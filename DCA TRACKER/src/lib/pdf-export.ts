@@ -79,10 +79,13 @@ export async function generateSimulationPDF(
     doc.setFontSize(size);
     doc.setFont("helvetica", style);
   }
-  function hline(y: number, color = C.gray200) {
-    stroke(color, 0.25);
-    doc.line(M, y, PW - M, y);
-  }
+function hline(
+  y: number,
+  color: readonly [number, number, number] = C.gray200
+) {
+  stroke(color, 0.25);
+  doc.line(M, y, PW - M, y);
+}
 
   // Advances y and draws a labelled section header.
   // Returns the new y position (after the header).
