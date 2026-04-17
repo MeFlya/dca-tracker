@@ -1,0 +1,159 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-white text-gray-900 font-sans;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply tracking-tight;
+  }
+}
+
+@layer components {
+  /* Reusable card primitive */
+  .card {
+    @apply bg-white rounded-2xl border border-gray-100 shadow-card p-6;
+  }
+
+  /* Primary CTA button */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl
+           bg-primary-600 hover:bg-primary-700 active:bg-primary-800
+           text-white font-medium text-sm
+           transition-colors duration-150
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* Secondary / ghost button */
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl
+           bg-white hover:bg-gray-50 active:bg-gray-100
+           border border-gray-200 hover:border-gray-300
+           text-gray-700 font-medium text-sm
+           transition-colors duration-150
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 focus-visible:ring-offset-2;
+  }
+
+  /* Input field */
+  .input-field {
+    @apply w-full px-4 py-2.5 rounded-xl border border-gray-200
+           bg-white text-gray-900 placeholder-gray-400
+           text-sm font-medium
+           transition-colors duration-150
+           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
+           hover:border-gray-300;
+  }
+
+  /* Disclaimer banner */
+  .disclaimer-banner {
+    @apply flex gap-3 items-start p-4 rounded-xl bg-amber-50 border border-amber-200
+           text-amber-800 text-sm;
+  }
+
+  /* Demo mode badge */
+  .demo-badge {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg
+           bg-orange-100 text-orange-700 text-xs font-semibold tracking-wide;
+  }
+}
+
+/* Recharts tooltip customization */
+.recharts-tooltip-wrapper {
+  @apply !shadow-card-lg !rounded-xl overflow-hidden;
+}
+
+/* ── Range slider — cross-browser reset + custom style ── */
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 9999px;
+  outline: none;
+  cursor: pointer;
+  /* active track filled via inline style background gradient */
+}
+
+/* Thumb — WebKit */
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid #1d4ed8;
+  box-shadow: 0 1px 4px rgb(29 78 216 / 0.25);
+  cursor: grab;
+  transition: box-shadow 0.15s, transform 0.1s;
+}
+.slider::-webkit-slider-thumb:hover {
+  box-shadow: 0 0 0 6px rgb(29 78 216 / 0.10);
+  transform: scale(1.1);
+}
+.slider::-webkit-slider-thumb:active {
+  cursor: grabbing;
+  box-shadow: 0 0 0 8px rgb(29 78 216 / 0.14);
+  transform: scale(1.12);
+}
+
+/* Thumb — Firefox */
+.slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid #1d4ed8;
+  box-shadow: 0 1px 4px rgb(29 78 216 / 0.25);
+  cursor: grab;
+  transition: box-shadow 0.15s, transform 0.1s;
+}
+.slider::-moz-range-thumb:hover {
+  box-shadow: 0 0 0 6px rgb(29 78 216 / 0.10);
+}
+
+/* Focus ring */
+.slider:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 3px #fff, 0 0 0 5px #1d4ed8;
+}
+.slider:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 3px #fff, 0 0 0 5px #1d4ed8;
+}
+
+/* Number input inside SliderInput — compact inline style */
+.slider-number-input {
+  @apply w-20 px-2 py-1 rounded-lg border border-gray-200
+         bg-white text-gray-900
+         text-sm font-semibold tabular-nums text-right
+         transition-colors duration-150
+         focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
+         hover:border-gray-300;
+  /* hide spin arrows */
+  -moz-appearance: textfield;
+}
+.slider-number-input::-webkit-outer-spin-button,
+.slider-number-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
