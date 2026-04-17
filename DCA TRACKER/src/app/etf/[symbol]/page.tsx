@@ -288,7 +288,11 @@ function PriceBlock({
   quote,
   error,
 }: {
-  quote: NonNullable<Awaited<ReturnType<typeof getMarketDataProvider>>["getQuote"]>["quote"] | null;
+  quote: NonNullable<
+    Awaited<
+      ReturnType<Awaited<ReturnType<typeof getMarketDataProvider>>["getQuote"]>
+    >["quote"]
+  > | null;
   error: string | null;
 }) {
   if (error) {
