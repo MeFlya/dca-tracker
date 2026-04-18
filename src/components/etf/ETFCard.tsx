@@ -32,9 +32,16 @@ export function ETFCard({ etf, quote, error }: ETFCardProps) {
             {etf.name}
           </p>
         </Link>
-        <span className="shrink-0 px-2 py-1 rounded-lg bg-gray-50 text-xs font-medium text-gray-500">
-          {etf.category}
-        </span>
+        <div className="flex flex-col items-end gap-1 shrink-0">
+          <span className="px-2 py-1 rounded-lg bg-gray-50 text-xs font-medium text-gray-500">
+            {etf.category}
+          </span>
+          {etf.peaEligible && (
+            <span className="px-2 py-0.5 rounded-full bg-green-50 text-green-700 text-[10px] font-semibold tracking-wide">
+              PEA
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Price block */}

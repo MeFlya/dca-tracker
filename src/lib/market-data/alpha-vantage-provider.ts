@@ -27,17 +27,38 @@ interface AlphaVantageGlobalQuote {
 
 // Static name mapping — Alpha Vantage doesn't return human-readable names on free tier
 const SYMBOL_NAMES: Record<string, string> = {
+  // MSCI World
   "CW8.PA": "Amundi MSCI World UCITS ETF",
   "EWLD.PA": "iShares MSCI World UCITS ETF",
+  // FTSE All-World
   "VWCE.DE": "Vanguard FTSE All-World UCITS ETF",
+  // S&P 500
+  "SP5.PA": "Amundi S&P 500 UCITS ETF",
+  "CSPX.L": "iShares Core S&P 500 UCITS ETF",
   SPY: "SPDR S&P 500 ETF Trust",
+  "VUSA.AS": "Vanguard S&P 500 UCITS ETF",
+  // Nasdaq-100
+  "ANX.PA": "Amundi Nasdaq-100 UCITS ETF",
   QQQ: "Invesco Nasdaq-100 ETF",
+  // Emerging Markets
+  "PAEEM.PA": "Amundi MSCI Emerging Markets UCITS ETF",
+  // Europe
+  "PCEU.PA": "Amundi STOXX Europe 600 UCITS ETF",
+  // Small Cap
+  "RS2K.PA": "Amundi MSCI Russell 2000 UCITS ETF",
+  "SMAE.PA": "Amundi MSCI Europe Small Cap UCITS ETF",
+  "IUSN.DE": "iShares MSCI World Small Cap UCITS ETF",
+  // Japan
+  "LYYA.PA": "Amundi Japan TOPIX UCITS ETF",
+  // Bonds
+  "OBLI.PA": "Amundi Euro Government Bond UCITS ETF",
 };
 
 const EXCHANGE_MAP: Record<string, string> = {
   ".PA": "Euronext Paris",
   ".DE": "Xetra",
   ".L": "London Stock Exchange",
+  ".AS": "Euronext Amsterdam",
 };
 
 function inferExchange(symbol: string): string {
@@ -48,7 +69,7 @@ function inferExchange(symbol: string): string {
 }
 
 function inferCurrency(symbol: string): string {
-  if (symbol.endsWith(".PA") || symbol.endsWith(".DE")) return "EUR";
+  if (symbol.endsWith(".PA") || symbol.endsWith(".DE") || symbol.endsWith(".AS")) return "EUR";
   if (symbol.endsWith(".L")) return "GBP";
   return "USD";
 }
@@ -114,7 +135,6 @@ export class AlphaVantageProvider implements IMarketDataProvider {
     const results: BatchMarketDataResult["results"] = {};
 
     // Sequential to respect rate limits on free tier
-    // TODO (premium): Parallelize with a paid API key
     for (const symbol of symbols) {
       results[symbol] = await this.getQuote(symbol);
     }

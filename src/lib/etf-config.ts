@@ -1,5 +1,14 @@
 // ETF configuration — update symbols and metadata here without touching UI code.
 
+export type ETFRegion =
+  | "monde"
+  | "usa"
+  | "europe"
+  | "emergents"
+  | "japon"
+  | "small-cap"
+  | "obligations";
+
 export interface ETFConfig {
   symbol: string;           // API symbol (e.g. "CW8.PA")
   displaySymbol: string;    // Short label for UI (e.g. "CW8")
@@ -11,6 +20,7 @@ export interface ETFConfig {
   distributionPolicy: "Capitalisant" | "Distribuant";
   isin?: string;
   peaEligible: boolean;     // Whether the ETF can be held in a French PEA
+  region: ETFRegion;
 }
 
 export const ETF_LIST: ETFConfig[] = [
@@ -29,6 +39,7 @@ export const ETF_LIST: ETFConfig[] = [
     distributionPolicy: "Capitalisant",
     isin: "LU1681043599",
     peaEligible: true,
+    region: "monde",
   },
   {
     symbol: "EWLD.PA",
@@ -42,6 +53,7 @@ export const ETF_LIST: ETFConfig[] = [
     distributionPolicy: "Capitalisant",
     isin: "IE00B4L5Y983",
     peaEligible: true,
+    region: "monde",
   },
 
   // ── FTSE All-World — monde entier (développés + émergents) ───────────────
@@ -58,6 +70,7 @@ export const ETF_LIST: ETFConfig[] = [
     distributionPolicy: "Capitalisant",
     isin: "IE00BK5BQT80",
     peaEligible: false,
+    region: "monde",
   },
 
   // ── S&P 500 — grandes capitalisations américaines ─────────────────────────
@@ -74,6 +87,7 @@ export const ETF_LIST: ETFConfig[] = [
     distributionPolicy: "Capitalisant",
     isin: "LU1681048804",
     peaEligible: true,
+    region: "usa",
   },
   {
     symbol: "CSPX.L",
@@ -87,6 +101,7 @@ export const ETF_LIST: ETFConfig[] = [
     distributionPolicy: "Capitalisant",
     isin: "IE00B5BMR087",
     peaEligible: false,
+    region: "usa",
   },
   {
     symbol: "SPY",
@@ -100,6 +115,21 @@ export const ETF_LIST: ETFConfig[] = [
     distributionPolicy: "Distribuant",
     isin: "US78462F1030",
     peaEligible: false,
+    region: "usa",
+  },
+  {
+    symbol: "VUSA.AS",
+    displaySymbol: "VUSA",
+    name: "Vanguard S&P 500 UCITS ETF",
+    description:
+      "ETF S&P 500 de Vanguard coté à Amsterdam avec des frais parmi les plus bas du marché (TER 0,07 %). Réplication physique, idéal pour un compte-titres ou une assurance-vie.",
+    category: "Actions USA (S&P 500)",
+    ter: 0.07,
+    replicationMethod: "Physique complet",
+    distributionPolicy: "Capitalisant",
+    isin: "IE00B3XXRP09",
+    peaEligible: false,
+    region: "usa",
   },
 
   // ── Nasdaq-100 — technologie américaine ──────────────────────────────────
@@ -116,6 +146,7 @@ export const ETF_LIST: ETFConfig[] = [
     distributionPolicy: "Capitalisant",
     isin: "LU1681038243",
     peaEligible: true,
+    region: "usa",
   },
   {
     symbol: "QQQ",
@@ -129,6 +160,7 @@ export const ETF_LIST: ETFConfig[] = [
     distributionPolicy: "Distribuant",
     isin: "US46090E1038",
     peaEligible: false,
+    region: "usa",
   },
 
   // ── Marchés émergents ─────────────────────────────────────────────────────
@@ -145,6 +177,7 @@ export const ETF_LIST: ETFConfig[] = [
     distributionPolicy: "Capitalisant",
     isin: "LU1681045370",
     peaEligible: true,
+    region: "emergents",
   },
 
   // ── Europe ────────────────────────────────────────────────────────────────
@@ -161,6 +194,69 @@ export const ETF_LIST: ETFConfig[] = [
     distributionPolicy: "Capitalisant",
     isin: "LU1681049328",
     peaEligible: true,
+    region: "europe",
+  },
+
+  // ── Small Cap ─────────────────────────────────────────────────────────────
+
+  {
+    symbol: "RS2K.PA",
+    displaySymbol: "RS2K",
+    name: "Amundi MSCI Russell 2000 UCITS ETF",
+    description:
+      "Exposition aux 2 000 petites capitalisations américaines via swap, éligible PEA. Complément du S&P 500 pour capturer la croissance des PME américaines avec un risque plus élevé.",
+    category: "Actions petites caps USA",
+    ter: 0.35,
+    replicationMethod: "Synthétique (swap)",
+    distributionPolicy: "Capitalisant",
+    isin: "LU1681038755",
+    peaEligible: true,
+    region: "small-cap",
+  },
+  {
+    symbol: "SMAE.PA",
+    displaySymbol: "SMAE",
+    name: "Amundi MSCI Europe Small Cap UCITS ETF",
+    description:
+      "Accès aux petites entreprises européennes via swap, éligible PEA. Complément d'un ETF Europe large cap pour une exposition plus large au tissu économique européen.",
+    category: "Actions petites caps Europe",
+    ter: 0.3,
+    replicationMethod: "Synthétique (swap)",
+    distributionPolicy: "Capitalisant",
+    isin: "LU1681038672",
+    peaEligible: true,
+    region: "small-cap",
+  },
+  {
+    symbol: "IUSN.DE",
+    displaySymbol: "IUSN",
+    name: "iShares MSCI World Small Cap UCITS ETF",
+    description:
+      "Couvre les petites capitalisations mondiales des pays développés (~3 400 entreprises). Réplication physique, diversification internationale des small caps en un seul ETF. Non éligible PEA.",
+    category: "Actions petites caps monde",
+    ter: 0.35,
+    replicationMethod: "Physique optimisé",
+    distributionPolicy: "Capitalisant",
+    isin: "IE00BF4RFH31",
+    peaEligible: false,
+    region: "small-cap",
+  },
+
+  // ── Japon ─────────────────────────────────────────────────────────────────
+
+  {
+    symbol: "LYYA.PA",
+    displaySymbol: "LYYA",
+    name: "Amundi Japan TOPIX UCITS ETF",
+    description:
+      "Exposition au marché japonais via l'indice TOPIX (~2 200 entreprises), éligible PEA. Complément géographique pour diversifier hors États-Unis et Europe.",
+    category: "Actions Japon",
+    ter: 0.2,
+    replicationMethod: "Synthétique (swap)",
+    distributionPolicy: "Capitalisant",
+    isin: "LU1681038912",
+    peaEligible: true,
+    region: "japon",
   },
 
   // ── Obligataire — allocation défensive ────────────────────────────────────
@@ -177,6 +273,7 @@ export const ETF_LIST: ETFConfig[] = [
     distributionPolicy: "Distribuant",
     isin: "FR0010754200",
     peaEligible: false,
+    region: "obligations",
   },
 ];
 
