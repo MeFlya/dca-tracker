@@ -1,0 +1,97 @@
+import type { Metadata } from "next";
+import { Hero } from "@/components/home/Hero";
+import { Features } from "@/components/home/Features";
+import { TrustSection } from "@/components/home/TrustSection";
+import { FAQ } from "@/components/home/FAQ";
+import { EmailCapture } from "@/components/ui/EmailCapture";
+import { JsonLd } from "@/components/ui/JsonLd";
+import { FAQ_ITEMS } from "@/lib/faq-data";
+
+const TITLE = "DCA Tracker — Simulateur ETF & Investissement Progressif";
+const DESCRIPTION =
+  "Calculez combien peut valoir votre argent avec une stratégie DCA en ETF. Versements mensuels, intérêts composés, 3 scénarios comparés. Gratuit, sans inscription, hypothèses transparentes.";
+
+export const metadata: Metadata = {
+  title: TITLE,
+  description: DESCRIPTION,
+  alternates: { canonical: "/" },
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    url: "/",
+    type: "website",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "DCA Tracker — Simulateur d'investissement progressif en ETF",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description:
+      "Combien peut valoir votre argent dans 20 ans ? Simulez vos versements en ETF avec les intérêts composés. Gratuit, sans inscription.",
+  },
+};
+
+export default function HomePage() {
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: FAQ_ITEMS.map((item) => ({
+      "@type": "Question",
+      name: item.q,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.a,
+      },
+    })),
+  };
+
+  return (
+    <>
+      <Hero />
+      <Features />
+      <TrustSection />
+      <FAQ />
+
+      <EmailCapture source="homepage" />
+
+      {/* CTA band */}
+      <section className="py-16 bg-primary-600">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
+          <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">
+            Prêt à voir ce que votre argent peut devenir ?
+          </h2>
+          <p className="text-primary-200 mb-8 text-lg leading-relaxed">
+            La simulation prend 30 secondes. Résultats visibles sans inscription,
+            hypothèses toujours transparentes.
+          </p>
+          <a href="/simulateur" className="btn-secondary text-base px-6 py-3">
+            Tester ma simulation →
+          </a>
+
+          {/* Internal nav links */}
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-primary-300">
+            <a href="/comparer-etf" className="hover:text-white transition-colors">
+              Comparer les ETF
+            </a>
+            <span aria-hidden className="opacity-30">·</span>
+            <a href="/methodologie" className="hover:text-white transition-colors">
+              Méthodologie
+            </a>
+            <span aria-hidden className="opacity-30">·</span>
+            <a href="/donnees-marche" className="hover:text-white transition-colors">
+              Données de marché
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <JsonLd data={faqSchema} />
+    </>
+  );
+}
