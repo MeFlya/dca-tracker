@@ -69,13 +69,14 @@ export function EmailCapture({
           <EnvelopeIcon className="mx-auto mb-5" />
 
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">
-            Recevez votre simulation et{" "}
-            <span className="text-primary-600">1 idée simple</span>{" "}
-            pour investir à long terme
+            Recevez le guide :{" "}
+            <span className="text-primary-600">PEA ou CTO</span>{" "}
+            — quelle enveloppe pour vos ETF ?
           </h2>
           <p className="mt-3 text-base text-gray-500 leading-relaxed">
-            Pas de spam. Juste des contenus utiles, des nouveautés du simulateur
-            et des idées d&apos;investissement long terme.
+            Le guide pratique que tout investisseur DCA devrait lire avant
+            d&apos;ouvrir un compte. Quelle enveloppe choisir, quels ETF y
+            mettre, et comment éviter les erreurs courantes. Gratuit, sans spam.
           </p>
 
           <form
@@ -126,11 +127,11 @@ export function EmailCapture({
         <EnvelopeIcon />
         <div className="min-w-0">
           <h3 className="text-base font-semibold text-gray-900 leading-snug">
-            Recevez votre simulation et 1 idée simple pour investir à long terme
+            Recevez le guide PEA vs CTO + ressources pour investisseurs DCA
           </h3>
           <p className="mt-1 text-sm text-gray-500 leading-relaxed">
-            Pas de spam. Juste des contenus utiles, des nouveautés du simulateur
-            et des idées d&apos;investissement long terme.
+            Quelle enveloppe fiscale pour vos ETF, quel montant mensuel,
+            comment démarrer. Gratuit, sans spam.
           </p>
         </div>
       </div>

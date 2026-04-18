@@ -44,9 +44,10 @@ export function Hero() {
             </h1>
 
             <p className="text-lg md:text-xl text-gray-500 leading-relaxed mb-8 max-w-xl">
-              Entrez un versement mensuel et une durée.
-              DCA Tracker projette vos placements en ETF avec les intérêts
-              composés — hypothèses transparentes, résultats en temps réel.
+              Fixez un versement mensuel et une durée. DCA Tracker projette
+              votre portefeuille ETF avec les intérêts composés — trois
+              scénarios de marché, hypothèses entièrement vérifiables,
+              sans inscription.
             </p>
 
             {/* CTAs */}
@@ -55,14 +56,14 @@ export function Hero() {
                 href="/simulateur"
                 className="btn-primary text-base px-6 py-3"
               >
-                Tester ma simulation
+                Calculer ma projection
                 <span aria-hidden> →</span>
               </Link>
               <Link
-                href="/comparer-etf"
+                href="/pea-ou-cto"
                 className="btn-secondary text-base px-6 py-3"
               >
-                Comparer les ETF
+                PEA ou CTO ?
               </Link>
             </div>
 

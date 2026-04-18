@@ -1,10 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Enable React strict mode for better development experience
   reactStrictMode: true,
 
-  // Allow images from common financial data providers
   images: {
     remotePatterns: [
       {
@@ -14,8 +12,19 @@ const nextConfig: NextConfig = {
     ],
   },
 
-  // TODO (premium): Add i18n support for multi-language expansion
-  // TODO (premium): Add redirects for old URL structure if needed
+  async headers() {
+    // Explicitly set X-Robots-Tag on production. Vercel preview deployments
+    // inject their own noindex at platform level regardless of this header —
+    // this only reinforces correct indexing on the production domain.
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          { key: "X-Robots-Tag", value: "index, follow" },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;

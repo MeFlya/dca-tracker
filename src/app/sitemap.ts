@@ -6,11 +6,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
 
   const staticPages: MetadataRoute.Sitemap = [
-    { url: base,                        lastModified: now, changeFrequency: "weekly",  priority: 1.0 },
-    { url: `${base}/simulateur`,        lastModified: now, changeFrequency: "weekly",  priority: 0.9 },
-    { url: `${base}/comparer-etf`,      lastModified: now, changeFrequency: "weekly",  priority: 0.8 },
-    { url: `${base}/donnees-marche`,    lastModified: now, changeFrequency: "daily",   priority: 0.6 },
-    { url: `${base}/methodologie`,      lastModified: now, changeFrequency: "monthly", priority: 0.5 },
+    { url: base,                           lastModified: now, changeFrequency: "weekly",  priority: 1.0 },
+    { url: `${base}/simulateur`,           lastModified: now, changeFrequency: "weekly",  priority: 0.9 },
+    { url: `${base}/pea-ou-cto`,           lastModified: now, changeFrequency: "monthly", priority: 0.85 },
+    { url: `${base}/investir-en-etf`,      lastModified: now, changeFrequency: "monthly", priority: 0.85 },
+    { url: `${base}/comparer-etf`,         lastModified: now, changeFrequency: "weekly",  priority: 0.8 },
+    { url: `${base}/donnees-marche`,       lastModified: now, changeFrequency: "daily",   priority: 0.6 },
+    { url: `${base}/methodologie`,         lastModified: now, changeFrequency: "monthly", priority: 0.5 },
   ];
 
   const etfPages: MetadataRoute.Sitemap = ETF_LIST.map((etf) => ({
