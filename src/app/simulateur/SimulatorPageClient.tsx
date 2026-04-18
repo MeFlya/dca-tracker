@@ -4,6 +4,7 @@ import { useState, useCallback, useRef, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { SimulatorForm } from "@/components/simulator/SimulatorForm";
+import { SimulatorHero } from "@/components/simulator/SimulatorHero";
 import { SimulatorResults } from "@/components/simulator/SimulatorResults";
 import { MonteCarloChart } from "@/components/simulator/MonteCarloChart";
 import { ScenarioComparison } from "@/components/simulator/ScenarioComparison";
@@ -38,7 +39,6 @@ export function SimulatorPageClient() {
   const isPremium = plan === "premium" || plan === "pro";
   const isPro = plan === "pro";
 
-  // Init from URL params on first render
   const [initialParams] = useState(() => {
     if (hasSimulationParams(searchParams)) return paramsFromSearch(searchParams);
     return null;
@@ -56,9 +56,7 @@ export function SimulatorPageClient() {
     })
   );
 
-  // Trigger to refresh the saved list after a save/delete
   const [saveRefreshKey, setSaveRefreshKey] = useState(0);
-
   const monteCarloResult = useMemo(() => runMonteCarlo(output.input), [output.input]);
 
   const urlUpdateTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -84,7 +82,6 @@ export function SimulatorPageClient() {
     [router]
   );
 
-  // Load a saved simulation into the form — triggers handleChange via SimulatorForm defaultValues re-mount
   const [formKey, setFormKey] = useState(0);
   const [loadedInput, setLoadedInput] = useState<SimulatorInput | null>(null);
 
@@ -109,6 +106,9 @@ export function SimulatorPageClient() {
 
       {/* Results column */}
       <div id="results" className="space-y-4">
+        {/* Hero — big impactful result + MC distribution */}
+        <SimulatorHero output={output} mc={monteCarloResult} />
+
         {/* Action bar */}
         <div className="flex items-center justify-between gap-2 flex-wrap">
           <SaveSimulationButton
@@ -122,20 +122,22 @@ export function SimulatorPageClient() {
           </div>
         </div>
 
-        {/* Saved simulations list (only visible when there are saves) */}
+        {/* Saved simulations list */}
         <SavedSimulationsList
           onLoad={handleLoadSaved}
           refreshKey={saveRefreshKey}
         />
 
+        {/* Detailed results */}
         <SimulatorResults output={output} />
 
+        {/* Monte Carlo full chart */}
         <MonteCarloChart result={monteCarloResult} isPremium={isPremium} />
 
+        {/* A vs B — Pro */}
         <ScenarioComparison isPro={isPro} />
 
         <EmailCapture variant="card" source="simulator" />
-
         <InvestCTA />
       </div>
     </div>

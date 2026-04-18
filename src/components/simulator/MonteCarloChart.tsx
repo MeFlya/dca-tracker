@@ -95,10 +95,11 @@ function LockedOverlay() {
             <circle cx="12" cy="16" r="1.5" fill="currentColor" />
           </svg>
         </div>
-        <p className="font-bold text-gray-900 mb-1">Analyse Monte Carlo</p>
+        <p className="font-bold text-gray-900 mb-1">Pour aller plus loin</p>
         <p className="text-sm text-gray-500 mb-4 leading-relaxed">
-          Visualisez 1&nbsp;000 scénarios de marché et découvrez la distribution
-          réelle de vos résultats possibles.
+          Visualisez 1&nbsp;000 marchés possibles pour votre stratégie —
+          et découvrez dans quelle fourchette vos résultats ont le plus de
+          chances de se situer.
         </p>
         <Link
           href="/tarifs"
@@ -209,7 +210,7 @@ export function MonteCarloChart({
             </span>
           </div>
           <p className="text-xs text-gray-400">
-            1&nbsp;000 scénarios simulés · volatilité historique ETF ≈ 15&nbsp;%/an
+            1&nbsp;000 marchés possibles simulés · volatilité historique ETF ≈ 15&nbsp;%/an
           </p>
         </div>
       </div>

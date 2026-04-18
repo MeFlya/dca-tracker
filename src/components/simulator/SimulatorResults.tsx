@@ -19,7 +19,7 @@ function ScenarioCard({
   return (
     <div
       className={cn(
-        "rounded-2xl border p-5 flex flex-col gap-3",
+        "rounded-2xl border p-5 flex flex-col gap-3 transition-shadow hover:shadow-md",
         isMain
           ? "border-primary-200 bg-primary-50 shadow-card"
           : "border-gray-100 bg-white shadow-card"
@@ -35,19 +35,19 @@ function ScenarioCard({
           {scenario.label}
         </span>
         <span className="text-xs text-gray-400">
-          {scenario.annualReturnPct} % / an brut
+          {scenario.annualReturnPct} %/an brut
         </span>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <p className="text-xs text-gray-500 mb-0.5">Valeur finale</p>
+          <p className="text-xs text-gray-400 mb-0.5">Capital final</p>
           <p className="text-xl font-bold text-gray-900 tabular-nums">
             {formatEur(scenario.finalValue)}
           </p>
         </div>
         <div>
-          <p className="text-xs text-gray-500 mb-0.5">Gain total</p>
+          <p className="text-xs text-gray-400 mb-0.5">Gains</p>
           <p
             className={cn(
               "text-xl font-bold tabular-nums",
@@ -58,13 +58,13 @@ function ScenarioCard({
           </p>
         </div>
         <div>
-          <p className="text-xs text-gray-500 mb-0.5">Investi</p>
+          <p className="text-xs text-gray-400 mb-0.5">Capital investi</p>
           <p className="text-sm font-semibold text-gray-700 tabular-nums">
             {formatEur(scenario.totalInvested)}
           </p>
         </div>
         <div>
-          <p className="text-xs text-gray-500 mb-0.5">Rendement</p>
+          <p className="text-xs text-gray-400 mb-0.5">Performance</p>
           <p
             className={cn(
               "text-sm font-semibold tabular-nums",
@@ -79,7 +79,7 @@ function ScenarioCard({
       {scenario.inflationAdjustedValue !== undefined && (
         <div className="pt-2 border-t border-gray-200">
           <p className="text-xs text-gray-400">
-            Valeur réelle (€ d&apos;aujourd&apos;hui)
+            Pouvoir d&apos;achat équivalent (€ d&apos;aujourd&apos;hui)
           </p>
           <p className="text-sm font-medium text-gray-700 tabular-nums">
             {formatEur(scenario.inflationAdjustedValue)}
@@ -92,27 +92,29 @@ function ScenarioCard({
 
 export function SimulatorResults({ output }: SimulatorResultsProps) {
   const { base, conservative, optimistic, input } = output;
+  const netReturn = input.annualReturnPct - input.annualFeesPct;
 
   return (
     <div className="space-y-6 animate-slide-up">
-      {/* Summary stats */}
+
+      {/* Key stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
-          label="Montant investi"
+          label="Capital investi"
           value={formatEur(base.totalInvested)}
           sub={`${input.monthlyAmount} €/mois × ${input.durationYears} ans`}
         />
         <StatCard
-          label="Valeur projetée (base)"
+          label="Valeur estimée"
           value={formatEur(base.finalValue)}
           accent="primary"
-          sub={`Rendement net : ${(input.annualReturnPct - input.annualFeesPct).toFixed(2)} %/an`}
+          sub={`Rendement net : ${netReturn.toFixed(2)} %/an`}
         />
         <StatCard
-          label="Gain projeté"
+          label="Gains potentiels"
           value={formatEur(base.totalGain)}
           accent="gain"
-          sub={`+${base.gainPercent.toFixed(1)} % sur le capital investi`}
+          sub={`+${base.gainPercent.toFixed(1)} % sur capital investi`}
         />
         {base.inflationAdjustedValue !== undefined ? (
           <StatCard
@@ -129,7 +131,7 @@ export function SimulatorResults({ output }: SimulatorResultsProps) {
         )}
       </div>
 
-      {/* Charts row: donut (composition) + area chart (journey over time) */}
+      {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-[288px_1fr] gap-6 items-start">
         <GainsDonutChart base={base} />
         <PortfolioChart
@@ -141,9 +143,10 @@ export function SimulatorResults({ output }: SimulatorResultsProps) {
 
       {/* 3 scenarios */}
       <div>
-        <h3 className="font-semibold text-gray-900 mb-3">
-          Scénarios comparés
-        </h3>
+        <div className="flex items-baseline gap-2 mb-3">
+          <h3 className="font-semibold text-gray-900">3 scénarios comparés</h3>
+          <span className="text-xs text-gray-400">± 2 % autour de votre hypothèse</span>
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <ScenarioCard scenario={conservative} />
           <ScenarioCard scenario={base} isMain />
@@ -151,41 +154,39 @@ export function SimulatorResults({ output }: SimulatorResultsProps) {
         </div>
       </div>
 
-      {/* Assumptions */}
-      <div className="card bg-gray-50 border-gray-100">
-        <h4 className="text-sm font-semibold text-gray-700 mb-2">
+      {/* Assumptions — collapsed, less prominent */}
+      <details className="group">
+        <summary className="flex items-center gap-2 cursor-pointer text-xs font-medium text-gray-400 hover:text-gray-600 transition-colors list-none w-fit">
+          <svg viewBox="0 0 16 16" fill="none" className="w-3.5 h-3.5 group-open:rotate-90 transition-transform shrink-0" aria-hidden>
+            <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
           Hypothèses de calcul
-        </h4>
-        <ul className="text-xs text-gray-500 space-y-1 leading-relaxed">
-          <li>
-            • Versement de <strong>{formatEur(input.monthlyAmount)}</strong> en
-            début de mois, capitalisé mensuellement
-          </li>
-          <li>
-            • Rendement net ={" "}
-            <strong>
-              {input.annualReturnPct} % − {input.annualFeesPct} % (frais) ={" "}
-              {(input.annualReturnPct - input.annualFeesPct).toFixed(2)} %/an
-            </strong>
-          </li>
-          <li>
-            • Scénario conservateur / optimiste :{" "}
-            <strong>±2 points de pourcentage</strong> par rapport au scénario de
-            base
-          </li>
-          <li>
-            • Rendement constant sur toute la durée (simplification — les
-            marchés sont volatils)
-          </li>
-          {input.annualInflationPct && (
+        </summary>
+        <div className="mt-3 card bg-gray-50 border-gray-100">
+          <ul className="text-xs text-gray-500 space-y-1 leading-relaxed">
             <li>
-              • Valeur réelle calculée en déflatant par{" "}
-              <strong>{input.annualInflationPct} % / an</strong> sur{" "}
-              {input.durationYears} ans
+              • Versement de <strong>{formatEur(input.monthlyAmount)}</strong> en début de mois, capitalisé mensuellement
             </li>
-          )}
-        </ul>
-      </div>
+            <li>
+              • Rendement net = <strong>{input.annualReturnPct} % − {input.annualFeesPct} % (frais TER) = {netReturn.toFixed(2)} %/an</strong>
+            </li>
+            <li>
+              • Scénario conservateur / optimiste : <strong>±2 points de pourcentage</strong> par rapport au scénario de base
+            </li>
+            <li>
+              • Rendement constant sur toute la durée (simplification — les marchés sont volatils)
+            </li>
+            <li>
+              • Basé sur la mécanique des intérêts composés — le même modèle mathématique qui sous-tend l&apos;historique du MSCI World (~7–8 %/an sur 30 ans)
+            </li>
+            {input.annualInflationPct && (
+              <li>
+                • Valeur réelle calculée en déflatant par <strong>{input.annualInflationPct} %/an</strong> sur {input.durationYears} ans
+              </li>
+            )}
+          </ul>
+        </div>
+      </details>
 
       <Disclaimer />
     </div>

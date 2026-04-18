@@ -27,13 +27,14 @@ export function SaveSimulationButton({ input, plan, onSaved }: Props) {
     return (
       <Link
         href="/tarifs"
+        title="Sauvegardez vos stratégies pour les comparer — disponible en Premium"
         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-primary-200 bg-primary-50 text-xs font-semibold text-primary-700 hover:bg-primary-100 transition-colors"
       >
         <svg viewBox="0 0 16 16" fill="none" className="w-3.5 h-3.5" aria-hidden>
           <rect x="3" y="7" width="10" height="8" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
           <path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
         </svg>
-        Sauvegarder
+        Sauvegarder la stratégie
       </Link>
     );
   }

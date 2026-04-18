@@ -90,9 +90,10 @@ function LockedOverlay() {
             <path d="M8 11V7a4 4 0 0 1 8 0v4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
           </svg>
         </div>
-        <p className="font-bold text-gray-900 mb-1">Comparaison A vs B</p>
+        <p className="font-bold text-gray-900 mb-1">Comparez deux stratégies</p>
         <p className="text-sm text-gray-500 mb-4 leading-relaxed">
-          Comparez deux stratégies d&apos;investissement côte à côte. Réservé au plan Pro.
+          200 €/mois pendant 20 ans vs 300 €/mois pendant 15 ans — lequel
+          produit le plus ? Comparez en temps réel côte à côte.
         </p>
         <Link
           href="/tarifs"

@@ -42,11 +42,11 @@ export default function SimulateurPage() {
       {/* Page header */}
       <div className="mb-10">
         <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-          Simulateur d&apos;investissement progressif
+          Projetez votre futur financier
         </h1>
         <p className="text-gray-500 text-lg max-w-2xl">
-          Ajustez les curseurs — les projections se mettent à jour instantanément.
-          Trois scénarios pour anticiper différentes conditions de marché.
+          Ajustez les curseurs — votre projection se met à jour en temps réel.
+          Basé sur la mécanique des intérêts composés et les données historiques ETF.
         </p>
       </div>
 

@@ -76,7 +76,8 @@ export function EmailCapture({
           <p className="mt-3 text-base text-gray-500 leading-relaxed">
             Le guide pratique que tout investisseur DCA devrait lire avant
             d&apos;ouvrir un compte. Quelle enveloppe choisir, quels ETF y
-            mettre, et comment éviter les erreurs courantes. Gratuit, sans spam.
+            mettre, et comment éviter les erreurs courantes.{" "}
+            <span className="font-medium text-gray-700">Livré par email, gratuit, sans spam.</span>
           </p>
 
           <form
@@ -127,11 +128,11 @@ export function EmailCapture({
         <EnvelopeIcon />
         <div className="min-w-0">
           <h3 className="text-base font-semibold text-gray-900 leading-snug">
-            Recevez le guide PEA vs CTO + ressources pour investisseurs DCA
+            PEA ou CTO ? Recevez le guide gratuit
           </h3>
           <p className="mt-1 text-sm text-gray-500 leading-relaxed">
-            Quelle enveloppe fiscale pour vos ETF, quel montant mensuel,
-            comment démarrer. Gratuit, sans spam.
+            La question que tous les investisseurs DCA se posent — réponse
+            claire, exemples concrets, livré immédiatement par email.
           </p>
         </div>
       </div>
@@ -188,10 +189,10 @@ function SuccessState({
       >
         <div className="max-w-sm mx-auto px-4 text-center">
           <CheckCircleIcon className="mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-gray-900">C&apos;est noté !</h2>
+          <h2 className="text-xl font-bold text-gray-900">Guide envoyé ! 🎉</h2>
           <p className="mt-2 text-sm text-gray-500 leading-relaxed">
-            Bienvenue. Vous recevrez bientôt des idées simples pour investir sur
-            le long terme.
+            Consultez votre boîte mail — le guide PEA vs CTO vous attend.
+            Vérifiez les spams si vous ne le recevez pas dans 2 minutes.
           </p>
         </div>
       </section>
@@ -201,16 +202,15 @@ function SuccessState({
   return (
     <div
       className={cn(
-        "rounded-2xl border border-green-100 bg-green-50/60 p-6 flex items-start gap-4",
+        "rounded-2xl border border-emerald-100 bg-emerald-50/60 p-5 flex items-start gap-4",
         className
       )}
     >
       <CheckCircleIcon />
       <div>
-        <p className="text-sm font-semibold text-gray-900">C&apos;est noté !</p>
+        <p className="text-sm font-semibold text-gray-900">Guide envoyé ! 🎉</p>
         <p className="mt-0.5 text-sm text-gray-500 leading-snug">
-          Bienvenue. Vous recevrez bientôt des idées simples pour investir sur
-          le long terme.
+          Vérifiez votre boîte mail — le guide PEA vs CTO est en route.
         </p>
       </div>
     </div>
