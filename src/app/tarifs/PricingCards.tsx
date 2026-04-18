@@ -2,14 +2,13 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useUser } from "@clerk/nextjs";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type Feature = {
   label: string;
-  /** true = included, false = not in this tier */
   included: boolean;
-  /** true = feature exists but not built yet */
   soon?: boolean;
 };
 
@@ -65,8 +64,8 @@ const PLANS: Plan[] = [
     savePercent: 34,
     badge: "Le plus populaire",
     ctaStyle: "primary",
-    cta: "Être notifié au lancement",
-    ctaHref: "#acces-anticipe",
+    cta: "Choisir Premium",
+    ctaHref: "#",
     features: [
       { label: "Tout du plan Gratuit", included: true },
       { label: "Export PDF professionnel (sans filigrane)", included: true },
@@ -89,8 +88,8 @@ const PLANS: Plan[] = [
     yearlyPerMonth: 6.58,
     savePercent: 34,
     ctaStyle: "dark",
-    cta: "Rejoindre l'accès anticipé",
-    ctaHref: "#acces-anticipe",
+    cta: "Choisir Pro",
+    ctaHref: "#",
     features: [
       { label: "Tout du plan Premium", included: true },
       { label: "Simulations illimitées sauvegardées", included: true, soon: true },
@@ -105,6 +104,64 @@ const PLANS: Plan[] = [
     ],
   },
 ];
+
+// ─── Checkout button ──────────────────────────────────────────────────────────
+
+function CheckoutButton({
+  planId,
+  billing,
+  style,
+  label,
+}: {
+  planId: "premium" | "pro";
+  billing: "monthly" | "yearly";
+  style: "primary" | "dark";
+  label: string;
+}) {
+  const { isSignedIn, isLoaded } = useUser();
+  const [loading, setLoading] = useState(false);
+
+  async function handleClick() {
+    if (!isSignedIn) {
+      window.location.href = `/sign-up?redirect_url=${encodeURIComponent("/tarifs")}`;
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ planId, billing }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        alert(data.error ?? "Erreur lors de la création du paiement.");
+      }
+    } catch {
+      alert("Erreur réseau — réessayez dans quelques secondes.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const baseClass = `w-full text-center text-sm font-semibold py-2.5 px-4 rounded-xl transition-all mb-6 block disabled:opacity-60 cursor-pointer`;
+  const styleClass =
+    style === "primary"
+      ? "bg-primary-600 text-white hover:bg-primary-700"
+      : "bg-white text-slate-900 hover:bg-gray-100";
+
+  return (
+    <button
+      onClick={handleClick}
+      disabled={!isLoaded || loading}
+      className={`${baseClass} ${styleClass}`}
+    >
+      {loading ? "Chargement…" : isSignedIn ? label : "Créer un compte"}
+    </button>
+  );
+}
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -142,6 +199,7 @@ export function PricingCards() {
         {PLANS.map((plan) => {
           const price = yearly ? plan.yearlyPerMonth : plan.monthlyPrice;
           const isHighlight = plan.id === "premium";
+          const billing: "monthly" | "yearly" = yearly ? "yearly" : "monthly";
 
           return (
             <div
@@ -207,18 +265,21 @@ export function PricingCards() {
               </div>
 
               {/* CTA */}
-              <Link
-                href={plan.ctaHref}
-                className={`w-full text-center text-sm font-semibold py-2.5 px-4 rounded-xl transition-all mb-6 block ${
-                  plan.ctaStyle === "primary"
-                    ? "bg-primary-600 text-white hover:bg-primary-700"
-                    : plan.ctaStyle === "dark"
-                    ? "bg-white text-slate-900 hover:bg-gray-100"
-                    : "border border-gray-200 text-gray-700 hover:border-gray-300 hover:bg-gray-50"
-                }`}
-              >
-                {plan.cta}
-              </Link>
+              {plan.id === "free" ? (
+                <Link
+                  href={plan.ctaHref}
+                  className="w-full text-center text-sm font-semibold py-2.5 px-4 rounded-xl transition-all mb-6 block border border-gray-200 text-gray-700 hover:border-gray-300 hover:bg-gray-50"
+                >
+                  {plan.cta}
+                </Link>
+              ) : (
+                <CheckoutButton
+                  planId={plan.id as "premium" | "pro"}
+                  billing={billing}
+                  style={plan.ctaStyle as "primary" | "dark"}
+                  label={plan.cta}
+                />
+              )}
 
               {/* Feature list */}
               <ul className="space-y-2.5 flex-1">

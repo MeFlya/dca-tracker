@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { LogoMark } from "@/components/ui/LogoMark";
+import { UserButton, useUser } from "@clerk/nextjs";
 
 const NAV_LINKS = [
   { href: "/simulateur",      label: "Simulateur" },
@@ -17,6 +18,7 @@ const NAV_LINKS = [
 export function Header() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { isSignedIn, isLoaded } = useUser();
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100">
@@ -53,11 +55,37 @@ export function Header() {
             ))}
           </nav>
 
-          {/* Desktop CTA */}
+          {/* Desktop CTA + Auth */}
           <div className="hidden md:flex items-center gap-3">
-            <Link href="/simulateur" className="btn-primary text-xs px-4 py-2">
-              Démarrer la simulation
-            </Link>
+            {isLoaded && !isSignedIn && (
+              <>
+                <Link
+                  href="/sign-in"
+                  className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+                >
+                  Connexion
+                </Link>
+                <Link href="/simulateur" className="btn-primary text-xs px-4 py-2">
+                  Démarrer la simulation
+                </Link>
+              </>
+            )}
+            {isLoaded && isSignedIn && (
+              <>
+                <Link href="/simulateur" className="btn-primary text-xs px-4 py-2">
+                  Simulateur
+                </Link>
+                <Link
+                  href="/account"
+                  className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+                >
+                  Mon compte
+                </Link>
+                <UserButton />
+              </>
+            )}
+            {/* Placeholder pour éviter le layout shift pendant le chargement */}
+            {!isLoaded && <div className="w-24 h-8" />}
           </div>
 
           {/* Mobile hamburger */}
@@ -101,7 +129,6 @@ export function Header() {
               {link.label}
             </Link>
           ))}
-          {/* Extra guide link visible on mobile */}
           <Link
             href="/pea-ou-cto"
             onClick={() => setMobileOpen(false)}
@@ -109,7 +136,16 @@ export function Header() {
           >
             PEA ou CTO ?
           </Link>
-          <div className="pt-2 pb-1">
+          <div className="pt-2 pb-1 space-y-2">
+            {isLoaded && !isSignedIn && (
+              <Link
+                href="/sign-in"
+                onClick={() => setMobileOpen(false)}
+                className="block px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
+              >
+                Connexion
+              </Link>
+            )}
             <Link
               href="/simulateur"
               onClick={() => setMobileOpen(false)}
