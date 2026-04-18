@@ -1,12 +1,15 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
 import { SimulatorForm } from "@/components/simulator/SimulatorForm";
 import { SimulatorResults } from "@/components/simulator/SimulatorResults";
+import { MonteCarloChart } from "@/components/simulator/MonteCarloChart";
 import { ShareButton } from "@/components/simulator/ShareButton";
 import { ExportPDFButton } from "@/components/simulator/ExportPDFButton";
 import { runSimulation, SimulatorInput, SimulatorOutput } from "@/lib/simulator";
+import { runMonteCarlo } from "@/lib/monte-carlo";
 import { EmailCapture } from "@/components/ui/EmailCapture";
 import { InvestCTA } from "@/components/ui/InvestCTA";
 import { UpgradePrompt } from "@/components/ui/UpgradePrompt";
@@ -28,6 +31,10 @@ const FALLBACK_INPUT: SimulatorInput = {
 export function SimulatorPageClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { user } = useUser();
+  const isPremium =
+    user?.publicMetadata?.plan === "premium" ||
+    user?.publicMetadata?.plan === "pro";
 
   // Derive initial state from URL params on first render
   const [initialParams] = useState(() => {
@@ -49,6 +56,8 @@ export function SimulatorPageClient() {
         : undefined,
     })
   );
+
+  const monteCarloResult = useMemo(() => runMonteCarlo(output.input), [output.input]);
 
   // Debounce URL updates to avoid flooding the router on slider drags
   const urlUpdateTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -109,6 +118,8 @@ export function SimulatorPageClient() {
         </div>
 
         <SimulatorResults output={output} />
+
+        <MonteCarloChart result={monteCarloResult} isPremium={isPremium} />
 
         <UpgradePrompt
           feature="Sauvegarder cette simulation"

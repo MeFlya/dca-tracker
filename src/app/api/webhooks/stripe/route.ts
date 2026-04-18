@@ -4,6 +4,7 @@ import { getPlanFromPriceId } from "@/lib/plans";
 import {
   sendSubscriptionConfirmed,
   sendSubscriptionCancelled,
+  sendOnboardingDay1,
 } from "@/lib/emails/send";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
@@ -63,11 +64,11 @@ export async function POST(req: Request) {
         const user = await clerk.users.getUser(clerkUserId);
         const email = user.emailAddresses[0]?.emailAddress;
         if (email) {
-          await sendSubscriptionConfirmed(
-            email,
-            user.firstName ?? "Investisseur",
-            plan
-          );
+          const firstName = user.firstName ?? "Investisseur";
+          await Promise.all([
+            sendSubscriptionConfirmed(email, firstName, plan),
+            sendOnboardingDay1(email, firstName, plan),
+          ]);
         }
         break;
       }

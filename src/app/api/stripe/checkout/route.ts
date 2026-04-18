@@ -55,7 +55,7 @@ export async function POST(req: Request) {
     payment_method_types: ["card"],
     mode: "subscription",
     line_items: [{ price: priceId, quantity: 1 }],
-    success_url: `${siteUrl}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
+    success_url: `${siteUrl}/payment/success?plan=${planId}&session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${siteUrl}/payment/cancel`,
     subscription_data: {
       metadata: { clerkUserId: userId },
