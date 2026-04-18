@@ -51,7 +51,8 @@ function ratio(finalValue: number, invested: number): string {
 // ─── Main export function ─────────────────────────────────────────────────────
 
 export async function generateSimulationPDF(
-  output: SimulatorOutput
+  output: SimulatorOutput,
+  withWatermark = false
 ): Promise<void> {
   // Lazy-load jsPDF — keeps it out of the initial JS bundle entirely.
   const { jsPDF } = await import("jspdf");
@@ -354,7 +355,31 @@ function hline(
   doc.text("dcatracker.fr — outil éducatif, pas de conseil en investissement", M, PH - 7);
   doc.text(pdfStr(today), PW - M, PH - 7, { align: "right" });
 
-  // ── 7. Save ───────────────────────────────────────────────────────────────
+  // ── 7. Watermark (free users) ─────────────────────────────────────────────
+
+  if (withWatermark) {
+    doc.saveGraphicsState?.();
+    doc.setGState?.(new (doc as unknown as { GState: new (opts: { opacity: number }) => unknown }).GState({ opacity: 0.08 }));
+    font(52, "bold");
+    textColor(C.gray900);
+    doc.text("VERSION GRATUITE", PW / 2, PH / 2, {
+      align: "center",
+      angle: 45,
+    });
+    doc.restoreGraphicsState?.();
+
+    // Bottom notice
+    font(7, "normal");
+    textColor(C.gray400);
+    doc.text(
+      "Exportez sans filigrane avec DCA Tracker Premium — dcatracker.fr/tarifs",
+      PW / 2,
+      PH - 14,
+      { align: "center" }
+    );
+  }
+
+  // ── 8. Save ───────────────────────────────────────────────────────────────
 
   const year = new Date().getFullYear();
   doc.save(

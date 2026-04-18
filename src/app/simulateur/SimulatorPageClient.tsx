@@ -6,20 +6,21 @@ import { useUser } from "@clerk/nextjs";
 import { SimulatorForm } from "@/components/simulator/SimulatorForm";
 import { SimulatorResults } from "@/components/simulator/SimulatorResults";
 import { MonteCarloChart } from "@/components/simulator/MonteCarloChart";
+import { ScenarioComparison } from "@/components/simulator/ScenarioComparison";
+import { SaveSimulationButton } from "@/components/simulator/SaveSimulationButton";
+import { SavedSimulationsList } from "@/components/simulator/SavedSimulationsList";
 import { ShareButton } from "@/components/simulator/ShareButton";
 import { ExportPDFButton } from "@/components/simulator/ExportPDFButton";
 import { runSimulation, SimulatorInput, SimulatorOutput } from "@/lib/simulator";
 import { runMonteCarlo } from "@/lib/monte-carlo";
 import { EmailCapture } from "@/components/ui/EmailCapture";
 import { InvestCTA } from "@/components/ui/InvestCTA";
-import { UpgradePrompt } from "@/components/ui/UpgradePrompt";
 import {
   paramsFromSearch,
   paramsToSearch,
   hasSimulationParams,
 } from "@/lib/simulation-params";
 
-// Fallback defaults when no URL params are present
 const FALLBACK_INPUT: SimulatorInput = {
   monthlyAmount: 200,
   durationYears: 20,
@@ -32,22 +33,20 @@ export function SimulatorPageClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user } = useUser();
-  const isPremium =
-    user?.publicMetadata?.plan === "premium" ||
-    user?.publicMetadata?.plan === "pro";
 
-  // Derive initial state from URL params on first render
+  const plan = (user?.publicMetadata?.plan as string) ?? "free";
+  const isPremium = plan === "premium" || plan === "pro";
+  const isPro = plan === "pro";
+
+  // Init from URL params on first render
   const [initialParams] = useState(() => {
-    if (hasSimulationParams(searchParams)) {
-      return paramsFromSearch(searchParams);
-    }
+    if (hasSimulationParams(searchParams)) return paramsFromSearch(searchParams);
     return null;
   });
 
   const initialInput = initialParams?.input ?? FALLBACK_INPUT;
   const initialInflationEnabled = initialParams?.inflationEnabled ?? false;
 
-  // Derive initial simulation from URL or defaults — visible immediately
   const [output, setOutput] = useState<SimulatorOutput>(() =>
     runSimulation({
       ...initialInput,
@@ -57,31 +56,25 @@ export function SimulatorPageClient() {
     })
   );
 
+  // Trigger to refresh the saved list after a save/delete
+  const [saveRefreshKey, setSaveRefreshKey] = useState(0);
+
   const monteCarloResult = useMemo(() => runMonteCarlo(output.input), [output.input]);
 
-  // Debounce URL updates to avoid flooding the router on slider drags
   const urlUpdateTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  // Track whether we've auto-scrolled on mobile
   const hasScrolled = useRef(false);
 
   const handleChange = useCallback(
     (input: SimulatorInput, inflationEnabled: boolean) => {
       setOutput(runSimulation(input));
 
-      // Scroll to results the first time on small screens
       if (!hasScrolled.current && window.innerWidth < 1024) {
         hasScrolled.current = true;
         setTimeout(() => {
-          document.getElementById("results")?.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
-          });
+          document.getElementById("results")?.scrollIntoView({ behavior: "smooth", block: "start" });
         }, 120);
       }
 
-      // Debounce URL sync — 300 ms is imperceptible to users but prevents
-      // dozens of router.replace calls per second while dragging
       if (urlUpdateTimer.current) clearTimeout(urlUpdateTimer.current);
       urlUpdateTimer.current = setTimeout(() => {
         const qs = paramsToSearch({ input, inflationEnabled }).toString();
@@ -91,25 +84,37 @@ export function SimulatorPageClient() {
     [router]
   );
 
+  // Load a saved simulation into the form — triggers handleChange via SimulatorForm defaultValues re-mount
+  const [formKey, setFormKey] = useState(0);
+  const [loadedInput, setLoadedInput] = useState<SimulatorInput | null>(null);
+
+  function handleLoadSaved(input: SimulatorInput) {
+    setLoadedInput(input);
+    setFormKey((k) => k + 1);
+    setOutput(runSimulation(input));
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[400px_1fr] gap-8 items-start">
       {/* Sticky form column */}
       <div className="lg:sticky lg:top-24">
         <SimulatorForm
+          key={formKey}
           onChange={handleChange}
-          defaultValues={initialInput}
+          defaultValues={loadedInput ?? initialInput}
           defaultInflationEnabled={initialInflationEnabled}
         />
       </div>
 
       {/* Results column */}
       <div id="results" className="space-y-4">
-        {/* Action bar — sits above results, visually attached */}
+        {/* Action bar */}
         <div className="flex items-center justify-between gap-2 flex-wrap">
-          <UpgradePrompt
-            feature="PDF sans filigrane"
-            tier="premium"
-            variant="inline"
+          <SaveSimulationButton
+            input={output.input}
+            plan={plan}
+            onSaved={() => setSaveRefreshKey((k) => k + 1)}
           />
           <div className="flex items-center gap-2">
             <ExportPDFButton output={output} />
@@ -117,16 +122,17 @@ export function SimulatorPageClient() {
           </div>
         </div>
 
+        {/* Saved simulations list (only visible when there are saves) */}
+        <SavedSimulationsList
+          onLoad={handleLoadSaved}
+          refreshKey={saveRefreshKey}
+        />
+
         <SimulatorResults output={output} />
 
         <MonteCarloChart result={monteCarloResult} isPremium={isPremium} />
 
-        <UpgradePrompt
-          feature="Sauvegarder cette simulation"
-          description="Retrouvez votre projection à tout moment, sur tous vos appareils."
-          tier="premium"
-          variant="banner"
-        />
+        <ScenarioComparison isPro={isPro} />
 
         <EmailCapture variant="card" source="simulator" />
 
