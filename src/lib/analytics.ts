@@ -9,7 +9,7 @@
  *
  * Plausible (recommended — cookie-free, GDPR-compliant by default):
  *   NEXT_PUBLIC_ANALYTICS_PROVIDER=plausible
- *   NEXT_PUBLIC_SITE_DOMAIN=dca-tracker.fr
+ *   NEXT_PUBLIC_SITE_DOMAIN=dcatracker.fr
  *
  * Google Analytics 4:
  *   NEXT_PUBLIC_ANALYTICS_PROVIDER=ga

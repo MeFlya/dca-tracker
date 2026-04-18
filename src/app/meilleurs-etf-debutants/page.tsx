@@ -163,7 +163,7 @@ const FAQ = [
 ];
 
 export default function MeilleursETFDebutantsPage() {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://dca-tracker.fr";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://dcatracker.fr";
 
   // Get ETFs from config to show full list at bottom
   const allETFs = ETF_LIST.filter((e) => ["CW8", "EWLD", "VWCE", "SP5", "ANX", "PAEEM", "PCEU"].includes(e.displaySymbol));

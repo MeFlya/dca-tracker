@@ -205,12 +205,12 @@ Optimiste   : rendement_brut + 2 %`}
           "@type": "Article",
           headline: "Méthodologie — Formules et hypothèses du simulateur DCA",
           description: DESCRIPTION,
-          url: `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://dca-tracker.fr"}/methodologie`,
+          url: `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://dcatracker.fr"}/methodologie`,
           inLanguage: "fr-FR",
           publisher: {
             "@type": "Organization",
             name: "DCA Tracker",
-            url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://dca-tracker.fr",
+            url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://dcatracker.fr",
           },
           about: {
             "@type": "Thing",

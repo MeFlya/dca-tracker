@@ -12,6 +12,17 @@ const nextConfig: NextConfig = {
     ],
   },
 
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "www.dcatracker.fr" }],
+        destination: "https://dcatracker.fr/:path*",
+        permanent: true,
+      },
+    ];
+  },
+
   async headers() {
     // Explicitly set X-Robots-Tag on production. Vercel preview deployments
     // inject their own noindex at platform level regardless of this header —

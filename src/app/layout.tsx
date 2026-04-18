@@ -5,8 +5,7 @@ import { Footer } from "@/components/layout/Footer";
 import { JsonLd } from "@/components/ui/JsonLd";
 
 const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ??
-  "https://dca-tracker-git-main-meflyas-projects.vercel.app";
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://dcatracker.fr";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

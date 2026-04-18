@@ -197,7 +197,7 @@ const MISTAKES = [
 ];
 
 export default function InvestirEnETFPage() {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://dca-tracker.fr";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://dcatracker.fr";
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

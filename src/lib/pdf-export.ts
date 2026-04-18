@@ -351,7 +351,7 @@ function hline(
 
   // Footer
   font(6.5, "normal"); textColor(C.gray400);
-  doc.text("dca-tracker.fr — outil educatif, pas de conseil en investissement", M, PH - 7);
+  doc.text("dcatracker.fr — outil éducatif, pas de conseil en investissement", M, PH - 7);
   doc.text(pdfStr(today), PW - M, PH - 7, { align: "right" });
 
   // ── 7. Save ───────────────────────────────────────────────────────────────

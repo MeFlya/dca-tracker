@@ -2,7 +2,7 @@ import { MetadataRoute } from "next";
 import { ETF_LIST } from "@/lib/etf-config";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://dca-tracker.fr";
+  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://dcatracker.fr";
   const now = new Date();
 
   const staticPages: MetadataRoute.Sitemap = [

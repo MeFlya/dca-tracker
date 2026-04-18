@@ -143,7 +143,7 @@ function CellValue({ value }: { value: boolean | string }) {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function TarifsPage() {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://dca-tracker.fr";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://dcatracker.fr";
 
   return (
     <div className="py-12">
