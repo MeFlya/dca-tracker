@@ -37,14 +37,19 @@ const ROWS = [
 ];
 
 const ETF_PEA = [
-  { symbol: "CW8", name: "Amundi MSCI World", ter: "0,38 %", note: "Réplication synthétique, PEA éligible" },
-  { symbol: "EWLD", name: "iShares MSCI World", ter: "0,20 %", note: "Réplication physique optimisée, PEA éligible" },
-  { symbol: "VWCE", name: "Vanguard FTSE All-World", ter: "0,22 %", note: "Tous pays développés + émergents, PEA éligible" },
+  { symbol: "CW8",   name: "Amundi MSCI World",              ter: "0,38 %", note: "Réplication synthétique — le plus populaire en PEA" },
+  { symbol: "EWLD",  name: "iShares MSCI World",             ter: "0,20 %", note: "Réplication physique optimisée — sans risque de contrepartie" },
+  { symbol: "SP5",   name: "Amundi S&P 500",                 ter: "0,15 %", note: "S&P 500 en PEA grâce à la réplication synthétique" },
+  { symbol: "ANX",   name: "Amundi Nasdaq-100",              ter: "0,23 %", note: "Seule option PEA pour s'exposer au Nasdaq-100" },
+  { symbol: "PAEEM", name: "Amundi MSCI Emerging Markets",   ter: "0,20 %", note: "Marchés émergents accessibles en PEA via swap" },
+  { symbol: "PCEU",  name: "Amundi STOXX Europe 600",        ter: "0,07 %", note: "600 grandes capitalisations européennes — frais minimaux" },
 ];
 
 const ETF_CTO = [
-  { symbol: "SPY", name: "SPDR S&P 500 ETF Trust", ter: "0,09 %", note: "Coté à New York — CTO uniquement" },
-  { symbol: "QQQ", name: "Invesco Nasdaq-100 ETF", ter: "0,20 %", note: "Coté à New York — CTO uniquement" },
+  { symbol: "VWCE", name: "Vanguard FTSE All-World",   ter: "0,22 %", note: "Développés + émergents — CTO ou assurance-vie uniquement" },
+  { symbol: "CSPX", name: "iShares Core S&P 500",      ter: "0,07 %", note: "S&P 500 physique, le moins cher d'Europe — CTO uniquement" },
+  { symbol: "SPY",  name: "SPDR S&P 500 ETF Trust",    ter: "0,09 %", note: "Coté à New York — CTO uniquement" },
+  { symbol: "QQQ",  name: "Invesco Nasdaq-100 ETF",    ter: "0,20 %", note: "Coté à New York — CTO uniquement" },
 ];
 
 const FAQ = [

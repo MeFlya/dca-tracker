@@ -76,16 +76,28 @@ export default function HomePage() {
 
           {/* Internal nav links */}
           <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-primary-300">
+            <a href="/meilleurs-etf-debutants" className="hover:text-white transition-colors">
+              Meilleurs ETF débutants
+            </a>
+            <span aria-hidden className="opacity-30">·</span>
+            <a href="/strategie-dca" className="hover:text-white transition-colors">
+              Stratégie DCA
+            </a>
+            <span aria-hidden className="opacity-30">·</span>
+            <a href="/interets-composes" className="hover:text-white transition-colors">
+              Intérêts composés
+            </a>
+            <span aria-hidden className="opacity-30">·</span>
+            <a href="/investir-en-etf" className="hover:text-white transition-colors">
+              Investir en ETF
+            </a>
+            <span aria-hidden className="opacity-30">·</span>
+            <a href="/pea-ou-cto" className="hover:text-white transition-colors">
+              PEA ou CTO ?
+            </a>
+            <span aria-hidden className="opacity-30">·</span>
             <a href="/comparer-etf" className="hover:text-white transition-colors">
               Comparer les ETF
-            </a>
-            <span aria-hidden className="opacity-30">·</span>
-            <a href="/methodologie" className="hover:text-white transition-colors">
-              Méthodologie
-            </a>
-            <span aria-hidden className="opacity-30">·</span>
-            <a href="/donnees-marche" className="hover:text-white transition-colors">
-              Données de marché
             </a>
           </div>
         </div>

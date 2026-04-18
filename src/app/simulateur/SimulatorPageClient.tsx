@@ -9,6 +9,7 @@ import { ExportPDFButton } from "@/components/simulator/ExportPDFButton";
 import { runSimulation, SimulatorInput, SimulatorOutput } from "@/lib/simulator";
 import { EmailCapture } from "@/components/ui/EmailCapture";
 import { InvestCTA } from "@/components/ui/InvestCTA";
+import { UpgradePrompt } from "@/components/ui/UpgradePrompt";
 import {
   paramsFromSearch,
   paramsToSearch,
@@ -95,12 +96,26 @@ export function SimulatorPageClient() {
       {/* Results column */}
       <div id="results" className="space-y-4">
         {/* Action bar — sits above results, visually attached */}
-        <div className="flex items-center justify-end gap-2">
-          <ExportPDFButton output={output} />
-          <ShareButton />
+        <div className="flex items-center justify-between gap-2 flex-wrap">
+          <UpgradePrompt
+            feature="PDF sans filigrane"
+            tier="premium"
+            variant="inline"
+          />
+          <div className="flex items-center gap-2">
+            <ExportPDFButton output={output} />
+            <ShareButton />
+          </div>
         </div>
 
         <SimulatorResults output={output} />
+
+        <UpgradePrompt
+          feature="Sauvegarder cette simulation"
+          description="Retrouvez votre projection à tout moment, sur tous vos appareils."
+          tier="premium"
+          variant="banner"
+        />
 
         <EmailCapture variant="card" source="simulator" />
 

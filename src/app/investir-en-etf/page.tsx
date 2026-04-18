@@ -274,10 +274,12 @@ export default function InvestirEnETFPage() {
         <h2 className="text-2xl font-bold text-gray-900 mb-5">Pour aller plus loin</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {[
-            { href: "/pea-ou-cto",    label: "PEA ou CTO : le comparatif complet",         sub: "Quelle enveloppe fiscale choisir ?" },
-            { href: "/comparer-etf",  label: "Comparer les ETF",                            sub: "CW8, EWLD, VWCE, SPY, QQQ côte à côte" },
-            { href: "/simulateur",    label: "Simulateur DCA",                              sub: "Projetez vos versements mensuels" },
-            { href: "/methodologie",  label: "Méthodologie",                                sub: "Comment fonctionnent les calculs" },
+            { href: "/strategie-dca",           label: "La stratégie DCA expliquée",                sub: "Comment lisser le risque avec des versements réguliers" },
+            { href: "/meilleurs-etf-debutants", label: "Meilleurs ETF pour débutants",              sub: "Notre sélection commentée avec critères de choix" },
+            { href: "/interets-composes",       label: "Les intérêts composés",                     sub: "Visualiser la puissance du temps sur votre portefeuille" },
+            { href: "/pea-ou-cto",              label: "PEA ou CTO : le comparatif complet",        sub: "Quelle enveloppe fiscale choisir ?" },
+            { href: "/comparer-etf",            label: "Comparer les ETF",                          sub: "CW8, EWLD, VWCE, SP5, ANX côte à côte" },
+            { href: "/simulateur",              label: "Simulateur DCA",                            sub: "Projetez vos versements mensuels" },
           ].map((link) => (
             <Link
               key={link.href}

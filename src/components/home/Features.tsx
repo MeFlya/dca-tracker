@@ -17,7 +17,7 @@ const PRIMARY_FEATURES = [
     iconBg: "bg-blue-50",
     title: "Comparez les principaux ETF",
     description:
-      "CW8, VWCE, EWLD, SPY, QQQ — TER réels, méthode de réplication, derniers cours indicatifs. Chaque ETF détaillé avec son profil et ses points d'attention.",
+      "CW8, EWLD, VWCE, SP5, ANX, PAEEM et plus — TER réels, méthode de réplication, éligibilité PEA, derniers cours indicatifs. Chaque ETF détaillé avec son profil et ses points d'attention.",
     cta: "Comparer les ETF",
     href: "/comparer-etf",
   },

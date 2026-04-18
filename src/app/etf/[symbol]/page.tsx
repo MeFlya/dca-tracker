@@ -84,8 +84,7 @@ export default async function ETFDetailPage({
 
   const otherETFs = ETF_LIST.filter((e) => e.displaySymbol !== etf.displaySymbol);
 
-  // EU-listed ETFs (*.PA, *.DE) are PEA-eligible; US-listed ETFs (no suffix) → CTO only.
-  const etfAccountType: AccountType = etf.symbol.includes(".") ? "PEA" : "CTO";
+  const etfAccountType: AccountType = etf.peaEligible ? "PEA" : "CTO";
 
   // Simulator URL pre-filled with this ETF's typical return + fees
   const suggestedReturn = detail?.suggestedReturn ?? 7;

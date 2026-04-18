@@ -105,6 +105,116 @@ Contrairement aux ETF UCITS européens, le SPY est un trust américain (grantor 
     suggestedReturn: 8,
   },
 
+  SP5: {
+    whatItTracks: `Le SP5 réplique le S&P 500, l'indice des 500 plus grandes entreprises américaines cotées, tout en étant éligible au PEA grâce à la réplication synthétique d'Amundi. L'ETF ne détient pas directement les actions américaines mais conclut un contrat swap avec une contrepartie bancaire qui livre la performance du S&P 500. Le portefeuille physique du fonds est constitué d'actions européennes éligibles PEA — la mécanique du swap fait le reste.
+
+Le S&P 500 est l'indice de référence de la gestion d'actifs mondiale. Il couvre environ 80 % de la capitalisation boursière américaine et surpondère fortement la technologie : les dix premières positions (Apple, Microsoft, Nvidia, Amazon, Meta, Alphabet, Tesla, Berkshire Hathaway, JPMorgan, Broadcom) représentent plus de 35 % de l'indice.
+
+Avec un TER de 0,15 %, le SP5 est l'une des façons les moins chères d'accéder au S&P 500 en Europe, et la seule solution PEA-éligible à ce niveau de frais.`,
+    whyChooseIt: [
+      "Éligible PEA — le seul moyen d'investir sur le S&P 500 avec la fiscalité avantageuse du PEA (17,2 % après 5 ans)",
+      "TER ultra-compétitif à 0,15 % — parmi les moins chers de l'univers ETF S&P 500 accessibles en Europe",
+      "Capitalisant — les dividendes sont réinvestis automatiquement, sans friction fiscale annuelle",
+      "Amundi : émetteur n°1 européen, gestionnaire de référence sur les ETF actions PEA",
+    ],
+    watchOut: [
+      "Réplication synthétique : risque de contrepartie résiduel, encadré à 10 % de l'actif net par la réglementation UCITS",
+      "Exposition 100 % américaine — forte concentration géographique sur un seul marché",
+      "Sensibilité élevée aux valorisations tech US, qui tirent une large part de la performance de l'indice",
+    ],
+    suitableFor:
+      "Idéal pour les investisseurs français qui souhaitent s'exposer au dynamisme des entreprises américaines dans le cadre fiscal du PEA. Excellent complément à un ETF MSCI World pour surpondérer les États-Unis.",
+    suggestedReturn: 8,
+  },
+
+  ANX: {
+    whatItTracks: `L'ANX réplique le Nasdaq-100, l'indice des 100 plus grandes entreprises non-financières du Nasdaq, massivement orienté technologie (Apple, Microsoft, Nvidia, Amazon, Meta, Alphabet, Tesla, Broadcom, Costco, Netflix). Il constitue la seule solution disponible sur le marché européen pour accéder au Nasdaq-100 dans le cadre fiscal d'un PEA.
+
+La prouesse technique repose sur la réplication synthétique d'Amundi : le fonds détient des actions européennes éligibles PEA et conclut un swap pour obtenir la performance du Nasdaq-100. Cette structure est identique à celle du SP5 (S&P 500) et du CW8 (MSCI World) chez Amundi.
+
+Le Nasdaq-100 est l'indice le plus performant de l'histoire sur les 20 dernières années, mais aussi l'un des plus volatils. Ses corrections peuvent être brutales : -35 % en 2022, -80 % sur la bulle internet de 2000–2003.`,
+    whyChooseIt: [
+      "Unique ETF PEA-éligible sur le Nasdaq-100 — opportunité d'expo tech US sans sacrifier l'avantage fiscal",
+      "Amundi, le n°1 européen, assure robustesse et liquidité de la structure swap",
+      "Capitalisant — optimisation fiscale maximale dans le cadre du PEA",
+      "TER raisonnable (0,23 %) pour un accès à l'indice tech américain de référence",
+    ],
+    watchOut: [
+      "Volatilité très élevée — le Nasdaq-100 peut perdre 30–50 % lors des cycles baissiers. Horizon minimum recommandé : 10–15 ans",
+      "Concentration sectorielle extrême : technologie ~60 %, sensible aux rotations de taux et aux changements de sentiment sur la croissance",
+      "Réplication synthétique — risque de contrepartie, même si encadré réglementairement",
+    ],
+    suitableFor:
+      "Réservé aux investisseurs avec une forte conviction sur la croissance technologique américaine et un horizon long terme (15 ans+). À combiner avec un ETF MSCI World pour équilibrer le risque — ne pas utiliser comme unique ETF d'un portefeuille.",
+    suggestedReturn: 9,
+  },
+
+  PAEEM: {
+    whatItTracks: `Le PAEEM réplique le MSCI Emerging Markets, l'indice de référence des marchés en développement. Il regroupe environ 1 400 entreprises dans 24 pays émergents : Chine (~27 %), Inde (~18 %), Taïwan (~15 %), Corée du Sud (~11 %), Brésil (~5 %), Arabie Saoudite, Afrique du Sud, etc. Ces marchés représentent plus de 40 % du PIB mondial mais restent sous-représentés dans les indices développés comme le MSCI World.
+
+Grâce à la réplication synthétique d'Amundi, cet ETF est éligible au PEA — une exception notable, car les marchés émergents sont normalement inaccessibles via PEA. C'est l'un des rares ETF qui permettent une diversification réelle (développés + émergents) entièrement dans le cadre fiscal du PEA.
+
+Les émergents offrent un potentiel de croissance long terme supérieur aux marchés développés, mais avec une volatilité et des risques spécifiques plus importants (risque politique, risque de change, gouvernance d'entreprise, liquidité).`,
+    whyChooseIt: [
+      "Exposition aux marchés émergents dans le PEA — une rareté qui permet une diversification mondiale fiscalement optimisée",
+      "Complète idéalement un CW8 ou EWLD : MSCI World (développés) + PAEEM (émergents) = couverture mondiale quasi-totale",
+      "TER compétitif à 0,20 % pour un ETF marchés émergents",
+      "Amundi : structure swap maîtrisée, ETF coté sur Euronext Paris",
+    ],
+    watchOut: [
+      "Volatilité nettement supérieure aux marchés développés — drawdowns plus profonds et récupérations plus lentes",
+      "Forte exposition à la Chine (~27 %) : risques réglementaires, tensions géopolitiques et délistings potentiels",
+      "Réplication synthétique avec risque de contrepartie, même encadré",
+    ],
+    suitableFor:
+      "Investisseurs souhaitant compléter un portefeuille MSCI World par une exposition aux marchés émergents, tout en conservant l'enveloppe PEA. Une allocation de 10–20 % en émergents aux côtés d'un ETF monde est une approche courante.",
+    suggestedReturn: 7,
+  },
+
+  PCEU: {
+    whatItTracks: `Le PCEU réplique le STOXX Europe 600, l'indice de référence des marchés boursiers européens. Il regroupe 600 grandes, moyennes et petites capitalisations issues de 17 pays européens (dont les pays hors zone euro comme la Suisse, le Royaume-Uni, la Suède et la Norvège). Parmi les plus grandes positions : ASML, Nestlé, Novo Nordisk, LVMH, Shell, AstraZeneca, HSBC, SAP.
+
+Contrairement aux indices MSCI qui se concentrent sur les grandes capitalisations, le STOXX Europe 600 inclut également les moyennes et petites entreprises européennes, offrant une exposition plus complète à l'économie du continent. La répartition sectorielle est plus équilibrée que le Nasdaq ou le S&P 500, avec une forte présence des valeurs financières, pharmaceutiques, industrielles et de consommation.
+
+Amundi utilise la réplication synthétique pour rendre cet ETF éligible au PEA, avec un TER de seulement 0,07 % — un des moins chers de l'univers ETF européen.`,
+    whyChooseIt: [
+      "TER ultra-compétitif à 0,07 % — l'un des ETF les moins chers disponibles sur le marché européen",
+      "Éligible PEA — diversification géographique vers l'Europe sans perdre l'avantage fiscal",
+      "Exposition large à l'économie européenne : 600 entreprises dans 17 pays, secteurs équilibrés",
+      "Diversification devise : exposure à GBP, CHF, SEK en plus de l'euro",
+    ],
+    watchOut: [
+      "L'Europe affiche une performance historique inférieure aux États-Unis sur les 15 dernières années — croissance structurellement plus faible",
+      "Réplication synthétique — risque de contrepartie, même encadré par la réglementation UCITS",
+      "Le Royaume-Uni représente ~22 % de l'indice : sensibilité résiduelle aux évolutions post-Brexit",
+    ],
+    suitableFor:
+      "Investisseurs qui souhaitent diversifier géographiquement leur portefeuille vers l'Europe à moindre coût, ou qui cherchent à réduire la dépendance aux marchés américains. Excellent complément à un ETF MSCI World pour surpondérer délibérément l'Europe.",
+    suggestedReturn: 6,
+  },
+
+  CSPX: {
+    whatItTracks: `Le CSPX réplique le S&P 500 par réplication physique complète — le fonds détient directement les 500 actions composant l'indice, dans des proportions reflétant leur poids dans le S&P 500. iShares (BlackRock) gère cet ETF domicilié en Irlande, coté à la Bourse de Londres (LSE) en USD.
+
+Avec un TER de 0,07 %, le CSPX est l'ETF S&P 500 physique le moins cher d'Europe — moins cher que le SPY américain (0,09 %) tout en offrant la transparence totale de la réplication physique. La domiciliation irlandaise bénéficie d'une convention fiscale avantageuse avec les États-Unis (retenue à la source sur dividendes de 15 % au lieu de 30 %), réduisant la friction fiscale sur les dividendes réinvestis.
+
+Capitalisant : les dividendes ne sont pas versés mais réinvestis dans le fonds, optimisant la composition et simplifiant la gestion fiscale pour l'investisseur.`,
+    whyChooseIt: [
+      "TER le plus bas de la catégorie S&P 500 en Europe (0,07 %) — coût minimal pour une exposition maximale",
+      "Réplication physique complète — transparence totale, absence de risque de contrepartie",
+      "Domiciliation irlandaise : convention fiscale US-Irlande avantageuse (retenue source 15 % vs 30 %)",
+      "Capitalisant — optimisation automatique des dividendes sans déclaration annuelle des revenus",
+    ],
+    watchOut: [
+      "Non éligible PEA — à loger impérativement en CTO, PER ou assurance-vie",
+      "Coté à Londres en USD — exposition au risque de change EUR/USD pour un investisseur européen",
+      "100 % américain — concentration géographique importante, surpondération technologique (>30 %)",
+    ],
+    suitableFor:
+      "Idéal pour les investisseurs qui veulent le S&P 500 physique le moins cher disponible en Europe, dans un CTO ou une assurance-vie. Solution de référence pour ceux qui préfèrent éviter les swaps et maximiser la transparence.",
+    suggestedReturn: 8,
+  },
+
   QQQ: {
     whatItTracks: `Le QQQ réplique le Nasdaq-100, un indice regroupant les 100 plus grandes entreprises non-financières listées sur le Nasdaq. Il est extrêmement concentré sur la technologie et la croissance : Apple, Microsoft, Nvidia, Amazon, Meta, Alphabet, Broadcom, Tesla, Costco et Netflix constituent les dix premières positions et représentent généralement plus de 50 % de l'indice.
 

@@ -22,13 +22,15 @@
  *  "PEA"  — Plan d'Épargne en Actions (French tax wrapper, EU ETFs only)
  *  "CTO"  — Compte-Titres Ordinaire   (all markets, no tax benefit)
  *
- * ─── Partners to consider ────────────────────────────────────────────────────
+ * ─── Partners to consider (France-first) ────────────────────────────────────
  *
- *  Trade Republic     — https://refer.trade.to/...  (PEA + CTO)
- *  Boursorama Bourse  — https://www.boursorama.com/...  (PEA + CTO)
- *  Degiro             — https://www.degiro.fr/...    (CTO only)
- *  Interactive Brokers — https://ibkr.com/...        (CTO only)
- *  Fortuneo           — https://...                  (PEA + CTO)
+ *  Trade Republic     — https://refer.trade.to/...  (PEA + CTO) — sans commission, très populaire
+ *  Boursorama Bourse  — https://clients.boursorama.com/...  (PEA + CTO) — référence banque en ligne
+ *  Fortuneo           — https://...  (PEA + CTO) — bonne expérience mobile
+ *  BforBank           — https://...  (PEA + CTO) — filiale du Crédit Agricole
+ *  Saxo Banque        — https://...  (PEA + CTO) — gamme ETF étendue
+ *  Degiro             — https://www.degiro.fr/...  (CTO only) — frais très bas
+ *  Interactive Brokers — déconseillé pour débutants : interface complexe, fiscalité à gérer manuellement
  */
 
 export type AccountType = "PEA" | "CTO";
@@ -58,7 +60,7 @@ export const BROKER_CONFIG: BrokerCTAConfig = {
   enabled: false,
 
   partners: [
-    // Example — uncomment and fill in real URLs to activate:
+    // ── Recommandés pour débutants français (PEA + CTO) ──────────────────────
     //
     // {
     //   id: "trade-republic",
@@ -70,9 +72,19 @@ export const BROKER_CONFIG: BrokerCTAConfig = {
     // {
     //   id: "boursorama",
     //   name: "Boursorama Bourse",
-    //   url: "https://www.boursorama.com/...",
+    //   url: "https://clients.boursorama.com/parrainage/...",
+    //   accountTypes: ["PEA", "CTO"],
+    //   badge: "Banque en ligne",
+    // },
+    // {
+    //   id: "fortuneo",
+    //   name: "Fortuneo",
+    //   url: "https://www.fortuneo.fr/...",
     //   accountTypes: ["PEA", "CTO"],
     // },
+    //
+    // ── CTO uniquement ────────────────────────────────────────────────────────
+    //
     // {
     //   id: "degiro",
     //   name: "Degiro",
