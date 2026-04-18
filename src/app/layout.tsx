@@ -14,6 +14,9 @@ export const metadata: Metadata = {
   },
   description:
     "Simulez votre stratégie d'investissement progressif (DCA) sur des ETF. Visualisez la croissance de votre portefeuille, comparez les ETF populaires et comprenez l'effet des intérêts composés.",
+  verification: {
+  google: "lvfKBxYVpHuIHP-gtnSN7ka9Z4U2gHWLpsPeZLaQnJU",
+},
   keywords: [
     "DCA",
     "Dollar Cost Averaging",
