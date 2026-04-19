@@ -79,7 +79,7 @@ export default function SimulateurPage() {
             availability: "https://schema.org/InStock",
           },
           description:
-            "Simulateur d'investissement progressif (DCA) en ETF. Calcule la valeur future d'un portefeuille avec les intérêts composés, les frais annuels et l'inflation. Outil éducatif gratuit.",
+            "Simulateur DCA ETF : projetez votre portefeuille avec intérêts composés, frais annuels et inflation. Calcul transparent, hypothèses vérifiables, sans inscription.",
         }}
       />
     </div>

@@ -34,7 +34,7 @@ export function Hero() {
             {/* Badge */}
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-50 border border-primary-100 text-primary-700 text-xs font-medium mb-6">
               <span className="w-1.5 h-1.5 rounded-full bg-primary-500 shrink-0" />
-              Outil éducatif gratuit — pas de conseil financier
+              Le cockpit DCA pour investisseurs long-terme
             </div>
 
             <h1 className="text-4xl md:text-5xl lg:text-[3.25rem] font-bold text-gray-900 leading-[1.1] tracking-tight mb-5">
@@ -44,10 +44,9 @@ export function Hero() {
             </h1>
 
             <p className="text-lg md:text-xl text-gray-500 leading-relaxed mb-8 max-w-xl">
-              Fixez un versement mensuel et une durée. DCA Tracker projette
-              votre portefeuille ETF avec les intérêts composés — trois
-              scénarios de marché, hypothèses entièrement vérifiables,
-              sans inscription.
+              Simulez votre stratégie DCA, sauvegardez-la, puis suivez votre
+              progression mois après mois. Hypothèses transparentes, trois
+              scénarios de marché, zéro jargon.
             </p>
 
             {/* CTAs */}

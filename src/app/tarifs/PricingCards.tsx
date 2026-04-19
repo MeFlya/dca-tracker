@@ -32,7 +32,7 @@ const PLANS: Plan[] = [
     features: [
       { label: "Simulateur DCA (3 scénarios, 30 ans)", included: true },
       { label: "Comparaison ETF (tous les ETF)", included: true },
-      { label: "Guides et articles éducatifs", included: true },
+      { label: "Guides et glossaire", included: true },
       { label: "Lien de partage de simulation", included: true },
       { label: "Export PDF (avec filigrane)", included: true },
       { label: "Analyse Monte Carlo (1 000 scénarios)", included: false },

@@ -1,0 +1,173 @@
+import Link from "next/link";
+import {
+  TrendingUp,
+  Calendar,
+  BarChart3,
+  Mail,
+  Flame,
+  Check,
+} from "lucide-react";
+
+const BULLETS = [
+  {
+    Icon: TrendingUp,
+    title: "Réel vs projection, chaque mois",
+    text: "Voyez instantanément si vous êtes en avance ou en retard sur votre plan.",
+  },
+  {
+    Icon: Calendar,
+    title: "Comparaison 12 mois",
+    text: "Après 1 an de suivi, voyez votre progression année sur année — un indicateur impossible à reproduire ailleurs.",
+  },
+  {
+    Icon: BarChart3,
+    title: "Monte Carlo",
+    text: "1 000 scénarios de marché simulés pour voir le pire cas, le meilleur, et votre probabilité de gain.",
+  },
+  {
+    Icon: Mail,
+    title: "Email mensuel",
+    text: "Résumé personnalisé le 1ᵉʳ de chaque mois. Vos chiffres, vos insights, rien d'autre.",
+  },
+  {
+    Icon: Flame,
+    title: "Série de mois",
+    text: "Un streak qui se construit mois après mois — jamais interrompre devient l'objectif.",
+  },
+];
+
+export function TrackingPitch() {
+  return (
+    <section className="py-20 bg-gradient-to-b from-slate-50 to-white">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6">
+        <div className="text-center mb-14">
+          <p className="text-xs font-semibold text-primary-600 uppercase tracking-widest mb-3">
+            Au-delà du simulateur
+          </p>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">
+            Un cockpit qui grandit avec votre DCA
+          </h2>
+          <p className="text-lg text-gray-500 leading-relaxed max-w-2xl mx-auto">
+            Une simulation vous donne une trajectoire théorique. Un suivi
+            mensuel vous donne votre progression réelle. La différence change
+            vos décisions.
+          </p>
+        </div>
+
+        {/* Visual: mockup-ish card on left, bullets on right */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center mb-12">
+          {/* Left: visual mockup */}
+          <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-card">
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                Suivi de stratégie
+              </p>
+              <span className="text-xs text-gray-400">Mois 6</span>
+            </div>
+
+            <p className="text-sm text-gray-500 mb-5">
+              <span className="font-semibold text-gray-900">200 €/mois</span>
+              {" · "}20 ans{" · "}7 %/an
+            </p>
+
+            {/* Streak pill */}
+            <div className="inline-flex items-center gap-1.5 bg-orange-50 border border-orange-200 text-orange-700 text-sm font-bold px-3 py-1.5 rounded-full mb-5">
+              <Flame size={14} />
+              6 mois consécutifs
+            </div>
+
+            {/* KPI row */}
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              <div className="rounded-xl bg-gray-50 border border-gray-100 px-3 py-2.5">
+                <p className="text-[10px] text-gray-400 uppercase tracking-wide mb-0.5">
+                  Théorique
+                </p>
+                <p className="text-lg font-bold text-gray-500 tabular-nums">
+                  1 247 €
+                </p>
+              </div>
+              <div className="rounded-xl bg-primary-50/60 border border-primary-100 px-3 py-2.5">
+                <p className="text-[10px] text-primary-600 uppercase tracking-wide mb-0.5">
+                  Votre portefeuille
+                </p>
+                <p className="text-lg font-bold text-primary-900 tabular-nums">
+                  1 380 €
+                </p>
+              </div>
+            </div>
+
+            {/* Insight */}
+            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+              <TrendingUp size={14} />
+              En avance de +133 €
+            </div>
+          </div>
+
+          {/* Right: bullet list */}
+          <div>
+            <ul className="space-y-5">
+              {BULLETS.map(({ Icon, title, text }) => (
+                <li key={title} className="flex items-start gap-4">
+                  <div className="w-9 h-9 rounded-lg bg-primary-50 flex items-center justify-center shrink-0">
+                    <Icon size={16} className="text-primary-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-gray-900 mb-0.5 leading-snug">
+                      {title}
+                    </p>
+                    <p className="text-sm text-gray-500 leading-relaxed">
+                      {text}
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        {/* CTA */}
+        <div className="rounded-2xl border border-primary-100 bg-primary-50/40 p-6 sm:p-8 text-center">
+          <div className="flex items-center justify-center gap-2 mb-3">
+            <span className="inline-flex items-center text-[10px] font-bold bg-primary-600 text-white px-2 py-0.5 rounded uppercase tracking-wide">
+              Premium
+            </span>
+            <span className="text-xs text-gray-500">
+              7 jours gratuits · annulable en 1 clic
+            </span>
+          </div>
+          <p className="text-lg sm:text-xl font-bold text-gray-900 mb-4 leading-snug">
+            Essayez le suivi complet pendant 7 jours
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center mb-4">
+            <Link
+              href="/tarifs"
+              className="btn-primary text-sm px-6 py-2.5 btn-lift"
+            >
+              Essayer Premium — 7 jours gratuits
+            </Link>
+            <Link
+              href="/simulateur"
+              className="btn-secondary text-sm px-6 py-2.5 btn-lift"
+            >
+              Rester sur le simulateur gratuit
+            </Link>
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-gray-500">
+            <span className="inline-flex items-center gap-1">
+              <Check size={12} className="text-emerald-500" />
+              Pas de carte requise après l&apos;essai
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <Check size={12} className="text-emerald-500" />
+              4,90 €/mois ensuite
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <Check size={12} className="text-emerald-500" />
+              Vos données vous appartiennent
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}

@@ -21,7 +21,7 @@ const TRUST_POINTS = [
     icon: <ShieldIcon />,
     iconBg: "bg-green-50",
     title: "Pas de conseil personnalisé",
-    body: "DCA Tracker est un outil éducatif. Il ne remplace pas un conseiller financier agréé (CGP, CIF).",
+    body: "DCA Tracker projette et suit votre stratégie. Il ne remplace pas un conseiller financier agréé (CGP, CIF).",
   },
 ] as const;
 

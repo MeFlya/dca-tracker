@@ -92,7 +92,7 @@ export default function RootLayout({
             name: "DCA Tracker",
             url: CANONICAL_ORIGIN,
             description:
-              "Simulateur d'investissement progressif (DCA) en ETF. Outil éducatif gratuit, transparent, sans inscription.",
+              "Le cockpit DCA ETF long-terme : simulez votre stratégie, sauvegardez-la, suivez votre progression mois après mois. Transparent, sans inscription.",
             inLanguage: "fr-FR",
           }}
         />

@@ -1,15 +1,17 @@
 import type { Metadata } from "next";
 import { Hero } from "@/components/home/Hero";
+import { HowItWorks } from "@/components/home/HowItWorks";
 import { Features } from "@/components/home/Features";
+import { TrackingPitch } from "@/components/home/TrackingPitch";
 import { TrustSection } from "@/components/home/TrustSection";
 import { FAQ } from "@/components/home/FAQ";
 import { EmailCapture } from "@/components/ui/EmailCapture";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { FAQ_ITEMS } from "@/lib/faq-data";
 
-const TITLE = "DCA Tracker — Simulateur ETF & Investissement Progressif";
+const TITLE = "DCA Tracker — Simulez et pilotez votre DCA ETF long-terme";
 const DESCRIPTION =
-  "Calculez combien peut valoir votre argent avec une stratégie DCA en ETF. Versements mensuels, intérêts composés, 3 scénarios comparés. Gratuit, sans inscription, hypothèses transparentes.";
+  "Simulez votre stratégie DCA en ETF, sauvegardez-la et suivez votre progression mois après mois. 3 scénarios, intérêts composés, hypothèses transparentes. Gratuit.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -54,7 +56,9 @@ export default function HomePage() {
   return (
     <>
       <Hero />
+      <HowItWorks />
       <Features />
+      <TrackingPitch />
       <TrustSection />
       <FAQ />
 

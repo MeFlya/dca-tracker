@@ -32,8 +32,8 @@ export function Footer() {
               </span>
             </Link>
             <p className="text-sm text-gray-500 leading-relaxed">
-              Simulateur d&apos;investissement progressif en ETF.
-              Outil éducatif, transparent, gratuit.
+              Le cockpit DCA long-terme pour investisseurs ETF.
+              Simuler, sauvegarder, suivre.
             </p>
           </div>
 
