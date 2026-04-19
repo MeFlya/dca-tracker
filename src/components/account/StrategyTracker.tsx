@@ -10,6 +10,7 @@ import {
   nextStreakMilestone,
   computeInterestSnapshot,
 } from "@/lib/strategy-math";
+import { BADGES, computeEarnedBadges, nextBadge } from "@/lib/badges";
 import type { StrategyData, MonthlyEntry } from "@/lib/user-strategy";
 import type { SimulatorInput } from "@/lib/simulator";
 
@@ -262,6 +263,57 @@ function formatMonthLabel(month: string): string {
   return new Date(y, m - 1, 1).toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
 }
 
+// ─── Badge section ────────────────────────────────────────────────────────────
+
+function BadgeSection({ entries }: { entries: MonthlyEntry[] }) {
+  const earned = computeEarnedBadges(entries);
+  const next = nextBadge(entries);
+  const count = earned.size;
+
+  return (
+    <div className="mt-5 pt-5 border-t border-gray-100">
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+          Badges
+        </p>
+        <span className="text-xs text-gray-400 tabular-nums">
+          {count}/{BADGES.length} débloqués
+        </span>
+      </div>
+
+      <div className="grid grid-cols-5 gap-2">
+        {BADGES.map((badge) => {
+          const isEarned = earned.has(badge.id);
+          return (
+            <div
+              key={badge.id}
+              title={`${badge.label} — ${badge.desc}`}
+              className={`aspect-square flex flex-col items-center justify-center gap-0.5 rounded-xl border text-center px-1 py-2 ${
+                isEarned
+                  ? "bg-amber-50 border-amber-200"
+                  : "bg-gray-50 border-gray-100 opacity-40 grayscale"
+              }`}
+            >
+              <span className="text-xl leading-none">{badge.icon}</span>
+              <span className={`text-[9px] leading-tight font-semibold ${isEarned ? "text-amber-900" : "text-gray-400"}`}>
+                {badge.label}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+
+      {next && (
+        <p className="mt-3 text-xs text-gray-500 leading-snug">
+          Prochain : <strong className="text-gray-900">{next.badge.icon} {next.badge.label}</strong>
+          {" · "}
+          <span className="text-gray-400">{next.progressText}</span>
+        </p>
+      )}
+    </div>
+  );
+}
+
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export function StrategyTracker() {
@@ -379,6 +431,9 @@ export function StrategyTracker() {
         {entries.length > 0 && (
           <EntryHistory entries={entries} input={input} />
         )}
+
+        {/* Badges */}
+        <BadgeSection entries={entries} />
       </div>
     </>
   );
