@@ -73,8 +73,8 @@ export async function POST(req: Request) {
         if (email) {
           const firstName = user.firstName ?? "Investisseur";
           await Promise.all([
-            sendSubscriptionConfirmed(email, firstName, plan),
-            sendOnboardingDay1(email, firstName, plan),
+            sendSubscriptionConfirmed(email, firstName),
+            sendOnboardingDay1(email, firstName),
           ]);
         }
         break;

@@ -1,5 +1,4 @@
 import { resend } from "@/lib/resend-client";
-import type { PlanId } from "@/lib/plans";
 import { formatEur } from "@/lib/simulator";
 
 const FROM = process.env.RESEND_FROM_EMAIL ?? "DCA Tracker <hello@dcatracker.fr>";
@@ -7,33 +6,34 @@ const FROM = process.env.RESEND_FROM_EMAIL ?? "DCA Tracker <hello@dcatracker.fr>
 export async function sendSubscriptionConfirmed(
   email: string,
   firstName: string,
-  plan: PlanId
 ) {
-  const planLabel = plan === "pro" ? "Pro" : "Premium";
   await resend.emails.send({
     from: FROM,
     to: email,
-    subject: `Votre plan ${planLabel} est actif — commencez par le Monte Carlo 🎉`,
+    subject: "Votre abonnement Premium est actif — commencez par le Monte Carlo",
     html: `
 <!DOCTYPE html>
 <html lang="fr">
 <body style="font-family:sans-serif;color:#1f2937;max-width:600px;margin:0 auto;padding:32px 16px">
-  <h1 style="font-size:22px;font-weight:700;margin-bottom:8px">Votre abonnement ${planLabel} est actif ✅</h1>
+  <h1 style="font-size:22px;font-weight:700;margin-bottom:8px">Votre abonnement Premium est actif</h1>
   <p style="color:#6b7280;margin-bottom:16px">Bonjour ${firstName},</p>
-  <p>Merci pour votre confiance. Votre plan <strong>${planLabel}</strong> est actif sur <a href="https://dcatracker.fr" style="color:#2563eb">dcatracker.fr</a>.</p>
+  <p>Merci pour votre confiance. Votre plan <strong>Premium</strong> est actif sur <a href="https://dcatracker.fr" style="color:#2563eb">dcatracker.fr</a>.</p>
 
   <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:20px;margin:24px 0">
-    <p style="margin:0 0 12px 0;font-weight:700;color:#1e40af;font-size:15px">🎯 Votre fonctionnalité phare : le Monte Carlo</p>
+    <p style="margin:0 0 12px 0;font-weight:700;color:#1e40af;font-size:15px">Votre fonctionnalité phare : le Monte Carlo</p>
     <p style="margin:0 0 12px 0;color:#1e3a8a;font-size:14px;line-height:1.5">
       Simulez <strong>1 000 scénarios de marché</strong> pour voir la distribution réelle de vos résultats possibles — pas juste une ligne optimiste.
     </p>
     <a href="https://dcatracker.fr/simulateur" style="display:inline-block;background:#2563eb;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px">Lancer l'analyse Monte Carlo →</a>
   </div>
 
-  <p style="font-weight:600;color:#374151;margin-bottom:8px">Vous avez aussi accès à :</p>
+  <p style="font-weight:600;color:#374151;margin-bottom:8px">Tout ce que Premium vous débloque :</p>
   <ul style="color:#4b5563;padding-left:20px;line-height:1.8;font-size:14px">
-    <li>Export PDF professionnel sans filigrane</li>
-    ${plan === "pro" ? "<li>Simulations illimitées sauvegardées</li><li>Accès anticipé aux nouvelles fonctions</li><li>Support prioritaire</li>" : "<li>Simulations sauvegardées (10 slots) — bientôt</li><li>Données de marché temps réel — bientôt</li>"}
+    <li>Monte Carlo (1 000 scénarios)</li>
+    <li>Suivi mensuel de stratégie et insights</li>
+    <li>Comparaison A/B de deux stratégies</li>
+    <li>Simulations sauvegardées illimitées</li>
+    <li>Export PDF sans filigrane</li>
   </ul>
 
   <p style="margin-top:32px;color:#9ca3af;font-size:12px">Gérez votre abonnement depuis <a href="https://dcatracker.fr/account" style="color:#6b7280">votre espace compte</a>. Pas d'engagement, annulation à tout moment.</p>
@@ -45,14 +45,11 @@ export async function sendSubscriptionConfirmed(
 export async function sendOnboardingDay1(
   email: string,
   firstName: string,
-  plan: PlanId
 ) {
-  const planLabel = plan === "pro" ? "Pro" : "Premium";
   await resend.emails.send({
     from: FROM,
     to: email,
     subject: "Avez-vous essayé le Monte Carlo ? (guide rapide)",
-    // Resend supports scheduled_at as ISO 8601 — fire 24h after subscription
     scheduled_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
     html: `
 <!DOCTYPE html>
@@ -60,7 +57,7 @@ export async function sendOnboardingDay1(
 <body style="font-family:sans-serif;color:#1f2937;max-width:600px;margin:0 auto;padding:32px 16px">
   <h1 style="font-size:20px;font-weight:700;margin-bottom:8px">Bonjour ${firstName}, avez-vous essayé le Monte Carlo ?</h1>
   <p style="color:#6b7280;font-size:14px">
-    C'est la fonctionnalité ${planLabel} la plus puissante — voici comment en tirer le maximum en 2 minutes.
+    C'est la fonctionnalité Premium la plus puissante — voici comment en tirer le maximum en 2 minutes.
   </p>
 
   <div style="background:#f8fafc;border-radius:12px;padding:20px;margin:24px 0;border:1px solid #e2e8f0">
@@ -75,7 +72,7 @@ export async function sendOnboardingDay1(
 
   <div style="background:#f0fdf4;border-radius:12px;padding:16px;margin:16px 0;border:1px solid #bbf7d0">
     <p style="margin:0;font-size:14px;color:#15803d">
-      <strong>💡 Astuce :</strong> comparez le pire cas (10e percentile) avec votre capital investi. Si le pire cas reste positif sur 20 ans, c'est un signal fort de résilience de votre stratégie.
+      <strong>Astuce :</strong> comparez le pire cas (10e percentile) avec votre capital investi. Si le pire cas reste positif sur 20 ans, c'est un signal fort de résilience de votre stratégie.
     </p>
   </div>
 
@@ -84,7 +81,7 @@ export async function sendOnboardingDay1(
   </a>
 
   <p style="margin-top:32px;color:#9ca3af;font-size:12px">
-    Vous recevez cet email car vous êtes abonné à DCA Tracker ${planLabel}.<br>
+    Vous recevez cet email car vous êtes abonné à DCA Tracker Premium.<br>
     <a href="https://dcatracker.fr/account" style="color:#9ca3af">Gérer mon abonnement</a>
   </p>
 </body>
@@ -138,21 +135,16 @@ export type AnnualPushMilestone = "month-3" | "month-6" | "month-12";
 export async function sendAnnualPush({
   email,
   firstName,
-  plan,
   milestone,
 }: {
   email: string;
   firstName: string;
-  plan: PlanId;
   milestone: AnnualPushMilestone;
 }) {
   const SITE_URL = "https://dcatracker.fr";
 
-  const prices =
-    plan === "pro"
-      ? { monthly: 9.9, annual: 99, monthlyTotal: 118.8, savings: 19.8 }
-      : { monthly: 4.9, annual: 49, monthlyTotal: 58.8, savings: 9.8 };
-  const planLabel = plan === "pro" ? "Pro" : "Premium";
+  const prices = { monthly: 4.9, annual: 49, monthlyTotal: 58.8, savings: 9.8 };
+  const planLabel = "Premium";
 
   const content: Record<AnnualPushMilestone, { subject: string; headline: string; body: string; ctaLabel: string }> = {
     "month-3": {

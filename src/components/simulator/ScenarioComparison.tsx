@@ -101,7 +101,7 @@ function LockedOverlay({ input }: { input?: SimulatorInput }) {
           href={buildUpgradeUrl("ab-comparison", input)}
           className="inline-block bg-slate-900 text-white font-semibold text-sm px-5 py-2.5 rounded-xl hover:bg-slate-800 transition-colors"
         >
-          Débloquer avec Pro →
+          Débloquer avec Premium →
         </Link>
       </div>
     </div>
@@ -113,7 +113,7 @@ function LockedOverlay({ input }: { input?: SimulatorInput }) {
 const DEFAULT_A: ScenInput = { monthlyAmount: 200, durationYears: 20, annualReturnPct: 7, annualFeesPct: 0.3 };
 const DEFAULT_B: ScenInput = { monthlyAmount: 400, durationYears: 20, annualReturnPct: 7, annualFeesPct: 0.3 };
 
-export function ScenarioComparison({ isPro, input }: { isPro: boolean; input?: SimulatorInput }) {
+export function ScenarioComparison({ isPremium, input }: { isPremium: boolean; input?: SimulatorInput }) {
   const [a, setA] = useState<ScenInput>(DEFAULT_A);
   const [b, setB] = useState<ScenInput>(DEFAULT_B);
 
@@ -132,7 +132,7 @@ export function ScenarioComparison({ isPro, input }: { isPro: boolean; input?: S
         <div>
           <div className="flex items-center gap-2 mb-1">
             <h3 className="font-semibold text-gray-900">Comparaison A vs B</h3>
-            <span className="bg-slate-800 text-white text-xs font-bold px-2 py-0.5 rounded-full">Pro</span>
+            <span className="bg-primary-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">Premium</span>
           </div>
           <p className="text-xs text-gray-400">Comparez deux stratégies d&apos;investissement indépendantes</p>
         </div>
@@ -140,11 +140,11 @@ export function ScenarioComparison({ isPro, input }: { isPro: boolean; input?: S
 
       <div className="relative mt-4">
         {/* Content — always rendered, blurred if not Pro */}
-        <div className={isPro ? "" : "blur-sm pointer-events-none select-none"}>
+        <div className={isPremium ? "" : "blur-sm pointer-events-none select-none"}>
           {/* Scenarios side by side */}
           <div className="flex flex-col sm:flex-row gap-4 mb-6">
-            <ScenForm label="Scénario A" color="border-blue-200" values={isPro ? a : DEFAULT_A} onChange={setA} />
-            <ScenForm label="Scénario B" color="border-slate-300" values={isPro ? b : DEFAULT_B} onChange={setB} />
+            <ScenForm label="Scénario A" color="border-blue-200" values={isPremium ? a : DEFAULT_A} onChange={setA} />
+            <ScenForm label="Scénario B" color="border-slate-300" values={isPremium ? b : DEFAULT_B} onChange={setB} />
           </div>
 
           {/* Results */}
@@ -177,7 +177,7 @@ export function ScenarioComparison({ isPro, input }: { isPro: boolean; input?: S
           </div>
         </div>
 
-        {!isPro && <LockedOverlay input={input} />}
+        {!isPremium && <LockedOverlay input={input} />}
       </div>
     </div>
   );

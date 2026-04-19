@@ -9,8 +9,6 @@ interface UpgradePromptProps {
   feature: string;
   /** One sentence explaining why it's worth it */
   description?: string;
-  /** Which tier unlocks this */
-  tier?: "premium" | "pro";
   /** How the prompt is displayed */
   variant?: "inline" | "card" | "banner";
   className?: string;
@@ -21,25 +19,14 @@ interface UpgradePromptProps {
 export function UpgradePrompt({
   feature,
   description,
-  tier = "premium",
   variant = "inline",
   className = "",
 }: UpgradePromptProps) {
-  const label = tier === "pro" ? "Pro" : "Premium";
-  const colorClass =
-    tier === "pro"
-      ? "border-slate-200 bg-slate-50 text-slate-700"
-      : "border-primary-100 bg-primary-50 text-primary-700";
-  const badgeClass =
-    tier === "pro"
-      ? "bg-slate-700 text-white"
-      : "bg-primary-600 text-white";
-
   if (variant === "inline") {
     return (
       <div className={`inline-flex items-center gap-2 ${className}`}>
-        <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${badgeClass}`}>
-          {label}
+        <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-primary-600 text-white">
+          Premium
         </span>
         <Link
           href="/tarifs"
@@ -53,23 +40,23 @@ export function UpgradePrompt({
 
   if (variant === "banner") {
     return (
-      <div className={`flex items-center justify-between gap-4 px-4 py-3 rounded-xl border text-sm ${colorClass} ${className}`}>
+      <div
+        className={`flex items-center justify-between gap-4 px-4 py-3 rounded-xl border text-sm border-primary-100 bg-primary-50 text-primary-700 ${className}`}
+      >
         <div className="flex items-center gap-2.5 min-w-0">
           <LockIcon className="w-4 h-4 shrink-0 opacity-60" />
           <span className="font-medium truncate">{feature}</span>
           {description && (
-            <span className="text-xs opacity-70 hidden sm:inline truncate">— {description}</span>
+            <span className="text-xs opacity-70 hidden sm:inline truncate">
+              — {description}
+            </span>
           )}
         </div>
         <Link
           href="/tarifs"
-          className={`shrink-0 text-xs font-bold px-3 py-1.5 rounded-lg transition-colors ${
-            tier === "pro"
-              ? "bg-slate-700 text-white hover:bg-slate-800"
-              : "bg-primary-600 text-white hover:bg-primary-700"
-          }`}
+          className="shrink-0 text-xs font-bold px-3 py-1.5 rounded-lg bg-primary-600 text-white hover:bg-primary-700 transition-colors"
         >
-          Voir {label} →
+          Voir Premium →
         </Link>
       </div>
     );
@@ -77,18 +64,18 @@ export function UpgradePrompt({
 
   // card variant
   return (
-    <div className={`rounded-2xl border p-5 ${colorClass} ${className}`}>
+    <div
+      className={`rounded-2xl border p-5 border-primary-100 bg-primary-50 text-primary-700 ${className}`}
+    >
       <div className="flex items-start gap-3 mb-3">
-        <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
-          tier === "pro" ? "bg-slate-200" : "bg-primary-100"
-        }`}>
+        <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-primary-100">
           <LockIcon className="w-4 h-4" />
         </div>
         <div>
           <div className="flex items-center gap-2 mb-1">
             <p className="font-semibold text-sm text-gray-900">{feature}</p>
-            <span className={`text-xs font-bold px-1.5 py-0.5 rounded-full ${badgeClass}`}>
-              {label}
+            <span className="text-xs font-bold px-1.5 py-0.5 rounded-full bg-primary-600 text-white">
+              Premium
             </span>
           </div>
           {description && (
@@ -98,13 +85,9 @@ export function UpgradePrompt({
       </div>
       <Link
         href="/tarifs"
-        className={`w-full text-center block text-sm font-semibold py-2 px-4 rounded-xl transition-colors ${
-          tier === "pro"
-            ? "bg-slate-700 text-white hover:bg-slate-800"
-            : "bg-primary-600 text-white hover:bg-primary-700"
-        }`}
+        className="w-full text-center block text-sm font-semibold py-2 px-4 rounded-xl bg-primary-600 text-white hover:bg-primary-700 transition-colors"
       >
-        Découvrir {label} →
+        Découvrir Premium →
       </Link>
     </div>
   );

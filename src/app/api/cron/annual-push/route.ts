@@ -5,7 +5,6 @@
 import { NextResponse } from "next/server";
 import { clerkClient } from "@clerk/nextjs/server";
 import { sendAnnualPush, type AnnualPushMilestone } from "@/lib/emails/send";
-import type { PlanId } from "@/lib/plans";
 
 export const dynamic = "force-dynamic";
 
@@ -68,7 +67,6 @@ export async function GET(req: Request) {
         await sendAnnualPush({
           email,
           firstName,
-          plan: plan as PlanId,
           milestone: milestone.id,
         });
 

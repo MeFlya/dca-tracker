@@ -17,14 +17,14 @@ export async function POST(req: Request) {
   }
 
   const { planId, billing } = (await req.json()) as {
-    planId: "premium" | "pro";
+    planId: "premium";
     billing: "monthly" | "yearly";
   };
 
-  const plan = PLANS[planId];
-  if (!plan) {
+  if (planId !== "premium") {
     return NextResponse.json({ error: "Plan invalide" }, { status: 400 });
   }
+  const plan = PLANS.premium;
 
   const priceId = billing === "yearly" ? plan.yearlyPriceId : plan.monthlyPriceId;
   if (!priceId) {

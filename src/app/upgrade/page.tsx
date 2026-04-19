@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 type FeatureKey = "monte-carlo" | "save-strategy" | "pdf-export" | "ab-comparison";
 
 type FeatureCopy = {
-  plan: "Premium" | "Pro";
+  plan: "Premium";
   planColor: string;
   price: string;
   priceYear: string;
@@ -236,7 +236,7 @@ const SAVE_STRATEGY: FeatureCopy = {
   faq: [
     {
       q: "Combien de stratégies puis-je sauvegarder ?",
-      a: "Premium : 1 stratégie principale + 10 simulations de test. Pro : illimité.",
+      a: "Vous pouvez sauvegarder jusqu'à 10 simulations en plus de votre stratégie principale.",
     },
     {
       q: "Je peux modifier ma stratégie plus tard ?",
@@ -349,10 +349,10 @@ const PDF_EXPORT: FeatureCopy = {
 // ─── Copy — A/B Comparison ────────────────────────────────────────────────────
 
 const AB_COMPARISON: FeatureCopy = {
-  plan: "Pro",
-  planColor: "bg-slate-800",
-  price: "9,90 €/mois",
-  priceYear: "99 €/an",
+  plan: "Premium",
+  planColor: "bg-primary-600",
+  price: "4,90 €/mois",
+  priceYear: "49 €/an",
   yearSavings: "soit 2 mois offerts",
   icon: "⚖️",
 
@@ -406,7 +406,7 @@ const AB_COMPARISON: FeatureCopy = {
       ],
     },
     after: {
-      label: "Avec comparaison A/B (Pro)",
+      label: "Avec comparaison A/B",
       lines: [
         "Deux stratégies côte à côte",
         "Écart calculé en temps réel",
@@ -429,16 +429,16 @@ const AB_COMPARISON: FeatureCopy = {
 
   faq: [
     {
-      q: "Quelle différence entre Pro et Premium ?",
-      a: "Premium (4,90 €) : Monte Carlo, tracking, export PDF. Pro (9,90 €) ajoute : comparaison A/B, simulations illimitées, accès anticipé aux nouvelles fonctions.",
+      q: "Qu'est-ce qu'une comparaison A/B ?",
+      a: "Deux jeux de paramètres (montant, durée, rendement, frais) simulés côte à côte, avec l'écart final chiffré. Idéal pour arbitrer entre deux stratégies concrètes.",
     },
     {
       q: "Puis-je comparer plus de 2 stratégies ?",
-      a: "La comparaison affiche 2 stratégies côte à côte simultanément. Pour comparer 3+ scénarios, utilisez les simulations sauvegardées (illimitées en Pro).",
+      a: "La comparaison A/B affiche 2 stratégies simultanément. Pour évaluer plus de scénarios, créez plusieurs simulations sauvegardées et relancez la comparaison deux par deux.",
     },
     {
-      q: "Je peux passer de Premium à Pro ?",
-      a: "Oui, à tout moment. La différence est facturée au prorata du mois en cours.",
+      q: "Puis-je annuler à tout moment ?",
+      a: "Oui, en 1 clic depuis votre dashboard. Aucun engagement, pas de frais cachés.",
     },
   ],
 };
@@ -588,8 +588,6 @@ export default async function UpgradePage({ searchParams }: Props) {
     projection: buildDynamicProjection(key, base, input, hasExplicitParams),
   };
 
-  const isPro = f.plan === "Pro";
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12 pb-32 sm:pb-12">
@@ -702,14 +700,14 @@ export default async function UpgradePage({ searchParams }: Props) {
                 ))}
               </ul>
             </div>
-            <div className={`rounded-2xl border-2 ${isPro ? "border-slate-200 bg-slate-50" : "border-primary-200 bg-primary-50/50"} p-5`}>
-              <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${isPro ? "text-slate-700" : "text-primary-700"}`}>
+            <div className="rounded-2xl border-2 border-primary-200 bg-primary-50/50 p-5">
+              <p className="text-xs font-bold uppercase tracking-wider mb-3 text-primary-700">
                 {f.beforeAfter.after.label}
               </p>
               <ul className="space-y-2">
                 {f.beforeAfter.after.lines.map((line, i) => (
-                  <li key={i} className={`flex items-start gap-2 text-sm ${isPro ? "text-slate-800" : "text-primary-900"}`}>
-                    <span className={`${isPro ? "text-slate-600" : "text-primary-600"} mt-0.5 font-bold`}>✓</span>
+                  <li key={i} className="flex items-start gap-2 text-sm text-primary-900">
+                    <span className="text-primary-600 mt-0.5 font-bold">✓</span>
                     <span>{line}</span>
                   </li>
                 ))}
@@ -743,7 +741,7 @@ export default async function UpgradePage({ searchParams }: Props) {
         <section id="cta" className="mb-10">
           <div className="flex flex-col sm:flex-row gap-3">
             <Link
-              href={`/tarifs${isPro ? "#pro" : "#premium"}`}
+              href="/tarifs#premium"
               className="btn-primary text-base px-8 py-4 text-center flex-1"
             >
               Passer {f.plan} — {f.price} →
@@ -817,7 +815,7 @@ export default async function UpgradePage({ searchParams }: Props) {
       {/* ── Sticky mobile CTA ────────────────────────────────────────────────── */}
       <div className="sm:hidden fixed bottom-0 left-0 right-0 z-40 p-3 bg-white border-t border-gray-100 shadow-lg">
         <Link
-          href={`/tarifs${isPro ? "#pro" : "#premium"}`}
+          href="/tarifs#premium"
           className="btn-primary w-full justify-center text-sm py-3"
         >
           Débloquer {f.plan} — {f.price} →

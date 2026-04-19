@@ -5,7 +5,7 @@ import { PricingCards } from "./PricingCards";
 
 const TITLE = "Tarifs — DCA Tracker";
 const DESCRIPTION =
-  "Plan Gratuit, Premium et Pro. Simulez votre stratégie DCA en ETF gratuitement, upgradez pour le Monte Carlo, la comparaison A vs B et les simulations sauvegardées.";
+  "Plan Gratuit et Premium. Simulez votre stratégie DCA en ETF gratuitement, upgradez pour le Monte Carlo, le suivi mensuel et la comparaison A vs B.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -20,48 +20,48 @@ const COMPARISON_SECTIONS = [
   {
     category: "Simulateur",
     rows: [
-      { feature: "Simulation DCA mensuelle",               free: true,        premium: true,    pro: true    },
-      { feature: "3 scénarios (conservateur/base/optimiste)", free: true,     premium: true,    pro: true    },
-      { feature: "Durée jusqu'à 30 ans",                   free: true,        premium: true,    pro: true    },
-      { feature: "Intégration TER automatique",            free: true,        premium: true,    pro: true    },
-      { feature: "Analyse Monte Carlo (1 000 scénarios)",  free: false,       premium: true,    pro: true    },
-      { feature: "Comparaison de scénarios A vs B",        free: false,       premium: false,   pro: true    },
+      { feature: "Simulation DCA mensuelle",               free: true,        premium: true   },
+      { feature: "3 scénarios (conservateur/base/optimiste)", free: true,     premium: true   },
+      { feature: "Durée jusqu'à 30 ans",                   free: true,        premium: true   },
+      { feature: "Intégration TER automatique",            free: true,        premium: true   },
+      { feature: "Analyse Monte Carlo (1 000 scénarios)",  free: false,       premium: true   },
+      { feature: "Comparaison de scénarios A vs B",        free: false,       premium: true   },
     ],
   },
   {
     category: "ETF & Marchés",
     rows: [
-      { feature: "Accès à tous les ETF",                   free: true,        premium: true,    pro: true    },
-      { feature: "Fiches ETF détaillées",                  free: true,        premium: true,    pro: true    },
-      { feature: "Données de marché (délai ~15 min)",      free: true,        premium: true,    pro: true    },
+      { feature: "Accès à tous les ETF",                   free: true,        premium: true   },
+      { feature: "Fiches ETF détaillées",                  free: true,        premium: true   },
+      { feature: "Données de marché (délai ~15 min)",      free: true,        premium: true   },
     ],
   },
   {
-    category: "Sauvegarde & Compte",
+    category: "Suivi & Sauvegarde",
     rows: [
-      { feature: "Simulation sans compte requis",          free: true,        premium: true,    pro: true    },
-      { feature: "Simulations sauvegardées",               free: false,       premium: "10",    pro: "Illimité" },
+      { feature: "Simulation sans compte requis",          free: true,        premium: true   },
+      { feature: "Suivi mensuel de stratégie",             free: false,       premium: true   },
+      { feature: "Simulations sauvegardées",               free: false,       premium: "10"   },
+      { feature: "Emails mensuels de suivi",               free: false,       premium: true   },
     ],
   },
   {
     category: "Export & Partage",
     rows: [
-      { feature: "Lien de partage de simulation",          free: true,        premium: true,    pro: true    },
-      { feature: "Export PDF",                             free: "Filigrané", premium: "Propre", pro: "Propre" },
+      { feature: "Lien de partage de simulation",          free: true,        premium: true   },
+      { feature: "Export PDF",                             free: "Filigrané", premium: "Propre" },
     ],
   },
   {
     category: "Guides",
     rows: [
-      { feature: "Guides PEA / CTO / fiscalité",           free: true,        premium: true,    pro: true    },
+      { feature: "Guides PEA / CTO / fiscalité",           free: true,        premium: true   },
     ],
   },
   {
     category: "Support",
     rows: [
-      { feature: "Support par email",                      free: false,       premium: true,    pro: true    },
-      { feature: "Support prioritaire",                    free: false,       premium: false,   pro: true    },
-      { feature: "Accès anticipé nouvelles fonctions",     free: false,       premium: false,   pro: true    },
+      { feature: "Support par email",                      free: false,       premium: true   },
     ],
   },
 ];
@@ -72,8 +72,8 @@ const FAQ = [
     a: "Non. Le simulateur DCA, les guides éducatifs et la comparaison ETF restent gratuits et complets. Notre modèle est freemium : le Premium ajoute des fonctions avancées sans rien retirer au plan Gratuit.",
   },
   {
-    q: "Quelle est la différence entre Premium et Pro ?",
-    a: "Premium débloque le Monte Carlo (1 000 scénarios), l'export PDF propre et les simulations sauvegardées (10 slots). Pro ajoute la comparaison A vs B, un nombre illimité de sauvegardes, le support prioritaire et l'accès anticipé aux futures fonctions.",
+    q: "Qu'est-ce que j'obtiens avec Premium ?",
+    a: "Tout ce que le plan Gratuit inclut, plus : Monte Carlo (1 000 scénarios), suivi mensuel de stratégie avec insights, comparaison A/B de deux stratégies, 10 simulations sauvegardées, export PDF sans filigrane, et emails mensuels personnalisés.",
   },
   {
     q: "Les simulations sauvegardées sont-elles accessibles sur tous mes appareils ?",
@@ -176,17 +176,16 @@ export default function TarifsPage() {
           <table className="w-full text-sm border-collapse">
             <thead>
               <tr>
-                <th className="text-left px-4 py-3 bg-gray-50 font-medium text-gray-400 border-b border-gray-100 w-1/2" />
+                <th className="text-left px-4 py-3 bg-gray-50 font-medium text-gray-400 border-b border-gray-100 w-2/3" />
                 <th className="text-center px-4 py-3 bg-gray-50 font-semibold text-gray-600 border-b border-gray-100">Gratuit</th>
                 <th className="text-center px-4 py-3 bg-primary-50 font-bold text-primary-700 border-b border-primary-100">Premium</th>
-                <th className="text-center px-4 py-3 bg-slate-800 font-bold text-white border-b border-slate-700">Pro</th>
               </tr>
             </thead>
             <tbody>
               {COMPARISON_SECTIONS.map((section) => (
                 <>
                   <tr key={`cat-${section.category}`} className="bg-gray-50/80">
-                    <td colSpan={4} className="px-4 py-2 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100">
+                    <td colSpan={3} className="px-4 py-2 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100">
                       {section.category}
                     </td>
                   </tr>
@@ -195,7 +194,6 @@ export default function TarifsPage() {
                       <td className="px-4 py-3 text-gray-700">{row.feature}</td>
                       <td className="px-4 py-3"><CellValue value={row.free} /></td>
                       <td className="px-4 py-3 bg-primary-50/30"><CellValue value={row.premium} /></td>
-                      <td className="px-4 py-3 bg-slate-50"><CellValue value={row.pro} /></td>
                     </tr>
                   ))}
                 </>

@@ -38,8 +38,7 @@ export function SimulatorPageClient() {
   const { user } = useUser();
 
   const plan = (user?.publicMetadata?.plan as string) ?? "free";
-  const isPremium = plan === "premium" || plan === "pro";
-  const isPro = plan === "pro";
+  const isPremium = plan === "premium";
 
   const [initialParams] = useState(() => {
     if (hasSimulationParams(searchParams)) return paramsFromSearch(searchParams);
@@ -144,8 +143,8 @@ export function SimulatorPageClient() {
         {/* Monte Carlo full chart */}
         <MonteCarloChart result={monteCarloResult} isPremium={isPremium} input={output.input} />
 
-        {/* A vs B — Pro */}
-        <ScenarioComparison isPro={isPro} input={output.input} />
+        {/* A vs B — Premium */}
+        <ScenarioComparison isPremium={isPremium} input={output.input} />
 
         <EmailCapture variant="card" source="simulator" />
         <InvestCTA />

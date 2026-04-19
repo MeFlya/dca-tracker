@@ -6,31 +6,16 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-const PLAN_FEATURES: Record<string, { headline: string; features: string[] }> = {
-  premium: {
-    headline: "Votre plan Premium est actif",
-    features: [
-      "Analyse Monte Carlo — 1 000 scénarios de marché simulés",
-      "Export PDF professionnel sans filigrane",
-      "Données de marché en temps réel (bientôt)",
-      "Simulations sauvegardées — 10 emplacements (bientôt)",
-      "Calculateur fiscal PEA / CTO (bientôt)",
-      "Rappels DCA automatiques par email (bientôt)",
-    ],
-  },
-  pro: {
-    headline: "Votre plan Pro est actif",
-    features: [
-      "Analyse Monte Carlo — 1 000 scénarios de marché simulés",
-      "Export PDF professionnel sans filigrane",
-      "Simulations illimitées sauvegardées (bientôt)",
-      "Suivi de portefeuille réel vs projection (bientôt)",
-      "Simulation multi-ETF pondérée (bientôt)",
-      "Récapitulatif fiscal annuel (bientôt)",
-      "Accès anticipé aux nouvelles fonctions",
-      "Support prioritaire",
-    ],
-  },
+const PREMIUM_CONTENT = {
+  headline: "Votre plan Premium est actif",
+  features: [
+    "Analyse Monte Carlo — 1 000 scénarios de marché simulés",
+    "Suivi mensuel de stratégie avec insights",
+    "Comparaison A vs B de deux stratégies",
+    "Simulations sauvegardées (10 emplacements)",
+    "Export PDF professionnel sans filigrane",
+    "Emails mensuels personnalisés de suivi",
+  ],
 };
 
 export default async function PaymentSuccessPage({
@@ -38,8 +23,8 @@ export default async function PaymentSuccessPage({
 }: {
   searchParams: Promise<{ plan?: string }>;
 }) {
-  const { plan = "premium" } = await searchParams;
-  const content = PLAN_FEATURES[plan] ?? PLAN_FEATURES.premium;
+  await searchParams;
+  const content = PREMIUM_CONTENT;
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-200px)] py-16 px-4">

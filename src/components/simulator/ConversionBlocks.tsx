@@ -60,7 +60,7 @@ function PremiumFix({ bullets }: { bullets: string[] }) {
 export function ConversionBlocks({ output }: { output: SimulatorOutput }) {
   const { user } = useUser();
   const plan = (user?.publicMetadata?.plan as string) ?? "free";
-  const isPremium = plan === "premium" || plan === "pro";
+  const isPremium = plan === "premium";
 
   return (
     <div className="space-y-3">

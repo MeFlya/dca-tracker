@@ -119,7 +119,7 @@ const FAQ = [
   },
   {
     q: "Comment comparer deux stratégies différentes (300€/mois 20 ans vs 400€/mois 15 ans) ?",
-    a: "C'est exactement pour ça qu'existe la fonctionnalité de comparaison A vs B du simulateur. En mode Pro, vous pouvez saisir deux scénarios indépendants et voir côte à côte quel capital final chacun produit — avec la différence en euros et en pourcentage calculée automatiquement.",
+    a: "C'est exactement pour ça qu'existe la fonctionnalité de comparaison A vs B du simulateur. Avec Premium, vous saisissez deux scénarios indépendants et voyez côte à côte quel capital final chacun produit — avec la différence en euros et en pourcentage calculée automatiquement.",
   },
 ];
 

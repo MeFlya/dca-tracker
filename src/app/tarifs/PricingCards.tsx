@@ -7,7 +7,7 @@ import { useUser } from "@clerk/nextjs";
 type Feature = { label: string; included: boolean };
 
 type Plan = {
-  id: string;
+  id: "free" | "premium";
   name: string;
   tagline: string;
   monthlyPrice: number;
@@ -16,7 +16,6 @@ type Plan = {
   features: Feature[];
   cta: string;
   ctaHref: string;
-  ctaStyle: "ghost" | "primary" | "dark";
   badge?: string;
 };
 
@@ -28,7 +27,6 @@ const PLANS: Plan[] = [
     monthlyPrice: 0,
     yearlyTotal: 0,
     yearlyPerMonth: 0,
-    ctaStyle: "ghost",
     cta: "Essayer le simulateur",
     ctaHref: "/simulateur",
     features: [
@@ -37,52 +35,32 @@ const PLANS: Plan[] = [
       { label: "Guides et articles éducatifs", included: true },
       { label: "Lien de partage de simulation", included: true },
       { label: "Export PDF (avec filigrane)", included: true },
-      { label: "Analyse Monte Carlo", included: false },
-      { label: "Simulations sauvegardées", included: false },
-      { label: "Export PDF professionnel", included: false },
+      { label: "Analyse Monte Carlo (1 000 scénarios)", included: false },
+      { label: "Suivi mensuel de stratégie", included: false },
       { label: "Comparaison A vs B", included: false },
-      { label: "Support par email", included: false },
+      { label: "Simulations sauvegardées", included: false },
+      { label: "Export PDF sans filigrane", included: false },
     ],
   },
   {
     id: "premium",
     name: "Premium",
-    tagline: "Pour investisseurs actifs",
+    tagline: "Le cockpit DCA complet",
     monthlyPrice: 4.9,
-    yearlyTotal: 39,
-    yearlyPerMonth: 3.25,
+    yearlyTotal: 49,
+    yearlyPerMonth: 4.08,
     badge: "Le plus populaire",
-    ctaStyle: "primary",
     cta: "Choisir Premium",
     ctaHref: "#",
     features: [
       { label: "Tout du plan Gratuit", included: true },
       { label: "Analyse Monte Carlo (1 000 scénarios)", included: true },
-      { label: "Export PDF professionnel (sans filigrane)", included: true },
+      { label: "Suivi mensuel de stratégie + insights", included: true },
+      { label: "Comparaison A vs B (deux stratégies)", included: true },
       { label: "Simulations sauvegardées (10 slots)", included: true },
+      { label: "Export PDF professionnel (sans filigrane)", included: true },
+      { label: "Emails mensuels de suivi", included: true },
       { label: "Support par email", included: true },
-      { label: "Comparaison A vs B", included: false },
-      { label: "Simulations illimitées", included: false },
-      { label: "Support prioritaire", included: false },
-      { label: "Accès anticipé nouvelles fonctions", included: false },
-    ],
-  },
-  {
-    id: "pro",
-    name: "Pro",
-    tagline: "Pour investisseurs avancés",
-    monthlyPrice: 9.9,
-    yearlyTotal: 79,
-    yearlyPerMonth: 6.58,
-    ctaStyle: "dark",
-    cta: "Choisir Pro",
-    ctaHref: "#",
-    features: [
-      { label: "Tout du plan Premium", included: true },
-      { label: "Comparaison de scénarios A vs B", included: true },
-      { label: "Simulations sauvegardées illimitées", included: true },
-      { label: "Support prioritaire", included: true },
-      { label: "Accès anticipé nouvelles fonctions", included: true },
     ],
   },
 ];
@@ -90,14 +68,10 @@ const PLANS: Plan[] = [
 // ─── Checkout button ──────────────────────────────────────────────────────────
 
 function CheckoutButton({
-  planId,
   billing,
-  style,
   label,
 }: {
-  planId: "premium" | "pro";
   billing: "monthly" | "yearly";
-  style: "primary" | "dark";
   label: string;
 }) {
   const { isSignedIn, isLoaded } = useUser();
@@ -113,7 +87,7 @@ function CheckoutButton({
       const res = await fetch("/api/stripe/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ planId, billing }),
+        body: JSON.stringify({ planId: "premium", billing }),
       });
       const data = await res.json();
       if (data.url) {
@@ -128,17 +102,11 @@ function CheckoutButton({
     }
   }
 
-  const baseClass = `w-full text-center text-sm font-semibold py-2.5 px-4 rounded-xl transition-all mb-6 block disabled:opacity-60 cursor-pointer`;
-  const styleClass =
-    style === "primary"
-      ? "bg-primary-600 text-white hover:bg-primary-700"
-      : "bg-white text-slate-900 hover:bg-gray-100";
-
   return (
     <button
       onClick={handleClick}
       disabled={!isLoaded || loading}
-      className={`${baseClass} ${styleClass}`}
+      className="w-full text-center text-sm font-semibold py-2.5 px-4 rounded-xl transition-all mb-6 block bg-primary-600 text-white hover:bg-primary-700 disabled:opacity-60 cursor-pointer"
     >
       {loading ? "Chargement…" : isSignedIn ? label : "Créer un compte"}
     </button>
@@ -167,12 +135,12 @@ export function PricingCards() {
         </button>
         <span className={`text-sm font-medium flex items-center gap-2 ${yearly ? "text-gray-900" : "text-gray-400"}`}>
           Annuel
-          <span className="bg-gain-light text-gain-dark text-xs font-bold px-2 py-0.5 rounded-full">−33 %</span>
+          <span className="bg-gain-light text-gain-dark text-xs font-bold px-2 py-0.5 rounded-full">−17 %</span>
         </span>
       </div>
 
-      {/* Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+      {/* Cards — 2-column layout */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch max-w-3xl mx-auto">
         {PLANS.map((plan) => {
           const price = yearly ? plan.yearlyPerMonth : plan.monthlyPrice;
           const isHighlight = plan.id === "premium";
@@ -181,11 +149,10 @@ export function PricingCards() {
           return (
             <div
               key={plan.id}
+              id={plan.id}
               className={`relative flex flex-col rounded-2xl border p-6 transition-all ${
                 isHighlight
-                  ? "border-primary-400 shadow-card-lg ring-2 ring-primary-500 ring-offset-2"
-                  : plan.id === "pro"
-                  ? "border-slate-800 bg-slate-900 text-white"
+                  ? "border-primary-400 shadow-card-lg ring-2 ring-primary-500 ring-offset-2 bg-white"
                   : "border-gray-200 bg-white"
               }`}
             >
@@ -200,40 +167,40 @@ export function PricingCards() {
               {/* Header */}
               <div className="mb-6">
                 <p className={`text-xs font-semibold uppercase tracking-widest mb-1 ${
-                  plan.id === "pro" ? "text-slate-400" : isHighlight ? "text-primary-600" : "text-gray-400"
+                  isHighlight ? "text-primary-600" : "text-gray-400"
                 }`}>
                   {plan.tagline}
                 </p>
-                <h3 className={`text-xl font-bold mb-4 ${plan.id === "pro" ? "text-white" : "text-gray-900"}`}>
+                <h3 className="text-xl font-bold mb-4 text-gray-900">
                   {plan.name}
                 </h3>
 
                 <div className="flex items-end gap-1.5">
                   {plan.monthlyPrice === 0 ? (
-                    <span className={`text-4xl font-bold ${plan.id === "pro" ? "text-white" : "text-gray-900"}`}>
+                    <span className="text-4xl font-bold text-gray-900">
                       Gratuit
                     </span>
                   ) : (
                     <>
-                      <span className={`text-4xl font-bold ${plan.id === "pro" ? "text-white" : "text-gray-900"}`}>
+                      <span className="text-4xl font-bold text-gray-900">
                         {price.toFixed(2).replace(".", ",")} €
                       </span>
-                      <span className={`text-sm mb-1 ${plan.id === "pro" ? "text-slate-400" : "text-gray-400"}`}>
+                      <span className="text-sm mb-1 text-gray-400">
                         /mois
                       </span>
                     </>
                   )}
                 </div>
                 {plan.monthlyPrice > 0 && yearly && (
-                  <p className={`text-xs mt-1 ${plan.id === "pro" ? "text-slate-400" : "text-gray-400"}`}>
+                  <p className="text-xs mt-1 text-gray-400">
                     Facturé {plan.yearlyTotal} € / an
-                    <span className={`ml-2 font-semibold ${plan.id === "pro" ? "text-green-400" : "text-gain-default"}`}>
+                    <span className="ml-2 font-semibold text-gain-default">
                       (économisez {Math.round(plan.monthlyPrice * 12 - plan.yearlyTotal)} €)
                     </span>
                   </p>
                 )}
                 {plan.monthlyPrice > 0 && !yearly && (
-                  <p className={`text-xs mt-1 ${plan.id === "pro" ? "text-slate-400" : "text-gray-400"}`}>
+                  <p className="text-xs mt-1 text-gray-400">
                     Ou {plan.yearlyPerMonth.toFixed(2).replace(".", ",")} €/mois facturé annuellement
                   </p>
                 )}
@@ -248,12 +215,7 @@ export function PricingCards() {
                   {plan.cta}
                 </Link>
               ) : (
-                <CheckoutButton
-                  planId={plan.id as "premium" | "pro"}
-                  billing={billing}
-                  style={plan.ctaStyle as "primary" | "dark"}
-                  label={plan.cta}
-                />
+                <CheckoutButton billing={billing} label={plan.cta} />
               )}
 
               {/* Feature list */}
@@ -261,7 +223,7 @@ export function PricingCards() {
                 {plan.features.map((f) => (
                   <li key={f.label} className="flex items-start gap-2.5 text-sm">
                     {f.included ? (
-                      <svg className={`w-4 h-4 shrink-0 mt-0.5 ${plan.id === "pro" ? "text-green-400" : "text-gain-default"}`} viewBox="0 0 16 16" fill="none" aria-hidden>
+                      <svg className="w-4 h-4 shrink-0 mt-0.5 text-gain-default" viewBox="0 0 16 16" fill="none" aria-hidden>
                         <circle cx="8" cy="8" r="7" fill="currentColor" opacity="0.15" />
                         <path d="M5 8l2.5 2.5L11 5.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
@@ -270,11 +232,7 @@ export function PricingCards() {
                         <path d="M5 8h6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                       </svg>
                     )}
-                    <span className={`leading-snug ${
-                      !f.included
-                        ? plan.id === "pro" ? "text-slate-600" : "text-gray-300"
-                        : plan.id === "pro" ? "text-slate-200" : "text-gray-700"
-                    }`}>
+                    <span className={`leading-snug ${!f.included ? "text-gray-300" : "text-gray-700"}`}>
                       {f.label}
                     </span>
                   </li>

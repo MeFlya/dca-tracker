@@ -33,10 +33,6 @@ export async function getUserSubscription(): Promise<UserSubscription> {
   };
 }
 
-export function isPremiumOrPro(plan: PlanId): boolean {
-  return plan === "premium" || plan === "pro";
-}
-
-export function isPro(plan: PlanId): boolean {
-  return plan === "pro";
+export function isPremium(plan: PlanId): boolean {
+  return plan === "premium";
 }

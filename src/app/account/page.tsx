@@ -16,7 +16,6 @@ export const metadata: Metadata = {
 const PLAN_META: Record<string, { label: string; color: string; bg: string }> = {
   free:    { label: "Gratuit",  color: "text-gray-600",    bg: "bg-gray-100"   },
   premium: { label: "Premium",  color: "text-primary-700", bg: "bg-primary-100" },
-  pro:     { label: "Pro",      color: "text-white",       bg: "bg-slate-800"  },
 };
 
 export default async function AccountPage() {
@@ -25,7 +24,7 @@ export default async function AccountPage() {
 
   const sub = await getUserSubscription();
   const planMeta = PLAN_META[sub.plan] ?? PLAN_META.free;
-  const isPremium = sub.plan === "premium" || sub.plan === "pro";
+  const isPremium = sub.plan === "premium";
 
   // Fetch strategy data server-side so we can detect the "canceled with
   // preserved data" state for the re-lock UI.

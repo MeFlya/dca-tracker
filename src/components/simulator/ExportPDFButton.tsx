@@ -15,7 +15,7 @@ export function ExportPDFButton({ output }: { output: SimulatorOutput }) {
   const router = useRouter();
 
   const plan = (user?.publicMetadata?.plan as string) ?? "free";
-  const isPremium = plan === "premium" || plan === "pro";
+  const isPremium = plan === "premium";
 
   async function handleClick() {
     if (state === "generating") return;

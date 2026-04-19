@@ -14,7 +14,6 @@ const KEY = "dca_saved_simulations";
 export const SAVE_LIMITS: Record<string, number> = {
   free: 0,
   premium: 10,
-  pro: Infinity,
 };
 
 function readStore(): SavedSimulation[] {
