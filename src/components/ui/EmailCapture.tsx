@@ -69,15 +69,13 @@ export function EmailCapture({
           <EnvelopeIcon className="mx-auto mb-5" />
 
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">
-            Recevez le guide :{" "}
-            <span className="text-primary-600">PEA ou CTO</span>{" "}
-            — quelle enveloppe pour vos ETF ?
+            Voyez ce que{" "}
+            <span className="text-primary-600">200&nbsp;€/mois</span>{" "}
+            peuvent devenir
           </h2>
           <p className="mt-3 text-base text-gray-500 leading-relaxed">
-            Le guide pratique que tout investisseur DCA devrait lire avant
-            d&apos;ouvrir un compte. Quelle enveloppe choisir, quels ETF y
-            mettre, et comment éviter les erreurs courantes.{" "}
-            <span className="font-medium text-gray-700">Livré par email, gratuit, sans spam.</span>
+            Un exemple concret sur 10, 20 et 30 ans avec les intérêts composés.{" "}
+            <span className="font-medium text-gray-700">Gratuit, livré par email.</span>
           </p>
 
           <form
@@ -128,11 +126,11 @@ export function EmailCapture({
         <EnvelopeIcon />
         <div className="min-w-0">
           <h3 className="text-base font-semibold text-gray-900 leading-snug">
-            PEA ou CTO ? Recevez le guide gratuit
+            Voyez ce que 200&nbsp;€/mois peuvent devenir
           </h3>
           <p className="mt-1 text-sm text-gray-500 leading-relaxed">
-            La question que tous les investisseurs DCA se posent — réponse
-            claire, exemples concrets, livré immédiatement par email.
+            Un exemple concret sur 10, 20 et 30&nbsp;ans avec les intérêts composés.
+            Gratuit, livré par email.
           </p>
         </div>
       </div>
@@ -189,10 +187,10 @@ function SuccessState({
       >
         <div className="max-w-sm mx-auto px-4 text-center">
           <CheckCircleIcon className="mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-gray-900">Guide envoyé ! 🎉</h2>
+          <h2 className="text-xl font-bold text-gray-900">Exemple envoyé ✅</h2>
           <p className="mt-2 text-sm text-gray-500 leading-relaxed">
-            Consultez votre boîte mail — le guide PEA vs CTO vous attend.
-            Vérifiez les spams si vous ne le recevez pas dans 2 minutes.
+            Vérifiez votre boîte mail.
+            Si vous ne le recevez pas dans 2 minutes, vérifiez les spams.
           </p>
         </div>
       </section>
@@ -208,9 +206,9 @@ function SuccessState({
     >
       <CheckCircleIcon />
       <div>
-        <p className="text-sm font-semibold text-gray-900">Guide envoyé ! 🎉</p>
+        <p className="text-sm font-semibold text-gray-900">Exemple envoyé ✅</p>
         <p className="mt-0.5 text-sm text-gray-500 leading-snug">
-          Vérifiez votre boîte mail — le guide PEA vs CTO est en route.
+          Vérifiez votre boîte mail.
         </p>
       </div>
     </div>
@@ -232,7 +230,7 @@ function SubmitButton({ state }: { state: SubmitState }) {
           Envoi…
         </span>
       ) : (
-        "S'inscrire"
+        "Recevoir l'exemple"
       )}
     </button>
   );

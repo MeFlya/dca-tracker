@@ -60,10 +60,10 @@ export function Hero() {
                 <span aria-hidden> →</span>
               </Link>
               <Link
-                href="/pea-ou-cto"
+                href="/simulateur"
                 className="btn-secondary text-base px-6 py-3"
               >
-                PEA ou CTO ?
+                Tester avec 200 €/mois
               </Link>
             </div>
 
