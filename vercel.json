@@ -3,6 +3,10 @@
     {
       "path": "/api/cron/monthly-update",
       "schedule": "0 9 1 * *"
+    },
+    {
+      "path": "/api/cron/missed-month",
+      "schedule": "0 9 10 * *"
     }
   ]
 }

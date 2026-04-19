@@ -133,6 +133,88 @@ export async function sendWelcome(email: string, firstName: string) {
   });
 }
 
+export async function sendMissedMonth({
+  email,
+  firstName,
+  prevMonth,
+  streak,
+}: {
+  email: string;
+  firstName: string;
+  prevMonth: string; // "YYYY-MM"
+  streak: number;
+}) {
+  const SITE_URL = "https://dcatracker.fr";
+  const [y, m] = prevMonth.split("-").map(Number);
+  const monthLabel = new Date(y, m - 1, 1).toLocaleDateString("fr-FR", {
+    month: "long",
+    year: "numeric",
+  });
+
+  const subject =
+    streak >= 3
+      ? `🔥 Votre série de ${streak} mois est en danger`
+      : streak > 0
+      ? "Ne cassez pas votre série de suivi DCA"
+      : `Un mois manquant dans votre suivi : ${monthLabel}`;
+
+  const hook =
+    streak >= 3
+      ? `Vous avez loggé <strong>${streak} mois consécutifs</strong>. Le mois de ${monthLabel} manque — et sans enregistrement, votre série casse.`
+      : streak > 0
+      ? `Vous avez commencé votre suivi DCA. Le mois de ${monthLabel} n'a pas encore été enregistré.`
+      : `Vous avez sauvegardé votre stratégie DCA mais n'avez pas encore commencé à logger vos mois. ${monthLabel} serait un bon moment pour démarrer.`;
+
+  const streakLine =
+    streak >= 3
+      ? `<p style="margin:0 0 20px 0;font-size:14px;color:#ea580c;background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:14px 18px;line-height:1.6">
+          <strong>🔥 Série actuelle : ${streak} mois</strong><br/>
+          <span style="color:#9a3412">Elle sera réinitialisée si ${monthLabel} reste vide.</span>
+        </p>`
+      : "";
+
+  await resend.emails.send({
+    from: FROM,
+    to: email,
+    subject,
+    html: `<!DOCTYPE html>
+<html lang="fr">
+<body style="font-family:sans-serif;color:#1f2937;max-width:560px;margin:0 auto;padding:32px 16px">
+  <p style="color:#6b7280;margin-bottom:4px;font-size:14px">Rappel mensuel</p>
+  <h1 style="font-size:22px;font-weight:700;margin:0 0 20px 0">Bonjour ${firstName} 👋</h1>
+
+  <p style="font-size:15px;color:#374151;margin:0 0 20px 0;line-height:1.7">
+    ${hook}
+  </p>
+
+  ${streakLine}
+
+  <p style="font-size:14px;color:#6b7280;margin:0 0 24px 0;line-height:1.6">
+    Loguer votre mois prend 10 secondes : votre montant versé + la valeur actuelle
+    affichée dans votre courtier. C&rsquo;est tout.
+  </p>
+
+  <a href="${SITE_URL}/account" style="display:inline-block;background:#2563eb;color:#fff;padding:14px 26px;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px">
+    Enregistrer maintenant →
+  </a>
+
+  <p style="margin-top:32px;color:#9ca3af;font-size:11px;line-height:1.6">
+    DCA Tracker · outil éducatif, pas de conseil en investissement.<br/>
+    <a href="${SITE_URL}/account" style="color:#9ca3af">Gérer mon compte</a>
+  </p>
+</body>
+</html>`,
+    text: `Bonjour ${firstName},
+
+${streak >= 3 ? `Vous avez loggé ${streak} mois consécutifs. Le mois de ${monthLabel} manque — et sans enregistrement, votre série casse.\n\n🔥 Série actuelle : ${streak} mois\nElle sera réinitialisée si ${monthLabel} reste vide.\n\n` : streak > 0 ? `Vous avez commencé votre suivi DCA. Le mois de ${monthLabel} n'a pas encore été enregistré.\n\n` : `Vous avez sauvegardé votre stratégie DCA mais n'avez pas encore commencé à logger vos mois.\n\n`}Loguer votre mois prend 10 secondes : votre montant versé + la valeur actuelle affichée dans votre courtier.
+
+Enregistrer maintenant : ${SITE_URL}/account
+
+---
+DCA Tracker · outil éducatif, pas de conseil en investissement.`,
+  });
+}
+
 export async function sendMonthlyUpdate({
   email,
   firstName,
