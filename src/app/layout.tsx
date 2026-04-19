@@ -4,6 +4,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { JsonLd } from "@/components/ui/JsonLd";
+import { clerkAppearance } from "@/lib/clerk-appearance";
 
 // Hardcoded — never trust NEXT_PUBLIC_SITE_URL for canonical/metadataBase
 // (Vercel preview deployments set it to *.vercel.app which breaks SEO)
@@ -83,7 +84,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen flex flex-col">
-        <ClerkProvider>
+        <ClerkProvider appearance={clerkAppearance}>
         <JsonLd
           data={{
             "@context": "https://schema.org",
