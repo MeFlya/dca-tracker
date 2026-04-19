@@ -130,6 +130,204 @@ export async function sendWelcome(email: string, firstName: string) {
   });
 }
 
+// ─── Onboarding sequence (D+0, D+3, D+7, D+14) ────────────────────────────────
+
+function emailShell(body: string): string {
+  return `<!DOCTYPE html>
+<html lang="fr">
+<body style="margin:0;padding:0;background:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;padding:40px 16px">
+    <tr>
+      <td align="center">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:16px;border:1px solid #e2e8f0;overflow:hidden">
+          <tr>
+            <td style="padding:24px 32px;border-bottom:1px solid #f1f5f9">
+              <a href="https://dcatracker.fr" style="text-decoration:none">
+                <span style="font-size:16px;font-weight:700;color:#1d4ed8">DCA</span><span style="font-size:16px;color:#6b7280">Tracker</span>
+              </a>
+            </td>
+          </tr>
+          <tr><td style="padding:36px 32px 28px">${body}</td></tr>
+          <tr>
+            <td style="padding:16px 32px;background:#f8fafc;border-top:1px solid #f1f5f9">
+              <p style="margin:0;font-size:11px;color:#9ca3af;line-height:1.6">
+                DCA Tracker · outil éducatif, pas de conseil en investissement.<br/>
+                <a href="https://dcatracker.fr/account" style="color:#9ca3af">Gérer mon compte</a>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
+/** D+0 — Immediate welcome with quick-start guide. */
+export async function sendOnboardingWelcome(email: string, firstName: string) {
+  const body = `
+    <h1 style="font-size:22px;font-weight:700;color:#0f172a;margin:0 0 12px 0;line-height:1.3">
+      Bienvenue ${firstName}, voici comment démarrer
+    </h1>
+    <p style="font-size:15px;color:#475569;line-height:1.7;margin:0 0 20px 0">
+      Vous avez accès à tout le simulateur DCA gratuitement. En 60 secondes,
+      vous saurez ce que peut devenir votre épargne sur 20 ans.
+    </p>
+
+    <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:18px 20px;margin:20px 0">
+      <p style="margin:0 0 10px 0;font-size:13px;font-weight:700;color:#1e40af;text-transform:uppercase;letter-spacing:0.06em">
+        3 étapes
+      </p>
+      <ol style="margin:0;padding-left:20px;color:#1e3a8a;font-size:14px;line-height:1.9">
+        <li>Entrez votre montant mensuel (ex : 200 €)</li>
+        <li>Choisissez une durée (ex : 20 ans)</li>
+        <li>Voyez la projection avec les intérêts composés</li>
+      </ol>
+    </div>
+
+    <a href="https://dcatracker.fr/simulateur" style="display:inline-block;background:#2563eb;color:#fff;padding:12px 26px;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px">
+      Lancer ma première simulation →
+    </a>
+
+    <p style="margin-top:28px;font-size:13px;color:#64748b;line-height:1.6">
+      Des questions ? Répondez simplement à cet email — c'est moi qui le lis.
+    </p>
+  `;
+  await resend.emails.send({
+    from: FROM,
+    to: email,
+    subject: "Bienvenue sur DCA Tracker — voici comment démarrer",
+    html: emailShell(body),
+  });
+}
+
+/** D+3 — Nudge for users who haven't run a simulation yet. */
+export async function sendOnboardingDay3(email: string, firstName: string) {
+  const body = `
+    <h1 style="font-size:22px;font-weight:700;color:#0f172a;margin:0 0 12px 0;line-height:1.3">
+      ${firstName}, une simulation prend 60 secondes
+    </h1>
+    <p style="font-size:15px;color:#475569;line-height:1.7;margin:0 0 14px 0">
+      La plupart des gens pensent qu&apos;une projection DCA, c&apos;est
+      complexe. En fait, c&apos;est 3 nombres :
+    </p>
+    <ul style="font-size:15px;color:#475569;line-height:1.9;padding-left:20px;margin:0 0 20px 0">
+      <li><strong>Montant mensuel</strong> — ce que vous pouvez épargner sans stress</li>
+      <li><strong>Durée</strong> — 10, 20, 30 ans selon votre horizon</li>
+      <li><strong>Rendement cible</strong> — 7 %/an est réaliste pour un ETF MSCI World</li>
+    </ul>
+    <p style="font-size:15px;color:#475569;line-height:1.7;margin:0 0 22px 0">
+      Avec ces 3 entrées, vous verrez exactement ce que peut valoir votre
+      épargne dans 20 ans — et combien vient des intérêts composés.
+    </p>
+
+    <a href="https://dcatracker.fr/simulateur" style="display:inline-block;background:#2563eb;color:#fff;padding:12px 26px;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px">
+      Ouvrir le simulateur →
+    </a>
+  `;
+  await resend.emails.send({
+    from: FROM,
+    to: email,
+    subject: "Votre simulation DCA prend 60 secondes",
+    html: emailShell(body),
+    scheduled_at: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
+  } as Parameters<typeof resend.emails.send>[0]);
+}
+
+/** D+7 — Introduce the tracking value prop (Premium teaser). */
+export async function sendOnboardingDay7(email: string, firstName: string) {
+  const body = `
+    <h1 style="font-size:22px;font-weight:700;color:#0f172a;margin:0 0 12px 0;line-height:1.3">
+      Simuler, c'est bien. Suivre, c'est autre chose.
+    </h1>
+    <p style="font-size:15px;color:#475569;line-height:1.7;margin:0 0 14px 0">
+      ${firstName}, le simulateur vous montre votre projection. Mais dans
+      6 mois, dans 1 an, comment savez-vous si vous êtes en avance ou en
+      retard ?
+    </p>
+
+    <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:18px 20px;margin:20px 0">
+      <p style="margin:0 0 10px 0;font-size:13px;font-weight:700;color:#0f172a">
+        Avec un suivi mensuel, vous voyez :
+      </p>
+      <ul style="margin:0;padding-left:20px;color:#475569;font-size:14px;line-height:1.9">
+        <li>Votre avance ou retard en € chaque mois</li>
+        <li>Ce que les intérêts composés ont généré sans effort</li>
+        <li>Votre série de mois consécutifs de suivi</li>
+        <li>Des emails mensuels avec vos chiffres réels</li>
+      </ul>
+    </div>
+
+    <p style="font-size:15px;color:#475569;line-height:1.7;margin:0 0 22px 0">
+      Premium ajoute le tracking au simulateur. <strong>7 jours gratuits</strong>,
+      annulation en 1 clic.
+    </p>
+
+    <a href="https://dcatracker.fr/tarifs" style="display:inline-block;background:#2563eb;color:#fff;padding:12px 26px;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px">
+      Essayer Premium 7 jours →
+    </a>
+  `;
+  await resend.emails.send({
+    from: FROM,
+    to: email,
+    subject: "Simuler, c'est bien. Suivre, c'est autre chose.",
+    html: emailShell(body),
+    scheduled_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+  } as Parameters<typeof resend.emails.send>[0]);
+}
+
+/** D+14 — Final conversion nudge. */
+export async function sendOnboardingDay14(email: string, firstName: string) {
+  const body = `
+    <h1 style="font-size:22px;font-weight:700;color:#0f172a;margin:0 0 12px 0;line-height:1.3">
+      Une dernière idée, ${firstName}
+    </h1>
+    <p style="font-size:15px;color:#475569;line-height:1.7;margin:0 0 14px 0">
+      Vous suivez DCA Tracker depuis 2 semaines. Si vous n&apos;avez pas encore
+      activé Premium, voici ce que vous ratez — concrètement.
+    </p>
+
+    <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:18px 20px;margin:20px 0">
+      <p style="margin:0 0 10px 0;font-size:13px;font-weight:700;color:#92400e">
+        Pour 4,90 €/mois :
+      </p>
+      <ul style="margin:0;padding-left:20px;color:#78350f;font-size:14px;line-height:1.9">
+        <li>Monte Carlo : 1 000 scénarios de marché simulés</li>
+        <li>Suivi mensuel de votre stratégie vs projection</li>
+        <li>Comparaison A/B de deux stratégies côte à côte</li>
+        <li>Export PDF propre, sans filigrane</li>
+        <li>Emails mensuels personnalisés</li>
+      </ul>
+    </div>
+
+    <p style="font-size:15px;color:#475569;line-height:1.7;margin:0 0 14px 0">
+      Moins d&apos;un café par mois. Sur 20 ans, c&apos;est 0,01 % de votre
+      portefeuille final. Pour un suivi qui change vos décisions.
+    </p>
+    <p style="font-size:15px;color:#475569;line-height:1.7;margin:0 0 22px 0">
+      <strong>7 jours gratuits pour tester.</strong> Vous pouvez annuler en
+      1 clic avant la fin de l&apos;essai.
+    </p>
+
+    <a href="https://dcatracker.fr/tarifs" style="display:inline-block;background:#2563eb;color:#fff;padding:12px 26px;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px">
+      Essayer Premium 7 jours →
+    </a>
+
+    <p style="margin-top:28px;font-size:13px;color:#64748b;line-height:1.6">
+      Si Premium n&apos;est pas pour vous, aucun problème — le simulateur
+      reste gratuit pour toujours. Aucun spam après cet email.
+    </p>
+  `;
+  await resend.emails.send({
+    from: FROM,
+    to: email,
+    subject: "Une dernière idée avant que je ne vous écrive plus",
+    html: emailShell(body),
+    scheduled_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+  } as Parameters<typeof resend.emails.send>[0]);
+}
+
 export type AnnualPushMilestone = "month-3" | "month-6" | "month-12";
 
 export async function sendAnnualPush({

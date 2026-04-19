@@ -87,6 +87,16 @@ export function Footer() {
                   Investir 300€/mois
                 </Link>
               </li>
+              <li>
+                <Link href="/investir-500-euros-mois-etf" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+                  Investir 500€/mois
+                </Link>
+              </li>
+              <li>
+                <Link href="/investir-1000-euros-mois-etf" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+                  Investir 1 000€/mois
+                </Link>
+              </li>
             </ul>
           </div>
 

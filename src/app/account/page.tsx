@@ -8,6 +8,7 @@ import { ManageSubscriptionButton } from "./ManageSubscriptionButton";
 import { StrategyTracker } from "@/components/account/StrategyTracker";
 import { ReLockedStrategy } from "@/components/account/ReLockedStrategy";
 import { OnboardingChecklist } from "@/components/account/OnboardingChecklist";
+import { OnboardingEmailTrigger } from "@/components/account/OnboardingEmailTrigger";
 
 export const metadata: Metadata = {
   title: "Dashboard — DCA Tracker",
@@ -40,6 +41,7 @@ export default async function AccountPage() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
+      <OnboardingEmailTrigger />
 
       {/* Page header */}
       <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
