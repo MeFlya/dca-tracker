@@ -68,9 +68,22 @@ export default async function AccountPage() {
           2. Free + preserved data → ReLockedStrategy (reactivation CTA)
           3. Free + no data → generic upgrade prompt
       ─────────────────────────────────────────────────────────────────── */}
-      {isPremium ? (
+      {isPremium && strategy ? (
         <div className="mb-6">
-          <StrategyTracker />
+          <StrategyTracker initialStrategy={strategy} initialEntries={entries} />
+        </div>
+      ) : isPremium ? (
+        /* Premium but no strategy yet — invite them to save one */
+        <div className="rounded-2xl border border-primary-100 bg-white p-8 mb-6 text-center">
+          <p className="text-lg font-bold text-gray-900 mb-2">
+            Prêt à démarrer votre suivi ?
+          </p>
+          <p className="text-sm text-gray-500 leading-relaxed mb-5 max-w-sm mx-auto">
+            Simulez votre DCA et cliquez sur <strong className="text-gray-700">Sauvegarder ma stratégie</strong> pour commencer le tracking mensuel.
+          </p>
+          <Link href="/simulateur" className="btn-primary text-sm px-6 py-2.5 inline-block btn-lift">
+            Ouvrir le simulateur →
+          </Link>
         </div>
       ) : hasLockedData && strategy ? (
         <div className="mb-6">
