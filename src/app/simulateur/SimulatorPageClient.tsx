@@ -107,7 +107,7 @@ export function SimulatorPageClient() {
       {/* Results column */}
       <div id="results" className="space-y-4">
         {/* Hero — big impactful result + MC distribution */}
-        <SimulatorHero output={output} mc={monteCarloResult} />
+        <SimulatorHero output={output} />
 
         {/* Action bar */}
         <div className="flex items-center justify-between gap-2 flex-wrap">
