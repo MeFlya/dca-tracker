@@ -1,10 +1,12 @@
 import { currentUser } from "@clerk/nextjs/server";
 import { getUserSubscription } from "@/lib/subscription";
+import { getStrategyData } from "@/lib/user-strategy";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { ManageSubscriptionButton } from "./ManageSubscriptionButton";
 import { StrategyTracker } from "@/components/account/StrategyTracker";
+import { ReLockedStrategy } from "@/components/account/ReLockedStrategy";
 
 export const metadata: Metadata = {
   title: "Dashboard — DCA Tracker",
@@ -24,6 +26,11 @@ export default async function AccountPage() {
   const sub = await getUserSubscription();
   const planMeta = PLAN_META[sub.plan] ?? PLAN_META.free;
   const isPremium = sub.plan === "premium" || sub.plan === "pro";
+
+  // Fetch strategy data server-side so we can detect the "canceled with
+  // preserved data" state for the re-lock UI.
+  const { strategy, entries } = await getStrategyData(user.id);
+  const hasLockedData = !isPremium && strategy !== null;
 
   const periodEndDate = sub.periodEnd
     ? new Date(sub.periodEnd * 1000).toLocaleDateString("fr-FR", {
@@ -56,13 +63,21 @@ export default async function AccountPage() {
         </div>
       </div>
 
-      {/* ── PREMIUM: Strategy tracker as hero ─────────────────────────────── */}
+      {/* ── HERO: 3 states ─────────────────────────────────────────────────
+          1. Premium/Pro → full StrategyTracker
+          2. Free + preserved data → ReLockedStrategy (reactivation CTA)
+          3. Free + no data → generic upgrade prompt
+      ─────────────────────────────────────────────────────────────────── */}
       {isPremium ? (
         <div className="mb-6">
           <StrategyTracker />
         </div>
+      ) : hasLockedData && strategy ? (
+        <div className="mb-6">
+          <ReLockedStrategy strategy={strategy} entries={entries} />
+        </div>
       ) : (
-        /* ── FREE: Upgrade prompt as hero ─────────────────────────────────── */
+        /* ── FREE + no data: generic upgrade prompt ───────────────────────── */
         <div className="rounded-2xl bg-gradient-to-br from-primary-600 to-blue-700 p-8 mb-6 text-center">
           <p className="text-4xl mb-3">📊</p>
           <h2 className="text-white font-bold text-xl mb-2">
