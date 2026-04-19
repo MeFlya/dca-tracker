@@ -109,7 +109,7 @@ function LockedOverlay() {
           Le résultat moyen ne suffit pas pour piloter une vraie stratégie.
         </p>
         <Link
-          href="/tarifs"
+          href="/upgrade?feature=monte-carlo"
           className="inline-block bg-primary-600 text-white font-semibold text-sm px-5 py-2.5 rounded-xl hover:bg-primary-700 transition-colors"
         >
           Débloquer l&apos;analyse de risque →

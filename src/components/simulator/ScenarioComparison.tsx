@@ -96,7 +96,7 @@ function LockedOverlay() {
           produit le plus ? Comparez en temps réel côte à côte.
         </p>
         <Link
-          href="/tarifs"
+          href="/upgrade?feature=ab-comparison"
           className="inline-block bg-slate-900 text-white font-semibold text-sm px-5 py-2.5 rounded-xl hover:bg-slate-800 transition-colors"
         >
           Débloquer avec Pro →

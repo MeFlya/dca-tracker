@@ -72,14 +72,22 @@ export function Header() {
             )}
             {isLoaded && isSignedIn && (
               <>
-                <Link href="/simulateur" className="btn-primary text-xs px-4 py-2">
-                  Simulateur
-                </Link>
                 <Link
                   href="/account"
-                  className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+                  className={cn(
+                    "px-3 py-1.5 rounded-lg text-sm font-medium transition-colors",
+                    pathname === "/account"
+                      ? "bg-primary-50 text-primary-700"
+                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                  )}
                 >
-                  Mon compte
+                  Dashboard
+                </Link>
+                <Link
+                  href="/tarifs"
+                  className="inline-flex items-center gap-1 text-xs font-bold bg-primary-600 text-white px-3 py-1.5 rounded-lg hover:bg-primary-700 transition-colors"
+                >
+                  Premium ↑
                 </Link>
                 <UserButton />
               </>
@@ -144,6 +152,15 @@ export function Header() {
                 className="block px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
               >
                 Connexion
+              </Link>
+            )}
+            {isLoaded && isSignedIn && (
+              <Link
+                href="/account"
+                onClick={() => setMobileOpen(false)}
+                className="block px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
+              >
+                Dashboard
               </Link>
             )}
             <Link

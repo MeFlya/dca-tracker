@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { SimulatorOutput } from "@/lib/simulator";
 import { generateSimulationPDF } from "@/lib/pdf-export";
@@ -10,15 +11,20 @@ type ExportState = "idle" | "generating" | "error";
 export function ExportPDFButton({ output }: { output: SimulatorOutput }) {
   const [state, setState] = useState<ExportState>("idle");
   const { user } = useUser();
+  const router = useRouter();
 
   const plan = (user?.publicMetadata?.plan as string) ?? "free";
   const isPremium = plan === "premium" || plan === "pro";
 
   async function handleClick() {
     if (state === "generating") return;
+    if (!isPremium) {
+      router.push("/upgrade?feature=pdf-export");
+      return;
+    }
     setState("generating");
     try {
-      await generateSimulationPDF(output, !isPremium);
+      await generateSimulationPDF(output, false);
       setState("idle");
     } catch {
       setState("error");
@@ -32,7 +38,7 @@ export function ExportPDFButton({ output }: { output: SimulatorOutput }) {
       disabled={state === "generating"}
       className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors disabled:opacity-60 disabled:cursor-not-allowed
         border-gray-200 bg-white text-gray-600 hover:border-primary-300 hover:text-primary-700 hover:bg-primary-50"
-      title={isPremium ? "Exporter en PDF (sans filigrane)" : "Exporter en PDF (avec filigrane — Premium pour la version propre)"}
+      title={isPremium ? "Exporter en PDF sans filigrane" : "Débloquer l'export PDF propre — Premium"}
     >
       {state === "generating" ? (
         <>
@@ -54,7 +60,12 @@ export function ExportPDFButton({ output }: { output: SimulatorOutput }) {
           <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
             <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
           </svg>
-          PDF{!isPremium && <span className="opacity-50 ml-0.5">(filigrané)</span>}
+          PDF
+          {!isPremium && (
+            <span className="bg-primary-100 text-primary-700 text-[9px] font-bold px-1 py-0.5 rounded uppercase tracking-wide">
+              Premium
+            </span>
+          )}
         </>
       )}
     </button>

@@ -31,7 +31,7 @@ export function SaveStrategyButton({ input, plan }: Props) {
   if (plan === "free") {
     return (
       <Link
-        href="/tarifs"
+        href="/upgrade?feature=save-strategy"
         className="inline-flex items-center gap-2 text-sm font-semibold text-primary-600 hover:text-primary-700 transition-colors"
       >
         <LockIcon />
