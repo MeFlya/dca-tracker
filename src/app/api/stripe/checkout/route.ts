@@ -50,6 +50,10 @@ export async function POST(req: Request) {
     customerId = customer.id;
   }
 
+  // 7-day free trial — user can cancel anytime, no charge if cancelled before day 7.
+  // Stripe enforces this server-side; payment method is collected up-front.
+  const TRIAL_DAYS = 7;
+
   const session = await stripe.checkout.sessions.create({
     customer: customerId,
     payment_method_types: ["card"],
@@ -58,6 +62,7 @@ export async function POST(req: Request) {
     success_url: `${siteUrl}/payment/success?plan=${planId}&session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${siteUrl}/payment/cancel`,
     subscription_data: {
+      trial_period_days: TRIAL_DAYS,
       metadata: { clerkUserId: userId },
     },
     metadata: { clerkUserId: userId },

@@ -103,13 +103,18 @@ function CheckoutButton({
   }
 
   return (
-    <button
-      onClick={handleClick}
-      disabled={!isLoaded || loading}
-      className="w-full text-center text-sm font-semibold py-2.5 px-4 rounded-xl transition-all mb-6 block bg-primary-600 text-white hover:bg-primary-700 disabled:opacity-60 cursor-pointer"
-    >
-      {loading ? "Chargement…" : isSignedIn ? label : "Créer un compte"}
-    </button>
+    <div className="mb-6">
+      <button
+        onClick={handleClick}
+        disabled={!isLoaded || loading}
+        className="w-full text-center text-sm font-semibold py-2.5 px-4 rounded-xl transition-all block bg-primary-600 text-white hover:bg-primary-700 disabled:opacity-60 cursor-pointer"
+      >
+        {loading ? "Chargement…" : isSignedIn ? `${label} — 7 jours gratuits` : "Créer un compte"}
+      </button>
+      <p className="text-[11px] text-gray-400 text-center mt-2">
+        Essai gratuit 7 jours · annulable à tout moment
+      </p>
+    </div>
   );
 }
 
@@ -244,7 +249,7 @@ export function PricingCards() {
       </div>
 
       <p className="text-center text-xs text-gray-400 mt-6">
-        Tous les prix incluent la TVA · Pas d&apos;engagement · Annulation à tout moment
+        7 jours d&apos;essai gratuit · TVA incluse · Annulation en 1 clic
       </p>
     </section>
   );

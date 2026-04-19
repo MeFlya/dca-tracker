@@ -625,7 +625,7 @@ export default async function UpgradePage({ searchParams }: Props) {
             href="#cta"
             className="btn-primary text-base px-6 py-3 inline-block"
           >
-            Débloquer maintenant — {f.price} →
+            Essayer Premium — 7 jours gratuits →
           </Link>
         </section>
 
@@ -744,7 +744,7 @@ export default async function UpgradePage({ searchParams }: Props) {
               href="/tarifs#premium"
               className="btn-primary text-base px-8 py-4 text-center flex-1"
             >
-              Passer {f.plan} — {f.price} →
+              Essayer Premium — 7 jours gratuits →
             </Link>
             <Link
               href="/simulateur"
@@ -754,7 +754,7 @@ export default async function UpgradePage({ searchParams }: Props) {
             </Link>
           </div>
           <p className="text-xs text-gray-400 mt-4 text-center">
-            Annulation en 1 clic · Pas d&apos;engagement · Accès immédiat
+            7 jours d&apos;essai gratuit · Annulation en 1 clic · Pas d&apos;engagement
           </p>
         </section>
 
@@ -818,7 +818,7 @@ export default async function UpgradePage({ searchParams }: Props) {
           href="/tarifs#premium"
           className="btn-primary w-full justify-center text-sm py-3"
         >
-          Débloquer {f.plan} — {f.price} →
+          Essayer Premium — 7 jours gratuits →
         </Link>
       </div>
     </div>

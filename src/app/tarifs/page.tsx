@@ -68,6 +68,10 @@ const COMPARISON_SECTIONS = [
 
 const FAQ = [
   {
+    q: "Comment fonctionne l'essai gratuit de 7 jours ?",
+    a: "Vous activez Premium sans frais pendant 7 jours. Vous gardez le contrôle total : si vous annulez avant la fin du 7e jour, aucun prélèvement n'a lieu. Après les 7 jours, votre abonnement démarre au tarif choisi (mensuel ou annuel). Un moyen de paiement est requis pour confirmer l'essai, mais n'est débité qu'à l'issue de la période gratuite.",
+  },
+  {
     q: "Le plan Gratuit va-t-il devenir limité ?",
     a: "Non. Le simulateur DCA, les guides éducatifs et la comparaison ETF restent gratuits et complets. Notre modèle est freemium : le Premium ajoute des fonctions avancées sans rien retirer au plan Gratuit.",
   },
@@ -154,11 +158,12 @@ export default function TarifsPage() {
         </nav>
         <p className="text-xs font-semibold uppercase tracking-widest text-primary-600 mb-3">Tarifs</p>
         <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">
-          Commencez gratuitement. Upgradez quand vous êtes prêt.
+          Commencez gratuitement. 7 jours Premium offerts.
         </h1>
         <p className="text-lg text-gray-500 leading-relaxed">
           Le simulateur DCA et tous les guides restent gratuits pour toujours.
-          Le Premium débloque les analyses avancées qui font la différence.
+          Essayez Premium 7 jours sans frais — annulation en 1 clic si ça ne
+          vous convient pas.
         </p>
       </div>
 
