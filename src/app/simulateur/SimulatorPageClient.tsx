@@ -10,6 +10,7 @@ import { MonteCarloChart } from "@/components/simulator/MonteCarloChart";
 import { ScenarioComparison } from "@/components/simulator/ScenarioComparison";
 import { SaveSimulationButton } from "@/components/simulator/SaveSimulationButton";
 import { SaveStrategyButton } from "@/components/simulator/SaveStrategyButton";
+import { ConversionBlocks } from "@/components/simulator/ConversionBlocks";
 import { SavedSimulationsList } from "@/components/simulator/SavedSimulationsList";
 import { ShareButton } from "@/components/simulator/ShareButton";
 import { ExportPDFButton } from "@/components/simulator/ExportPDFButton";
@@ -109,6 +110,9 @@ export function SimulatorPageClient() {
       <div id="results" className="space-y-4">
         {/* Hero — big impactful result + MC distribution */}
         <SimulatorHero output={output} />
+
+        {/* Conversion blocks — emotional tension on result view */}
+        <ConversionBlocks output={output} />
 
         {/* Save strategy CTA */}
         <div className="flex items-center justify-between gap-3 px-1">
