@@ -2,7 +2,13 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { formatEur } from "@/lib/simulator";
-import { theoreticalValueAtMonth, monthsElapsed, currentMonth } from "@/lib/strategy-math";
+import {
+  theoreticalValueAtMonth,
+  monthsElapsed,
+  currentMonth,
+  computeStreak,
+  nextStreakMilestone,
+} from "@/lib/strategy-math";
 import type { StrategyData, MonthlyEntry } from "@/lib/user-strategy";
 import type { SimulatorInput } from "@/lib/simulator";
 
@@ -109,6 +115,52 @@ function LogMonthModal({
           </button>
         </form>
       </div>
+    </div>
+  );
+}
+
+// ─── Streak block ─────────────────────────────────────────────────────────────
+
+function milestoneLabel(n: number): string {
+  switch (n) {
+    case 3: return "Premier trimestre";
+    case 6: return "Semestre complet";
+    case 12: return "1 an complet";
+    case 24: return "2 ans de régularité";
+    default: return `${n} mois`;
+  }
+}
+
+function StreakBlock({ entries }: { entries: MonthlyEntry[] }) {
+  if (!entries.length) return null;
+
+  const streak = computeStreak(entries.map((e) => e.month));
+
+  if (streak === 0) {
+    return (
+      <div className="rounded-xl bg-orange-50 border border-orange-100 px-4 py-3 mb-4">
+        <p className="text-sm font-semibold text-orange-900">💔 Série interrompue</p>
+        <p className="text-xs text-orange-700 mt-0.5">
+          Reprenez en enregistrant ce mois pour relancer votre série.
+        </p>
+      </div>
+    );
+  }
+
+  const next = nextStreakMilestone(streak);
+
+  return (
+    <div className="flex items-center gap-3 mb-4 flex-wrap">
+      <span className="inline-flex items-center gap-1.5 bg-orange-50 border border-orange-200 text-orange-700 text-sm font-bold px-3 py-1.5 rounded-full">
+        🔥 {streak} mois consécutif{streak > 1 ? "s" : ""}
+      </span>
+      {next && (
+        <span className="text-xs text-gray-500 leading-snug">
+          Plus que{" "}
+          <strong className="text-gray-900">{next - streak} mois</strong>{" "}
+          pour débloquer <em className="text-gray-700 not-italic">&ldquo;{milestoneLabel(next)}&rdquo;</em>
+        </span>
+      )}
     </div>
   );
 }
@@ -247,6 +299,9 @@ export function StrategyTracker() {
           <span className="font-semibold text-gray-900">{formatEur(input.monthlyAmount)}/mois</span>
           {" · "}{input.durationYears} ans{" · "}{input.annualReturnPct} %/an
         </p>
+
+        {/* Streak */}
+        <StreakBlock entries={entries} />
 
         {/* Values row */}
         <div className="grid grid-cols-2 gap-3 mb-4">

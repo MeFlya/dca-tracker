@@ -30,3 +30,45 @@ export function currentMonth(): string {
   const now = new Date();
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
 }
+
+/** Previous month as "YYYY-MM". */
+function previousMonth(month: string): string {
+  const [y, m] = month.split("-").map(Number);
+  if (m === 1) return `${y - 1}-12`;
+  return `${y}-${String(m - 1).padStart(2, "0")}`;
+}
+
+/**
+ * Active streak — number of consecutive trailing months with a logged entry.
+ * Grace period: last entry can be current OR previous month (user hasn't
+ * logged this month yet, but is still on track).
+ * If last entry is 2+ months old → streak = 0 (broken).
+ */
+export function computeStreak(entryMonths: string[]): number {
+  if (!entryMonths.length) return 0;
+
+  const months = [...new Set(entryMonths)].sort().reverse(); // newest first
+  const last = months[0];
+  const cur = currentMonth();
+  const prev = previousMonth(cur);
+
+  if (last !== cur && last !== prev) return 0;
+
+  let streak = 1;
+  let expected = previousMonth(last);
+  for (let i = 1; i < months.length; i++) {
+    if (months[i] === expected) {
+      streak++;
+      expected = previousMonth(expected);
+    } else {
+      break;
+    }
+  }
+  return streak;
+}
+
+/** Next streak milestone in months (3, 6, 12, 24) or null if past all. */
+export function nextStreakMilestone(streak: number): number | null {
+  const milestones = [3, 6, 12, 24];
+  return milestones.find((m) => streak < m) ?? null;
+}
