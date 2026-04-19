@@ -49,6 +49,10 @@ export async function POST(req: Request) {
         );
         const priceId = subscription.items.data[0]?.price.id;
         const plan = getPlanFromPriceId(priceId);
+        const interval = subscription.items.data[0]?.price.recurring?.interval ?? "month";
+        const subscribedAt = subscription.start_date
+          ? new Date(subscription.start_date * 1000).toISOString()
+          : new Date().toISOString();
 
         await clerk.users.updateUserMetadata(clerkUserId, {
           publicMetadata: { plan },
@@ -58,6 +62,9 @@ export async function POST(req: Request) {
             subscriptionStatus: subscription.status,
             periodEnd: // eslint-disable-next-line @typescript-eslint/no-explicit-any
 (subscription as any).current_period_end as number ?? null,
+            subscriptionInterval: interval,
+            subscribedAt,
+            annualPushSent: [],
           },
         });
 
@@ -82,6 +89,7 @@ export async function POST(req: Request) {
         const priceId = sub.items.data[0]?.price.id;
         const plan = getPlanFromPriceId(priceId);
         const activePlan = sub.status === "active" ? plan : "free";
+        const interval = sub.items.data[0]?.price.recurring?.interval ?? "month";
 
         await clerk.users.updateUserMetadata(clerkUserId, {
           publicMetadata: { plan: activePlan },
@@ -90,6 +98,7 @@ export async function POST(req: Request) {
             subscriptionStatus: sub.status,
             periodEnd: // eslint-disable-next-line @typescript-eslint/no-explicit-any
 (sub as any).current_period_end as number ?? null,
+            subscriptionInterval: interval,
           },
         });
         break;

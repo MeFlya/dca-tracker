@@ -7,6 +7,10 @@
     {
       "path": "/api/cron/missed-month",
       "schedule": "0 9 10 * *"
+    },
+    {
+      "path": "/api/cron/annual-push",
+      "schedule": "0 10 * * 1"
     }
   ]
 }

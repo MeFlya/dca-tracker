@@ -133,6 +133,123 @@ export async function sendWelcome(email: string, firstName: string) {
   });
 }
 
+export type AnnualPushMilestone = "month-3" | "month-6" | "month-12";
+
+export async function sendAnnualPush({
+  email,
+  firstName,
+  plan,
+  milestone,
+}: {
+  email: string;
+  firstName: string;
+  plan: PlanId;
+  milestone: AnnualPushMilestone;
+}) {
+  const SITE_URL = "https://dcatracker.fr";
+
+  const prices =
+    plan === "pro"
+      ? { monthly: 9.9, annual: 99, monthlyTotal: 118.8, savings: 19.8 }
+      : { monthly: 4.9, annual: 49, monthlyTotal: 58.8, savings: 9.8 };
+  const planLabel = plan === "pro" ? "Pro" : "Premium";
+
+  const content: Record<AnnualPushMilestone, { subject: string; headline: string; body: string; ctaLabel: string }> = {
+    "month-3": {
+      subject: `Vous économisez ${prices.savings.toFixed(2)} € en passant à l'annuel`,
+      headline: `3 mois de DCA validés. Et maintenant ?`,
+      body: `
+        <p style="font-size:15px;color:#374151;margin:0 0 16px 0;line-height:1.7">
+          Ça fait <strong>3 mois</strong> que vous suivez votre DCA avec DCA Tracker
+          ${planLabel}. 60 % des gens abandonnent avant ce cap. Vous l'avez passé.
+        </p>
+        <p style="font-size:15px;color:#374151;margin:0 0 16px 0;line-height:1.7">
+          À ce stade, ça vaut le coup de sécuriser les 12 prochains mois d'un seul coup —
+          et d'économiser au passage :
+        </p>
+      `,
+      ctaLabel: "Passer à l'annuel →",
+    },
+    "month-6": {
+      subject: "Vos 6 mois de tracking valent plus cher que vous ne croyez",
+      headline: "6 mois de suivi. Vos données ont maintenant une valeur réelle.",
+      body: `
+        <p style="font-size:15px;color:#374151;margin:0 0 16px 0;line-height:1.7">
+          Vos 6 mois de tracking ne peuvent pas être reproduits. Quelqu'un qui
+          s'inscrit aujourd'hui devra attendre 6 mois pour avoir le même historique.
+        </p>
+        <p style="font-size:15px;color:#374151;margin:0 0 16px 0;line-height:1.7">
+          Sécurisez les 12 prochains mois d'un coup — et économisez 2 mois au passage :
+        </p>
+      `,
+      ctaLabel: "Sécuriser mes 12 prochains mois →",
+    },
+    "month-12": {
+      subject: `🏆 1 an complet · bloquez votre tarif ${planLabel} à vie`,
+      headline: "Un an avec DCA Tracker. Offre exclusive.",
+      body: `
+        <p style="font-size:15px;color:#374151;margin:0 0 16px 0;line-height:1.7">
+          Vous venez de passer <strong>1 an complet</strong> avec DCA Tracker ${planLabel}.
+          C'est rare — et ça débloque la comparaison année-sur-année dans votre dashboard.
+        </p>
+        <p style="font-size:15px;color:#374151;margin:0 0 12px 0;line-height:1.7">
+          <strong>Offre exclusive anniversaire :</strong> en passant à l'annuel maintenant,
+          votre tarif actuel est <strong>bloqué à vie</strong>. Si nos prix augmentent,
+          vous gardez le vôtre. Pour toujours.
+        </p>
+      `,
+      ctaLabel: "Bloquer mon tarif à vie →",
+    },
+  };
+
+  const m = content[milestone];
+
+  await resend.emails.send({
+    from: FROM,
+    to: email,
+    subject: m.subject,
+    html: `<!DOCTYPE html>
+<html lang="fr">
+<body style="font-family:sans-serif;color:#1f2937;max-width:560px;margin:0 auto;padding:32px 16px">
+  <p style="color:#6b7280;margin-bottom:4px;font-size:14px">${planLabel} · Offre annuelle</p>
+  <h1 style="font-size:22px;font-weight:700;margin:0 0 20px 0;line-height:1.3">
+    ${firstName}, ${m.headline}
+  </h1>
+
+  ${m.body}
+
+  <table width="100%" cellpadding="0" cellspacing="0" style="margin:20px 0 28px 0;border-collapse:separate">
+    <tr>
+      <td style="padding:16px 20px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px 0 0 10px;border-right:0">
+        <p style="margin:0 0 4px 0;font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.06em">Mensuel × 12</p>
+        <p style="margin:0;font-size:18px;font-weight:700;color:#64748b;text-decoration:line-through;text-decoration-color:#cbd5e1">${prices.monthlyTotal.toFixed(2).replace(".", ",")} €</p>
+      </td>
+      <td style="padding:16px 20px;background:#eff6ff;border:1px solid #2563eb;border-radius:0 10px 10px 0;text-align:right">
+        <p style="margin:0 0 4px 0;font-size:11px;font-weight:600;color:#2563eb;text-transform:uppercase;letter-spacing:0.06em">Annuel</p>
+        <p style="margin:0;font-size:22px;font-weight:800;color:#1e40af">${prices.annual} €</p>
+        <p style="margin:2px 0 0 0;font-size:11px;color:#2563eb">Économie : ${prices.savings.toFixed(2).replace(".", ",")} €</p>
+      </td>
+    </tr>
+  </table>
+
+  <a href="${SITE_URL}/tarifs" style="display:inline-block;background:#2563eb;color:#fff;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:700;font-size:15px">
+    ${m.ctaLabel}
+  </a>
+
+  <p style="margin-top:24px;font-size:12px;color:#9ca3af;line-height:1.6">
+    Pas d'engagement supplémentaire — l'annuel est juste un paiement unique.
+    Annulation possible à tout moment, remboursement prorata.
+  </p>
+
+  <p style="margin-top:24px;color:#9ca3af;font-size:11px;line-height:1.6">
+    DCA Tracker · outil éducatif, pas de conseil en investissement.<br/>
+    <a href="${SITE_URL}/account" style="color:#9ca3af">Gérer mon abonnement</a>
+  </p>
+</body>
+</html>`,
+  });
+}
+
 export async function sendMissedMonth({
   email,
   firstName,
