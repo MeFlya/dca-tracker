@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { ETF_LIST } from "@/lib/etf-config";
 import { BROKER_LIST } from "@/lib/brokers";
+import { ETF_COMPARISON_LIST } from "@/lib/etf-comparisons";
 
 export const dynamic = "force-static";
 
@@ -38,6 +39,12 @@ export async function GET(): Promise<NextResponse> {
     { url: `${base}/comparatif`,               changeFreq: "monthly", priority: 0.8  },
     ...BROKER_LIST.map((b) => ({
       url: `${base}/comparatif/${b.slug}`,
+      changeFreq: "monthly",
+      priority: 0.8,
+    })),
+    { url: `${base}/comparatif-etf`,           changeFreq: "monthly", priority: 0.8  },
+    ...ETF_COMPARISON_LIST.map((c) => ({
+      url: `${base}/comparatif-etf/${c.slug}`,
       changeFreq: "monthly",
       priority: 0.8,
     })),
