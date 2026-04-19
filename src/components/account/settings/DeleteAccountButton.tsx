@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useClerk } from "@clerk/nextjs";
 import { Trash2, AlertTriangle, X } from "lucide-react";
+import { track } from "@/lib/analytics";
 
 interface Props {
   userEmail: string;
@@ -32,6 +33,7 @@ export function DeleteAccountButton({ userEmail }: Props) {
         setDeleting(false);
         return;
       }
+      track({ name: "delete_account" });
       // Sign out and redirect home
       await signOut();
       router.push("/");

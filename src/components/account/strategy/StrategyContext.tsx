@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import type { Strategy, MonthlyEntry, StoredMonthlyEntry } from "@/lib/user-strategy";
 import { computeInsights, type Insights } from "@/lib/strategy-insights";
 import { monthsElapsed } from "@/lib/strategy-math";
+import { track } from "@/lib/analytics";
 
 export type TabKey = "overview" | "activity" | "insights";
 
@@ -86,6 +87,8 @@ export function StrategyProvider({
 
   const upsertEntry = useCallback(
     async (entry: StoredMonthlyEntry): Promise<boolean> => {
+      // Detect whether this is an edit or a new log (existing entry for that month?)
+      const isEdit = entries.some((e) => e.month === entry.month);
       try {
         const res = await fetch("/api/strategy/entry", {
           method: "POST",
@@ -94,12 +97,23 @@ export function StrategyProvider({
         });
         if (!res.ok) return false;
         await refetch();
+        if (isEdit) {
+          track({ name: "edit_month" });
+        } else {
+          track({
+            name: "log_month",
+            props: {
+              contributions: entry.contributions.length,
+              portfolio_value: entry.portfolioValue,
+            },
+          });
+        }
         return true;
       } catch {
         return false;
       }
     },
-    [refetch],
+    [entries, refetch],
   );
 
   const deleteEntry = useCallback(
@@ -111,6 +125,7 @@ export function StrategyProvider({
         );
         if (!res.ok) return false;
         await refetch();
+        track({ name: "delete_month" });
         return true;
       } catch {
         return false;

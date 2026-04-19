@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Upload, FileText, AlertTriangle, Check, ArrowLeft } from "lucide-react";
 import { parseBrokerCsv, type ParsedMonth, type ParseResult } from "@/lib/csv-import";
+import { track } from "@/lib/analytics";
 
 type Stage = "upload" | "map-values" | "importing" | "done";
 
@@ -97,6 +98,13 @@ export function ImportFlow() {
       }
       const data = (await res.json()) as { imported: number; failed: number };
       setImportResult(data);
+      track({
+        name: "import_csv",
+        props: {
+          months: data.imported,
+          detected_format: parseResult.detectedFormat,
+        },
+      });
       setStage("done");
     } catch {
       setError("Erreur réseau. Réessayez.");

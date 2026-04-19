@@ -1,6 +1,7 @@
 import { stripe } from "@/lib/stripe";
 import { clerkClient } from "@clerk/nextjs/server";
 import { getPlanFromPriceId } from "@/lib/plans";
+import { log } from "@/lib/logger";
 import {
   sendSubscriptionConfirmed,
   sendSubscriptionCancelled,
@@ -34,6 +35,8 @@ export async function POST(req: Request) {
   }
 
   const clerk = await clerkClient();
+
+  log.event("webhook/stripe", "received", { type: event.type, id: event.id });
 
   try {
     switch (event.type) {

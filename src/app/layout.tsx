@@ -5,6 +5,8 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { clerkAppearance } from "@/lib/clerk-appearance";
+import { PlausibleScript, GoogleAnalyticsScript } from "@/components/analytics/PlausibleScript";
+import { AnalyticsContextProvider } from "@/components/analytics/AnalyticsContext";
 
 // Hardcoded — never trust NEXT_PUBLIC_SITE_URL for canonical/metadataBase
 // (Vercel preview deployments set it to *.vercel.app which breaks SEO)
@@ -82,6 +84,8 @@ export default function RootLayout({
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
         />
+        <PlausibleScript />
+        <GoogleAnalyticsScript />
       </head>
       <body className="min-h-screen flex flex-col">
         <ClerkProvider appearance={clerkAppearance}>
@@ -96,6 +100,7 @@ export default function RootLayout({
             inLanguage: "fr-FR",
           }}
         />
+        <AnalyticsContextProvider />
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />

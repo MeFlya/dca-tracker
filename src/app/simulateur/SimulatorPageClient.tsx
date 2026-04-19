@@ -23,6 +23,7 @@ import {
   paramsToSearch,
   hasSimulationParams,
 } from "@/lib/simulation-params";
+import { track } from "@/lib/analytics";
 
 const FALLBACK_INPUT: SimulatorInput = {
   monthlyAmount: 200,
@@ -62,10 +63,32 @@ export function SimulatorPageClient() {
 
   const urlUpdateTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hasScrolled = useRef(false);
+  const hasTrackedStart = useRef(false);
+  const completeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleChange = useCallback(
     (input: SimulatorInput, inflationEnabled: boolean) => {
       setOutput(runSimulation(input));
+
+      // Fire start_simulation once per session on first interaction
+      if (!hasTrackedStart.current) {
+        hasTrackedStart.current = true;
+        track({ name: "start_simulation" });
+      }
+
+      // Fire complete_simulation debounced so we don't flood when dragging sliders
+      if (completeTimer.current) clearTimeout(completeTimer.current);
+      completeTimer.current = setTimeout(() => {
+        track({
+          name: "complete_simulation",
+          props: {
+            monthly: input.monthlyAmount,
+            years: input.durationYears,
+            return_pct: input.annualReturnPct,
+            fees_pct: input.annualFeesPct,
+          },
+        });
+      }, 1500);
 
       if (!hasScrolled.current && window.innerWidth < 1024) {
         hasScrolled.current = true;

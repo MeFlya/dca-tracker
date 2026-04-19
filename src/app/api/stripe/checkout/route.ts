@@ -4,6 +4,7 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import { stripe } from "@/lib/stripe";
 import { PLANS } from "@/lib/plans";
 import { NextResponse } from "next/server";
+import { log } from "@/lib/logger";
 
 export async function POST(req: Request) {
   const { userId } = await auth();
@@ -70,5 +71,12 @@ export async function POST(req: Request) {
     locale: "fr",
   });
 
+  log.event("stripe/checkout", "session_created", {
+    userId,
+    billing,
+    customer: customerId,
+    session: session.id,
+    trial_days: TRIAL_DAYS,
+  });
   return NextResponse.json({ url: session.url });
 }

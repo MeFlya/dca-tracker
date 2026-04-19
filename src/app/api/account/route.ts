@@ -12,6 +12,7 @@
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
+import { log } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
 
@@ -33,25 +34,39 @@ export async function DELETE(req: Request) {
     );
   }
 
-  // Best-effort Stripe cancellation
+  // Stripe cancellation — hard-fail if it errors. We don't want to delete the
+  // Clerk user while leaving an active Stripe subscription that keeps charging.
   const priv = user.privateMetadata as Record<string, unknown>;
   const stripeSubId = priv?.stripeSubscriptionId as string | undefined;
+  const stripeStatus = priv?.subscriptionStatus as string | undefined;
 
-  if (stripeSubId) {
+  if (stripeSubId && stripeStatus === "active") {
     try {
       await stripe.subscriptions.cancel(stripeSubId);
+      log.event("account/delete", "stripe_cancelled", { userId, sub_id: stripeSubId });
     } catch (err) {
-      console.error(
-        "[account/delete] Failed to cancel Stripe subscription:",
-        err,
+      log.error("account/delete", "stripe_cancel_failed", { userId, sub_id: stripeSubId }, err);
+      return NextResponse.json(
+        {
+          error:
+            "Impossible d'annuler votre abonnement Stripe. Contactez le support avant de supprimer votre compte.",
+        },
+        { status: 500 },
       );
-      // Continue — user explicitly wants to delete their account. Stripe
-      // issues can be resolved out-of-band via support.
     }
   }
 
   // Delete Clerk user (cascades everything)
-  await clerk.users.deleteUser(userId);
+  try {
+    await clerk.users.deleteUser(userId);
+    log.event("account/delete", "success", { userId });
+  } catch (err) {
+    log.error("account/delete", "clerk_delete_failed", { userId }, err);
+    return NextResponse.json(
+      { error: "Erreur lors de la suppression du compte. Réessayez ou contactez le support." },
+      { status: 500 },
+    );
+  }
 
   return NextResponse.json({ success: true });
 }

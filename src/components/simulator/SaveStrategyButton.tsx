@@ -5,6 +5,7 @@ import { useState } from "react";
 import Link from "next/link";
 import type { SimulatorInput } from "@/lib/simulator";
 import { buildUpgradeUrl } from "@/lib/upgrade-link";
+import { track } from "@/lib/analytics";
 
 interface Props {
   input: SimulatorInput;
@@ -21,6 +22,7 @@ export function SaveStrategyButton({ input, plan }: Props) {
     return (
       <Link
         href="/sign-in"
+        onClick={() => track({ name: "click_save_strategy", props: { has_account: false, plan: "free" } })}
         className="inline-flex items-center gap-2 text-sm font-semibold text-primary-600 hover:text-primary-700 transition-colors"
       >
         <LockIcon />
@@ -33,6 +35,7 @@ export function SaveStrategyButton({ input, plan }: Props) {
     return (
       <Link
         href={buildUpgradeUrl("save-strategy", input)}
+        onClick={() => track({ name: "click_save_strategy", props: { has_account: true, plan: "free" } })}
         className="inline-flex items-center gap-2 text-sm font-semibold text-primary-600 hover:text-primary-700 transition-colors"
       >
         <LockIcon />
@@ -58,6 +61,7 @@ export function SaveStrategyButton({ input, plan }: Props) {
 
   async function handleSave() {
     if (state === "saving") return;
+    track({ name: "click_save_strategy", props: { has_account: true, plan } });
     setState("saving");
     try {
       const res = await fetch("/api/strategy", {

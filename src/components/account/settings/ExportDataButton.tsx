@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Download, Check } from "lucide-react";
+import { track } from "@/lib/analytics";
 
 export function ExportDataButton() {
   const [state, setState] = useState<"idle" | "downloading" | "done" | "error">("idle");
@@ -21,6 +22,7 @@ export function ExportDataButton() {
       a.click();
       a.remove();
       URL.revokeObjectURL(url);
+      track({ name: "export_data" });
       setState("done");
       setTimeout(() => setState("idle"), 3000);
     } catch {

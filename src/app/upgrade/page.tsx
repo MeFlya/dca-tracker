@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { runSimulation, formatEur } from "@/lib/simulator";
+import { VisitTracker } from "@/components/analytics/VisitTracker";
 import type { SimulatorInput } from "@/lib/simulator";
 import { runMonteCarlo } from "@/lib/monte-carlo";
 import { theoreticalValueAtMonth } from "@/lib/strategy-math";
@@ -590,6 +591,7 @@ export default async function UpgradePage({ searchParams }: Props) {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+      <VisitTracker event={{ name: "open_upgrade", props: { feature: key || "fallback" } }} />
       <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12 pb-32 sm:pb-12">
 
         {/* Back link */}

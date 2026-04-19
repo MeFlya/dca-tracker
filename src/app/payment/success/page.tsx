@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { VisitTracker } from "@/components/analytics/VisitTracker";
 
 export const metadata: Metadata = {
   title: "Paiement confirmé — DCA Tracker",
@@ -28,6 +29,7 @@ export default async function PaymentSuccessPage({
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-200px)] py-16 px-4">
+      <VisitTracker event={{ name: "complete_payment", props: { plan: "premium" } }} />
       <div className="max-w-lg w-full">
 
         {/* Success icon */}

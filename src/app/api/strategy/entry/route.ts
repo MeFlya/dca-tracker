@@ -8,6 +8,7 @@ import {
   type StoredMonthlyEntry,
 } from "@/lib/user-strategy";
 import { getUserSubscription } from "@/lib/subscription";
+import { log } from "@/lib/logger";
 
 type IncomingContribution = {
   id?: string;
@@ -92,6 +93,13 @@ export async function POST(req: Request) {
   };
 
   await upsertMonthlyEntry(userId, entry);
+  log.event("strategy/entry", "upsert_success", {
+    userId,
+    month,
+    contributions: contributions.length,
+    total_invested: contributions.reduce((s, c) => s + c.amount, 0),
+    portfolio: body.portfolioValue,
+  });
   return NextResponse.json({ success: true });
 }
 

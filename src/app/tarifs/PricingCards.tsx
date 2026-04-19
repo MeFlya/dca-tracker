@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
+import { track } from "@/lib/analytics";
 
 type Feature = { label: string; included: boolean };
 
@@ -82,6 +83,7 @@ function CheckoutButton({
       window.location.href = `/sign-up?redirect_url=${encodeURIComponent("/tarifs")}`;
       return;
     }
+    track({ name: "start_trial", props: { billing } });
     setLoading(true);
     try {
       const res = await fetch("/api/stripe/checkout", {

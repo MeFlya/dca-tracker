@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Hero } from "@/components/home/Hero";
 import { LiveSocialProof } from "@/components/home/LiveSocialProof";
+import { VisitTracker } from "@/components/analytics/VisitTracker";
 import { HowItWorks } from "@/components/home/HowItWorks";
 import { Features } from "@/components/home/Features";
 import { TrackingPitch } from "@/components/home/TrackingPitch";
@@ -56,6 +57,7 @@ export default function HomePage() {
 
   return (
     <>
+      <VisitTracker event={{ name: "visit_home" }} />
       <Hero />
       <LiveSocialProof />
       <HowItWorks />
