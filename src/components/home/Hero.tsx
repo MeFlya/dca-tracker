@@ -56,7 +56,7 @@ export function Hero() {
                 href="/simulateur"
                 className="btn-primary text-base px-6 py-3"
               >
-                Calculer ma projection
+                Voir ce que vaut mon argent
                 <span aria-hidden> →</span>
               </Link>
               <Link

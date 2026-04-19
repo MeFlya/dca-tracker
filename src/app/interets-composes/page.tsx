@@ -342,7 +342,7 @@ export default function InteretsComposesPage() {
           composés en temps réel — trois scénarios, hypothèses transparentes.
         </p>
         <Link href="/simulateur" className="btn-secondary text-sm px-5 py-2.5 inline-flex">
-          Calculer ma projection →
+          Voir ce que vaut mon argent →
         </Link>
         <p className="text-primary-300 text-xs mt-3">Sans inscription · Résultats immédiats</p>
       </section>

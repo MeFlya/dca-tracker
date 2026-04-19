@@ -349,7 +349,7 @@ export default function StrategieDCAPage() {
           calcule votre projection en trois scénarios de marché.
         </p>
         <Link href="/simulateur" className="btn-secondary text-sm px-5 py-2.5 inline-flex">
-          Calculer ma projection DCA →
+          Voir ce que vaut mon argent →
         </Link>
       </section>
 
