@@ -7,6 +7,7 @@ import type { Metadata } from "next";
 import { ManageSubscriptionButton } from "./ManageSubscriptionButton";
 import { StrategyTracker } from "@/components/account/StrategyTracker";
 import { ReLockedStrategy } from "@/components/account/ReLockedStrategy";
+import { OnboardingChecklist } from "@/components/account/OnboardingChecklist";
 
 export const metadata: Metadata = {
   title: "Dashboard — DCA Tracker",
@@ -62,58 +63,26 @@ export default async function AccountPage() {
         </div>
       </div>
 
-      {/* ── HERO: 3 states ─────────────────────────────────────────────────
-          1. Premium/Pro → full StrategyTracker
-          2. Free + preserved data → ReLockedStrategy (reactivation CTA)
-          3. Free + no data → generic upgrade prompt
+      {/* ── HERO: 4 states ─────────────────────────────────────────────────
+          1. Premium + strategy → full StrategyTracker (dashboard)
+          2. Free + preserved data (canceled) → ReLockedStrategy (reactivate CTA)
+          3. Premium + no strategy yet → OnboardingChecklist (activation flow)
+          4. Free + no data → OnboardingChecklist (activation flow + trial pitch)
       ─────────────────────────────────────────────────────────────────── */}
       {isPremium && strategy ? (
         <div className="mb-6">
           <StrategyTracker initialStrategy={strategy} initialEntries={entries} />
-        </div>
-      ) : isPremium ? (
-        /* Premium but no strategy yet — invite them to save one */
-        <div className="rounded-2xl border border-primary-100 bg-white p-8 mb-6 text-center">
-          <p className="text-lg font-bold text-gray-900 mb-2">
-            Prêt à démarrer votre suivi ?
-          </p>
-          <p className="text-sm text-gray-500 leading-relaxed mb-5 max-w-sm mx-auto">
-            Simulez votre DCA et cliquez sur <strong className="text-gray-700">Sauvegarder ma stratégie</strong> pour commencer le tracking mensuel.
-          </p>
-          <Link href="/simulateur" className="btn-primary text-sm px-6 py-2.5 inline-block btn-lift">
-            Ouvrir le simulateur →
-          </Link>
         </div>
       ) : hasLockedData && strategy ? (
         <div className="mb-6">
           <ReLockedStrategy strategy={strategy} entries={entries} />
         </div>
       ) : (
-        /* ── FREE + no data: generic upgrade prompt ───────────────────────── */
-        <div className="rounded-2xl bg-gradient-to-br from-primary-600 to-blue-700 p-8 mb-6 text-center">
-          <p className="text-4xl mb-3">📊</p>
-          <h2 className="text-white font-bold text-xl mb-2">
-            Suivez votre progression réelle
-          </h2>
-          <p className="text-primary-200 text-sm leading-relaxed mb-6 max-w-md mx-auto">
-            Sauvegardez votre stratégie, enregistrez votre portefeuille chaque mois,
-            et voyez si vous êtes en avance ou en retard sur votre projection.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link
-              href="/tarifs"
-              className="inline-block bg-white text-primary-700 font-bold px-6 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors"
-            >
-              Débloquer le suivi — 4,90 €/mois →
-            </Link>
-            <Link
-              href="/simulateur"
-              className="inline-block bg-white/10 text-white font-semibold px-6 py-2.5 rounded-xl text-sm hover:bg-white/20 transition-colors"
-            >
-              Continuer à simuler
-            </Link>
-          </div>
-        </div>
+        <OnboardingChecklist
+          isPremium={isPremium}
+          hasStrategy={!!strategy}
+          firstName={user.firstName ?? undefined}
+        />
       )}
 
       {/* ── Quick actions ─────────────────────────────────────────────────── */}
