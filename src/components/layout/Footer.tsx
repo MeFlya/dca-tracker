@@ -107,6 +107,16 @@ export function Footer() {
                   Investir 1 000€/mois
                 </Link>
               </li>
+              <li>
+                <Link href="/simulateur-retraite" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+                  Simulateur retraite
+                </Link>
+              </li>
+              <li>
+                <Link href="/communaute" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+                  Communauté
+                </Link>
+              </li>
             </ul>
           </div>
 

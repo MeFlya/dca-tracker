@@ -100,12 +100,12 @@ export default async function SettingsPage() {
         </div>
       </section>
 
-      {/* ── Data export ──────────────────────────────────────────────────── */}
+      {/* ── Data export + import ─────────────────────────────────────────── */}
       <section className="rounded-2xl border border-gray-100 bg-white p-6 mb-4">
         <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">
           Mes données
         </h2>
-        <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div className="flex items-start justify-between gap-4 flex-wrap mb-4">
           <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold text-gray-900 mb-1">
               Exporter mon historique
@@ -119,6 +119,23 @@ export default async function SettingsPage() {
           </div>
           <ExportDataButton />
         </div>
+        {isPremium && (
+          <div className="pt-4 border-t border-gray-100 flex items-start justify-between gap-4 flex-wrap">
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-gray-900 mb-1">
+                Importer depuis mon courtier
+              </p>
+              <p className="text-xs text-gray-500 leading-relaxed">
+                Importez un CSV exporté depuis Trade Republic, Boursorama ou
+                Fortuneo. Vos transactions sont regroupées par mois
+                automatiquement.
+              </p>
+            </div>
+            <Link href="/account/import" className="btn-secondary text-sm px-4 py-2 inline-flex items-center gap-2 btn-lift">
+              Importer un CSV →
+            </Link>
+          </div>
+        )}
       </section>
 
       {/* ── Security & email (Clerk portal) ──────────────────────────────── */}

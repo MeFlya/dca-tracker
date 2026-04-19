@@ -32,6 +32,8 @@ export async function GET(): Promise<NextResponse> {
     { url: `${base}/donnees-marche`,           changeFreq: "daily",   priority: 0.6  },
     { url: `${base}/tarifs`,                   changeFreq: "monthly", priority: 0.8  },
     { url: `${base}/methodologie`,             changeFreq: "monthly", priority: 0.5  },
+    { url: `${base}/simulateur-retraite`,      changeFreq: "monthly", priority: 0.9  },
+    { url: `${base}/communaute`,               changeFreq: "weekly",  priority: 0.6  },
     { url: `${base}/glossaire`,                changeFreq: "monthly", priority: 0.7  },
     { url: `${base}/glossaire/dca`,            changeFreq: "monthly", priority: 0.8  },
     { url: `${base}/glossaire/etf`,            changeFreq: "monthly", priority: 0.8  },
