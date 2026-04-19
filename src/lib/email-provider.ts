@@ -1,6 +1,8 @@
 // Newsletter subscription handler.
-// Sends a welcome email via Resend and optionally adds the contact to a
-// Resend Audience (requires RESEND_AUDIENCE_ID env var).
+// Sends the PEA vs CTO guide delivery email via Resend.
+// All EmailCapture placements on the site promise this guide, so every
+// subscription triggers the same guide email regardless of source.
+// The `source` field is preserved in the footer for attribution tracking.
 
 import { resend } from "./resend-client";
 
@@ -18,17 +20,24 @@ export interface EmailProviderResult {
   error?: string;
 }
 
-// ─── Email templates ──────────────────────────────────────────────────────────
+// ─── Templates ────────────────────────────────────────────────────────────────
 
-function buildWelcomeHtml(source: string): string {
+function buildGuideHtml(source: string): string {
   return `<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Bienvenue sur DCA Tracker</title>
+  <title>Votre guide PEA vs CTO est pr&ecirc;t</title>
 </head>
 <body style="margin:0;padding:0;background:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
+
+  <!--[if mso]><div style="display:none"><![endif]-->
+  <div style="display:none;max-height:0;overflow:hidden;font-size:1px;line-height:1px;color:#f8fafc">
+    Le guide pratique pour choisir la bonne enveloppe pour vos ETF.&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;
+  </div>
+  <!--[if mso]></div><![endif]-->
+
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;padding:40px 16px">
     <tr>
       <td align="center">
@@ -43,71 +52,123 @@ function buildWelcomeHtml(source: string): string {
             </td>
           </tr>
 
-          <!-- Body -->
+          <!-- Hero -->
           <tr>
-            <td style="padding:36px 32px 28px">
-
-              <h1 style="margin:0 0 16px 0;font-size:22px;font-weight:700;color:#0f172a;line-height:1.3">
-                Bienvenue sur DCA Tracker
-              </h1>
-
-              <p style="margin:0 0 20px 0;font-size:15px;color:#475569;line-height:1.7">
-                Tu viens de rejoindre DCA Tracker.<br/>
-                L&rsquo;objectif&nbsp;: t&rsquo;aider &agrave; comprendre ce que ton &eacute;pargne
-                peut vraiment devenir dans le temps.
+            <td style="padding:36px 32px 0">
+              <p style="margin:0 0 8px 0;font-size:12px;font-weight:600;color:#2563eb;text-transform:uppercase;letter-spacing:0.08em">
+                Votre guide est pr&ecirc;t
               </p>
+              <h1 style="margin:0 0 16px 0;font-size:24px;font-weight:700;color:#0f172a;line-height:1.3">
+                PEA ou CTO &mdash; quelle enveloppe pour vos ETF&nbsp;?
+              </h1>
+              <p style="margin:0 0 28px 0;font-size:15px;color:#475569;line-height:1.7">
+                Merci. Voici le guide pratique que vous avez demand&eacute;&nbsp;: tout ce
+                qu&rsquo;il faut savoir pour choisir la bonne enveloppe fiscale avant
+                de commencer &agrave; investir en ETF.
+              </p>
+            </td>
+          </tr>
 
-              <!-- Example callout -->
-              <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px 0">
+          <!-- Primary CTA -->
+          <tr>
+            <td style="padding:0 32px 32px">
+              <table cellpadding="0" cellspacing="0">
                 <tr>
-                  <td style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:20px">
-                    <p style="margin:0 0 6px 0;font-size:12px;font-weight:600;color:#1e40af;text-transform:uppercase;letter-spacing:0.06em">
-                      Exemple concret
-                    </p>
-                    <p style="margin:0;font-size:15px;color:#1e3a8a;line-height:1.65">
-                      <strong>200&nbsp;&euro;/mois pendant 20&nbsp;ans</strong> peuvent repr&eacute;senter
-                      environ <strong>104&nbsp;000&nbsp;&euro;</strong> selon les hypoth&egrave;ses
-                      choisies &mdash; dont plus de la moiti&eacute; g&eacute;n&eacute;r&eacute;s par les
-                      int&eacute;r&ecirc;ts compos&eacute;s, sans effort suppl&eacute;mentaire.
-                    </p>
+                  <td style="border-radius:8px;background:#2563eb">
+                    <a href="${SITE_URL}/pea-ou-cto"
+                       style="display:inline-block;padding:14px 28px;color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;border-radius:8px;line-height:1">
+                      Lire le guide &rarr;
+                    </a>
                   </td>
                 </tr>
               </table>
+            </td>
+          </tr>
 
-              <p style="margin:0 0 28px 0;font-size:15px;color:#475569;line-height:1.7">
-                Lance ta premi&egrave;re simulation&nbsp;: choisis un versement mensuel,
-                une dur&eacute;e et un rendement cible. Le r&eacute;sultat s&rsquo;affiche
-                en quelques secondes avec trois sc&eacute;narios compar&eacute;s.
-              </p>
-
-              <!-- Primary CTA -->
-              <table cellpadding="0" cellspacing="0" style="margin-bottom:32px">
+          <!-- What the guide covers -->
+          <tr>
+            <td style="padding:0 32px 32px">
+              <table width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid #f1f5f9;padding-top:24px">
                 <tr>
-                  <td style="border-radius:8px;background:#2563eb">
+                  <td>
+                    <p style="margin:0 0 16px 0;font-size:13px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.06em">
+                      Ce que couvre le guide
+                    </p>
+
+                    <!-- Point 1 -->
+                    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:12px">
+                      <tr>
+                        <td style="width:28px;vertical-align:top;padding-top:2px">
+                          <div style="width:20px;height:20px;border-radius:50%;background:#eff6ff;text-align:center;line-height:20px;font-size:11px;font-weight:700;color:#2563eb">1</div>
+                        </td>
+                        <td style="padding-left:12px">
+                          <p style="margin:0;font-size:14px;color:#0f172a;font-weight:600;line-height:1.4">Quelle enveloppe choisir</p>
+                          <p style="margin:4px 0 0 0;font-size:13px;color:#64748b;line-height:1.5">PEA, CTO, assurance-vie : les crit&egrave;res concrets pour ne pas se tromper selon votre situation.</p>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- Point 2 -->
+                    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:12px">
+                      <tr>
+                        <td style="width:28px;vertical-align:top;padding-top:2px">
+                          <div style="width:20px;height:20px;border-radius:50%;background:#eff6ff;text-align:center;line-height:20px;font-size:11px;font-weight:700;color:#2563eb">2</div>
+                        </td>
+                        <td style="padding-left:12px">
+                          <p style="margin:0;font-size:14px;color:#0f172a;font-weight:600;line-height:1.4">Quels ETF y loger</p>
+                          <p style="margin:4px 0 0 0;font-size:13px;color:#64748b;line-height:1.5">Tous les ETF ne sont pas &eacute;ligibles PEA. Voici lesquels privil&eacute;gier dans chaque enveloppe.</p>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- Point 3 -->
+                    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px">
+                      <tr>
+                        <td style="width:28px;vertical-align:top;padding-top:2px">
+                          <div style="width:20px;height:20px;border-radius:50%;background:#eff6ff;text-align:center;line-height:20px;font-size:11px;font-weight:700;color:#2563eb">3</div>
+                        </td>
+                        <td style="padding-left:12px">
+                          <p style="margin:0;font-size:14px;color:#0f172a;font-weight:600;line-height:1.4">Les erreurs courantes &agrave; &eacute;viter</p>
+                          <p style="margin:4px 0 0 0;font-size:13px;color:#64748b;line-height:1.5">Ouvrir un CTO avant un PEA, m&eacute;langer les enveloppes sans strat&eacute;gie : les pi&egrave;ges que font la plupart des d&eacute;butants.</p>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <table cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td style="border-radius:8px;background:#2563eb">
+                          <a href="${SITE_URL}/pea-ou-cto"
+                             style="display:inline-block;padding:12px 24px;color:#ffffff;font-size:14px;font-weight:600;text-decoration:none;border-radius:8px;line-height:1">
+                            Lire le guide complet &rarr;
+                          </a>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Secondary CTA -->
+          <tr>
+            <td style="padding:0 32px 32px">
+              <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;border-radius:12px;border:1px solid #e2e8f0">
+                <tr>
+                  <td style="padding:20px">
+                    <p style="margin:0 0 4px 0;font-size:13px;font-weight:600;color:#0f172a">
+                      Et apr&egrave;s avoir choisi votre enveloppe&nbsp;?
+                    </p>
+                    <p style="margin:0 0 14px 0;font-size:13px;color:#64748b;line-height:1.5">
+                      Simulez combien peut valoir votre &eacute;pargne mensuelle sur 10, 20 ou 30&nbsp;ans avec les int&eacute;r&ecirc;ts compos&eacute;s.
+                    </p>
                     <a href="${SITE_URL}/simulateur"
-                       style="display:inline-block;padding:13px 26px;color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;border-radius:8px;line-height:1">
+                       style="font-size:13px;color:#2563eb;font-weight:600;text-decoration:none">
                       Lancer ma simulation &rarr;
                     </a>
                   </td>
                 </tr>
               </table>
-
-              <!-- Secondary links -->
-              <table width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid #f1f5f9;padding-top:24px">
-                <tr>
-                  <td>
-                    <p style="margin:0 0 10px 0;font-size:12px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">
-                      Pour aller plus loin
-                    </p>
-                    <table cellpadding="0" cellspacing="0">
-                      <tr><td style="padding:4px 0"><a href="${SITE_URL}/investir-200-euros-mois-etf" style="font-size:14px;color:#2563eb;text-decoration:none">200&nbsp;&euro;/mois en ETF &mdash; simulation sur 20&nbsp;ans &rarr;</a></td></tr>
-                      <tr><td style="padding:4px 0"><a href="${SITE_URL}/pea-ou-cto" style="font-size:14px;color:#2563eb;text-decoration:none">PEA ou CTO &mdash; quelle enveloppe choisir&nbsp;? &rarr;</a></td></tr>
-                      <tr><td style="padding:4px 0"><a href="${SITE_URL}/strategie-dca" style="font-size:14px;color:#2563eb;text-decoration:none">La strat&eacute;gie DCA expliqu&eacute;e &rarr;</a></td></tr>
-                    </table>
-                  </td>
-                </tr>
-              </table>
-
             </td>
           </tr>
 
@@ -135,24 +196,39 @@ function buildWelcomeHtml(source: string): string {
 </html>`;
 }
 
-function buildWelcomeText(source: string): string {
-  return `Bienvenue sur DCA Tracker
+function buildGuideText(source: string): string {
+  return `Votre guide PEA vs CTO est prêt
+========================================
 
-Tu viens de rejoindre DCA Tracker.
-L'objectif : t'aider à comprendre ce que ton épargne peut vraiment devenir dans le temps.
+Merci. Voici le guide pratique que vous avez demandé : tout ce qu'il faut
+savoir pour choisir la bonne enveloppe fiscale avant de commencer à
+investir en ETF.
 
---- Exemple concret ---
-200€/mois pendant 20 ans peuvent représenter environ 104 000€ selon les
-hypothèses choisies — dont plus de la moitié générés par les intérêts
-composés, sans effort supplémentaire.
+Lire le guide : ${SITE_URL}/pea-ou-cto
 
-Lance ta première simulation :
-${SITE_URL}/simulateur
 
-Pour aller plus loin :
-- 200€/mois en ETF : ${SITE_URL}/investir-200-euros-mois-etf
-- PEA ou CTO : ${SITE_URL}/pea-ou-cto
-- Stratégie DCA : ${SITE_URL}/strategie-dca
+CE QUE COUVRE LE GUIDE
+-----------------------
+
+1. Quelle enveloppe choisir
+   PEA, CTO, assurance-vie : les critères concrets pour ne pas se tromper
+   selon votre situation.
+
+2. Quels ETF y loger
+   Tous les ETF ne sont pas éligibles PEA. Voici lesquels privilégier
+   dans chaque enveloppe.
+
+3. Les erreurs courantes à éviter
+   Ouvrir un CTO avant un PEA, mélanger les enveloppes sans stratégie :
+   les pièges que font la plupart des débutants.
+
+
+ET APRÈS AVOIR CHOISI VOTRE ENVELOPPE ?
+-----------------------------------------
+Simulez combien peut valoir votre épargne mensuelle sur 10, 20 ou 30 ans.
+
+Lancer ma simulation : ${SITE_URL}/simulateur
+
 
 À bientôt,
 L'équipe DCA Tracker
@@ -169,8 +245,8 @@ export async function subscribeEmail({
   source,
 }: EmailSubscription): Promise<EmailProviderResult> {
   try {
-    // 1. Add to Resend Audience — optional, non-blocking.
-    //    Set RESEND_AUDIENCE_ID in Vercel env vars to enable contact list management.
+    // Optional: add to Resend Audience for list management.
+    // Set RESEND_AUDIENCE_ID in Vercel env vars to enable.
     const audienceId = process.env.RESEND_AUDIENCE_ID;
     if (audienceId) {
       fetch(`https://api.resend.com/audiences/${audienceId}/contacts`, {
@@ -185,23 +261,25 @@ export async function subscribeEmail({
       );
     }
 
-    // 2. Send welcome email — blocking: failure surfaces to caller.
-    const { error } = await resend.emails.send({
+    // All EmailCapture placements promise the PEA vs CTO guide.
+    // Send the guide delivery email for every subscription source.
+    const { data, error } = await resend.emails.send({
       from: FROM,
       to: email,
-      subject: "Bienvenue sur DCA Tracker",
-      html: buildWelcomeHtml(source),
-      text: buildWelcomeText(source),
+      subject: "Votre guide PEA vs CTO est prêt",
+      html: buildGuideHtml(source),
+      text: buildGuideText(source),
     });
 
     if (error) {
-      console.error("[email-provider] Resend send error:", error);
+      console.error("[email-provider] Resend error:", error);
       return {
         success: false,
         error: "Impossible d'envoyer l'email pour l'instant.",
       };
     }
 
+    console.log("[email-provider] Email sent:", data?.id, "to:", email, "source:", source);
     return { success: true };
   } catch (err) {
     console.error("[email-provider] Unexpected error:", err);
