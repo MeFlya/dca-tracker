@@ -107,7 +107,7 @@ export function SimulatorPageClient() {
       </div>
 
       {/* Results column */}
-      <div id="results" className="space-y-4">
+      <div id="results" className="space-y-5">
         {/* Hero — big impactful result + MC distribution */}
         <SimulatorHero output={output} />
 

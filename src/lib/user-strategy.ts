@@ -18,6 +18,7 @@ export type MonthlyEntry = {
   month: string;         // "YYYY-MM"
   invested: number;      // EUR invested this month
   portfolioValue: number; // broker value at month end
+  note?: string;         // optional user comment for the month
 };
 
 export type StrategyData = {

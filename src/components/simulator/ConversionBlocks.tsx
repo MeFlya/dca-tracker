@@ -1,20 +1,17 @@
 "use client";
 
 import Link from "next/link";
+import { useUser } from "@clerk/nextjs";
+import {
+  TrendingDown,
+  Clock,
+  AlertTriangle,
+  ArrowRight,
+  Check,
+} from "lucide-react";
 import { runSimulation, formatEur } from "@/lib/simulator";
 import type { SimulatorOutput, SimulatorInput, MonthlyDataPoint } from "@/lib/simulator";
-
-// ─── URL helper ───────────────────────────────────────────────────────────────
-
-function buildSimUrl(input: SimulatorInput): string {
-  const p = new URLSearchParams({
-    monthly: String(input.monthlyAmount),
-    years: String(input.durationYears),
-    return: String(input.annualReturnPct),
-    fees: String(input.annualFeesPct),
-  });
-  return `/simulateur?${p.toString()}`;
-}
+import { buildUpgradeUrl } from "@/lib/upgrade-link";
 
 // ─── Milestone helpers ────────────────────────────────────────────────────────
 
@@ -39,8 +36,8 @@ function yearReaching(data: MonthlyDataPoint[], target: number): number | null {
 
 function PremiumFix({ bullets }: { bullets: string[] }) {
   return (
-    <div className="mt-4 rounded-xl bg-primary-50 border border-primary-100 px-4 py-3">
-      <p className="text-xs font-bold text-primary-800 mb-2 flex items-center gap-2">
+    <div className="mt-4 rounded-xl bg-primary-50/60 border border-primary-100 px-4 py-3">
+      <p className="text-xs font-bold text-primary-800 mb-2.5 flex items-center gap-2">
         <span className="inline-flex items-center bg-primary-600 text-white px-1.5 py-0.5 rounded text-[10px] uppercase tracking-wide">
           Premium
         </span>
@@ -49,7 +46,7 @@ function PremiumFix({ bullets }: { bullets: string[] }) {
       <ul className="space-y-1.5">
         {bullets.map((b, i) => (
           <li key={i} className="flex items-start gap-2 text-sm text-primary-900 leading-relaxed">
-            <span className="text-primary-600 mt-0.5 shrink-0 font-bold">✓</span>
+            <Check size={14} className="text-primary-600 mt-0.5 shrink-0" strokeWidth={2.5} />
             <span>{b}</span>
           </li>
         ))}
@@ -61,18 +58,28 @@ function PremiumFix({ bullets }: { bullets: string[] }) {
 // ─── Main wrapper ─────────────────────────────────────────────────────────────
 
 export function ConversionBlocks({ output }: { output: SimulatorOutput }) {
+  const { user } = useUser();
+  const plan = (user?.publicMetadata?.plan as string) ?? "free";
+  const isPremium = plan === "premium" || plan === "pro";
+
   return (
     <div className="space-y-3">
-      <LossBlock output={output} />
-      <TimeShiftBlock output={output} />
-      <ErrorBlock output={output} />
+      <LossBlock output={output} isPremium={isPremium} />
+      <TimeShiftBlock output={output} isPremium={isPremium} />
+      <ErrorBlock output={output} isPremium={isPremium} />
     </div>
   );
 }
 
+/** CTA routing: Premium → /account, Free → /upgrade?feature=... */
+function ctaHref(isPremium: boolean, feature: string, input: SimulatorInput): string {
+  if (isPremium) return "/account";
+  return buildUpgradeUrl(feature, input);
+}
+
 // ─── 1. LOSS BLOCK ────────────────────────────────────────────────────────────
 
-function LossBlock({ output }: { output: SimulatorOutput }) {
+function LossBlock({ output, isPremium }: { output: SimulatorOutput; isPremium: boolean }) {
   const { input } = output;
   const current = output.base.finalValue;
 
@@ -86,9 +93,10 @@ function LossBlock({ output }: { output: SimulatorOutput }) {
   if (gap <= 0) return null;
 
   return (
-    <div className="rounded-2xl border-2 border-red-200 bg-red-50/50 p-5">
-      <p className="text-xs font-bold text-red-700 uppercase tracking-wider mb-3">
-        💸 Vous laissez de l&apos;argent sur la table
+    <div className="rounded-2xl border border-red-100 bg-red-50/30 p-5">
+      <p className="text-xs font-bold text-red-700 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+        <TrendingDown size={14} />
+        Vous laissez de l&apos;argent sur la table
       </p>
 
       <div className="space-y-2 mb-4">
@@ -108,9 +116,9 @@ function LossBlock({ output }: { output: SimulatorOutput }) {
         </div>
       </div>
 
-      <div className="rounded-xl bg-white border border-red-200 px-4 py-3 mb-4">
+      <div className="rounded-xl bg-white border border-red-100 px-4 py-3 mb-4">
         <p className="text-sm font-semibold text-gray-900">
-          👉 Différence :{" "}
+          Différence :{" "}
           <span className="text-xl font-bold text-red-700 tabular-nums">
             +{formatEur(gap)}
           </span>
@@ -121,10 +129,11 @@ function LossBlock({ output }: { output: SimulatorOutput }) {
       </div>
 
       <Link
-        href={buildSimUrl(optimizedInput)}
-        className="btn-primary w-full text-sm px-5 py-2.5 inline-flex items-center justify-center"
+        href={ctaHref(isPremium, "save-strategy", input)}
+        className="btn-primary w-full text-sm px-5 py-2.5 inline-flex items-center justify-center btn-lift"
       >
-        Voir mon vrai potentiel →
+        {isPremium ? "Ouvrir mon dashboard" : "Voir mon vrai potentiel"}
+        <ArrowRight size={14} className="ml-1" />
       </Link>
 
       <PremiumFix
@@ -140,7 +149,7 @@ function LossBlock({ output }: { output: SimulatorOutput }) {
 
 // ─── 2. TIME SHIFT BLOCK ──────────────────────────────────────────────────────
 
-function TimeShiftBlock({ output }: { output: SimulatorOutput }) {
+function TimeShiftBlock({ output, isPremium }: { output: SimulatorOutput; isPremium: boolean }) {
   const { input } = output;
   const milestone = pickMilestone(output.base.finalValue);
   if (!milestone) return null;
@@ -168,9 +177,10 @@ function TimeShiftBlock({ output }: { output: SimulatorOutput }) {
     : `avec +50&nbsp;€/mois`;
 
   return (
-    <div className="rounded-2xl border-2 border-amber-200 bg-amber-50/60 p-5">
-      <p className="text-xs font-bold text-amber-700 uppercase tracking-wider mb-3">
-        ⏳ Vous perdez des années
+    <div className="rounded-2xl border border-amber-100 bg-amber-50/40 p-5">
+      <p className="text-xs font-bold text-amber-700 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+        <Clock size={14} />
+        Vous perdez des années
       </p>
 
       <div className="space-y-2 mb-4">
@@ -195,9 +205,9 @@ function TimeShiftBlock({ output }: { output: SimulatorOutput }) {
         </div>
       </div>
 
-      <div className="rounded-xl bg-white border border-amber-200 px-4 py-3 mb-4">
+      <div className="rounded-xl bg-white border border-amber-100 px-4 py-3 mb-4">
         <p className="text-sm font-semibold text-gray-900">
-          👉 Vous perdez{" "}
+          Vous perdez{" "}
           <span className="text-xl font-bold text-amber-700 tabular-nums">
             {yearsLost} année{yearsLost > 1 ? "s" : ""}
           </span>{" "}
@@ -206,10 +216,13 @@ function TimeShiftBlock({ output }: { output: SimulatorOutput }) {
       </div>
 
       <Link
-        href={buildSimUrl(optimizedInput)}
-        className="btn-primary w-full text-sm px-5 py-2.5 inline-flex items-center justify-center"
+        href={ctaHref(isPremium, "save-strategy", input)}
+        className="btn-primary w-full text-sm px-5 py-2.5 inline-flex items-center justify-center btn-lift"
       >
-        Gagner ces {yearsLost} année{yearsLost > 1 ? "s" : ""} →
+        {isPremium
+          ? "Ouvrir mon dashboard"
+          : `Gagner ces ${yearsLost} année${yearsLost > 1 ? "s" : ""}`}
+        <ArrowRight size={14} className="ml-1" />
       </Link>
 
       <PremiumFix
@@ -241,7 +254,7 @@ function detectErrors(input: SimulatorInput): ErrorDef[] {
   if (input.annualFeesPct > 0.2) {
     errors.push({
       id: "fees",
-      icon: "💰",
+      icon: "",
       title: "Frais ETF trop élevés",
       desc: `Vos frais sont à ${input.annualFeesPct.toString().replace(".", ",")}&nbsp;%. Les meilleurs ETF du marché sont à 0,1&nbsp;%. Sur ${input.durationYears} ans, chaque 0,1&nbsp;% compte.`,
       optimized: { ...input, annualFeesPct: 0.1 },
@@ -252,7 +265,7 @@ function detectErrors(input: SimulatorInput): ErrorDef[] {
   if (input.durationYears < 20) {
     errors.push({
       id: "duration",
-      icon: "⏰",
+      icon: "",
       title: "Horizon trop court",
       desc: `Vous projetez sur ${input.durationYears} ans seulement. Les intérêts composés accélèrent massivement après 20 ans — c&apos;est là que le DCA devient puissant.`,
       optimized: { ...input, durationYears: input.durationYears + 5 },
@@ -263,7 +276,7 @@ function detectErrors(input: SimulatorInput): ErrorDef[] {
   if (input.monthlyAmount < 200) {
     errors.push({
       id: "monthly",
-      icon: "📉",
+      icon: "",
       title: "Versement prudent",
       desc: `${input.monthlyAmount}&nbsp;€/mois, c&apos;est un bon début — mais +100&nbsp;€ maintenant change radicalement le résultat final.`,
       optimized: { ...input, monthlyAmount: input.monthlyAmount + 100 },
@@ -275,7 +288,7 @@ function detectErrors(input: SimulatorInput): ErrorDef[] {
   if (errors.length === 0 && input.annualReturnPct >= 6) {
     errors.push({
       id: "volatility",
-      icon: "⚠️",
+      icon: "",
       title: "Rendement non validé par la volatilité",
       desc: `Votre projection de ${input.annualReturnPct}&nbsp;%/an suppose que tout se passe bien. Les marchés ne sont pas linéaires. Monte Carlo teste votre stratégie contre 1 000 scénarios réels.`,
       optimized: input,
@@ -287,7 +300,7 @@ function detectErrors(input: SimulatorInput): ErrorDef[] {
   return errors;
 }
 
-function ErrorBlock({ output }: { output: SimulatorOutput }) {
+function ErrorBlock({ output, isPremium }: { output: SimulatorOutput; isPremium: boolean }) {
   const errors = detectErrors(output.input);
   if (!errors.length) return null;
 
@@ -300,26 +313,26 @@ function ErrorBlock({ output }: { output: SimulatorOutput }) {
   scored.sort((a, b) => b.impact - a.impact);
   const { err, impact } = scored[0];
 
-  const href = err.ctaHref ?? buildSimUrl(err.optimized);
+  // Premium users → /account. Free → /upgrade?feature=monte-carlo (error = risk/validation).
+  const href = isPremium ? "/account" : ctaHref(false, "monte-carlo", output.input);
 
   return (
-    <div className="rounded-2xl border-2 border-red-200 bg-red-50/50 p-5">
-      <p className="text-xs font-bold text-red-700 uppercase tracking-wider mb-3">
-        ⚠️ Erreur fréquente détectée
+    <div className="rounded-2xl border border-red-100 bg-red-50/30 p-5">
+      <p className="text-xs font-bold text-red-700 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+        <AlertTriangle size={14} />
+        Erreur fréquente détectée
       </p>
 
-      <p className="text-base font-bold text-gray-900 mb-1.5">
-        {err.icon} {err.title}
-      </p>
+      <p className="text-base font-bold text-gray-900 mb-1.5">{err.title}</p>
       <p
         className="text-sm text-gray-600 mb-4 leading-relaxed"
         dangerouslySetInnerHTML={{ __html: err.desc }}
       />
 
       {impact > 0 && (
-        <div className="rounded-xl bg-white border border-red-200 px-4 py-3 mb-4">
+        <div className="rounded-xl bg-white border border-red-100 px-4 py-3 mb-4">
           <p className="text-sm font-semibold text-gray-900">
-            👉 Impact estimé :{" "}
+            Impact estimé :{" "}
             <span className="text-xl font-bold text-red-700 tabular-nums">
               −{formatEur(impact)}
             </span>
@@ -332,9 +345,10 @@ function ErrorBlock({ output }: { output: SimulatorOutput }) {
 
       <Link
         href={href}
-        className="btn-primary w-full text-sm px-5 py-2.5 inline-flex items-center justify-center"
+        className="btn-primary w-full text-sm px-5 py-2.5 inline-flex items-center justify-center btn-lift"
       >
-        {err.ctaLabel} →
+        {isPremium ? "Ouvrir mon dashboard" : err.ctaLabel}
+        <ArrowRight size={14} className="ml-1" />
       </Link>
 
       <PremiumFix
