@@ -32,10 +32,31 @@ export function currentMonth(): string {
 }
 
 /** Previous month as "YYYY-MM". */
-function previousMonth(month: string): string {
+export function previousMonth(month: string): string {
   const [y, m] = month.split("-").map(Number);
   if (m === 1) return `${y - 1}-12`;
   return `${y}-${String(m - 1).padStart(2, "0")}`;
+}
+
+/**
+ * Interest earned this month = portfolio delta − what the user invested.
+ * Requires 2 consecutive-month entries. Returns null otherwise.
+ */
+export function computeInterestSnapshot(
+  entries: { month: string; invested: number; portfolioValue: number }[],
+): { interest: number; invested: number; delta: number; month: string } | null {
+  if (entries.length < 2) return null;
+
+  const sorted = [...entries].sort((a, b) => a.month.localeCompare(b.month));
+  const latest = sorted[sorted.length - 1];
+  const prev = sorted[sorted.length - 2];
+
+  if (prev.month !== previousMonth(latest.month)) return null;
+
+  const delta = latest.portfolioValue - prev.portfolioValue;
+  const interest = delta - latest.invested;
+
+  return { interest, invested: latest.invested, delta, month: latest.month };
 }
 
 /**

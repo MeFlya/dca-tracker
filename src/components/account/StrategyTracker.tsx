@@ -8,6 +8,7 @@ import {
   currentMonth,
   computeStreak,
   nextStreakMilestone,
+  computeInterestSnapshot,
 } from "@/lib/strategy-math";
 import type { StrategyData, MonthlyEntry } from "@/lib/user-strategy";
 import type { SimulatorInput } from "@/lib/simulator";
@@ -161,6 +162,43 @@ function StreakBlock({ entries }: { entries: MonthlyEntry[] }) {
           pour débloquer <em className="text-gray-700 not-italic">&ldquo;{milestoneLabel(next)}&rdquo;</em>
         </span>
       )}
+    </div>
+  );
+}
+
+// ─── Interest snapshot ────────────────────────────────────────────────────────
+
+function InterestSnapshot({ entries }: { entries: MonthlyEntry[] }) {
+  const snap = computeInterestSnapshot(entries);
+  if (!snap) return null;
+
+  if (snap.interest >= 0) {
+    return (
+      <div className="rounded-xl bg-emerald-50 border border-emerald-100 px-4 py-3 mb-4">
+        <p className="text-sm font-semibold text-emerald-900 mb-0.5">
+          💸 Ce mois sans effort
+        </p>
+        <p className="text-xs text-emerald-800 leading-relaxed">
+          Les intérêts composés ont ajouté{" "}
+          <strong className="text-emerald-900">+{formatEur(snap.interest)}</strong>{" "}
+          à votre portefeuille. Vous avez versé {formatEur(snap.invested)},
+          votre portefeuille a gagné {formatEur(snap.delta)}.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-xl bg-orange-50 border border-orange-100 px-4 py-3 mb-4">
+      <p className="text-sm font-semibold text-orange-900 mb-0.5">
+        📉 Mois baissier — le DCA fait son travail
+      </p>
+      <p className="text-xs text-orange-800 leading-relaxed">
+        Le marché a retiré{" "}
+        <strong className="text-orange-900">{formatEur(Math.abs(snap.interest))}</strong>{" "}
+        ce mois. C&apos;est exactement le moment où vos{" "}
+        {formatEur(snap.invested)} achètent plus de parts à prix réduit.
+      </p>
     </div>
   );
 }
@@ -325,6 +363,9 @@ export function StrategyTracker() {
             <InsightChip actual={latestEntry.portfolioValue} theoretical={theoretical} />
           </div>
         )}
+
+        {/* Interest snapshot (requires 2 consecutive entries) */}
+        <InterestSnapshot entries={entries} />
 
         {/* Log button */}
         <button
