@@ -10,12 +10,15 @@ type PageEntry = {
 };
 
 export async function GET(): Promise<NextResponse> {
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://dcatracker.fr";
+  const base = "https://dcatracker.fr";
   const now = new Date().toISOString();
 
   const pages: PageEntry[] = [
     { url: base,                               changeFreq: "weekly",  priority: 1.0  },
     { url: `${base}/simulateur`,               changeFreq: "weekly",  priority: 0.9  },
+    { url: `${base}/investir-100-euros-mois-etf`, changeFreq: "monthly", priority: 0.9 },
+    { url: `${base}/investir-200-euros-mois-etf`, changeFreq: "monthly", priority: 0.9 },
+    { url: `${base}/investir-300-euros-mois-etf`, changeFreq: "monthly", priority: 0.9 },
     { url: `${base}/meilleurs-etf-debutants`,  changeFreq: "monthly", priority: 0.9  },
     { url: `${base}/strategie-dca`,            changeFreq: "monthly", priority: 0.9  },
     { url: `${base}/interets-composes`,        changeFreq: "monthly", priority: 0.85 },

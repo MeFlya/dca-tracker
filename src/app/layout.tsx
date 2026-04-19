@@ -5,11 +5,12 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { JsonLd } from "@/components/ui/JsonLd";
 
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://dcatracker.fr";
+// Hardcoded — never trust NEXT_PUBLIC_SITE_URL for canonical/metadataBase
+// (Vercel preview deployments set it to *.vercel.app which breaks SEO)
+const CANONICAL_ORIGIN = "https://dcatracker.fr";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL(CANONICAL_ORIGIN),
   title: {
     default: "DCA Tracker — Simulateur ETF & Investissement Progressif",
     template: "%s | DCA Tracker",
@@ -36,7 +37,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "fr_FR",
-    url: siteUrl,
+    url: CANONICAL_ORIGIN,
     siteName: "DCA Tracker",
     title: "DCA Tracker — Simulateur ETF & Investissement Progressif",
     description:
@@ -62,7 +63,7 @@ export const metadata: Metadata = {
     follow: true,
   },
   alternates: {
-    canonical: siteUrl,
+    canonical: CANONICAL_ORIGIN,
   },
 };
 
@@ -88,7 +89,7 @@ export default function RootLayout({
             "@context": "https://schema.org",
             "@type": "WebSite",
             name: "DCA Tracker",
-            url: siteUrl,
+            url: CANONICAL_ORIGIN,
             description:
               "Simulateur d'investissement progressif (DCA) en ETF. Outil éducatif gratuit, transparent, sans inscription.",
             inLanguage: "fr-FR",

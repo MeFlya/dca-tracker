@@ -1,7 +1,7 @@
 import { resend } from "@/lib/resend-client";
 import type { PlanId } from "@/lib/plans";
 
-const FROM = process.env.RESEND_FROM_EMAIL ?? "DCA Tracker <bonjour@dcatracker.fr>";
+const FROM = process.env.RESEND_FROM_EMAIL ?? "DCA Tracker <hello@dcatracker.fr>";
 
 export async function sendSubscriptionConfirmed(
   email: string,

@@ -21,10 +21,10 @@ export function Footer() {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-10">
 
           {/* Brand */}
-          <div className="col-span-2 md:col-span-1">
+          <div className="col-span-2 md:col-span-2">
             <Link href="/" className="flex items-center gap-2.5 mb-3 hover:opacity-80 transition-opacity">
               <LogoMark size={24} />
               <span className="text-sm font-bold tracking-tight text-gray-900">
@@ -61,6 +61,30 @@ export function Footer() {
               <li>
                 <Link href="/tarifs" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
                   Tarifs
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Simulations */}
+          <div>
+            <h3 className="text-xs font-semibold text-gray-900 uppercase tracking-wider mb-3">
+              Simulations
+            </h3>
+            <ul className="space-y-2">
+              <li>
+                <Link href="/investir-100-euros-mois-etf" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+                  Investir 100€/mois
+                </Link>
+              </li>
+              <li>
+                <Link href="/investir-200-euros-mois-etf" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+                  Investir 200€/mois
+                </Link>
+              </li>
+              <li>
+                <Link href="/investir-300-euros-mois-etf" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+                  Investir 300€/mois
                 </Link>
               </li>
             </ul>

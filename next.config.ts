@@ -24,15 +24,13 @@ const nextConfig: NextConfig = {
   },
 
   async headers() {
-    // Explicitly set X-Robots-Tag on production. Vercel preview deployments
-    // inject their own noindex at platform level regardless of this header —
-    // this only reinforces correct indexing on the production domain.
     return [
       {
+        // Only set index/follow on the canonical domain.
+        // Requests to *.vercel.app are redirected by middleware before reaching here.
         source: "/(.*)",
-        headers: [
-          { key: "X-Robots-Tag", value: "index, follow" },
-        ],
+        has: [{ type: "host", value: "dcatracker.fr" }],
+        headers: [{ key: "X-Robots-Tag", value: "index, follow" }],
       },
     ];
   },

@@ -11,7 +11,20 @@ const _clerkMw = clerkMiddleware(async (auth, req) => {
   }
 });
 
+const CANONICAL_HOST = "dcatracker.fr";
+
 export default function middleware(req: NextRequest, evt: NextFetchEvent) {
+  // Redirect any *.vercel.app request to the canonical domain.
+  // This prevents Google from indexing duplicate content on the Vercel subdomain
+  // and forces it to select dcatracker.fr as the canonical URL.
+  const host = req.headers.get("host") ?? req.nextUrl.hostname;
+  if (host.endsWith(".vercel.app")) {
+    const url = req.nextUrl.clone();
+    url.protocol = "https:";
+    url.host = CANONICAL_HOST;
+    return NextResponse.redirect(url, { status: 301 });
+  }
+
   // Guard: if Clerk env vars are missing, pass through without auth.
   // Prevents MIDDLEWARE_INVOCATION_FAILED when keys aren't set in Vercel yet.
   if (
