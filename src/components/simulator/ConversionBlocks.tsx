@@ -33,6 +33,31 @@ function yearReaching(data: MonthlyDataPoint[], target: number): number | null {
   return null;
 }
 
+// ─── Premium fix sub-block ────────────────────────────────────────────────────
+// Bridges emotional pain ("you lose X") to actionable Premium features.
+// Rendered below each block's CTA.
+
+function PremiumFix({ bullets }: { bullets: string[] }) {
+  return (
+    <div className="mt-4 rounded-xl bg-primary-50 border border-primary-100 px-4 py-3">
+      <p className="text-xs font-bold text-primary-800 mb-2 flex items-center gap-2">
+        <span className="inline-flex items-center bg-primary-600 text-white px-1.5 py-0.5 rounded text-[10px] uppercase tracking-wide">
+          Premium
+        </span>
+        <span className="uppercase tracking-wider text-primary-700">vous permet de :</span>
+      </p>
+      <ul className="space-y-1.5">
+        {bullets.map((b, i) => (
+          <li key={i} className="flex items-start gap-2 text-sm text-primary-900 leading-relaxed">
+            <span className="text-primary-600 mt-0.5 shrink-0 font-bold">✓</span>
+            <span>{b}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 // ─── Main wrapper ─────────────────────────────────────────────────────────────
 
 export function ConversionBlocks({ output }: { output: SimulatorOutput }) {
@@ -101,6 +126,14 @@ function LossBlock({ output }: { output: SimulatorOutput }) {
       >
         Voir mon vrai potentiel →
       </Link>
+
+      <PremiumFix
+        bullets={[
+          "Sauvegarder et comparer 10 variantes de votre stratégie",
+          "Monte Carlo : vérifier que +50 €/mois tient face à la volatilité réelle",
+          "Suivre mois après mois le potentiel effectivement gagné",
+        ]}
+      />
     </div>
   );
 }
@@ -178,6 +211,14 @@ function TimeShiftBlock({ output }: { output: SimulatorOutput }) {
       >
         Gagner ces {yearsLost} année{yearsLost > 1 ? "s" : ""} →
       </Link>
+
+      <PremiumFix
+        bullets={[
+          "Suivre chaque mois si vous tenez ce nouveau cap",
+          "Comparer votre portefeuille réel vs votre projection",
+          `Bilan mensuel automatique : êtes-vous toujours sur ces ${yearsLost} année${yearsLost > 1 ? "s" : ""} gagnée${yearsLost > 1 ? "s" : ""} ?`,
+        ]}
+      />
     </div>
   );
 }
@@ -295,6 +336,14 @@ function ErrorBlock({ output }: { output: SimulatorOutput }) {
       >
         {err.ctaLabel} →
       </Link>
+
+      <PremiumFix
+        bullets={[
+          "Monte Carlo teste votre stratégie contre 1 000 scénarios de marché",
+          "Voir le pire cas réaliste (pas juste la moyenne optimiste)",
+          "Connaître votre probabilité exacte d'être en plus-value",
+        ]}
+      />
     </div>
   );
 }
