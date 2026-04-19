@@ -51,10 +51,16 @@ export default async function AccountPage() {
           </h1>
           <p className="text-sm text-gray-400 mt-0.5">Votre tableau de bord DCA</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
           <span className={`px-3 py-1 rounded-full text-sm font-bold ${planMeta.bg} ${planMeta.color}`}>
             {planMeta.label}
           </span>
+          <Link
+            href="/account/settings"
+            className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
+          >
+            Paramètres
+          </Link>
           {sub.plan === "free" ? (
             <Link href="/tarifs" className="btn-primary text-xs px-4 py-2">
               Passer Premium →
