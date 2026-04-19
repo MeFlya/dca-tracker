@@ -29,11 +29,12 @@ Pre-launch verification before opening traffic to real users.
 - [ ] Vercel cron jobs configured in `vercel.json` (already shipped)
 
 ### Analytics
-- [ ] `NEXT_PUBLIC_ANALYTICS_PROVIDER=plausible`
-- [ ] `NEXT_PUBLIC_SITE_DOMAIN=dcatracker.fr`
+- [ ] `NEXT_PUBLIC_ANALYTICS_PROVIDER=plausible` — enables `track()` to send events
+- [ ] `NEXT_PUBLIC_PLAUSIBLE_SRC=https://plausible.io/js/pa-XXXXXX.js` — the per-site script URL from Plausible dashboard (Site Settings → Tracker setup → Script)
 - [ ] Plausible account created at plausible.io
 - [ ] Plausible domain added: `dcatracker.fr`
-- [ ] Test event fires (visit_home) in Plausible dashboard
+- [ ] Custom event goals created in Plausible for the key funnel events (signup, start_trial, complete_payment, log_month)
+- [ ] Test event fires (visit_home) in Plausible dashboard within 30 seconds of deploy
 
 ### Canonical / SEO
 - [ ] `NEXT_PUBLIC_SITE_URL=https://dcatracker.fr` (used by some sitemap code paths)

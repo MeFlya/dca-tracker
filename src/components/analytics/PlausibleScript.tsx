@@ -1,32 +1,32 @@
-// Plausible script loader. Only injected when both env vars are set.
-// Uses next/script so the tag loads after interactive and doesn't block rendering.
+// Plausible script loader — uses the new per-site `pa-*` script format.
 //
-// Plausible has a clean 'only-needs-one-script' model:
-//   <script defer data-domain="dcatracker.fr"
-//           src="https://plausible.io/js/script.pageview-props.tagged-events.js"></script>
+// Plausible gives you a snippet like this on the dashboard:
+//   <script async src="https://plausible.io/js/pa-XXXXXXXXXXXXXX.js"></script>
+//   <script>
+//     window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+//     plausible.init()
+//   </script>
 //
-// We use the 'tagged-events' variant so custom events auto-tag. The 'pageview-props'
-// variant lets us add `data-plausible-*` attributes if needed.
+// We replicate that here, with the src URL coming from env.
+// Only renders when NEXT_PUBLIC_PLAUSIBLE_SRC is set.
 
 import Script from "next/script";
 
-export function PlausibleScript() {
-  const provider = process.env.NEXT_PUBLIC_ANALYTICS_PROVIDER;
-  const domain = process.env.NEXT_PUBLIC_SITE_DOMAIN;
+const PLAUSIBLE_INIT = `window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};plausible.init()`;
 
-  if (provider !== "plausible" || !domain) return null;
+export function PlausibleScript() {
+  const src = process.env.NEXT_PUBLIC_PLAUSIBLE_SRC;
+  if (!src) return null;
 
   return (
     <>
       <Script
-        defer
-        data-domain={domain}
-        src="https://plausible.io/js/script.tagged-events.js"
+        async
+        src={src}
         strategy="afterInteractive"
       />
-      {/* Expose plausible() globally for custom events */}
-      <Script id="plausible-custom" strategy="afterInteractive">
-        {`window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }`}
+      <Script id="plausible-init" strategy="afterInteractive">
+        {PLAUSIBLE_INIT}
       </Script>
     </>
   );
