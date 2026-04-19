@@ -138,10 +138,10 @@ export function SimulatorPageClient() {
         <SimulatorResults output={output} />
 
         {/* Monte Carlo full chart */}
-        <MonteCarloChart result={monteCarloResult} isPremium={isPremium} />
+        <MonteCarloChart result={monteCarloResult} isPremium={isPremium} input={output.input} />
 
         {/* A vs B — Pro */}
-        <ScenarioComparison isPro={isPro} />
+        <ScenarioComparison isPro={isPro} input={output.input} />
 
         <EmailCapture variant="card" source="simulator" />
         <InvestCTA />

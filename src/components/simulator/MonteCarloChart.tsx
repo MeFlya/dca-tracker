@@ -12,6 +12,8 @@ import {
 } from "recharts";
 import type { MonteCarloResult, MonteCarloDataPoint } from "@/lib/monte-carlo";
 import { formatEur } from "@/lib/simulator";
+import type { SimulatorInput } from "@/lib/simulator";
+import { buildUpgradeUrl } from "@/lib/upgrade-link";
 
 // ─── Tooltip ──────────────────────────────────────────────────────────────────
 
@@ -84,7 +86,7 @@ function KpiCard({
 
 // ─── Lock overlay for free users ──────────────────────────────────────────────
 
-function LockedOverlay() {
+function LockedOverlay({ input }: { input?: SimulatorInput }) {
   return (
     <div className="absolute inset-0 flex flex-col items-center justify-center z-10 rounded-2xl bg-white/80 backdrop-blur-sm">
       <div className="text-center max-w-sm px-6">
@@ -109,7 +111,7 @@ function LockedOverlay() {
           Le résultat moyen ne suffit pas pour piloter une vraie stratégie.
         </p>
         <Link
-          href="/upgrade?feature=monte-carlo"
+          href={buildUpgradeUrl("monte-carlo", input)}
           className="inline-block bg-primary-600 text-white font-semibold text-sm px-5 py-2.5 rounded-xl hover:bg-primary-700 transition-colors"
         >
           Débloquer l&apos;analyse de risque →
@@ -201,9 +203,11 @@ function MCAreaChart({ data }: { data: MonteCarloDataPoint[] }) {
 export function MonteCarloChart({
   result,
   isPremium,
+  input,
 }: {
   result: MonteCarloResult;
   isPremium: boolean;
+  input?: SimulatorInput;
 }) {
   return (
     <div id="monte-carlo" className="card">
@@ -243,7 +247,7 @@ export function MonteCarloChart({
         <div className={isPremium ? "" : "blur-sm pointer-events-none select-none"}>
           <MCAreaChart data={result.data} />
         </div>
-        {!isPremium && <LockedOverlay />}
+        {!isPremium && <LockedOverlay input={input} />}
       </div>
 
       {/* KPI row — only for Premium */}

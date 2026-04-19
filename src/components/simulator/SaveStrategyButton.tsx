@@ -4,6 +4,7 @@ import { useUser } from "@clerk/nextjs";
 import { useState } from "react";
 import Link from "next/link";
 import type { SimulatorInput } from "@/lib/simulator";
+import { buildUpgradeUrl } from "@/lib/upgrade-link";
 
 interface Props {
   input: SimulatorInput;
@@ -31,7 +32,7 @@ export function SaveStrategyButton({ input, plan }: Props) {
   if (plan === "free") {
     return (
       <Link
-        href="/upgrade?feature=save-strategy"
+        href={buildUpgradeUrl("save-strategy", input)}
         className="inline-flex items-center gap-2 text-sm font-semibold text-primary-600 hover:text-primary-700 transition-colors"
       >
         <LockIcon />

@@ -3,6 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { runSimulation, formatEur } from "@/lib/simulator";
+import type { SimulatorInput } from "@/lib/simulator";
+import { buildUpgradeUrl } from "@/lib/upgrade-link";
 
 // ─── Mini slider row ──────────────────────────────────────────────────────────
 
@@ -80,7 +82,7 @@ function ScenForm({
 
 // ─── Lock overlay ─────────────────────────────────────────────────────────────
 
-function LockedOverlay() {
+function LockedOverlay({ input }: { input?: SimulatorInput }) {
   return (
     <div className="absolute inset-0 flex flex-col items-center justify-center z-10 rounded-2xl bg-white/75 backdrop-blur-sm">
       <div className="text-center max-w-xs px-4">
@@ -96,7 +98,7 @@ function LockedOverlay() {
           produit le plus ? Comparez en temps réel côte à côte.
         </p>
         <Link
-          href="/upgrade?feature=ab-comparison"
+          href={buildUpgradeUrl("ab-comparison", input)}
           className="inline-block bg-slate-900 text-white font-semibold text-sm px-5 py-2.5 rounded-xl hover:bg-slate-800 transition-colors"
         >
           Débloquer avec Pro →
@@ -111,7 +113,7 @@ function LockedOverlay() {
 const DEFAULT_A: ScenInput = { monthlyAmount: 200, durationYears: 20, annualReturnPct: 7, annualFeesPct: 0.3 };
 const DEFAULT_B: ScenInput = { monthlyAmount: 400, durationYears: 20, annualReturnPct: 7, annualFeesPct: 0.3 };
 
-export function ScenarioComparison({ isPro }: { isPro: boolean }) {
+export function ScenarioComparison({ isPro, input }: { isPro: boolean; input?: SimulatorInput }) {
   const [a, setA] = useState<ScenInput>(DEFAULT_A);
   const [b, setB] = useState<ScenInput>(DEFAULT_B);
 
@@ -175,7 +177,7 @@ export function ScenarioComparison({ isPro }: { isPro: boolean }) {
           </div>
         </div>
 
-        {!isPro && <LockedOverlay />}
+        {!isPro && <LockedOverlay input={input} />}
       </div>
     </div>
   );

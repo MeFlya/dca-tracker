@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { SimulatorOutput } from "@/lib/simulator";
 import { generateSimulationPDF } from "@/lib/pdf-export";
+import { buildUpgradeUrl } from "@/lib/upgrade-link";
 
 type ExportState = "idle" | "generating" | "error";
 
@@ -19,7 +20,7 @@ export function ExportPDFButton({ output }: { output: SimulatorOutput }) {
   async function handleClick() {
     if (state === "generating") return;
     if (!isPremium) {
-      router.push("/upgrade?feature=pdf-export");
+      router.push(buildUpgradeUrl("pdf-export", output.input));
       return;
     }
     setState("generating");

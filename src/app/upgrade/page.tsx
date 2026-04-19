@@ -1,5 +1,9 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { runSimulation, formatEur } from "@/lib/simulator";
+import type { SimulatorInput } from "@/lib/simulator";
+import { runMonteCarlo } from "@/lib/monte-carlo";
+import { theoreticalValueAtMonth } from "@/lib/strategy-math";
 
 export const metadata: Metadata = {
   title: "Passer Premium — DCA Tracker",
@@ -450,14 +454,139 @@ const FEATURES: Record<FeatureKey, FeatureCopy> = {
 
 const FALLBACK = MONTE_CARLO;
 
+// ─── Dynamic projection ──────────────────────────────────────────────────────
+// Replaces the static projection rows with numbers computed from the user's
+// current simulator params. Pass-through if feature doesn't support it.
+
+function buildDynamicProjection(
+  key: FeatureKey,
+  base: FeatureCopy,
+  input: SimulatorInput,
+  explicit: boolean,
+): FeatureCopy["projection"] {
+  const strategyLabel = `${input.monthlyAmount} €/mois · ${input.durationYears} ans · ${input.annualReturnPct} %/an`;
+  const titlePrefix = explicit ? "Pour votre stratégie" : "Exemple";
+
+  switch (key) {
+    case "monte-carlo": {
+      const sim = runSimulation(input);
+      const mc = runMonteCarlo(input);
+      const spread = mc.finalP90 - mc.finalP10;
+      const totalInvested = input.monthlyAmount * input.durationYears * 12;
+
+      return {
+        title: `${titlePrefix} : ${strategyLabel}`,
+        intro: "Voici ce que Monte Carlo révèle que le simulateur de base cache :",
+        rows: [
+          { label: "Scénario moyen", value: formatEur(sim.base.finalValue), baseline: true },
+          { label: "Pire cas réaliste (10e percentile)", value: formatEur(mc.finalP10), locked: true },
+          { label: "Meilleur cas réaliste (90e percentile)", value: formatEur(mc.finalP90), locked: true },
+          { label: "Probabilité d'être en plus-value", value: `${mc.probabilityPositive} %`, locked: true },
+        ],
+        conclusion: `Un écart de ${formatEur(spread)} entre le pire et le meilleur cas. C'est exactement ce que vous devez comprendre avant d'engager ${formatEur(totalInvested)} sur ${input.durationYears} ans.`,
+      };
+    }
+
+    case "save-strategy": {
+      const theo12 = theoreticalValueAtMonth(input, 12);
+      const totalAt12 = input.monthlyAmount * 12;
+      const interest12 = theo12 - totalAt12;
+      // Example "your real portfolio" offset by +5% to show a realistic ahead scenario.
+      const realExample = Math.round(theo12 * 1.05);
+
+      return {
+        title: `${titlePrefix} : ${strategyLabel}`,
+        intro: "Voici ce qui apparaît sur votre dashboard au mois 12 :",
+        rows: [
+          { label: "Total investi sur 12 mois", value: formatEur(totalAt12), baseline: true },
+          { label: "Valeur théorique attendue", value: formatEur(theo12), locked: true },
+          { label: "Votre portefeuille réel (exemple)", value: formatEur(realExample), locked: true },
+          { label: "Intérêts composés générés", value: `+ ${formatEur(interest12)}`, locked: true },
+        ],
+        conclusion: "Toutes ces informations sont perdues si vous ne sauvegardez pas. Dans 12 mois, vous ne pourrez plus les reconstituer.",
+      };
+    }
+
+    case "ab-comparison": {
+      // Keep the A/B example narrative-driven — user's exact strategy isn't
+      // enough for a meaningful comparison (we'd need a second strategy).
+      // Just reflect their monthly amount in the A label when explicit.
+      if (!explicit) return base.projection;
+      const altMonthly = Math.round(input.monthlyAmount * 1.5);
+      const altYears = Math.max(5, input.durationYears - 5);
+      const simA = runSimulation(input);
+      const simB = runSimulation({ ...input, monthlyAmount: altMonthly, durationYears: altYears });
+      const aInvested = input.monthlyAmount * input.durationYears * 12;
+      const bInvested = altMonthly * altYears * 12;
+
+      return {
+        title: "Votre stratégie vs une alternative",
+        intro: "Deux arbitrages concrets à partir de vos paramètres actuels :",
+        rows: [
+          {
+            label: `A : ${input.monthlyAmount} €/mois × ${input.durationYears} ans (${formatEur(aInvested)} investis)`,
+            value: formatEur(simA.base.finalValue),
+            baseline: true,
+          },
+          {
+            label: `B : ${altMonthly} €/mois × ${altYears} ans (${formatEur(bInvested)} investis)`,
+            value: formatEur(simB.base.finalValue),
+            locked: true,
+          },
+          {
+            label: "Différence finale",
+            value: formatEur(Math.abs(simA.base.finalValue - simB.base.finalValue)) +
+                   (simA.base.finalValue >= simB.base.finalValue ? " pour A" : " pour B"),
+            locked: true,
+          },
+        ],
+        conclusion: "Montant vs durée : l'arbitrage n'est jamais évident. La comparaison A/B le chiffre pour vous.",
+      };
+    }
+
+    case "pdf-export":
+    default:
+      return base.projection;
+  }
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-type Props = { searchParams: Promise<{ feature?: string }> };
+type Props = {
+  searchParams: Promise<{
+    feature?: string;
+    monthly?: string;
+    years?: string;
+    return?: string;
+    fees?: string;
+  }>;
+};
 
 export default async function UpgradePage({ searchParams }: Props) {
-  const { feature } = await searchParams;
-  const key = (feature ?? "") as FeatureKey;
-  const f = FEATURES[key] ?? FALLBACK;
+  const params = await searchParams;
+  const key = (params.feature ?? "") as FeatureKey;
+  const base = FEATURES[key] ?? FALLBACK;
+
+  // Parse strategy params (fallback to defaults if missing or invalid).
+  const rawMonthly = Number(params.monthly);
+  const rawYears = Number(params.years);
+  const rawReturn = Number(params.return);
+  const rawFees = Number(params.fees);
+
+  const input: SimulatorInput = {
+    monthlyAmount: Number.isFinite(rawMonthly) && rawMonthly >= 1 ? rawMonthly : 200,
+    durationYears: Number.isFinite(rawYears) && rawYears >= 1 ? rawYears : 20,
+    annualReturnPct: Number.isFinite(rawReturn) && rawReturn >= 0 ? rawReturn : 7,
+    annualFeesPct: Number.isFinite(rawFees) && rawFees >= 0 ? rawFees : 0.3,
+  };
+
+  const hasExplicitParams = params.monthly != null && params.years != null;
+
+  // Override projection with dynamic values per feature.
+  const f: FeatureCopy = {
+    ...base,
+    projection: buildDynamicProjection(key, base, input, hasExplicitParams),
+  };
 
   const isPro = f.plan === "Pro";
 
