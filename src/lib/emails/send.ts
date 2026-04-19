@@ -1,5 +1,6 @@
 import { resend } from "@/lib/resend-client";
 import type { PlanId } from "@/lib/plans";
+import { formatEur } from "@/lib/simulator";
 
 const FROM = process.env.RESEND_FROM_EMAIL ?? "DCA Tracker <hello@dcatracker.fr>";
 
@@ -127,6 +128,61 @@ export async function sendWelcome(email: string, firstName: string) {
   <p>Votre compte DCA Tracker est prêt. Commencez à simuler votre stratégie d'investissement progressif en ETF — gratuit, sans engagement.</p>
   <a href="https://dcatracker.fr/simulateur" style="display:inline-block;background:#2563eb;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:600">Démarrer la simulation →</a>
   <p style="margin-top:32px;color:#9ca3af;font-size:12px">DCA Tracker · outil éducatif, pas de conseil en investissement</p>
+</body>
+</html>`,
+  });
+}
+
+export async function sendMonthlyUpdate({
+  email,
+  firstName,
+  monthNumber,
+  theoreticalValue,
+  monthlyAmount,
+  insight,
+}: {
+  email: string;
+  firstName: string;
+  monthNumber: number;
+  theoreticalValue: number;
+  monthlyAmount: number;
+  insight: string;
+}) {
+  const SITE_URL = "https://dcatracker.fr";
+  await resend.emails.send({
+    from: FROM,
+    to: email,
+    subject: `Mois ${monthNumber} de ta stratégie DCA`,
+    html: `<!DOCTYPE html>
+<html lang="fr">
+<body style="font-family:sans-serif;color:#1f2937;max-width:560px;margin:0 auto;padding:32px 16px">
+  <p style="color:#6b7280;margin-bottom:4px;font-size:14px">Mois ${monthNumber} de ta stratégie</p>
+  <h1 style="font-size:22px;font-weight:700;margin:0 0 24px 0">Bonjour ${firstName} 👋</h1>
+
+  <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:20px;margin-bottom:24px">
+    <p style="margin:0 0 4px 0;font-size:12px;font-weight:600;color:#2563eb;text-transform:uppercase;letter-spacing:0.06em">
+      Valeur théorique ce mois
+    </p>
+    <p style="margin:0;font-size:32px;font-weight:800;color:#1e40af;line-height:1.1">
+      ${formatEur(theoreticalValue)}
+    </p>
+    <p style="margin:8px 0 0 0;font-size:13px;color:#3b82f6">
+      Basé sur ${formatEur(monthlyAmount)}/mois à ton rendement cible.
+    </p>
+  </div>
+
+  <p style="font-size:15px;color:#374151;margin-bottom:24px;line-height:1.6">
+    ${insight}
+  </p>
+
+  <a href="${SITE_URL}/account" style="display:inline-block;background:#2563eb;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px">
+    Mettre à jour mon mois →
+  </a>
+
+  <p style="margin-top:32px;color:#9ca3af;font-size:11px;line-height:1.6">
+    DCA Tracker · outil éducatif, pas de conseil en investissement.<br/>
+    <a href="${SITE_URL}/account" style="color:#9ca3af">Gérer mon compte</a>
+  </p>
 </body>
 </html>`,
   });

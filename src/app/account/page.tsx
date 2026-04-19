@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { ManageSubscriptionButton } from "./ManageSubscriptionButton";
+import { StrategyTracker } from "@/components/account/StrategyTracker";
 
 export const metadata: Metadata = {
   title: "Mon compte — DCA Tracker",
@@ -119,6 +120,13 @@ export default async function AccountPage() {
           )}
         </div>
       </div>
+
+      {/* Strategy tracker — Premium/Pro only */}
+      {isPremium && (
+        <div className="mb-6">
+          <StrategyTracker />
+        </div>
+      )}
 
       {/* Accès */}
       <div className="rounded-2xl border border-gray-100 bg-white p-6 mb-6">
