@@ -38,6 +38,52 @@ export function previousMonth(month: string): string {
   return `${y}-${String(m - 1).padStart(2, "0")}`;
 }
 
+/** Shift "YYYY-MM" by delta months (positive or negative). */
+export function addMonths(month: string, delta: number): string {
+  const [y, m] = month.split("-").map(Number);
+  const total = y * 12 + (m - 1) + delta;
+  const newY = Math.floor(total / 12);
+  const newM = (total % 12) + 1;
+  return `${newY}-${String(newM).padStart(2, "0")}`;
+}
+
+/**
+ * Year-over-year comparison — latest entry vs entry from 12 months ago.
+ * Returns null if no entry exists exactly 12 months before the latest.
+ */
+export function computeYearOverYear(
+  entries: { month: string; portfolioValue: number }[],
+): {
+  currentMonth: string;
+  previousYearMonth: string;
+  currentValue: number;
+  previousValue: number;
+  delta: number;
+  growthPct: number;
+} | null {
+  if (entries.length < 12) return null;
+
+  const sorted = [...entries].sort((a, b) => a.month.localeCompare(b.month));
+  const latest = sorted[sorted.length - 1];
+  const targetMonth = addMonths(latest.month, -12);
+
+  const prevYear = sorted.find((e) => e.month === targetMonth);
+  if (!prevYear) return null;
+
+  const delta = latest.portfolioValue - prevYear.portfolioValue;
+  const growthPct =
+    prevYear.portfolioValue > 0 ? (delta / prevYear.portfolioValue) * 100 : 0;
+
+  return {
+    currentMonth: latest.month,
+    previousYearMonth: prevYear.month,
+    currentValue: latest.portfolioValue,
+    previousValue: prevYear.portfolioValue,
+    delta,
+    growthPct,
+  };
+}
+
 /**
  * Interest earned this month = portfolio delta − what the user invested.
  * Requires 2 consecutive-month entries. Returns null otherwise.

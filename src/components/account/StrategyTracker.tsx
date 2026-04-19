@@ -9,6 +9,7 @@ import {
   computeStreak,
   nextStreakMilestone,
   computeInterestSnapshot,
+  computeYearOverYear,
 } from "@/lib/strategy-math";
 import { BADGES, computeEarnedBadges, nextBadge } from "@/lib/badges";
 import type { StrategyData, MonthlyEntry } from "@/lib/user-strategy";
@@ -263,6 +264,59 @@ function formatMonthLabel(month: string): string {
   return new Date(y, m - 1, 1).toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
 }
 
+// ─── Year-over-year block ─────────────────────────────────────────────────────
+
+function YearOverYearBlock({ entries }: { entries: MonthlyEntry[] }) {
+  const yoy = computeYearOverYear(entries);
+  if (!yoy) return null;
+
+  const positive = yoy.delta >= 0;
+
+  return (
+    <div className="rounded-xl bg-gradient-to-br from-slate-50 to-blue-50 border border-blue-100 px-4 py-4 mb-4">
+      <p className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+        📅 Comparaison sur 12 mois
+        <span className="text-[10px] font-bold bg-blue-600 text-white px-1.5 py-0.5 rounded uppercase tracking-wide">
+          débloqué
+        </span>
+      </p>
+
+      <div className="grid grid-cols-2 gap-3 mb-3">
+        <div>
+          <p className="text-[10px] text-gray-400 uppercase tracking-wide mb-0.5">
+            {formatMonthLabel(yoy.previousYearMonth)}
+          </p>
+          <p className="text-lg font-bold text-gray-500 tabular-nums">
+            {formatEur(yoy.previousValue)}
+          </p>
+        </div>
+        <div>
+          <p className="text-[10px] text-gray-400 uppercase tracking-wide mb-0.5">
+            {formatMonthLabel(yoy.currentMonth)}
+          </p>
+          <p className="text-lg font-bold text-gray-900 tabular-nums">
+            {formatEur(yoy.currentValue)}
+          </p>
+        </div>
+      </div>
+
+      <p
+        className={`text-sm font-semibold ${
+          positive ? "text-emerald-700" : "text-orange-600"
+        }`}
+      >
+        {positive ? "↑" : "↓"}{" "}
+        {positive ? "+" : ""}
+        {yoy.growthPct.toFixed(1)} % sur 1 an
+        <span className="text-gray-500 font-normal">
+          {" "}({positive ? "+" : ""}
+          {formatEur(yoy.delta)})
+        </span>
+      </p>
+    </div>
+  );
+}
+
 // ─── Badge section ────────────────────────────────────────────────────────────
 
 function BadgeSection({ entries }: { entries: MonthlyEntry[] }) {
@@ -418,6 +472,9 @@ export function StrategyTracker() {
 
         {/* Interest snapshot (requires 2 consecutive entries) */}
         <InterestSnapshot entries={entries} />
+
+        {/* Year-over-year (requires 12+ months) */}
+        <YearOverYearBlock entries={entries} />
 
         {/* Log button */}
         <button
