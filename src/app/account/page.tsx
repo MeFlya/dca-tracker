@@ -119,62 +119,98 @@ export default async function AccountPage() {
 
       {/* ── Quick actions ─────────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+        {/* Primary: Simuler */}
         <Link
           href="/simulateur"
-          className="rounded-xl border border-gray-100 bg-white p-4 hover:border-primary-200 hover:bg-primary-50/30 transition-colors group"
+          className="group rounded-2xl border border-primary-600 bg-primary-600 text-white p-5 card-hover"
         >
-          <p className="text-2xl mb-2">⚡</p>
-          <p className="text-sm font-semibold text-gray-900 group-hover:text-primary-700 transition-colors">
-            Simuler
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center">
+              <PlayIcon />
+            </div>
+          </div>
+          <p className="text-base font-bold leading-tight mb-1">
+            Simuler un scénario
           </p>
-          <p className="text-xs text-gray-400 mt-0.5">Lancer une projection DCA</p>
+          <p className="text-xs text-primary-100 leading-snug">
+            Tester un scénario et voir votre potentiel réel
+          </p>
         </Link>
 
-        {isPremium ? (
+        {/* Secondary: Optimiser */}
+        {isPremium && strategy ? (
           <Link
-            href="/simulateur"
-            className="rounded-xl border border-gray-100 bg-white p-4 hover:border-primary-200 hover:bg-primary-50/30 transition-colors group"
+            href={`/simulateur?monthly=${strategy.input.monthlyAmount}&years=${strategy.input.durationYears}&return=${strategy.input.annualReturnPct}&fees=${strategy.input.annualFeesPct}`}
+            className="group rounded-2xl border border-gray-100 bg-white p-5 card-hover"
           >
-            <p className="text-2xl mb-2">💾</p>
-            <p className="text-sm font-semibold text-gray-900 group-hover:text-primary-700 transition-colors">
-              Modifier ma stratégie
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-700 group-hover:bg-primary-50 group-hover:text-primary-700 transition-colors">
+                <SlidersIcon />
+              </div>
+            </div>
+            <p className="text-base font-bold text-gray-900 leading-tight mb-1 group-hover:text-primary-700 transition-colors">
+              Optimiser ma stratégie
             </p>
-            <p className="text-xs text-gray-400 mt-0.5">Ajuster les paramètres</p>
+            <p className="text-xs text-gray-500 leading-snug">
+              Améliorer votre stratégie actuelle pour maximiser vos gains
+            </p>
           </Link>
         ) : (
           <Link
             href="/upgrade?feature=save-strategy"
-            className="rounded-xl border border-dashed border-gray-200 bg-gray-50 p-4 hover:border-primary-300 transition-colors group"
+            className="group rounded-2xl border border-dashed border-gray-200 bg-gray-50/50 p-5 card-hover"
           >
-            <p className="text-2xl mb-2 opacity-40">💾</p>
-            <p className="text-sm font-semibold text-gray-400 group-hover:text-primary-600 transition-colors">
-              Sauvegarder stratégie
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-8 h-8 rounded-lg bg-white border border-gray-200 flex items-center justify-center text-gray-400">
+                <SlidersIcon />
+              </div>
+            </div>
+            <p className="text-base font-bold text-gray-500 leading-tight mb-1 group-hover:text-primary-600 transition-colors">
+              Optimiser ma stratégie
             </p>
-            <p className="text-[10px] text-primary-500 font-bold mt-0.5 uppercase tracking-wide">Premium</p>
+            <p className="text-[10px] text-primary-600 font-bold uppercase tracking-wide mt-1">
+              Premium
+            </p>
           </Link>
         )}
 
+        {/* Emphasized: Monte Carlo (risk analysis) */}
         {isPremium ? (
           <Link
-            href="/upgrade?feature=monte-carlo"
-            className="rounded-xl border border-gray-100 bg-white p-4 hover:border-primary-200 hover:bg-primary-50/30 transition-colors group"
+            href="/simulateur#monte-carlo"
+            className="group rounded-2xl border-2 border-primary-200 bg-white p-5 card-hover relative"
           >
-            <p className="text-2xl mb-2">📈</p>
-            <p className="text-sm font-semibold text-gray-900 group-hover:text-primary-700 transition-colors">
-              Monte Carlo
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-8 h-8 rounded-lg bg-primary-50 text-primary-700 flex items-center justify-center">
+                <ShieldIcon />
+              </div>
+              <span className="absolute top-3 right-3 bg-primary-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wide">
+                Premium
+              </span>
+            </div>
+            <p className="text-base font-bold text-gray-900 leading-tight mb-1 group-hover:text-primary-700 transition-colors">
+              Analyser mon risque
             </p>
-            <p className="text-xs text-gray-400 mt-0.5">Analyse de risque complète</p>
+            <p className="text-xs text-gray-500 leading-snug">
+              Tester votre stratégie dans 1 000 scénarios de marché
+            </p>
           </Link>
         ) : (
           <Link
             href="/upgrade?feature=monte-carlo"
-            className="rounded-xl border border-dashed border-gray-200 bg-gray-50 p-4 hover:border-primary-300 transition-colors group"
+            className="group rounded-2xl border border-dashed border-gray-200 bg-gray-50/50 p-5 card-hover"
           >
-            <p className="text-2xl mb-2 opacity-40">📈</p>
-            <p className="text-sm font-semibold text-gray-400 group-hover:text-primary-600 transition-colors">
-              Monte Carlo
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-8 h-8 rounded-lg bg-white border border-gray-200 flex items-center justify-center text-gray-400">
+                <ShieldIcon />
+              </div>
+            </div>
+            <p className="text-base font-bold text-gray-500 leading-tight mb-1 group-hover:text-primary-600 transition-colors">
+              Analyser mon risque
             </p>
-            <p className="text-[10px] text-primary-500 font-bold mt-0.5 uppercase tracking-wide">Premium</p>
+            <p className="text-[10px] text-primary-600 font-bold uppercase tracking-wide mt-1">
+              Premium
+            </p>
           </Link>
         )}
       </div>
@@ -236,5 +272,34 @@ export default async function AccountPage() {
         </div>
       )}
     </div>
+  );
+}
+
+// ─── Action card icons (inline SVG, no lucide dep in server component) ───────
+
+function PlayIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+      <path d="M6.3 4.5a1 1 0 0 1 1.5-.87l8 5.5a1 1 0 0 1 0 1.74l-8 5.5A1 1 0 0 1 6.3 15.5V4.5Z" />
+    </svg>
+  );
+}
+
+function SlidersIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" aria-hidden="true">
+      <line x1="4" y1="6" x2="16" y2="6" />
+      <circle cx="8" cy="6" r="1.75" fill="white" />
+      <line x1="4" y1="14" x2="16" y2="14" />
+      <circle cx="13" cy="14" r="1.75" fill="white" />
+    </svg>
+  );
+}
+
+function ShieldIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M10 2.5 4 4.5v5c0 4 2.5 7 6 8 3.5-1 6-4 6-8v-5l-6-2Z" />
+    </svg>
   );
 }

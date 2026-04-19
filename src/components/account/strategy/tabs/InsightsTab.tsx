@@ -38,12 +38,21 @@ export function InsightsTab() {
       <section>
         <SectionLabel>Métriques clés</SectionLabel>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-          <MetricCard
-            label="Score de discipline"
-            value={`${i.disciplineScore}/100`}
-            subvalue={`${i.monthsLogged}/${i.monthsSinceStart} mois loggés`}
-            tone={i.disciplineScore >= 80 ? "positive" : i.disciplineScore >= 50 ? "default" : "muted"}
-          />
+          {i.monthsLogged < 3 ? (
+            <MetricCard
+              label="Score de discipline"
+              value="En cours"
+              subvalue="Disponible après 3 mois de suivi"
+              tone="muted"
+            />
+          ) : (
+            <MetricCard
+              label="Score de discipline"
+              value={`${i.disciplineScore}/100`}
+              subvalue={`${i.monthsLogged}/${i.monthsSinceStart} mois loggés`}
+              tone={i.disciplineScore >= 80 ? "positive" : i.disciplineScore >= 50 ? "default" : "muted"}
+            />
+          )}
           <MetricCard
             label="Série actuelle"
             value={`${i.currentStreak} mois`}

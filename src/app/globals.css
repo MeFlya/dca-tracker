@@ -118,14 +118,29 @@
   box-shadow: none;
 }
 
+/* Subtle card lift on hover — for KPIs and action cards */
+.card-hover {
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgb(15 23 42 / 0.06);
+}
+
 /* Respect reduced-motion */
 @media (prefers-reduced-motion: reduce) {
   .animate-fade-in,
   .animate-slide-up,
   .animate-badge-pop,
-  .btn-lift {
+  .btn-lift,
+  .card-hover {
     animation: none !important;
     transition: none !important;
+  }
+  .btn-lift:hover,
+  .card-hover:hover {
+    transform: none !important;
+    box-shadow: none !important;
   }
 }
 

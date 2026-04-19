@@ -29,7 +29,7 @@ export function MetricCard({
   const valueSize = size === "compact" ? "text-sm" : size === "large" ? "text-2xl" : "text-lg";
 
   return (
-    <div className={`rounded-xl bg-white border border-gray-100 ${padding}`}>
+    <div className={`rounded-xl bg-white border border-gray-100 card-hover ${padding}`}>
       <div className="flex items-center gap-1.5 mb-1">
         {icon && <span className="text-gray-400 shrink-0">{icon}</span>}
         <p className="text-[10px] text-gray-400 uppercase tracking-wide leading-tight">

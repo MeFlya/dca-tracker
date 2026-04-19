@@ -18,8 +18,10 @@ import {
   ArrowUp,
   ArrowDown,
   Plus,
+  Target,
+  Sparkles,
 } from "lucide-react";
-import { formatEur } from "@/lib/simulator";
+import { runSimulation, formatEur } from "@/lib/simulator";
 import {
   computeInterestSnapshot,
   computeYearOverYear,
@@ -167,6 +169,12 @@ export function OverviewTab() {
         </div>
       </section>
 
+      {/* ── Contextual coach insight ────────────────────────────────────── */}
+      <ActionInsight />
+
+      {/* ── Long-term projection ────────────────────────────────────────── */}
+      <LongTermProjection />
+
       {/* ── This month recap ────────────────────────────────────────────── */}
       <MonthRecapBlock />
 
@@ -188,6 +196,112 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 }
 
 // ─── Sub-blocks ───────────────────────────────────────────────────────────────
+
+function ActionInsight() {
+  const { strategy, entries, monthsElapsed, openLogModal } = useStrategy();
+  if (!entries.length) return null;
+
+  const latest = entries[entries.length - 1];
+  const theoretical = theoreticalValueAtMonth(
+    strategy.input,
+    Math.max(monthsElapsed, 1),
+  );
+  const delta = latest.portfolioValue - theoretical;
+  const ahead = delta >= 0;
+
+  return (
+    <section>
+      <SectionLabel>Conseil du mois</SectionLabel>
+      <div
+        className={`rounded-2xl border px-5 py-5 ${
+          ahead
+            ? "bg-emerald-50/50 border-emerald-100"
+            : "bg-amber-50/50 border-amber-100"
+        }`}
+      >
+        <div className="flex items-start gap-3 mb-3">
+          <div
+            className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
+              ahead
+                ? "bg-emerald-100 text-emerald-700"
+                : "bg-amber-100 text-amber-700"
+            }`}
+          >
+            {ahead ? <Sparkles size={18} /> : <Target size={18} />}
+          </div>
+          <div className="flex-1">
+            <p
+              className={`text-base font-bold leading-snug ${
+                ahead ? "text-emerald-900" : "text-amber-900"
+              }`}
+            >
+              {ahead
+                ? `Vous êtes en avance de +${formatEur(delta)}`
+                : `Vous êtes en retard de ${formatEur(Math.abs(delta))}`}
+            </p>
+            <p
+              className={`text-sm leading-relaxed mt-1 ${
+                ahead ? "text-emerald-800" : "text-amber-800"
+              }`}
+            >
+              {ahead
+                ? "Continuez à ce rythme — vous êtes au-dessus de votre projection théorique."
+                : "Un simple rattrapage ce mois peut vous remettre sur la bonne trajectoire."}
+            </p>
+          </div>
+        </div>
+
+        <button
+          onClick={() => openLogModal()}
+          className={`text-sm font-semibold px-4 py-2 rounded-xl inline-flex items-center gap-1.5 btn-lift transition-colors ${
+            ahead
+              ? "bg-emerald-600 hover:bg-emerald-700 text-white"
+              : "bg-amber-600 hover:bg-amber-700 text-white"
+          }`}
+        >
+          {ahead ? "Continuer ce mois" : "Rattraper ce mois"}
+          <ArrowUp size={14} className="-rotate-45" />
+        </button>
+      </div>
+    </section>
+  );
+}
+
+function LongTermProjection() {
+  const { strategy } = useStrategy();
+  const sim = runSimulation(strategy.input);
+  const finalValue = sim.base.finalValue;
+  const totalInvested = sim.base.totalInvested;
+  const totalGain = sim.base.totalGain;
+
+  // End year of the strategy
+  const [sy] = strategy.startMonth.split("-").map(Number);
+  const endYear = sy + strategy.input.durationYears;
+
+  return (
+    <section>
+      <SectionLabel>Projection actuelle</SectionLabel>
+      <div className="rounded-2xl border border-gray-100 bg-white p-5">
+        <p className="text-sm text-gray-500 mb-1">
+          Si vous continuez ainsi, à la fin de votre plan :
+        </p>
+        <p className="text-3xl font-bold text-gray-900 tabular-nums leading-tight mb-1">
+          {formatEur(finalValue)}{" "}
+          <span className="text-base font-semibold text-gray-400">en {endYear}</span>
+        </p>
+        <p className="text-xs text-gray-500 leading-relaxed">
+          Dont{" "}
+          <strong className="text-emerald-700 tabular-nums">
+            {formatEur(totalGain)}
+          </strong>{" "}
+          générés par les intérêts composés · sur{" "}
+          <span className="tabular-nums">{formatEur(totalInvested)}</span> investis
+          au total.
+        </p>
+      </div>
+    </section>
+  );
+}
 
 function MonthRecapBlock() {
   const { entries } = useStrategy();
@@ -213,30 +327,33 @@ function MonthRecapBlock() {
         )}
         <div>
           <p
-            className={`text-sm font-semibold mb-0.5 ${
+            className={`text-sm font-semibold mb-1 ${
               positive ? "text-emerald-900" : "text-orange-900"
             }`}
           >
-            {positive ? "Intérêts composés ce mois" : "Mois baissier — le DCA continue"}
+            {positive
+              ? "Ce mois, votre argent a travaillé pour vous."
+              : "Mois baissier — le DCA continue."}
           </p>
           <p
-            className={`text-xs leading-relaxed ${
+            className={`text-sm leading-relaxed ${
               positive ? "text-emerald-800" : "text-orange-800"
             }`}
           >
             {positive ? (
               <>
-                Vous avez versé {formatEur(snap.invested)}, votre portefeuille a
-                gagné {formatEur(snap.delta)}. Les intérêts composés ont ajouté{" "}
-                <strong>+{formatEur(snap.interest)}</strong> sans effort de votre
-                part.
+                <strong className="tabular-nums">+{formatEur(snap.interest)}</strong>{" "}
+                générés sans effort, en plus de vos {formatEur(snap.invested)}{" "}
+                versés.
               </>
             ) : (
               <>
                 Le marché a retiré{" "}
-                <strong>{formatEur(Math.abs(snap.interest))}</strong> ce mois. Vos{" "}
-                {formatEur(snap.invested)} versés continuent d&apos;acheter à prix
-                réduit — c&apos;est le DCA qui fait son travail.
+                <strong className="tabular-nums">
+                  {formatEur(Math.abs(snap.interest))}
+                </strong>{" "}
+                ce mois. Vos {formatEur(snap.invested)} versés continuent
+                d&apos;acheter à prix réduit.
               </>
             )}
           </p>
