@@ -64,6 +64,19 @@ export default function HomePage() {
       <Features />
       <TrackingPitch />
       <TrustSection />
+
+      {/* Discreet link to About page — below engagements, above FAQ */}
+      <div className="bg-slate-50 border-b border-gray-100 py-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <a
+            href="/a-propos"
+            className="text-sm text-gray-500 hover:text-gray-900 underline underline-offset-4 decoration-gray-300 hover:decoration-gray-600 transition-colors"
+          >
+            → Qui est derrière DCA Tracker ?
+          </a>
+        </div>
+      </div>
+
       <FAQ />
 
       <EmailCapture source="homepage" />

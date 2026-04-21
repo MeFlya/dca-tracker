@@ -156,23 +156,35 @@ export function Footer() {
                   Glossaire
                 </Link>
               </li>
+            </ul>
+          </div>
+
+          {/* À propos */}
+          <div>
+            <h3 className="text-xs font-semibold text-gray-900 uppercase tracking-wider mb-3">
+              À propos
+            </h3>
+            <ul className="space-y-2">
+              <li>
+                <Link href="/a-propos" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+                  Qui est derrière
+                </Link>
+              </li>
+              <li>
+                <Link href="/a-propos#roadmap" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+                  Roadmap
+                </Link>
+              </li>
               <li>
                 <Link href="/methodologie" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
                   Méthodologie
                 </Link>
               </li>
-            </ul>
-          </div>
-
-          {/* Légal */}
-          <div>
-            <h3 className="text-xs font-semibold text-gray-900 uppercase tracking-wider mb-3">
-              Légal
-            </h3>
-            <ul className="space-y-2">
-              <li><span className="text-sm text-gray-400">Pas de conseil financier</span></li>
-              <li><span className="text-sm text-gray-400">Données indicatives</span></li>
-              <li><span className="text-sm text-gray-400">Outil éducatif uniquement</span></li>
+              <li>
+                <a href="mailto:contact@dcatracker.fr" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+                  Contact
+                </a>
+              </li>
             </ul>
           </div>
         </div>

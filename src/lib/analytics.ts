@@ -26,6 +26,7 @@
 export type AnalyticsEvent =
   // ── Top of funnel
   | { name: "visit_home" }
+  | { name: "visit_about" }
   | { name: "homepage_cta_click"; props: { destination: "simulator" | "compare_etf" | "tarifs" } }
 
   // ── Simulator
