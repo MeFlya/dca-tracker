@@ -1,6 +1,7 @@
 import { IMarketDataProvider } from "./types";
 import { AlphaVantageProvider } from "./alpha-vantage-provider";
 import { YahooFinanceProvider } from "./yahoo-finance-provider";
+import { TwelveDataProvider } from "./twelve-data-provider";
 import { MockProvider } from "./mock-provider";
 
 export * from "./types";
@@ -9,15 +10,29 @@ export * from "./types";
 // Add new providers here without changing any caller code.
 //
 // Default = "yahoo_finance" : gratuit, sans clé, couvre tous les ETF du
-// catalogue. Twelve Data nécessite un plan payant pour les bourses EU
-// (cf chore commit "keep twelve_data provider as inactive fallback").
+// catalogue. Les autres providers sont conservés en option :
+//  - twelve_data : nécessite un plan Grow (29 $/mo) pour les UCITS EU,
+//    free tier ne couvre que SPY / QQQ. Réactivable via env var si on
+//    upgrade plus tard.
+//  - alpha_vantage : 25 req/jour free tier, plan B
+//  - mock : données illustratives (CI / dev sans réseau)
 function createProvider(): IMarketDataProvider {
   const providerName = process.env.MARKET_DATA_PROVIDER ?? "yahoo_finance";
   const avKey = process.env.ALPHA_VANTAGE_API_KEY ?? "";
+  const tdKey = process.env.TWELVE_DATA_API_KEY ?? "";
 
   switch (providerName) {
     case "yahoo_finance":
       return new YahooFinanceProvider();
+
+    case "twelve_data":
+      if (!tdKey) {
+        console.warn(
+          "[market-data] TWELVE_DATA_API_KEY is not set. Falling back to mock provider."
+        );
+        return new MockProvider();
+      }
+      return new TwelveDataProvider(tdKey);
 
     case "alpha_vantage":
       if (!avKey) {
@@ -52,8 +67,10 @@ export function getMarketDataProvider(): IMarketDataProvider {
 export function isDemo(): boolean {
   const providerName = process.env.MARKET_DATA_PROVIDER ?? "yahoo_finance";
   const avKey = process.env.ALPHA_VANTAGE_API_KEY ?? "";
+  const tdKey = process.env.TWELVE_DATA_API_KEY ?? "";
 
   if (providerName === "yahoo_finance") return false;
+  if (providerName === "twelve_data" && tdKey) return false;
   if (providerName === "alpha_vantage" && avKey) return false;
   return true;
 }
