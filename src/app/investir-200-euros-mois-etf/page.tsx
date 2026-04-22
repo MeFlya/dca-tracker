@@ -91,7 +91,7 @@ const FAQ = [
   },
   {
     q: "Quel est le meilleur courtier pour investir 200€/mois en ETF ?",
-    a: "Pour un PEA avec 200€/mois, les options populaires en France sont Boursorama (PEA gratuit, ordres à partir de 0,99€), Trade Republic (interface simple, 1€ par ordre), et Fortuneo (PEA avec ordres gratuits sous conditions). La priorité : zéro frais de tenue de compte, frais d'ordre faibles et ETF MSCI World disponibles.",
+    a: "Pour un PEA avec 200€/mois, les options populaires en France sont Boursorama (PEA gratuit, ordres à partir de 0,99€), Trade Republic (interface simple, 1€ par ordre — et 0€ en plan d'épargne programmée), et Fortuneo (PEA avec ordres gratuits sous conditions). La priorité : zéro frais de tenue de compte, frais d'ordre faibles et ETF MSCI World disponibles.",
   },
 ];
 

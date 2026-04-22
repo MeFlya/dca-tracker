@@ -81,8 +81,12 @@ export default function ComparatifHubPage() {
                     <span className="text-gray-400">Non</span>
                   )}
                 </td>
-                <td className="px-4 py-3 text-gray-700 text-xs">
-                  {b.specs.orderFeesText.split(" · ")[0]}
+                <td className="px-4 py-3 text-gray-700 text-xs leading-relaxed">
+                  {b.specs.orderFeesText.split(" · ").map((part, idx) => (
+                    <span key={idx} className={idx === 0 ? "" : "block text-[11px] text-emerald-700 font-semibold"}>
+                      {idx > 0 && "↳ "}{part}
+                    </span>
+                  ))}
                 </td>
                 <td className="px-4 py-3">
                   <span

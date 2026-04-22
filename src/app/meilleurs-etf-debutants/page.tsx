@@ -4,7 +4,7 @@ import { ETF_LIST } from "@/lib/etf-config";
 import { EmailCapture } from "@/components/ui/EmailCapture";
 import { JsonLd } from "@/components/ui/JsonLd";
 
-const TITLE = "Meilleurs ETF pour débutants en 2025 : notre sélection commentée";
+const TITLE = "Meilleurs ETF pour débutants en 2026 : notre sélection commentée";
 const DESCRIPTION =
   "Quel ETF choisir pour commencer à investir en bourse ? Notre sélection des meilleurs ETF pour débutants en France : MSCI World, S&P 500, FTSE All-World — avec TER, éligibilité PEA et recommandations claires.";
 
@@ -199,7 +199,7 @@ export default function MeilleursETFDebutantsPage() {
       </nav>
 
       <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">
-        Meilleurs ETF pour débutants : notre sélection pour 2025
+        Meilleurs ETF pour débutants : notre sélection pour 2026
       </h1>
       <p className="text-lg text-gray-500 mb-12 leading-relaxed">
         Vous voulez investir en bourse mais vous ne savez pas quel ETF
