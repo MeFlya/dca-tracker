@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef, useMemo } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { SimulatorForm } from "@/components/simulator/SimulatorForm";
 import { SimulatorHero } from "@/components/simulator/SimulatorHero";
@@ -18,45 +18,31 @@ import { runSimulation, SimulatorInput, SimulatorOutput } from "@/lib/simulator"
 import { runMonteCarlo } from "@/lib/monte-carlo";
 import { EmailCapture } from "@/components/ui/EmailCapture";
 import { InvestCTA } from "@/components/ui/InvestCTA";
-import {
-  paramsFromSearch,
-  paramsToSearch,
-  hasSimulationParams,
-} from "@/lib/simulation-params";
+import { paramsToSearch } from "@/lib/simulation-params";
 import { track } from "@/lib/analytics";
 
-const FALLBACK_INPUT: SimulatorInput = {
-  monthlyAmount: 200,
-  durationYears: 20,
-  annualReturnPct: 7,
-  annualFeesPct: 0.3,
-  annualInflationPct: undefined,
-};
+interface Props {
+  /**
+   * Server-computed output. Used as the initial simulation state so the
+   * first paint contains real numbers (SSR SEO + instant TTI).
+   */
+  initialOutput: SimulatorOutput;
+}
 
-export function SimulatorPageClient() {
+export function SimulatorPageClient({ initialOutput }: Props) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { user } = useUser();
 
   const plan = (user?.publicMetadata?.plan as string) ?? "free";
   const isPremium = plan === "premium";
 
-  const [initialParams] = useState(() => {
-    if (hasSimulationParams(searchParams)) return paramsFromSearch(searchParams);
-    return null;
-  });
+  // Derive inflation-enabled from the server output itself (presence of
+  // inflationAdjustedValue on any scenario = inflation was in the input).
+  const initialInflationEnabled =
+    initialOutput.input.annualInflationPct !== undefined;
+  const initialInput = initialOutput.input;
 
-  const initialInput = initialParams?.input ?? FALLBACK_INPUT;
-  const initialInflationEnabled = initialParams?.inflationEnabled ?? false;
-
-  const [output, setOutput] = useState<SimulatorOutput>(() =>
-    runSimulation({
-      ...initialInput,
-      annualInflationPct: initialInflationEnabled
-        ? initialInput.annualInflationPct
-        : undefined,
-    })
-  );
+  const [output, setOutput] = useState<SimulatorOutput>(initialOutput);
 
   const [saveRefreshKey, setSaveRefreshKey] = useState(0);
   const monteCarloResult = useMemo(() => runMonteCarlo(output.input), [output.input]);
