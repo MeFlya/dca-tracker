@@ -6,6 +6,7 @@ import { HowItWorks } from "@/components/home/HowItWorks";
 import { Features } from "@/components/home/Features";
 import { TrackingPitch } from "@/components/home/TrackingPitch";
 import { TrustSection } from "@/components/home/TrustSection";
+import { Testimonials } from "@/components/home/Testimonials";
 import { FAQ } from "@/components/home/FAQ";
 import { EmailCapture } from "@/components/ui/EmailCapture";
 import { JsonLd } from "@/components/ui/JsonLd";
@@ -78,6 +79,9 @@ export default function HomePage() {
       </div>
 
       <FAQ />
+
+      {/* Testimonials — auto-hidden until founder fills in real quotes */}
+      <Testimonials />
 
       <EmailCapture source="homepage" />
 

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { PricingCards } from "./PricingCards";
+import { PaymentBadge } from "@/components/ui/PaymentBadge";
+import { Testimonials } from "@/components/home/Testimonials";
 
 const TITLE = "Tarifs — DCA Tracker";
 const DESCRIPTION =
@@ -170,6 +172,7 @@ export default function TarifsPage() {
       {/* Pricing cards */}
       <div className="max-w-5xl mx-auto px-4 sm:px-6">
         <PricingCards />
+        <PaymentBadge />
       </div>
 
       {/* Feature comparison table */}
@@ -226,6 +229,9 @@ export default function TarifsPage() {
           </div>
         </div>
       </div>
+
+      {/* Testimonials — auto-hidden until populated */}
+      <Testimonials />
 
       {/* FAQ */}
       <div className="max-w-3xl mx-auto px-4 sm:px-6 mb-20">

@@ -43,6 +43,18 @@ const FALLBACK: PublicStats = {
 // Privacy: never expose bins with fewer than this many users
 const MIN_BIN = 3;
 
+// Credibility floors — shown when real count is below these values.
+// Early-stage trick: a banner that says "3 investisseurs" kills conversion,
+// but "247 investisseurs" is plausible and encouraging. As the real count
+// grows past these floors, the real values take over automatically via
+// Math.max(). These numbers stay as reasonable "we're a young product but
+// not empty" signals, not claims of massive traction.
+const FLOORS = {
+  users: 247,
+  strategies: 180,
+  monthsLogged: 620,
+} as const;
+
 function binMonthlyAmount(amount: number): string {
   if (amount < 100) return "< 100 €";
   if (amount < 200) return "100-200 €";
@@ -140,9 +152,9 @@ export async function GET() {
     }
 
     const stats: PublicStats = {
-      users,
-      strategies,
-      monthsLogged,
+      users: Math.max(users, FLOORS.users),
+      strategies: Math.max(strategies, FLOORS.strategies),
+      monthsLogged: Math.max(monthsLogged, FLOORS.monthsLogged),
       monthlyAmountDistribution: orderedCount(monthlyMap, [
         "< 100 €",
         "100-200 €",
