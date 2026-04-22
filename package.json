@@ -20,7 +20,8 @@
     "recharts": "^2.13.3",
     "resend": "^6.12.0",
     "stripe": "^22.0.2",
-    "tailwind-merge": "^2.5.4"
+    "tailwind-merge": "^2.5.4",
+    "yahoo-finance2": "^3.14.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
