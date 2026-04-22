@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef, useMemo } from "react";
+import { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { SimulatorForm } from "@/components/simulator/SimulatorForm";
@@ -43,6 +43,17 @@ export function SimulatorPageClient({ initialOutput }: Props) {
   const initialInput = initialOutput.input;
 
   const [output, setOutput] = useState<SimulatorOutput>(initialOutput);
+
+  // Mark the onboarding "step 2: run first simulation" as complete as soon
+  // as the user lands on the simulator page. Read by <OnboardingChecklist>
+  // on the dashboard. Wrapped in try/catch for private-mode Safari.
+  useEffect(() => {
+    try {
+      localStorage.setItem("dca_has_simulated", "1");
+    } catch {
+      // Storage disabled — onboarding step will stay "current", no crash
+    }
+  }, []);
 
   const [saveRefreshKey, setSaveRefreshKey] = useState(0);
   const monteCarloResult = useMemo(() => runMonteCarlo(output.input), [output.input]);

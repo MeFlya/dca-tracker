@@ -1,5 +1,14 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { Check, ArrowRight, Lock } from "lucide-react";
+
+// localStorage key set by SimulatorPageClient on first page load.
+// Used here to detect "step 2 done" even when the user hasn't yet saved
+// a strategy (which only Premium can do). Survives across sessions on
+// the same device — acceptable tradeoff for an onboarding signal.
+const SIMULATED_FLAG_KEY = "dca_has_simulated";
 
 type StepStatus = "done" | "current" | "locked";
 
@@ -21,9 +30,26 @@ interface Props {
  * Post-signup onboarding checklist shown on /account when the user hasn't
  * yet completed the full activation flow (signup → simulate → save strategy).
  * Renders different step states depending on plan + data.
+ *
+ * Client component: reads localStorage to detect whether the user has
+ * opened the simulator at least once — otherwise step 2 would stay
+ * "current" indefinitely for free users who can't save a strategy.
  */
 export function OnboardingChecklist({ isPremium, hasStrategy, firstName }: Props) {
-  const steps = buildSteps({ isPremium, hasStrategy });
+  // Read the "has simulated" flag on mount. Default false during SSR so
+  // the initial render matches the server (no hydration mismatch). The
+  // component re-renders once the flag is read from localStorage.
+  const [hasSimulated, setHasSimulated] = useState(false);
+
+  useEffect(() => {
+    try {
+      setHasSimulated(localStorage.getItem(SIMULATED_FLAG_KEY) === "1");
+    } catch {
+      // Private mode / storage disabled — leave as false
+    }
+  }, []);
+
+  const steps = buildSteps({ isPremium, hasStrategy, hasSimulated });
   const completed = steps.filter((s) => s.status === "done").length;
 
   return (
@@ -94,10 +120,15 @@ export function OnboardingChecklist({ isPremium, hasStrategy, firstName }: Props
 function buildSteps({
   isPremium,
   hasStrategy,
+  hasSimulated,
 }: {
   isPremium: boolean;
   hasStrategy: boolean;
+  hasSimulated: boolean;
 }): Step[] {
+  // Having a saved strategy implies the user has simulated at least once.
+  const simulated = hasSimulated || hasStrategy;
+
   // Step 1 is always complete — they signed up to reach this screen.
   const step1: Step = {
     number: 1,
@@ -108,18 +139,29 @@ function buildSteps({
     status: "done",
   };
 
-  // Step 2: run first simulation
-  const step2: Step = {
-    number: 2,
-    title: "Lancez votre première simulation",
-    description:
-      "Entrez un montant mensuel et une durée. Voyez votre projection sur 20-30 ans en 10 secondes.",
-    status: "current",
-    cta: { label: "Ouvrir le simulateur", href: "/simulateur" },
-  };
+  // Step 2: "launched first simulation" — marked done as soon as the user
+  // has opened the simulator page (tracked via localStorage flag set in
+  // SimulatorPageClient on mount).
+  const step2: Step = simulated
+    ? {
+        number: 2,
+        title: "Première simulation lancée",
+        description:
+          "Vous avez exploré le simulateur. Ajustez les curseurs pour tester d'autres scénarios à tout moment.",
+        status: "done",
+      }
+    : {
+        number: 2,
+        title: "Lancez votre première simulation",
+        description:
+          "Entrez un montant mensuel et une durée. Voyez votre projection sur 20-30 ans en 10 secondes.",
+        status: "current",
+        cta: { label: "Ouvrir le simulateur", href: "/simulateur" },
+      };
 
-  // Step 3: depends on plan
+  // Step 3: depends on plan + state
   if (!isPremium) {
+    // Free plan: step 3 is always locked (save strategy requires Premium)
     const step3: Step = {
       number: 3,
       title: "Sauvegardez votre stratégie",
@@ -130,31 +172,30 @@ function buildSteps({
     return [step1, step2, step3];
   }
 
-  // Premium users
+  // Premium without strategy: step 3 becomes current once simulation is done
   if (!hasStrategy) {
     const step3: Step = {
       number: 3,
       title: "Sauvegardez votre stratégie",
       description:
         "Depuis le simulateur, cliquez sur 'Sauvegarder ma stratégie' pour démarrer le tracking mensuel.",
-      status: "current",
-      cta: { label: "Ouvrir le simulateur", href: "/simulateur" },
+      status: simulated ? "current" : "locked",
+      cta: simulated
+        ? { label: "Ouvrir le simulateur", href: "/simulateur" }
+        : undefined,
     };
     return [step1, step2, step3];
   }
 
-  // Premium + has strategy (shouldn't really render this — OverviewTab's EmptyState handles it)
+  // Premium + has strategy (shouldn't really render this — StrategyTracker replaces it)
   const step3Done: Step = {
     number: 3,
     title: "Stratégie sauvegardée",
-    description: "Votre stratégie est prête. Enregistrez votre premier mois pour activer le suivi.",
+    description:
+      "Votre stratégie est prête. Enregistrez votre premier mois pour activer le suivi.",
     status: "done",
   };
-  return [
-    step1,
-    { ...step2, status: "done" },
-    step3Done,
-  ];
+  return [step1, step2, step3Done];
 }
 
 // ─── Step row component ───────────────────────────────────────────────────────
