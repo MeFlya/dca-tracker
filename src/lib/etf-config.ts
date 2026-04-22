@@ -218,20 +218,12 @@ export const ETF_LIST: ETFConfig[] = [
     peaEligible: true,
     region: "small-cap",
   },
-  {
-    symbol: "SMAE.PA",
-    displaySymbol: "SMAE",
-    name: "Amundi MSCI Europe Small Cap UCITS ETF",
-    description:
-      "Accès aux petites entreprises européennes via swap, éligible PEA. Complément d'un ETF Europe large cap pour une exposition plus large au tissu économique européen.",
-    category: "Actions petites caps Europe",
-    ter: 0.3,
-    replicationMethod: "Synthétique (swap)",
-    distributionPolicy: "Capitalisant",
-    isin: "LU1681038672",
-    peaEligible: true,
-    region: "small-cap",
-  },
+  // Note: l'ancienne entrée "SMAE — Amundi MSCI Europe Small Cap" a été
+  // supprimée le 22/04/2026. Son ISIN (LU1681038672) pointait en réalité sur
+  // le même fonds que RS2K (Amundi Russell 2000 EUR-hedged), et le nom était
+  // incorrect — c'était un doublon trompeur. Un vrai ETF Europe Small Cap
+  // pourra être ajouté ultérieurement (candidat : ZPRS / SPDR MSCI Europe
+  // Small Cap Value Weighted, ISIN IE00BSPLC413, non PEA).
   {
     symbol: "IUSN.DE",
     displaySymbol: "IUSN",
