@@ -186,8 +186,12 @@ export async function GET() {
 
     return NextResponse.json(stats, {
       headers: {
+        // 5 min browser + CDN cache, 1h stale-while-revalidate.
+        // Short TTL so floor/real-count changes propagate quickly. Previous
+        // 24h cache meant users saw stale "3 investisseurs" for a full day
+        // after the floor was raised.
         "Cache-Control":
-          "public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800",
+          "public, max-age=300, s-maxage=300, stale-while-revalidate=3600",
       },
     });
   } catch (err) {
