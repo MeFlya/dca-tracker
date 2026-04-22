@@ -9,10 +9,28 @@ interface ETFCardProps {
   etf: ETFConfig;
   quote?: AssetQuote | null;
   error?: string | null;
+  /** Source label shown below the price (e.g. "Twelve Data", "Alpha Vantage") */
+  providerLabel?: string;
 }
 
-export function ETFCard({ etf, quote, error }: ETFCardProps) {
+/** "il y a 12 min", "il y a 2h", "il y a 1j" — French relative time. */
+function formatRelativeTime(iso: string): string {
+  const diffMs = Date.now() - new Date(iso).getTime();
+  const diffMin = Math.max(0, Math.round(diffMs / 60_000));
+  if (diffMin < 1) return "à l'instant";
+  if (diffMin < 60) return `il y a ${diffMin} min`;
+  const diffH = Math.round(diffMin / 60);
+  if (diffH < 24) return `il y a ${diffH} h`;
+  const diffD = Math.round(diffH / 24);
+  return diffD === 1 ? "il y a 1 j" : `il y a ${diffD} j`;
+}
+
+export function ETFCard({ etf, quote, error, providerLabel }: ETFCardProps) {
   const positive = (quote?.changePercent ?? 0) >= 0;
+  // "Cours non disponible" = couvert par notre catalogue mais pas par
+  // le provider (= ETF retiré de symbol-map). On masque le bloc prix
+  // entièrement (pas de message d'erreur agressif).
+  const hideQuoteSection = error === "Cours non disponible pour cet ETF";
 
   return (
     <div className="card hover:shadow-card-hover transition-shadow duration-200 flex flex-col gap-4">
@@ -45,23 +63,34 @@ export function ETFCard({ etf, quote, error }: ETFCardProps) {
       </div>
 
       {/* Price block */}
-      {error ? (
+      {hideQuoteSection ? (
+        <div className="text-xs text-gray-400 italic">
+          Cours non disponible
+        </div>
+      ) : error ? (
         <div className="text-xs text-red-500 bg-red-50 rounded-lg px-3 py-2">
           Cours indisponible
         </div>
       ) : quote ? (
-        <div className="flex items-baseline gap-3">
-          <span className="text-2xl font-bold text-gray-900 tabular-nums">
-            {formatCurrency(quote.price, quote.currency)}
-          </span>
-          <span
-            className={cn(
-              "text-sm font-semibold tabular-nums",
-              positive ? "text-gain" : "text-loss"
-            )}
-          >
-            {formatPercent(quote.changePercent)}
-          </span>
+        <div className="flex flex-col gap-1">
+          <div className="flex items-baseline gap-3">
+            <span className="text-2xl font-bold text-gray-900 tabular-nums">
+              {formatCurrency(quote.price, quote.currency)}
+            </span>
+            <span
+              className={cn(
+                "text-sm font-semibold tabular-nums",
+                positive ? "text-gain" : "text-loss"
+              )}
+            >
+              {formatPercent(quote.changePercent)}
+            </span>
+          </div>
+          {providerLabel && quote.lastUpdated && (
+            <p className="text-[11px] text-gray-400">
+              Source : {providerLabel} · Mis à jour {formatRelativeTime(quote.lastUpdated)}
+            </p>
+          )}
         </div>
       ) : (
         <div className="h-8 bg-gray-100 rounded-lg animate-pulse w-32" />

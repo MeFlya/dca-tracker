@@ -8,6 +8,8 @@ import { ETFCard } from "@/components/etf/ETFCard";
 interface ETFGridProps {
   etfs: ETFConfig[];
   quotes: Record<string, { quote: AssetQuote | null; error: string | null }>;
+  /** Optional provider label shown under each price (e.g. "Yahoo Finance") */
+  providerLabel?: string;
 }
 
 const REGIONS: { value: ETFRegion | "tous"; label: string }[] = [
@@ -60,7 +62,7 @@ function sortEtfs(etfs: ETFConfig[], mode: SortMode): ETFConfig[] {
   }
 }
 
-export function ETFGrid({ etfs, quotes }: ETFGridProps) {
+export function ETFGrid({ etfs, quotes, providerLabel }: ETFGridProps) {
   const [region, setRegion] = useState<ETFRegion | "tous">("tous");
   const [peaOnly, setPeaOnly] = useState(false);
   const [maxTer, setMaxTer] = useState<number | null>(null);
@@ -179,6 +181,7 @@ export function ETFGrid({ etfs, quotes }: ETFGridProps) {
                 etf={etf}
                 quote={result?.quote}
                 error={result?.error}
+                providerLabel={providerLabel}
               />
             );
           })}

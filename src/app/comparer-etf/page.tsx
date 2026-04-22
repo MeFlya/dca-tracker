@@ -4,9 +4,9 @@ import { getMarketDataProvider, isDemo } from "@/lib/market-data";
 import { DemoBadge } from "@/components/ui/Disclaimer";
 import { ETFGrid } from "./ETFGrid";
 
-const TITLE = "Comparer les ETF — CW8, VWCE, SP5, ANX, PAEEM et plus";
+const TITLE = "Comparer les ETF — CW8, VWCE, IWDA, ANX, AEEM et plus";
 const DESCRIPTION =
-  "Comparez 16 ETF populaires pour investisseurs en France : monde, S&P 500, Nasdaq, émergents, Europe, small cap, obligations. Filtres PEA, région, TER. Cours indicatifs, frais réels et simulation DCA intégrée.";
+  "Comparez 15 ETF populaires pour investisseurs en France : monde, S&P 500, Nasdaq, émergents, Europe, small cap, obligations. Filtres PEA, région, TER. Cours indicatifs, frais réels et simulation DCA intégrée.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -27,13 +27,22 @@ export const metadata: Metadata = {
   },
 };
 
-export const revalidate = 300;
+// Aligned with the cache TTL — re-render the SSR page every 60 min
+export const revalidate = 3600;
+
+// Provider name → human-readable label for the source line under each price
+const PROVIDER_LABELS: Record<string, string> = {
+  TwelveData: "Twelve Data",
+  AlphaVantage: "Alpha Vantage",
+  Mock: "Mode démo",
+};
 
 export default async function ComparerETFPage() {
   const provider = getMarketDataProvider();
   const symbols = ETF_LIST.map((e) => e.symbol);
   const batch = await provider.getQuotes(symbols);
   const demo = isDemo();
+  const providerLabel = PROVIDER_LABELS[provider.name] ?? provider.name;
 
   const quotes = Object.fromEntries(
     Object.entries(batch.results).map(([symbol, result]) => [
@@ -66,7 +75,7 @@ export default async function ComparerETFPage() {
       </div>
 
       {/* Filterable grid */}
-      <ETFGrid etfs={ETF_LIST} quotes={quotes} />
+      <ETFGrid etfs={ETF_LIST} quotes={quotes} providerLabel={demo ? undefined : providerLabel} />
 
       {/* Disclaimer */}
       <div className="mt-10 p-4 rounded-xl bg-amber-50 border border-amber-200">

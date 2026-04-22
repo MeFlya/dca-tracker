@@ -37,5 +37,9 @@ class TTLCache<T> {
   }
 }
 
-const DEFAULT_TTL = parseInt(process.env.MARKET_DATA_CACHE_TTL ?? "300", 10);
+// Default TTL: 60 minutes. Pour un produit DCA long-terme (horizon 20 ans),
+// rafraîchir les cours chaque heure suffit largement et permet de tenir
+// largement dans le free tier Twelve Data (~16 fetch/h max au lieu de
+// ~192 avec l'ancien TTL de 5 min). Override via env si besoin.
+const DEFAULT_TTL = parseInt(process.env.MARKET_DATA_CACHE_TTL ?? "3600", 10);
 export const quoteCache = new TTLCache<unknown>(DEFAULT_TTL);
