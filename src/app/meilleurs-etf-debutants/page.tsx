@@ -49,8 +49,8 @@ const TOP_PICKS = [
     watchOut: "La réplication synthétique (swap) introduit un risque de contrepartie faible mais réel. Encadré à 10 % par la réglementation UCITS.",
   },
   {
-    symbol: "EWLD",
-    name: "iShares MSCI World UCITS ETF",
+    symbol: "IWDA",
+    name: "iShares Core MSCI World UCITS ETF",
     ter: 0.20,
     pea: true,
     replication: "Physique optimisé",
@@ -87,7 +87,7 @@ const TOP_PICKS = [
     watchOut: "Non éligible PEA. À loger en CTO ou assurance-vie. La pondération émergents (~12 %) augmente la volatilité.",
   },
   {
-    symbol: "SP5",
+    symbol: "500",
     name: "Amundi S&P 500 UCITS ETF",
     ter: 0.15,
     pea: true,
@@ -166,7 +166,7 @@ export default function MeilleursETFDebutantsPage() {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://dcatracker.fr";
 
   // Get ETFs from config to show full list at bottom
-  const allETFs = ETF_LIST.filter((e) => ["CW8", "EWLD", "VWCE", "SP5", "ANX", "PAEEM", "PCEU"].includes(e.displaySymbol));
+  const allETFs = ETF_LIST.filter((e) => ["CW8", "IWDA", "VWCE", "500", "ANX", "AEEM", "PCEU"].includes(e.displaySymbol));
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -352,9 +352,9 @@ export default function MeilleursETFDebutantsPage() {
             <tbody>
               {[
                 { symbol: "CW8",  ter: "0,38 %", pea: true,  cover: "1 500 titres / 23 pays développés", ideal: "Premier ETF en PEA" },
-                { symbol: "EWLD", ter: "0,20 %", pea: true,  cover: "1 500 titres / 23 pays développés", ideal: "Alternative physique PEA" },
+                { symbol: "IWDA", ter: "0,20 %", pea: true,  cover: "1 500 titres / 23 pays développés", ideal: "Alternative physique PEA" },
                 { symbol: "VWCE", ter: "0,22 %", pea: false, cover: "3 700 titres / 49 pays", ideal: "Diversification maximale CTO" },
-                { symbol: "SP5",  ter: "0,15 %", pea: true,  cover: "500 grandes caps américaines", ideal: "S&P 500 en PEA" },
+                { symbol: "500",  ter: "0,15 %", pea: true,  cover: "500 grandes caps américaines", ideal: "S&P 500 en PEA" },
               ].map((row, i) => (
                 <tr key={row.symbol} className={i % 2 === 0 ? "bg-white" : "bg-gray-50/50"}>
                   <td className="px-4 py-3 font-bold text-gray-900 border-b border-gray-50">

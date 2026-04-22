@@ -59,7 +59,7 @@ const STEPS = [
           <div className="grid grid-cols-1 gap-2">
             {[
               { symbol: "CW8", name: "Amundi MSCI World", ter: "0,38 %", pea: true },
-              { symbol: "EWLD", name: "iShares MSCI World", ter: "0,20 %", pea: true },
+              { symbol: "IWDA", name: "iShares Core MSCI World", ter: "0,20 %", pea: true },
               { symbol: "VWCE", name: "Vanguard FTSE All-World", ter: "0,22 %", pea: true },
             ].map((etf) => (
               <Link

@@ -42,9 +42,11 @@ export const ETF_LIST: ETFConfig[] = [
     region: "monde",
   },
   {
-    symbol: "EWLD.PA",
-    displaySymbol: "EWLD",
-    name: "iShares MSCI World UCITS ETF",
+    // Anciennement EWLD.PA — Twelve Data ne liste pas cette variante Paris.
+    // Le listing Euronext Amsterdam IWDA couvre le même fonds (même ISIN).
+    symbol: "IWDA.AS",
+    displaySymbol: "IWDA",
+    name: "iShares Core MSCI World UCITS ETF",
     description:
       "Alternative à réplication physique au CW8, également exposée au MSCI World. Convient aux investisseurs qui préfèrent éviter le risque de contrepartie des swaps, tout en conservant l'éligibilité PEA.",
     category: "Actions monde développé",
@@ -76,8 +78,10 @@ export const ETF_LIST: ETFConfig[] = [
   // ── S&P 500 — grandes capitalisations américaines ─────────────────────────
 
   {
-    symbol: "SP5.PA",
-    displaySymbol: "SP5",
+    // Ex-Lyxor SP5 — devenu ticker "500" sur Euronext Paris après rachat
+    // Amundi (2022). Même ISIN.
+    symbol: "500.PA",
+    displaySymbol: "500",
     name: "Amundi S&P 500 UCITS ETF",
     description:
       "Version PEA-éligible du S&P 500 par Amundi. Réplication synthétique permettant d'accéder aux 500 plus grandes entreprises américaines dans le cadre fiscal avantageux du PEA. TER très compétitif à 0,15 %.",
@@ -166,8 +170,9 @@ export const ETF_LIST: ETFConfig[] = [
   // ── Marchés émergents ─────────────────────────────────────────────────────
 
   {
-    symbol: "PAEEM.PA",
-    displaySymbol: "PAEEM",
+    // Ex-Lyxor PAEEM — ticker AEEM sur Euronext Paris après rachat Amundi.
+    symbol: "AEEM.PA",
+    displaySymbol: "AEEM",
     name: "Amundi MSCI Emerging Markets UCITS ETF",
     description:
       "Exposition aux marchés émergents (Chine, Inde, Taïwan, Corée du Sud, Brésil…) via PEA grâce à la réplication synthétique d'Amundi. Complète idéalement un ETF MSCI World pour une diversification mondiale complète.",
@@ -245,8 +250,9 @@ export const ETF_LIST: ETFConfig[] = [
   // ── Japon ─────────────────────────────────────────────────────────────────
 
   {
-    symbol: "LYYA.PA",
-    displaySymbol: "LYYA",
+    // Ex-Lyxor LYYA — ticker JPNK sur Euronext Paris après rachat Amundi.
+    symbol: "JPNK.PA",
+    displaySymbol: "JPNK",
     name: "Amundi Japan TOPIX UCITS ETF",
     description:
       "Exposition au marché japonais via l'indice TOPIX (~2 200 entreprises), éligible PEA. Complément géographique pour diversifier hors États-Unis et Europe.",
@@ -262,8 +268,9 @@ export const ETF_LIST: ETFConfig[] = [
   // ── Obligataire — allocation défensive ────────────────────────────────────
 
   {
-    symbol: "OBLI.PA",
-    displaySymbol: "OBLI",
+    // Ex-Lyxor OBLI — ticker C3M sur Euronext Paris après rachat Amundi.
+    symbol: "C3M.PA",
+    displaySymbol: "C3M",
     name: "Amundi Euro Government Bond UCITS ETF",
     description:
       "ETF obligataire sur les emprunts d'État de la zone euro. Offre une composante défensive dans un portefeuille multi-actifs — contrepoids à la volatilité des ETF actions. Non éligible PEA (obligations), à loger en CTO ou assurance-vie.",

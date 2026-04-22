@@ -38,10 +38,10 @@ const ROWS = [
 
 const ETF_PEA = [
   { symbol: "CW8",   name: "Amundi MSCI World",              ter: "0,38 %", note: "Réplication synthétique — le plus populaire en PEA" },
-  { symbol: "EWLD",  name: "iShares MSCI World",             ter: "0,20 %", note: "Réplication physique optimisée — sans risque de contrepartie" },
-  { symbol: "SP5",   name: "Amundi S&P 500",                 ter: "0,15 %", note: "S&P 500 en PEA grâce à la réplication synthétique" },
+  { symbol: "IWDA",  name: "iShares Core MSCI World",        ter: "0,20 %", note: "Réplication physique optimisée — sans risque de contrepartie" },
+  { symbol: "500",   name: "Amundi S&P 500",                 ter: "0,15 %", note: "S&P 500 en PEA grâce à la réplication synthétique" },
   { symbol: "ANX",   name: "Amundi Nasdaq-100",              ter: "0,23 %", note: "Seule option PEA pour s'exposer au Nasdaq-100" },
-  { symbol: "PAEEM", name: "Amundi MSCI Emerging Markets",   ter: "0,20 %", note: "Marchés émergents accessibles en PEA via swap" },
+  { symbol: "AEEM",  name: "Amundi MSCI Emerging Markets",   ter: "0,20 %", note: "Marchés émergents accessibles en PEA via swap" },
   { symbol: "PCEU",  name: "Amundi STOXX Europe 600",        ter: "0,07 %", note: "600 grandes capitalisations européennes — frais minimaux" },
 ];
 

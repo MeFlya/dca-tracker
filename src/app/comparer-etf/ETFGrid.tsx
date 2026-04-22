@@ -25,7 +25,7 @@ const REGIONS: { value: ETFRegion | "tous"; label: string }[] = [
 // S&P 500 eligible PEA (ESE/SP5) → rest by TER ascending.
 // Rationale: this is the ~80% case for a French DCA beginner — diversified,
 // PEA-eligible, low TER. Ordering them first reduces analysis paralysis.
-const BEGINNER_PRIORITY = ["CW8", "EWLD", "ESE", "SP5"] as const;
+const BEGINNER_PRIORITY = ["CW8", "IWDA", "500"] as const;
 
 type SortMode = "recommande" | "ter" | "alpha";
 
