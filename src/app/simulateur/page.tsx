@@ -58,7 +58,26 @@ export default async function SimulateurPage({ searchParams }: Props) {
   const multiplier = base.totalInvested > 0 ? base.finalValue / base.totalInvested : 1;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="relative overflow-hidden">
+      {/* Ambient background for the top of the page — gradient + grid + orbs.
+          Same visual language as Hero, keeps the premium feel consistent.
+          Contained to the top 900px so long-scroll pages don't render orbs
+          below the fold (perf). */}
+      <div className="absolute inset-x-0 top-0 h-[900px] pointer-events-none" aria-hidden>
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-50 via-white to-transparent" />
+        <div
+          className="absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage:
+              "linear-gradient(#1d4ed8 1px, transparent 1px), linear-gradient(to right, #1d4ed8 1px, transparent 1px)",
+            backgroundSize: "56px 56px",
+          }}
+        />
+        <div className="absolute -top-20 -left-32 w-[500px] h-[500px] rounded-full bg-primary-400/30 blur-3xl animate-float-a" />
+        <div className="absolute top-10 -right-32 w-[600px] h-[600px] rounded-full bg-sky-400/25 blur-3xl animate-float-b" />
+      </div>
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       {/* Breadcrumb */}
       <nav aria-label="Fil d'ariane" className="flex items-center gap-2 text-sm text-gray-500 mb-3">
         <a href="/" className="hover:text-gray-600 transition-colors">Accueil</a>
@@ -71,7 +90,7 @@ export default async function SimulateurPage({ searchParams }: Props) {
         <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
           Projetez votre futur financier
         </h1>
-        <p className="text-gray-500 text-lg max-w-2xl">
+        <p className="text-gray-600 text-lg max-w-2xl">
           Ajustez les curseurs — votre projection se met à jour en temps réel.
           Basé sur la mécanique des intérêts composés et les données historiques ETF.
         </p>
@@ -135,6 +154,7 @@ export default async function SimulateurPage({ searchParams }: Props) {
             "Simulateur DCA ETF : projetez votre portefeuille avec intérêts composés, frais annuels et inflation. Calcul transparent, hypothèses vérifiables, sans inscription.",
         }}
       />
+      </div>
     </div>
   );
 }

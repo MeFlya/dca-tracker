@@ -156,20 +156,28 @@ export function PricingCards() {
 
           return (
             <div key={plan.id} id={plan.id} className="relative">
-              {/* Animated gradient border for the highlighted (Premium) plan.
-                  Gradient sits behind the card at -inset-px; card is rendered
-                  on top of it. Gradient-shift keyframe moves the gradient
-                  position laterally — creates a slow "glow sweep" effect. */}
+              {/* Premium card : effets empilés pour vraiment marquer la différence.
+                  1. Halo flou coloré derrière (visible au-delà de la card)
+                  2. Bordure gradient animée qui sweep (primary → indigo → sky)
+                  3. Card blanche opaque par dessus */}
               {isHighlight && (
-                <div
-                  className="absolute -inset-[1.5px] rounded-2xl bg-gradient-to-r from-primary-400 via-primary-500 to-primary-400 animate-gradient opacity-80 pointer-events-none"
-                  aria-hidden
-                />
+                <>
+                  {/* Halo flou — plus grand que la card, visible autour */}
+                  <div
+                    className="absolute -inset-4 rounded-3xl bg-gradient-to-br from-primary-400/40 via-indigo-400/30 to-sky-400/30 blur-2xl animate-breathe pointer-events-none"
+                    aria-hidden
+                  />
+                  {/* Bordure animée — 4 couleurs pour un vrai sweep visible */}
+                  <div
+                    className="absolute -inset-[3px] rounded-2xl bg-gradient-to-r from-primary-400 via-indigo-500 via-sky-400 to-primary-500 animate-gradient pointer-events-none"
+                    aria-hidden
+                  />
+                </>
               )}
               <div
                 className={`relative flex flex-col rounded-2xl p-6 h-full transition-all ${
                   isHighlight
-                    ? "border border-transparent shadow-card-lg bg-white"
+                    ? "bg-white shadow-card-lg"
                     : "border border-slate-200/70 bg-white"
                 }`}
               >

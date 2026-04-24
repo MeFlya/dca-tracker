@@ -132,7 +132,24 @@ export default function TarifsPage() {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://dcatracker.fr";
 
   return (
-    <div className="py-12">
+    <div className="relative py-12 overflow-hidden">
+      {/* Ambient background — same orb pattern as Hero for visual rhyme.
+          Only affects the section-level; doesn't bleed below the fold. */}
+      <div className="absolute inset-x-0 top-0 h-[900px] pointer-events-none" aria-hidden>
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-50 via-white to-transparent" />
+        <div
+          className="absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage:
+              "linear-gradient(#1d4ed8 1px, transparent 1px), linear-gradient(to right, #1d4ed8 1px, transparent 1px)",
+            backgroundSize: "56px 56px",
+          }}
+        />
+        <div className="absolute -top-20 -left-32 w-[500px] h-[500px] rounded-full bg-primary-400/30 blur-3xl animate-float-a" />
+        <div className="absolute top-10 -right-32 w-[600px] h-[600px] rounded-full bg-sky-400/25 blur-3xl animate-float-b" />
+      </div>
+
+      <div className="relative">
       <JsonLd data={{
         "@context": "https://schema.org",
         "@type": "WebPage",
@@ -162,7 +179,7 @@ export default function TarifsPage() {
         <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">
           Commencez gratuitement. 7 jours Premium offerts.
         </h1>
-        <p className="text-lg text-gray-500 leading-relaxed">
+        <p className="text-lg text-gray-600 leading-relaxed">
           Le simulateur DCA et tous les guides restent gratuits pour toujours.
           Essayez Premium 7 jours sans frais — annulation en 1 clic si ça ne
           vous convient pas.
@@ -247,6 +264,7 @@ export default function TarifsPage() {
             </details>
           ))}
         </div>
+      </div>
       </div>
     </div>
   );

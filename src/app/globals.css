@@ -139,8 +139,33 @@
 /* Aurora sweep — diagonal light wash passing over a surface. */
 @keyframes aurora-sweep {
   0%   { transform: translateX(-100%) skewX(-12deg); opacity: 0; }
-  50%  { opacity: 0.18; }
+  50%  { opacity: 0.25; }
   100% { transform: translateX(200%) skewX(-12deg); opacity: 0; }
+}
+
+/* SVG line draw — stroke-dashoffset animates from full length to 0 */
+@keyframes draw-line {
+  to { stroke-dashoffset: 0; }
+}
+
+/* Breathing pulse — subtle scale + opacity for "alive" indicators.
+   Softer than animate-pulse (Tailwind default) which can feel twitchy. */
+@keyframes breathe {
+  0%, 100% { transform: scale(1);   opacity: 1; }
+  50%      { transform: scale(1.06); opacity: 0.85; }
+}
+
+/* Glow pulse — a ring that pulses outward. Use on decorative ::after
+   to draw attention without blocking clicks. */
+@keyframes pulse-ring {
+  0%   { transform: scale(0.95); opacity: 0.6; }
+  100% { transform: scale(1.4);  opacity: 0;   }
+}
+
+/* Shimmer — sweeping light band over a surface (loading skeletons, badges) */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0;  }
 }
 
 .animate-fade-in   { animation: fade-in 180ms var(--ease-out-quart) both; }
@@ -149,8 +174,22 @@
 .animate-grow-x    { animation: grow-x 700ms var(--ease-out-expo) both; transform-origin: left center; }
 .animate-float-a   { animation: float-slow-a 14s ease-in-out infinite; }
 .animate-float-b   { animation: float-slow-b 18s ease-in-out infinite; }
-.animate-gradient  { animation: gradient-shift 6s linear infinite; background-size: 200% 100%; }
-.animate-aurora    { animation: aurora-sweep 8s ease-in-out infinite; }
+.animate-gradient  { animation: gradient-shift 4s linear infinite; background-size: 200% 100%; }
+.animate-aurora    { animation: aurora-sweep 6s ease-in-out infinite; }
+.animate-draw-line { stroke-dasharray: 1000; stroke-dashoffset: 1000; animation: draw-line 2.4s var(--ease-out-expo) 0.4s forwards; }
+.animate-breathe   { animation: breathe 3s ease-in-out infinite; }
+.animate-shimmer   { background-size: 200% 100%; animation: shimmer 3s linear infinite; }
+
+/* Pulse ring — apply to a decorative absolute element centered on a target. */
+.pulse-ring::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 2px solid currentColor;
+  animation: pulse-ring 2s ease-out infinite;
+  pointer-events: none;
+}
 
 /* Stagger helper — set style={{ "--i": index }} to delay child entrance */
 .stagger-child { animation-delay: calc(var(--i, 0) * 70ms); }
@@ -213,6 +252,10 @@
   .animate-float-b,
   .animate-gradient,
   .animate-aurora,
+  .animate-draw-line,
+  .animate-breathe,
+  .animate-shimmer,
+  .pulse-ring,
   .btn-lift,
   .btn-primary,
   .btn-secondary,

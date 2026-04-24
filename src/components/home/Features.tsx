@@ -64,11 +64,12 @@ export function Features() {
 
         {/* Primary feature cards — 3 cols */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          {PRIMARY_FEATURES.map((f) => (
+          {PRIMARY_FEATURES.map((f, i) => (
             <Link
               key={f.title}
               href={f.href}
-              className="group card hover:shadow-card-hover hover:border-primary-100 transition-all duration-200 flex flex-col"
+              className="group card card-hover animate-slide-up stagger-child flex flex-col"
+              style={{ ["--i" as string]: i }}
             >
               {/* Icon */}
               <div

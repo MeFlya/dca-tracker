@@ -27,13 +27,11 @@ export function Hero() {
         aria-hidden
       />
 
-      {/* Floating gradient orbs — slow drift adds life without noise.
-          Positioned with negative insets so they bleed off-screen.
-          pointer-events-none so they don't block clicks. blur-3xl = 64px. */}
+      {/* Floating gradient orbs — punchier now, more on-screen, saturated. */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden>
-        <div className="absolute -top-40 -left-40 w-[520px] h-[520px] rounded-full bg-primary-400/20 blur-3xl animate-float-a" />
-        <div className="absolute top-1/3 -right-48 w-[600px] h-[600px] rounded-full bg-primary-300/20 blur-3xl animate-float-b" />
-        <div className="absolute -bottom-40 left-1/3 w-[400px] h-[400px] rounded-full bg-sky-300/15 blur-3xl animate-float-a" style={{ animationDelay: "-4s" }} />
+        <div className="absolute -top-20 -left-20 w-[600px] h-[600px] rounded-full bg-primary-400/40 blur-3xl animate-float-a" />
+        <div className="absolute top-1/4 -right-32 w-[700px] h-[700px] rounded-full bg-sky-400/30 blur-3xl animate-float-b" />
+        <div className="absolute -bottom-20 left-1/4 w-[450px] h-[450px] rounded-full bg-indigo-400/25 blur-3xl animate-float-a" style={{ animationDelay: "-5s" }} />
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
@@ -41,9 +39,11 @@ export function Hero() {
 
           {/* ── Left column: copy + CTAs ───────────────────────────────── */}
           <div className="lg:col-span-7">
-            {/* Badge */}
+            {/* Badge — dot "breathes" to signal live/active */}
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-50 border border-primary-100 text-primary-700 text-xs font-medium mb-6">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary-500 shrink-0" />
+              <span className="relative w-1.5 h-1.5 rounded-full bg-primary-500 shrink-0 animate-breathe">
+                <span className="absolute inset-0 rounded-full bg-primary-500 animate-ping opacity-50" />
+              </span>
               Le cockpit DCA pour investisseurs long-terme
             </div>
 
@@ -126,34 +126,72 @@ export function Hero() {
                 <DemoStat label="Gains" value={DEMO.gains} color="green" />
               </div>
 
-              {/* Capital split — bars animate from 0 → share% on mount via
-                  grow-x (scaleX). Feels like the data is "loading" without
-                  needing any JS / state. */}
-              <div className="space-y-2.5 mb-4">
-                <div>
-                  <div className="flex justify-between text-[11px] text-gray-500 mb-1">
-                    <span>Capital investi</span>
-                    <span>{DEMO.investedShare} %</span>
-                  </div>
-                  <div className="h-2 rounded-full bg-gray-100 overflow-hidden">
-                    <div
-                      className="h-full rounded-full bg-gray-300 animate-grow-x"
-                      style={{ width: `${DEMO.investedShare}%`, animationDelay: "180ms" }}
-                    />
-                  </div>
+              {/* Mini portfolio chart — replaces the two capital-split bars.
+                  SVG path traces an exponential compound-growth curve from
+                  year 0 to year 20. stroke-dashoffset animation makes the
+                  line appear to draw itself on mount (~2.4s). A soft
+                  gradient area under the curve sits behind the stroke for
+                  visual weight — no JS, pure CSS + SVG. */}
+              <div className="mb-4">
+                <div className="flex justify-between text-[11px] text-gray-500 mb-2">
+                  <span>Croissance sur 20 ans</span>
+                  <span className="tabular-nums">{DEMO.gainsShare} % d&apos;intérêts</span>
                 </div>
-                <div>
-                  <div className="flex justify-between text-[11px] text-gray-500 mb-1">
-                    <span>Intérêts composés</span>
-                    <span>{DEMO.gainsShare} %</span>
-                  </div>
-                  <div className="h-2 rounded-full bg-gray-100 overflow-hidden">
-                    <div
-                      className="h-full rounded-full bg-gain/50 animate-grow-x"
-                      style={{ width: `${DEMO.gainsShare}%`, animationDelay: "320ms" }}
-                    />
-                  </div>
-                </div>
+                <svg
+                  viewBox="0 0 280 80"
+                  className="w-full h-20"
+                  preserveAspectRatio="none"
+                  aria-hidden
+                >
+                  <defs>
+                    <linearGradient id="heroChartArea" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#1d4ed8" stopOpacity="0.25" />
+                      <stop offset="100%" stopColor="#1d4ed8" stopOpacity="0" />
+                    </linearGradient>
+                    <linearGradient id="heroChartStroke" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor="#60a5fa" />
+                      <stop offset="100%" stopColor="#1d4ed8" />
+                    </linearGradient>
+                  </defs>
+                  {/* Area under the curve */}
+                  <path
+                    d="M 0 70 C 40 68, 80 60, 120 48 S 200 22, 280 8 L 280 80 L 0 80 Z"
+                    fill="url(#heroChartArea)"
+                    className="animate-fade-in"
+                    style={{ animationDelay: "1.8s", animationDuration: "600ms" }}
+                  />
+                  {/* The animated line */}
+                  <path
+                    d="M 0 70 C 40 68, 80 60, 120 48 S 200 22, 280 8"
+                    fill="none"
+                    stroke="url(#heroChartStroke)"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    className="animate-draw-line"
+                  />
+                  {/* Endpoint dot with pulse */}
+                  <circle
+                    cx="280"
+                    cy="8"
+                    r="4"
+                    fill="#1d4ed8"
+                    className="animate-fade-in"
+                    style={{ animationDelay: "2.4s", animationDuration: "400ms" }}
+                  />
+                  <circle
+                    cx="280"
+                    cy="8"
+                    r="4"
+                    fill="none"
+                    stroke="#1d4ed8"
+                    strokeWidth="2"
+                    className="animate-fade-in"
+                    style={{ animationDelay: "2.4s", animationDuration: "400ms", transformOrigin: "280px 8px" }}
+                  >
+                    <animate attributeName="r" from="4" to="10" dur="1.6s" repeatCount="indefinite" />
+                    <animate attributeName="opacity" from="0.6" to="0" dur="1.6s" repeatCount="indefinite" />
+                  </circle>
+                </svg>
               </div>
 
               {/* Multiplier row */}
