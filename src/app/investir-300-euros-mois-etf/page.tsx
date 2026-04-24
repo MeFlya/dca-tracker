@@ -125,7 +125,10 @@ const FAQ = [
 
 export default function Investir300EurosMoisPage() {
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    // Wrapper opaque bg-white pour stopper le leak AmbientBackground mesh.
+    // Page longue de lecture → fond calme et lisible.
+    <div className="bg-white">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <JsonLd
         data={{
           "@context": "https://schema.org",
@@ -182,31 +185,50 @@ export default function Investir300EurosMoisPage() {
         simulation complète, avec l&apos;objectif retraite intégré.
       </p>
 
-      {/* ── Bloc résultat mis en avant ─────────────────────────────────────── */}
-      <div className="rounded-2xl bg-gradient-to-br from-primary-600 to-blue-700 p-8 text-white mb-14">
-        <p className="text-primary-200 text-sm font-medium mb-2">
-          300€/mois · 20 ans · 7%/an
-        </p>
-        <p className="text-5xl font-bold tabular-nums mb-1">156 300 €</p>
-        <p className="text-primary-200 text-sm mb-6">
-          dont 72 000€ versés — et 84 300€ générés automatiquement par les marchés
-        </p>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div className="bg-white/10 rounded-xl p-3 text-center">
-            <p className="text-primary-200 text-xs mb-1">Capital investi</p>
-            <p className="font-bold">72 000 €</p>
-          </div>
-          <div className="bg-white/10 rounded-xl p-3 text-center">
-            <p className="text-primary-200 text-xs mb-1">Gain marché</p>
-            <p className="font-bold text-emerald-300">+84 300 €</p>
-          </div>
-          <div className="bg-white/10 rounded-xl p-3 text-center">
-            <p className="text-primary-200 text-xs mb-1">Performance</p>
-            <p className="font-bold text-emerald-300">+117 %</p>
-          </div>
-          <div className="bg-white/10 rounded-xl p-3 text-center">
-            <p className="text-primary-200 text-xs mb-1">Sur 30 ans</p>
-            <p className="font-bold text-emerald-300">366 300 €</p>
+      {/* ── Bloc résultat mis en avant — slate-950 + radial halo (Premium
+          identity, cohérent avec SimulatorHero et TrackingPitch). ─────── */}
+      <div className="relative rounded-2xl bg-slate-950 p-8 text-white mb-14 overflow-hidden">
+        <div
+          className="absolute inset-0 opacity-[0.05] pointer-events-none"
+          style={{
+            backgroundImage: "radial-gradient(#ffffff 1px, transparent 1px)",
+            backgroundSize: "20px 20px",
+          }}
+          aria-hidden
+        />
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage:
+              "radial-gradient(600px circle at 50% 30%, rgba(59, 130, 246, 0.22), transparent 60%)",
+          }}
+          aria-hidden
+        />
+        <div className="relative">
+          <p className="text-slate-400 text-sm font-medium mb-2">
+            300€/mois · 20 ans · 7%/an
+          </p>
+          <p className="text-5xl font-bold tabular-nums mb-1 text-white">156 300 €</p>
+          <p className="text-slate-400 text-sm mb-6">
+            dont 72 000€ versés — et 84 300€ générés automatiquement par les marchés
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="bg-white/5 border border-white/10 rounded-xl p-3 text-center backdrop-blur-sm">
+              <p className="text-slate-400 text-xs mb-1">Capital investi</p>
+              <p className="font-bold text-white">72 000 €</p>
+            </div>
+            <div className="bg-white/5 border border-white/10 rounded-xl p-3 text-center backdrop-blur-sm">
+              <p className="text-slate-400 text-xs mb-1">Gain marché</p>
+              <p className="font-bold text-emerald-400">+84 300 €</p>
+            </div>
+            <div className="bg-white/5 border border-white/10 rounded-xl p-3 text-center backdrop-blur-sm">
+              <p className="text-slate-400 text-xs mb-1">Performance</p>
+              <p className="font-bold text-emerald-400">+117 %</p>
+            </div>
+            <div className="bg-white/5 border border-white/10 rounded-xl p-3 text-center backdrop-blur-sm">
+              <p className="text-slate-400 text-xs mb-1">Sur 30 ans</p>
+              <p className="font-bold text-emerald-400">366 300 €</p>
+            </div>
           </div>
         </div>
       </div>
@@ -363,26 +385,44 @@ export default function Investir300EurosMoisPage() {
         </div>
       </section>
 
-      {/* ── CTA Simulateur ────────────────────────────────────────────────── */}
-      <section className="mb-14 rounded-2xl bg-primary-600 p-8 text-center">
-        <h2 className="text-xl font-bold text-white mb-2">
-          Projetez votre horizon retraite personnalisé
-        </h2>
-        <p className="text-primary-200 text-sm mb-6 leading-relaxed max-w-md mx-auto">
-          Ajustez le versement, la durée et les frais selon votre situation.
-          Pour les utilisateurs Premium : l&apos;analyse Monte Carlo simule
-          1 000 marchés possibles et donne la distribution réelle de vos
-          résultats — pas juste une ligne optimiste.
-        </p>
-        <Link
-          href="/simulateur?monthly=300&years=20&return=7&fees=0.2"
-          className="btn-secondary text-sm px-6 py-2.5 inline-flex"
-        >
-          Simuler avec 300€/mois →
-        </Link>
-        <p className="mt-4 text-primary-300 text-xs">
-          Gratuit · 3 scénarios · Export PDF · Analyse Monte Carlo en Premium
-        </p>
+      {/* ── CTA Simulateur — slate-950 glass (mirror TrackingPitch) ───── */}
+      <section className="relative mb-14 rounded-2xl bg-slate-950 p-8 text-center overflow-hidden">
+        <div
+          className="absolute inset-0 opacity-[0.05] pointer-events-none"
+          style={{
+            backgroundImage: "radial-gradient(#ffffff 1px, transparent 1px)",
+            backgroundSize: "20px 20px",
+          }}
+          aria-hidden
+        />
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage:
+              "radial-gradient(500px circle at 50% 40%, rgba(59, 130, 246, 0.2), transparent 60%)",
+          }}
+          aria-hidden
+        />
+        <div className="relative">
+          <h2 className="text-xl font-bold text-white mb-2">
+            Projetez votre horizon retraite personnalisé
+          </h2>
+          <p className="text-slate-300 text-sm mb-6 leading-relaxed max-w-md mx-auto">
+            Ajustez le versement, la durée et les frais selon votre situation.
+            Pour les utilisateurs Premium : l&apos;analyse Monte Carlo simule
+            1 000 marchés possibles et donne la distribution réelle de vos
+            résultats — pas juste une ligne optimiste.
+          </p>
+          <Link
+            href="/simulateur?monthly=300&years=20&return=7&fees=0.2"
+            className="inline-flex items-center justify-center gap-2 bg-white text-slate-950 font-semibold text-sm px-6 py-2.5 rounded-xl hover:bg-slate-100 transition-colors"
+          >
+            Simuler avec 300€/mois →
+          </Link>
+          <p className="mt-4 text-slate-400 text-xs">
+            Gratuit · 3 scénarios · Export PDF · Analyse Monte Carlo en Premium
+          </p>
+        </div>
       </section>
 
       {/* ── Section 3 : Comparaison A vs B ───────────────────────────────── */}
@@ -395,29 +435,37 @@ export default function Investir300EurosMoisPage() {
           moins, ou moins longtemps avec plus ? La simulation chiffrée surprend
           souvent.
         </p>
+        {/* 2 cards siblings au même traitement visuel (bg-white + border
+            slate-200/70). Différenciation de A via un pill "Recommandée"
+            uniquement. */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-          <div className="rounded-2xl border border-primary-100 bg-primary-50 p-5">
-            <p className="text-xs font-semibold text-primary-600 uppercase tracking-wide mb-3">
-              Stratégie A
-            </p>
+          <div className="rounded-2xl border border-slate-200/70 bg-white shadow-card p-5">
+            <div className="flex items-center gap-2 mb-3">
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                Stratégie A
+              </p>
+              <span className="inline-flex items-center bg-primary-50 text-primary-700 text-[10px] font-bold px-1.5 py-0.5 rounded border border-primary-100 uppercase tracking-wide">
+                Recommandée
+              </span>
+            </div>
             <p className="text-sm text-gray-600 mb-1">
               300€/mois · <strong>20 ans</strong>
             </p>
-            <p className="text-3xl font-bold text-primary-700 mb-1">
+            <p className="text-3xl font-bold text-primary-700 mb-1 tabular-nums">
               156 300 €
             </p>
             <p className="text-xs text-gray-500">
               total investi : 72 000€
             </p>
           </div>
-          <div className="rounded-2xl border border-gray-100 bg-gray-50 p-5">
+          <div className="rounded-2xl border border-slate-200/70 bg-white shadow-card p-5">
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
               Stratégie B
             </p>
             <p className="text-sm text-gray-600 mb-1">
               400€/mois · <strong>15 ans</strong>
             </p>
-            <p className="text-3xl font-bold text-gray-700 mb-1">
+            <p className="text-3xl font-bold text-gray-700 mb-1 tabular-nums">
               126 900 €
             </p>
             <p className="text-xs text-gray-500">
@@ -425,11 +473,16 @@ export default function Investir300EurosMoisPage() {
             </p>
           </div>
         </div>
-        <div className="rounded-2xl border border-amber-100 bg-amber-50 p-5">
-          <p className="text-sm font-semibold text-amber-800 mb-2">
+        {/* Insight callout — container neutre, amber UNIQUEMENT sur un
+            petit pill d'ouverture. */}
+        <div className="rounded-2xl border border-slate-200/70 bg-white shadow-card p-5">
+          <div className="inline-flex items-center gap-1.5 bg-amber-50 border border-amber-200 text-amber-700 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded mb-3">
+            <span>⚡ Insight</span>
+          </div>
+          <p className="text-sm font-semibold text-gray-900 mb-2">
             Même montant total investi — mais 29 400€ d&apos;écart
           </p>
-          <p className="text-sm text-amber-700 leading-relaxed">
+          <p className="text-sm text-gray-600 leading-relaxed">
             Les deux stratégies impliquent 72 000€ de versements totaux.
             Pourtant, A bat B de 29 400€ — uniquement grâce à 5 ans
             supplémentaires de capitalisation. Le temps, pas le montant,
@@ -459,6 +512,9 @@ export default function Investir300EurosMoisPage() {
           d&apos;autres −30%. L&apos;ordre de ces rendements change
           significativement le résultat final.
         </p>
+        {/* 3 tiles siblings au même traitement (bg-white + border slate-200/70).
+            La couleur ne vit QUE sur la valeur et sur le label de percentile,
+            jamais sur le fond de la tile. */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
           {[
             {
@@ -466,26 +522,23 @@ export default function Investir300EurosMoisPage() {
               value: "≈ 98 000 €",
               sub: "1 marché sur 10",
               color: "text-orange-600",
-              bg: "bg-orange-50 border-orange-100",
             },
             {
               label: "Médiane (50e percentile)",
               value: "≈ 148 000 €",
               sub: "résultat médian",
               color: "text-primary-700",
-              bg: "bg-primary-50 border-primary-100",
             },
             {
               label: "Meilleur cas (90e percentile)",
               value: "≈ 218 000 €",
               sub: "1 marché sur 10",
               color: "text-emerald-700",
-              bg: "bg-emerald-50 border-emerald-100",
             },
           ].map((s) => (
             <div
               key={s.label}
-              className={`rounded-xl border p-4 text-center ${s.bg}`}
+              className="rounded-xl border border-slate-200/70 bg-white shadow-card p-4 text-center"
             >
               <p className="text-xs text-gray-500 mb-2 leading-snug">
                 {s.label}
@@ -594,6 +647,7 @@ export default function Investir300EurosMoisPage() {
       </section>
 
       <EmailCapture source="simulation_300" />
+      </div>
     </div>
   );
 }
