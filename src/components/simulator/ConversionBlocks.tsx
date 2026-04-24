@@ -36,17 +36,35 @@ function yearReaching(data: MonthlyDataPoint[], target: number): number | null {
 
 function PremiumFix({ bullets }: { bullets: string[] }) {
   return (
-    <div className="mt-4 rounded-xl bg-primary-50 border border-primary-100 px-4 py-3">
-      <p className="text-xs font-bold text-primary-800 mb-2.5 flex items-center gap-2">
-        <span className="inline-flex items-center bg-primary-600 text-white px-1.5 py-0.5 rounded text-[10px] uppercase tracking-wide">
+    <div className="relative mt-4 rounded-xl bg-slate-950 border border-slate-800 px-4 py-3 overflow-hidden">
+      {/* Premium identity : dot texture + soft blue glow (langage partagé
+          avec TrackingPitch, Premium pricing card). */}
+      <div
+        className="absolute inset-0 opacity-[0.08] pointer-events-none"
+        style={{
+          backgroundImage: "radial-gradient(#ffffff 1px, transparent 1px)",
+          backgroundSize: "18px 18px",
+        }}
+        aria-hidden
+      />
+      <div
+        className="absolute -top-16 -right-16 w-48 h-48 pointer-events-none"
+        style={{
+          backgroundImage:
+            "radial-gradient(circle, rgba(59, 130, 246, 0.35), transparent 70%)",
+        }}
+        aria-hidden
+      />
+      <p className="relative text-xs font-bold mb-2.5 flex items-center gap-2">
+        <span className="inline-flex items-center bg-primary-500 text-white px-1.5 py-0.5 rounded text-[10px] uppercase tracking-wide">
           Premium
         </span>
-        <span className="uppercase tracking-wider text-primary-700">vous permet de :</span>
+        <span className="uppercase tracking-wider text-primary-300">vous permet de :</span>
       </p>
-      <ul className="space-y-1.5">
+      <ul className="relative space-y-1.5">
         {bullets.map((b, i) => (
-          <li key={i} className="flex items-start gap-2 text-sm text-primary-900 leading-relaxed">
-            <Check size={14} className="text-primary-600 mt-0.5 shrink-0" strokeWidth={2.5} />
+          <li key={i} className="flex items-start gap-2 text-sm text-slate-100 leading-relaxed">
+            <Check size={14} className="text-primary-400 mt-0.5 shrink-0" strokeWidth={2.5} />
             <span>{b}</span>
           </li>
         ))}

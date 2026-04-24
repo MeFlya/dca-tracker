@@ -89,22 +89,44 @@ export function OnboardingChecklist({ isPremium, hasStrategy, firstName }: Props
         ))}
       </div>
 
-      {/* Free user upgrade teaser (only when not premium and step 1 done) */}
+      {/* Free user upgrade teaser — dark premium theme pour cohérence
+          avec le reste du site (TrackingPitch, Premium card, PremiumFix). */}
       {!isPremium && (
-        <div className="mt-6 pt-6 border-t border-gray-100">
-          <div className="flex items-start gap-3 flex-wrap">
+        <div className="relative mt-6 rounded-xl bg-slate-950 border border-slate-800 p-5 overflow-hidden">
+          <div
+            className="absolute inset-0 opacity-[0.08] pointer-events-none"
+            style={{
+              backgroundImage: "radial-gradient(#ffffff 1px, transparent 1px)",
+              backgroundSize: "18px 18px",
+            }}
+            aria-hidden
+          />
+          <div
+            className="absolute -top-16 -right-16 w-48 h-48 pointer-events-none"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle, rgba(59, 130, 246, 0.35), transparent 70%)",
+            }}
+            aria-hidden
+          />
+          <div className="relative flex items-start gap-3 flex-wrap">
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-gray-900 mb-0.5">
-                Débloquez le suivi mensuel
-              </p>
-              <p className="text-xs text-gray-500 leading-relaxed">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="inline-flex items-center bg-primary-500 text-white px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide">
+                  Premium
+                </span>
+                <p className="text-sm font-semibold text-white">
+                  Débloquez le suivi mensuel
+                </p>
+              </div>
+              <p className="text-xs text-slate-300 leading-relaxed">
                 Essai gratuit 7 jours · sauvegarde de stratégie, Monte Carlo,
                 comparaison A/B.
               </p>
             </div>
             <Link
               href="/tarifs"
-              className="btn-primary text-sm px-4 py-2 btn-lift shrink-0"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-white text-slate-950 font-semibold text-sm hover:bg-slate-100 transition-colors btn-lift shrink-0"
             >
               Essayer Premium 7 jours
             </Link>

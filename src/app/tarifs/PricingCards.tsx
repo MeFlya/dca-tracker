@@ -71,9 +71,12 @@ const PLANS: Plan[] = [
 function CheckoutButton({
   billing,
   label,
+  onDark = false,
 }: {
   billing: "monthly" | "yearly";
   label: string;
+  /** Adapts colors for dark-themed (Premium) parent cards */
+  onDark?: boolean;
 }) {
   const { isSignedIn, isLoaded } = useUser();
   const [loading, setLoading] = useState(false);
@@ -105,15 +108,19 @@ function CheckoutButton({
   }
 
   return (
-    <div className="mb-6">
+    <div className="relative mb-6">
       <button
         onClick={handleClick}
         disabled={!isLoaded || loading}
-        className="w-full text-center text-sm font-semibold py-2.5 px-4 rounded-xl transition-all block bg-primary-600 text-white hover:bg-primary-700 disabled:opacity-60 cursor-pointer"
+        className={`w-full text-center text-sm font-semibold py-2.5 px-4 rounded-xl transition-all block disabled:opacity-60 cursor-pointer ${
+          onDark
+            ? "bg-white text-slate-950 hover:bg-slate-100"
+            : "bg-primary-600 text-white hover:bg-primary-700"
+        }`}
       >
         {loading ? "Chargement…" : isSignedIn ? `${label} — 7 jours gratuits` : "Créer un compte"}
       </button>
-      <p className="text-[11px] text-gray-500 text-center mt-2">
+      <p className={`text-[11px] text-center mt-2 ${onDark ? "text-slate-400" : "text-gray-500"}`}>
         Essai gratuit 7 jours · annulable à tout moment
       </p>
     </div>
@@ -156,18 +163,18 @@ export function PricingCards() {
 
           return (
             <div key={plan.id} id={plan.id} className="relative">
-              {/* Premium card : effets empilés pour vraiment marquer la différence.
-                  1. Halo flou coloré derrière (visible au-delà de la card)
-                  2. Bordure gradient animée qui sweep (primary → indigo → sky)
-                  3. Card blanche opaque par dessus */}
+              {/* Premium card = dark premium identity (slate-950 like the
+                  TrackingPitch section). Halo coloré + bordure gradient
+                  animée autour. Texte blanc. Cette couleur dark est la
+                  "signature" Premium à travers tout le site. */}
               {isHighlight && (
                 <>
-                  {/* Halo flou — plus grand que la card, visible autour */}
+                  {/* Halo flou */}
                   <div
-                    className="absolute -inset-4 rounded-3xl bg-gradient-to-br from-primary-400/40 via-indigo-400/30 to-sky-400/30 blur-2xl animate-breathe pointer-events-none"
+                    className="absolute -inset-4 rounded-3xl bg-gradient-to-br from-primary-400/40 via-indigo-500/30 to-sky-400/30 blur-2xl animate-breathe pointer-events-none"
                     aria-hidden
                   />
-                  {/* Bordure animée — 4 couleurs pour un vrai sweep visible */}
+                  {/* Bordure animée */}
                   <div
                     className="absolute -inset-[3px] rounded-2xl bg-gradient-to-r from-primary-400 via-indigo-500 via-sky-400 to-primary-500 animate-gradient pointer-events-none"
                     aria-hidden
@@ -175,31 +182,42 @@ export function PricingCards() {
                 </>
               )}
               <div
-                className={`relative flex flex-col rounded-2xl p-6 h-full transition-all ${
+                className={`relative flex flex-col rounded-2xl p-6 h-full overflow-hidden ${
                   isHighlight
-                    ? "bg-white shadow-card-lg"
+                    ? "bg-slate-950 shadow-card-lg"
                     : "border border-slate-200/70 bg-white"
                 }`}
               >
+              {/* Dot grid texture pour la card Premium (même langage que TrackingPitch) */}
+              {isHighlight && (
+                <div
+                  className="absolute inset-0 opacity-[0.06] pointer-events-none"
+                  style={{
+                    backgroundImage: "radial-gradient(#ffffff 1px, transparent 1px)",
+                    backgroundSize: "20px 20px",
+                  }}
+                  aria-hidden
+                />
+              )}
               {plan.badge && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <span className="bg-primary-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
+                  <span className="bg-primary-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg ring-2 ring-slate-950">
                     {plan.badge}
                   </span>
                 </div>
               )}
 
               {/* Header */}
-              <div className="mb-6">
+              <div className="relative mb-6">
                 <p className={`text-xs font-semibold uppercase tracking-widest mb-1 ${
-                  isHighlight ? "text-primary-600" : "text-gray-500"
+                  isHighlight ? "text-primary-300" : "text-gray-500"
                 }`}>
                   {plan.tagline}
                 </p>
                 {/* Plan name: H2 (not H3) to maintain a valid H1→H2→H3 order
                     — the page H1 is the hero "Commencez gratuitement". Visual
                     styling preserved via className (text-xl, not h2-default). */}
-                <h2 className="text-xl font-bold mb-4 text-gray-900">
+                <h2 className={`text-xl font-bold mb-4 ${isHighlight ? "text-white" : "text-gray-900"}`}>
                   {plan.name}
                 </h2>
 
@@ -210,32 +228,28 @@ export function PricingCards() {
                     </span>
                   ) : (
                     <>
-                      {/* key on billing mode triggers a fade-in each time the
-                          user toggles monthly ↔ yearly. No flicker for
-                          numerically identical values because the formatted
-                          string changes ("4,90" vs "4,08"). */}
                       <span
                         key={`${plan.id}-${yearly ? "y" : "m"}`}
-                        className="text-4xl font-bold text-gray-900 tabular-nums animate-fade-in"
+                        className={`text-4xl font-bold tabular-nums animate-fade-in ${isHighlight ? "text-white" : "text-gray-900"}`}
                       >
                         {price.toFixed(2).replace(".", ",")} €
                       </span>
-                      <span className="text-sm mb-1 text-gray-500">
+                      <span className={`text-sm mb-1 ${isHighlight ? "text-slate-400" : "text-gray-500"}`}>
                         /mois
                       </span>
                     </>
                   )}
                 </div>
                 {plan.monthlyPrice > 0 && yearly && (
-                  <p className="text-xs mt-1 text-gray-500">
+                  <p className={`text-xs mt-1 ${isHighlight ? "text-slate-400" : "text-gray-500"}`}>
                     Facturé {plan.yearlyTotal} € / an
-                    <span className="ml-2 font-semibold text-gain-default">
+                    <span className={`ml-2 font-semibold ${isHighlight ? "text-emerald-400" : "text-gain-default"}`}>
                       (économisez {Math.round(plan.monthlyPrice * 12 - plan.yearlyTotal)} €)
                     </span>
                   </p>
                 )}
                 {plan.monthlyPrice > 0 && !yearly && (
-                  <p className="text-xs mt-1 text-gray-500">
+                  <p className={`text-xs mt-1 ${isHighlight ? "text-slate-400" : "text-gray-500"}`}>
                     Ou {plan.yearlyPerMonth.toFixed(2).replace(".", ",")} €/mois facturé annuellement
                   </p>
                 )}
@@ -250,24 +264,28 @@ export function PricingCards() {
                   {plan.cta}
                 </Link>
               ) : (
-                <CheckoutButton billing={billing} label={plan.cta} />
+                <CheckoutButton billing={billing} label={plan.cta} onDark={isHighlight} />
               )}
 
               {/* Feature list */}
-              <ul className="space-y-2.5 flex-1">
+              <ul className="relative space-y-2.5 flex-1">
                 {plan.features.map((f) => (
                   <li key={f.label} className="flex items-start gap-2.5 text-sm">
                     {f.included ? (
-                      <svg className="w-4 h-4 shrink-0 mt-0.5 text-gain-default" viewBox="0 0 16 16" fill="none" aria-hidden>
-                        <circle cx="8" cy="8" r="7" fill="currentColor" opacity="0.15" />
+                      <svg className={`w-4 h-4 shrink-0 mt-0.5 ${isHighlight ? "text-emerald-400" : "text-gain-default"}`} viewBox="0 0 16 16" fill="none" aria-hidden>
+                        <circle cx="8" cy="8" r="7" fill="currentColor" opacity={isHighlight ? "0.2" : "0.15"} />
                         <path d="M5 8l2.5 2.5L11 5.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     ) : (
-                      <svg className="w-4 h-4 shrink-0 mt-0.5 text-gray-500" viewBox="0 0 16 16" fill="none" aria-hidden>
+                      <svg className={`w-4 h-4 shrink-0 mt-0.5 ${isHighlight ? "text-slate-500" : "text-gray-500"}`} viewBox="0 0 16 16" fill="none" aria-hidden>
                         <path d="M5 8h6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                       </svg>
                     )}
-                    <span className={`leading-snug ${!f.included ? "text-gray-500" : "text-gray-700"}`}>
+                    <span className={`leading-snug ${
+                      isHighlight
+                        ? f.included ? "text-slate-100" : "text-slate-500"
+                        : f.included ? "text-gray-700" : "text-gray-500"
+                    }`}>
                       {f.label}
                     </span>
                   </li>

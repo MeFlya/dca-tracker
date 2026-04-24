@@ -175,33 +175,44 @@ export default function TarifsPage() {
         <PaymentBadge />
       </div>
 
-      {/* Feature comparison table */}
+      {/* Feature comparison table — opaque bg (ambient was bleeding through
+          at /30, /50, /80 alpha) + Premium column treated visually as
+          "premium dark" via slate-900 header. */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 mb-20">
         <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">
           Comparaison détaillée des fonctions
         </h2>
-        <div className="overflow-x-auto rounded-2xl border border-gray-100">
+        <div className="overflow-hidden rounded-2xl border border-slate-200/70 bg-white shadow-card">
           <table className="w-full text-sm border-collapse">
             <thead>
               <tr>
-                <th className="text-left px-4 py-3 bg-gray-50 font-medium text-gray-500 border-b border-gray-100 w-2/3" />
-                <th className="text-center px-4 py-3 bg-gray-50 font-semibold text-gray-600 border-b border-gray-100">Gratuit</th>
-                <th className="text-center px-4 py-3 bg-primary-50 font-bold text-primary-700 border-b border-primary-100">Premium</th>
+                <th className="text-left px-4 py-3 bg-white font-medium text-gray-500 border-b border-slate-200 w-2/3" />
+                <th className="text-center px-4 py-3 bg-white font-semibold text-gray-700 border-b border-slate-200">
+                  Gratuit
+                </th>
+                {/* Premium header — dark, matches the "premium identity" used
+                    elsewhere in the app (TrackingPitch section, PremiumFix, etc). */}
+                <th className="text-center px-4 py-3 bg-slate-900 font-bold text-white border-b border-slate-900 relative">
+                  <span className="inline-flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary-400 animate-breathe" />
+                    Premium
+                  </span>
+                </th>
               </tr>
             </thead>
             <tbody>
               {COMPARISON_SECTIONS.map((section) => (
                 <>
-                  <tr key={`cat-${section.category}`} className="bg-gray-50/80">
-                    <td colSpan={3} className="px-4 py-2 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100">
+                  <tr key={`cat-${section.category}`} className="bg-slate-50">
+                    <td colSpan={3} className="px-4 py-2.5 text-xs font-bold text-gray-600 uppercase tracking-wider border-b border-slate-200/60">
                       {section.category}
                     </td>
                   </tr>
                   {section.rows.map((row) => (
-                    <tr key={row.feature} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                    <tr key={row.feature} className="border-b border-slate-100 hover:bg-slate-50/80 transition-colors bg-white">
                       <td className="px-4 py-3 text-gray-700">{row.feature}</td>
                       <td className="px-4 py-3"><CellValue value={row.free} /></td>
-                      <td className="px-4 py-3 bg-primary-50/30"><CellValue value={row.premium} /></td>
+                      <td className="px-4 py-3 bg-primary-50/80"><CellValue value={row.premium} /></td>
                     </tr>
                   ))}
                 </>

@@ -41,20 +41,29 @@ export function UpgradePrompt({
   if (variant === "banner") {
     return (
       <div
-        className={`flex items-center justify-between gap-4 px-4 py-3 rounded-xl border text-sm border-primary-100 bg-primary-50 text-primary-700 ${className}`}
+        className={`relative flex items-center justify-between gap-4 px-4 py-3 rounded-xl border text-sm border-slate-800 bg-slate-950 text-slate-100 overflow-hidden ${className}`}
       >
-        <div className="flex items-center gap-2.5 min-w-0">
-          <LockIcon className="w-4 h-4 shrink-0 opacity-60" />
-          <span className="font-medium truncate">{feature}</span>
+        {/* Premium identity : soft blue glow */}
+        <div
+          className="absolute -top-16 -right-16 w-40 h-40 pointer-events-none"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle, rgba(59, 130, 246, 0.3), transparent 70%)",
+          }}
+          aria-hidden
+        />
+        <div className="relative flex items-center gap-2.5 min-w-0">
+          <LockIcon className="w-4 h-4 shrink-0 text-primary-400" />
+          <span className="font-medium truncate text-white">{feature}</span>
           {description && (
-            <span className="text-xs opacity-70 hidden sm:inline truncate">
+            <span className="text-xs text-slate-400 hidden sm:inline truncate">
               — {description}
             </span>
           )}
         </div>
         <Link
           href="/tarifs"
-          className="shrink-0 text-xs font-bold px-3 py-1.5 rounded-lg bg-primary-600 text-white hover:bg-primary-700 transition-colors"
+          className="relative shrink-0 text-xs font-bold px-3 py-1.5 rounded-lg bg-white text-slate-950 hover:bg-slate-100 transition-colors"
         >
           Voir Premium →
         </Link>
@@ -62,30 +71,47 @@ export function UpgradePrompt({
     );
   }
 
-  // card variant
+  // card variant — dark premium theme
   return (
     <div
-      className={`rounded-2xl border p-5 border-primary-100 bg-primary-50 text-primary-700 ${className}`}
+      className={`relative rounded-2xl border p-5 border-slate-800 bg-slate-950 text-slate-100 overflow-hidden ${className}`}
     >
-      <div className="flex items-start gap-3 mb-3">
-        <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-primary-100">
-          <LockIcon className="w-4 h-4" />
+      {/* Premium identity : dot texture + soft blue glow */}
+      <div
+        className="absolute inset-0 opacity-[0.08] pointer-events-none"
+        style={{
+          backgroundImage: "radial-gradient(#ffffff 1px, transparent 1px)",
+          backgroundSize: "18px 18px",
+        }}
+        aria-hidden
+      />
+      <div
+        className="absolute -top-16 -right-16 w-48 h-48 pointer-events-none"
+        style={{
+          backgroundImage:
+            "radial-gradient(circle, rgba(59, 130, 246, 0.35), transparent 70%)",
+        }}
+        aria-hidden
+      />
+      <div className="relative flex items-start gap-3 mb-3">
+        <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-primary-500/20 border border-primary-400/30">
+          <LockIcon className="w-4 h-4 text-primary-300" />
         </div>
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <p className="font-semibold text-sm text-gray-900">{feature}</p>
-            <span className="text-xs font-bold px-1.5 py-0.5 rounded-full bg-primary-600 text-white">
+            <p className="font-semibold text-sm text-white">{feature}</p>
+            <span className="text-xs font-bold px-1.5 py-0.5 rounded-full bg-primary-500 text-white">
               Premium
             </span>
           </div>
           {description && (
-            <p className="text-xs opacity-80 leading-relaxed">{description}</p>
+            <p className="text-xs text-slate-300 leading-relaxed">{description}</p>
           )}
         </div>
       </div>
       <Link
         href="/tarifs"
-        className="w-full text-center block text-sm font-semibold py-2 px-4 rounded-xl bg-primary-600 text-white hover:bg-primary-700 transition-colors"
+        className="relative w-full text-center block text-sm font-semibold py-2 px-4 rounded-xl bg-white text-slate-950 hover:bg-slate-100 transition-colors"
       >
         Découvrir Premium →
       </Link>
