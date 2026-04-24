@@ -42,12 +42,13 @@ export function HowItWorks() {
           </p>
         </div>
 
-        {/* 3-step grid */}
+        {/* 3-step grid — staggered entrance (80ms per step = 240ms total) */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {STEPS.map(({ number, title, description, Icon }) => (
+          {STEPS.map(({ number, title, description, Icon }, i) => (
             <div
               key={number}
-              className="relative rounded-2xl border border-gray-100 bg-white p-6 card-hover"
+              className="relative rounded-2xl border border-slate-200/70 bg-white p-6 card-hover animate-slide-up stagger-child"
+              style={{ ["--i" as string]: i }}
             >
               {/* Number badge */}
               <div className="flex items-center justify-between mb-4">

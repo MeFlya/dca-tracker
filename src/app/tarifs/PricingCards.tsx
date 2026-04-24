@@ -193,7 +193,14 @@ export function PricingCards() {
                     </span>
                   ) : (
                     <>
-                      <span className="text-4xl font-bold text-gray-900">
+                      {/* key on billing mode triggers a fade-in each time the
+                          user toggles monthly ↔ yearly. No flicker for
+                          numerically identical values because the formatted
+                          string changes ("4,90" vs "4,08"). */}
+                      <span
+                        key={`${plan.id}-${yearly ? "y" : "m"}`}
+                        className="text-4xl font-bold text-gray-900 tabular-nums animate-fade-in"
+                      >
                         {price.toFixed(2).replace(".", ",")} €
                       </span>
                       <span className="text-sm mb-1 text-gray-500">

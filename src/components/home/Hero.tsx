@@ -37,10 +37,11 @@ export function Hero() {
               Le cockpit DCA pour investisseurs long-terme
             </div>
 
+            {/* H1 — no colored span. A hyperlink-looking emphasis ("votre argent"
+                in text-primary-600) was weakening the headline. The size already
+                does the work; keeping the accent would compete with CTAs. */}
             <h1 className="text-4xl md:text-5xl lg:text-[3.25rem] font-bold text-gray-900 leading-[1.1] tracking-tight mb-5">
-              Combien peut valoir{" "}
-              <span className="text-primary-600">votre argent</span>{" "}
-              dans 20 ans ?
+              Combien peut valoir votre argent dans 20 ans ?
             </h1>
 
             <p className="text-lg md:text-xl text-gray-600 leading-relaxed mb-8 max-w-xl">
@@ -53,10 +54,10 @@ export function Hero() {
             <div className="flex flex-col sm:flex-row gap-3 mb-10">
               <Link
                 href="/simulateur"
-                className="btn-primary text-base px-6 py-3"
+                className="btn-primary group text-base px-6 py-3"
               >
                 Voir ce que vaut mon argent
-                <span aria-hidden> →</span>
+                <span aria-hidden className="arrow-nudge">→</span>
               </Link>
               <Link
                 href="/simulateur"
@@ -84,7 +85,7 @@ export function Hero() {
 
           {/* ── Right column: demo preview card ───────────────────────── */}
           <div className="lg:col-span-5 flex justify-center lg:justify-end">
-            <div className="w-full max-w-sm bg-white rounded-2xl border border-gray-200 shadow-card-lg p-5 select-none">
+            <div className="w-full max-w-sm bg-white rounded-2xl border border-slate-200/70 shadow-card-lg p-5 select-none animate-slide-up">
 
               {/* Card header */}
               <div className="flex items-start justify-between gap-3 mb-5">
@@ -108,7 +109,9 @@ export function Hero() {
                 <DemoStat label="Gains" value={DEMO.gains} color="green" />
               </div>
 
-              {/* Capital split — bars */}
+              {/* Capital split — bars animate from 0 → share% on mount via
+                  grow-x (scaleX). Feels like the data is "loading" without
+                  needing any JS / state. */}
               <div className="space-y-2.5 mb-4">
                 <div>
                   <div className="flex justify-between text-[11px] text-gray-500 mb-1">
@@ -117,8 +120,8 @@ export function Hero() {
                   </div>
                   <div className="h-2 rounded-full bg-gray-100 overflow-hidden">
                     <div
-                      className="h-full rounded-full bg-gray-300 transition-all"
-                      style={{ width: `${DEMO.investedShare}%` }}
+                      className="h-full rounded-full bg-gray-300 animate-grow-x"
+                      style={{ width: `${DEMO.investedShare}%`, animationDelay: "180ms" }}
                     />
                   </div>
                 </div>
@@ -129,8 +132,8 @@ export function Hero() {
                   </div>
                   <div className="h-2 rounded-full bg-gray-100 overflow-hidden">
                     <div
-                      className="h-full rounded-full bg-gain/50 transition-all"
-                      style={{ width: `${DEMO.gainsShare}%` }}
+                      className="h-full rounded-full bg-gain/50 animate-grow-x"
+                      style={{ width: `${DEMO.gainsShare}%`, animationDelay: "320ms" }}
                     />
                   </div>
                 </div>
@@ -145,10 +148,10 @@ export function Hero() {
               {/* CTA */}
               <Link
                 href="/simulateur"
-                className="mt-1 flex items-center justify-center gap-1.5 w-full py-2.5 rounded-xl bg-primary-50 hover:bg-primary-100 text-primary-700 text-sm font-semibold transition-colors duration-150"
+                className="group mt-1 flex items-center justify-center gap-1.5 w-full py-2.5 rounded-xl bg-primary-50 hover:bg-primary-100 text-primary-700 text-sm font-semibold transition-colors duration-150"
               >
                 Tester avec mes chiffres
-                <span aria-hidden>→</span>
+                <span aria-hidden className="arrow-nudge">→</span>
               </Link>
             </div>
           </div>

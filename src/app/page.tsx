@@ -85,42 +85,54 @@ export default function HomePage() {
 
       <EmailCapture source="homepage" />
 
-      {/* CTA band */}
-      <section className="py-16 bg-primary-600">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
+      {/* CTA band — gradient + subtle grid for depth, vs the previous flat
+          primary-600 block. Internal link color upgraded primary-300 →
+          primary-100 for WCAG AA contrast on primary-700 background. */}
+      <section className="relative overflow-hidden py-20 bg-gradient-to-br from-primary-700 via-primary-600 to-primary-700">
+        {/* Ambient grid (matches Hero for visual rhyme) */}
+        <div
+          className="absolute inset-0 opacity-[0.05] pointer-events-none"
+          style={{
+            backgroundImage:
+              "linear-gradient(#ffffff 1px, transparent 1px), linear-gradient(to right, #ffffff 1px, transparent 1px)",
+            backgroundSize: "64px 64px",
+          }}
+          aria-hidden
+        />
+        <div className="relative max-w-3xl mx-auto px-4 sm:px-6 text-center">
           <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">
             Prêt à voir ce que votre argent peut devenir ?
           </h2>
-          <p className="text-primary-200 mb-8 text-lg leading-relaxed">
+          <p className="text-primary-100 mb-8 text-lg leading-relaxed">
             La simulation prend 30 secondes. Résultats visibles sans inscription,
             hypothèses toujours transparentes.
           </p>
-          <a href="/simulateur" className="btn-secondary text-base px-6 py-3">
-            Tester ma simulation →
+          <a href="/simulateur" className="btn-secondary group text-base px-6 py-3">
+            Tester ma simulation <span className="arrow-nudge" aria-hidden>→</span>
           </a>
 
-          {/* Internal nav links */}
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-primary-300">
+          {/* Internal nav links — primary-100 (AA on primary-700) */}
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-primary-100">
             <a href="/meilleurs-etf-debutants" className="hover:text-white transition-colors">
               Meilleurs ETF débutants
             </a>
-            <span aria-hidden className="opacity-30">·</span>
+            <span aria-hidden className="opacity-40">·</span>
             <a href="/strategie-dca" className="hover:text-white transition-colors">
               Stratégie DCA
             </a>
-            <span aria-hidden className="opacity-30">·</span>
+            <span aria-hidden className="opacity-40">·</span>
             <a href="/interets-composes" className="hover:text-white transition-colors">
               Intérêts composés
             </a>
-            <span aria-hidden className="opacity-30">·</span>
+            <span aria-hidden className="opacity-40">·</span>
             <a href="/investir-en-etf" className="hover:text-white transition-colors">
               Investir en ETF
             </a>
-            <span aria-hidden className="opacity-30">·</span>
+            <span aria-hidden className="opacity-40">·</span>
             <a href="/pea-ou-cto" className="hover:text-white transition-colors">
               PEA ou CTO ?
             </a>
-            <span aria-hidden className="opacity-30">·</span>
+            <span aria-hidden className="opacity-40">·</span>
             <a href="/comparer-etf" className="hover:text-white transition-colors">
               Comparer les ETF
             </a>

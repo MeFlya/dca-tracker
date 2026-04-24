@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { LogoMark } from "@/components/ui/LogoMark";
 import { UserButton, useUser } from "@clerk/nextjs";
@@ -85,9 +86,10 @@ export function Header() {
                 </Link>
                 <Link
                   href="/tarifs"
-                  className="inline-flex items-center gap-1 text-xs font-bold bg-primary-600 text-white px-3 py-1.5 rounded-lg hover:bg-primary-700 transition-colors"
+                  className="inline-flex items-center gap-1.5 text-sm font-medium text-primary-700 hover:bg-primary-50 px-3 py-1.5 rounded-lg transition-colors"
                 >
-                  Premium ↑
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary-500" />
+                  Passer à Premium
                 </Link>
                 <UserButton />
               </>
@@ -96,32 +98,21 @@ export function Header() {
             {!isLoaded && <div className="w-24 h-8" />}
           </div>
 
-          {/* Mobile hamburger */}
+          {/* Mobile hamburger — Lucide icons, smooth cross-fade */}
           <button
             onClick={() => setMobileOpen((v) => !v)}
-            className="md:hidden p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+            className="md:hidden p-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
             aria-label={mobileOpen ? "Fermer le menu" : "Ouvrir le menu"}
             aria-expanded={mobileOpen}
           >
-            {mobileOpen ? (
-              <>
-                <span className="block w-5 h-0.5 bg-current rotate-45 translate-y-1.5" />
-                <span className="block w-5 h-0.5 bg-current -rotate-45" />
-              </>
-            ) : (
-              <>
-                <span className="block w-5 h-0.5 bg-current mb-1" />
-                <span className="block w-5 h-0.5 bg-current mb-1" />
-                <span className="block w-4 h-0.5 bg-current" />
-              </>
-            )}
+            {mobileOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
       </div>
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden border-t border-gray-100 bg-white px-4 py-3 space-y-1">
+        <div className="md:hidden border-t border-gray-100 bg-white px-4 py-3 space-y-1 animate-slide-up">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}

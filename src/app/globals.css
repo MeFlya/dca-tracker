@@ -84,6 +84,16 @@
   @apply !shadow-card-lg !rounded-xl overflow-hidden;
 }
 
+/* ── Motion tokens (Impeccable methodology) ─────────────────────────────────
+ * Exponential curves that mimic real physics (friction → deceleration).
+ * Avoid `ease` (vague compromise) and bouncy/elastic (tacky).
+ */
+:root {
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);   /* smooth default */
+  --ease-out-expo:  cubic-bezier(0.16, 1, 0.3, 1);   /* snappy, confident */
+  --ease-in-out:    cubic-bezier(0.65, 0, 0.35, 1);  /* state toggles */
+}
+
 /* ── Micro-animations ─────────────────────────────────────────────────────── */
 
 @keyframes fade-in {
@@ -92,40 +102,76 @@
 }
 
 @keyframes slide-up {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes badge-pop {
-  0% { transform: scale(0.8); opacity: 0; }
-  60% { transform: scale(1.08); opacity: 1; }
+  0%   { transform: scale(0.8); opacity: 0; }
+  60%  { transform: scale(1.08); opacity: 1; }
   100% { transform: scale(1); opacity: 1; }
 }
 
-.animate-fade-in { animation: fade-in 0.18s ease-out both; }
-.animate-slide-up { animation: slide-up 0.22s ease-out both; }
-.animate-badge-pop { animation: badge-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+/* Horizontal growth for progress bars / capital-split bars */
+@keyframes grow-x {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
 
-/* Subtle button lift on hover */
+.animate-fade-in   { animation: fade-in 180ms var(--ease-out-quart) both; }
+.animate-slide-up  { animation: slide-up 400ms var(--ease-out-expo) both; }
+.animate-badge-pop { animation: badge-pop 350ms cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+.animate-grow-x    { animation: grow-x 700ms var(--ease-out-expo) both; transform-origin: left center; }
+
+/* Stagger helper — set style={{ "--i": index }} to delay child entrance */
+.stagger-child { animation-delay: calc(var(--i, 0) * 70ms); }
+
+/* Press feedback on primary CTA — 100ms is "instant" (< 80ms perceptual threshold) */
+.btn-primary {
+  transition: background-color 150ms var(--ease-out-quart),
+              transform 100ms var(--ease-out-quart),
+              box-shadow 150ms var(--ease-out-quart);
+}
+.btn-primary:hover  { box-shadow: 0 4px 14px rgb(29 78 216 / 0.22); }
+.btn-primary:active { transform: scale(0.98); box-shadow: none; }
+
+/* Secondary buttons: lighter press */
+.btn-secondary { transition: all 150ms var(--ease-out-quart); }
+.btn-secondary:active { transform: scale(0.98); }
+
+/* Subtle button lift on hover — used on dark/colored CTAs */
 .btn-lift {
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: transform 150ms var(--ease-out-quart), box-shadow 150ms var(--ease-out-quart);
 }
 .btn-lift:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgb(29 78 216 / 0.15);
 }
 .btn-lift:active {
-  transform: translateY(0);
+  transform: translateY(0) scale(0.98);
   box-shadow: none;
 }
 
-/* Subtle card lift on hover — for KPIs and action cards */
+/* Card lift on hover — more pronounced + border-color shift for interactive feel */
 .card-hover {
-  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+  transition: transform 220ms var(--ease-out-quart),
+              box-shadow 220ms var(--ease-out-quart),
+              border-color 220ms var(--ease-out-quart);
 }
 .card-hover:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 14px rgb(15 23 42 / 0.06);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px -8px rgb(15 23 42 / 0.10), 0 4px 8px -4px rgb(15 23 42 / 0.04);
+  border-color: rgb(191 219 254);  /* primary-200 — subtle warm-up */
+}
+
+/* Arrow nudge — put `group-arrow` on a link/button, arrow gets a transition class */
+.arrow-nudge {
+  display: inline-block;
+  transition: transform 180ms var(--ease-out-quart);
+}
+.group:hover .arrow-nudge,
+.group-arrow:hover .arrow-nudge {
+  transform: translateX(3px);
 }
 
 /* Respect reduced-motion */
@@ -133,12 +179,18 @@
   .animate-fade-in,
   .animate-slide-up,
   .animate-badge-pop,
+  .animate-grow-x,
   .btn-lift,
-  .card-hover {
+  .btn-primary,
+  .btn-secondary,
+  .card-hover,
+  .arrow-nudge {
     animation: none !important;
     transition: none !important;
   }
   .btn-lift:hover,
+  .btn-primary:active,
+  .btn-secondary:active,
   .card-hover:hover {
     transform: none !important;
     box-shadow: none !important;
@@ -154,7 +206,9 @@
   border-radius: 9999px;
   outline: none;
   cursor: pointer;
-  /* active track filled via inline style background gradient */
+  /* active track filled via inline style background gradient.
+     transition on background makes keyboard steps glide instead of snap. */
+  transition: background 120ms var(--ease-out-quart);
 }
 
 /* Thumb — WebKit */

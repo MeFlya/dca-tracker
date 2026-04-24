@@ -57,7 +57,7 @@ export function Testimonials() {
           {TESTIMONIALS.map((t) => (
             <figure
               key={t.name}
-              className="rounded-2xl border border-gray-100 bg-white p-6 shadow-card-sm"
+              className="rounded-2xl border border-slate-200/70 bg-white p-6 shadow-card-sm card-hover"
             >
               {/* Quote */}
               <svg
