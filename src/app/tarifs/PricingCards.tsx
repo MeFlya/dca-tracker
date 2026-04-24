@@ -155,15 +155,24 @@ export function PricingCards() {
           const billing: "monthly" | "yearly" = yearly ? "yearly" : "monthly";
 
           return (
-            <div
-              key={plan.id}
-              id={plan.id}
-              className={`relative flex flex-col rounded-2xl border p-6 transition-all ${
-                isHighlight
-                  ? "border-primary-300 shadow-card-lg bg-white"
-                  : "border-slate-200/70 bg-white"
-              }`}
-            >
+            <div key={plan.id} id={plan.id} className="relative">
+              {/* Animated gradient border for the highlighted (Premium) plan.
+                  Gradient sits behind the card at -inset-px; card is rendered
+                  on top of it. Gradient-shift keyframe moves the gradient
+                  position laterally — creates a slow "glow sweep" effect. */}
+              {isHighlight && (
+                <div
+                  className="absolute -inset-[1.5px] rounded-2xl bg-gradient-to-r from-primary-400 via-primary-500 to-primary-400 animate-gradient opacity-80 pointer-events-none"
+                  aria-hidden
+                />
+              )}
+              <div
+                className={`relative flex flex-col rounded-2xl p-6 h-full transition-all ${
+                  isHighlight
+                    ? "border border-transparent shadow-card-lg bg-white"
+                    : "border border-slate-200/70 bg-white"
+                }`}
+              >
               {plan.badge && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                   <span className="bg-primary-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">
@@ -256,6 +265,7 @@ export function PricingCards() {
                   </li>
                 ))}
               </ul>
+              </div>
             </div>
           );
         })}

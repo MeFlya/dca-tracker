@@ -118,10 +118,39 @@
   to   { transform: scaleX(1); }
 }
 
+/* Floating orbs — slow, subtle drift for ambient backgrounds.
+   Two variants so adjacent orbs don't sync. */
+@keyframes float-slow-a {
+  0%, 100% { transform: translate(0, 0); }
+  50%      { transform: translate(40px, -30px); }
+}
+@keyframes float-slow-b {
+  0%, 100% { transform: translate(0, 0); }
+  50%      { transform: translate(-35px, 25px); }
+}
+
+/* Animated gradient — shifts background-position left to right.
+   Use on a gradient bg with bg-[length:200%_100%]. */
+@keyframes gradient-shift {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+/* Aurora sweep — diagonal light wash passing over a surface. */
+@keyframes aurora-sweep {
+  0%   { transform: translateX(-100%) skewX(-12deg); opacity: 0; }
+  50%  { opacity: 0.18; }
+  100% { transform: translateX(200%) skewX(-12deg); opacity: 0; }
+}
+
 .animate-fade-in   { animation: fade-in 180ms var(--ease-out-quart) both; }
 .animate-slide-up  { animation: slide-up 400ms var(--ease-out-expo) both; }
 .animate-badge-pop { animation: badge-pop 350ms cubic-bezier(0.34, 1.56, 0.64, 1) both; }
 .animate-grow-x    { animation: grow-x 700ms var(--ease-out-expo) both; transform-origin: left center; }
+.animate-float-a   { animation: float-slow-a 14s ease-in-out infinite; }
+.animate-float-b   { animation: float-slow-b 18s ease-in-out infinite; }
+.animate-gradient  { animation: gradient-shift 6s linear infinite; background-size: 200% 100%; }
+.animate-aurora    { animation: aurora-sweep 8s ease-in-out infinite; }
 
 /* Stagger helper — set style={{ "--i": index }} to delay child entrance */
 .stagger-child { animation-delay: calc(var(--i, 0) * 70ms); }
@@ -180,6 +209,10 @@
   .animate-slide-up,
   .animate-badge-pop,
   .animate-grow-x,
+  .animate-float-a,
+  .animate-float-b,
+  .animate-gradient,
+  .animate-aurora,
   .btn-lift,
   .btn-primary,
   .btn-secondary,

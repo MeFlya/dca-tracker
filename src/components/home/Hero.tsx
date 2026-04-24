@@ -15,16 +15,26 @@ const DEMO = {
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-primary-50 border-b border-gray-100">
-      {/* Subtle background grid */}
+    <section className="relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-primary-50/60 border-b border-slate-200/60">
+      {/* Ambient grid — slightly stronger than before for depth */}
       <div
-        className="absolute inset-0 opacity-[0.025]"
+        className="absolute inset-0 opacity-[0.04] pointer-events-none"
         style={{
           backgroundImage:
             "linear-gradient(#1d4ed8 1px, transparent 1px), linear-gradient(to right, #1d4ed8 1px, transparent 1px)",
-          backgroundSize: "64px 64px",
+          backgroundSize: "56px 56px",
         }}
+        aria-hidden
       />
+
+      {/* Floating gradient orbs — slow drift adds life without noise.
+          Positioned with negative insets so they bleed off-screen.
+          pointer-events-none so they don't block clicks. blur-3xl = 64px. */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden>
+        <div className="absolute -top-40 -left-40 w-[520px] h-[520px] rounded-full bg-primary-400/20 blur-3xl animate-float-a" />
+        <div className="absolute top-1/3 -right-48 w-[600px] h-[600px] rounded-full bg-primary-300/20 blur-3xl animate-float-b" />
+        <div className="absolute -bottom-40 left-1/3 w-[400px] h-[400px] rounded-full bg-sky-300/15 blur-3xl animate-float-a" style={{ animationDelay: "-4s" }} />
+      </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-10 items-center">
@@ -85,7 +95,14 @@ export function Hero() {
 
           {/* ── Right column: demo preview card ───────────────────────── */}
           <div className="lg:col-span-5 flex justify-center lg:justify-end">
-            <div className="w-full max-w-sm bg-white rounded-2xl border border-slate-200/70 shadow-card-lg p-5 select-none animate-slide-up">
+            {/* Wrapping div for the glow halo effect behind the card */}
+            <div className="relative w-full max-w-sm">
+              {/* Halo — softly glowing primary gradient ring behind the card */}
+              <div
+                className="absolute -inset-3 rounded-3xl bg-gradient-to-br from-primary-400/30 via-primary-300/10 to-sky-300/20 blur-2xl opacity-80 pointer-events-none"
+                aria-hidden
+              />
+              <div className="relative w-full bg-white rounded-2xl border border-slate-200/70 shadow-card-lg p-5 select-none animate-slide-up">
 
               {/* Card header */}
               <div className="flex items-start justify-between gap-3 mb-5">
@@ -153,6 +170,7 @@ export function Hero() {
                 Tester avec mes chiffres
                 <span aria-hidden className="arrow-nudge">→</span>
               </Link>
+              </div>
             </div>
           </div>
 

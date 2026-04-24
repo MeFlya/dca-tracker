@@ -85,9 +85,7 @@ export default function HomePage() {
 
       <EmailCapture source="homepage" />
 
-      {/* CTA band — gradient + subtle grid for depth, vs the previous flat
-          primary-600 block. Internal link color upgraded primary-300 →
-          primary-100 for WCAG AA contrast on primary-700 background. */}
+      {/* CTA band — gradient + subtle grid + aurora sweep for visual depth. */}
       <section className="relative overflow-hidden py-20 bg-gradient-to-br from-primary-700 via-primary-600 to-primary-700">
         {/* Ambient grid (matches Hero for visual rhyme) */}
         <div
@@ -97,6 +95,16 @@ export default function HomePage() {
               "linear-gradient(#ffffff 1px, transparent 1px), linear-gradient(to right, #ffffff 1px, transparent 1px)",
             backgroundSize: "64px 64px",
           }}
+          aria-hidden
+        />
+        {/* Floating orbs for depth */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden>
+          <div className="absolute -top-32 -left-32 w-[400px] h-[400px] rounded-full bg-primary-400/30 blur-3xl animate-float-a" />
+          <div className="absolute -bottom-32 -right-32 w-[400px] h-[400px] rounded-full bg-indigo-500/20 blur-3xl animate-float-b" />
+        </div>
+        {/* Aurora sweep — diagonal light bar that passes left to right */}
+        <div
+          className="absolute inset-y-0 w-1/3 bg-gradient-to-r from-transparent via-white to-transparent animate-aurora pointer-events-none"
           aria-hidden
         />
         <div className="relative max-w-3xl mx-auto px-4 sm:px-6 text-center">

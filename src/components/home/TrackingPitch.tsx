@@ -38,16 +38,30 @@ const BULLETS = [
 
 export function TrackingPitch() {
   return (
-    <section className="py-20 bg-gradient-to-b from-slate-50 to-white">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6">
+    <section className="relative py-20 bg-slate-950 overflow-hidden">
+      {/* Ambient gradient orbs for depth on dark — same pattern as Hero */}
+      <div className="absolute inset-0 pointer-events-none" aria-hidden>
+        <div className="absolute -top-40 -left-40 w-[520px] h-[520px] rounded-full bg-primary-500/20 blur-3xl animate-float-a" />
+        <div className="absolute bottom-0 -right-40 w-[500px] h-[500px] rounded-full bg-indigo-500/15 blur-3xl animate-float-b" />
+        {/* Subtle dot grid for texture */}
+        <div
+          className="absolute inset-0 opacity-[0.05]"
+          style={{
+            backgroundImage: "radial-gradient(#ffffff 1px, transparent 1px)",
+            backgroundSize: "24px 24px",
+          }}
+        />
+      </div>
+
+      <div className="relative max-w-5xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-14">
-          <p className="text-xs font-semibold text-primary-600 uppercase tracking-widest mb-3">
+          <p className="text-xs font-semibold text-primary-300 uppercase tracking-widest mb-3">
             Au-delà du simulateur
           </p>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 leading-tight">
             Un cockpit qui grandit avec votre DCA
           </h2>
-          <p className="text-lg text-gray-600 leading-relaxed max-w-2xl mx-auto">
+          <p className="text-lg text-slate-300 leading-relaxed max-w-2xl mx-auto">
             Une simulation vous donne une trajectoire théorique. Un suivi
             mensuel vous donne votre progression réelle. La différence change
             vos décisions.
@@ -56,8 +70,14 @@ export function TrackingPitch() {
 
         {/* Visual: mockup-ish card on left, bullets on right */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center mb-12">
-          {/* Left: visual mockup */}
-          <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-card">
+          {/* Left: visual mockup — pops bright against the dark section.
+              Halo underneath for extra emphasis. */}
+          <div className="relative">
+            <div
+              className="absolute -inset-3 rounded-3xl bg-gradient-to-br from-primary-500/30 via-indigo-400/20 to-sky-400/20 blur-2xl pointer-events-none"
+              aria-hidden
+            />
+            <div className="relative rounded-2xl border border-slate-200/60 bg-white p-6 shadow-card-lg">
             <div className="flex items-center justify-between mb-4">
               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
                 Suivi de stratégie
@@ -101,21 +121,22 @@ export function TrackingPitch() {
               <TrendingUp size={14} />
               En avance de +133 €
             </div>
+            </div>
           </div>
 
-          {/* Right: bullet list */}
+          {/* Right: bullet list — on dark bg now */}
           <div>
             <ul className="space-y-5">
               {BULLETS.map(({ Icon, title, text }) => (
                 <li key={title} className="flex items-start gap-4">
-                  <div className="w-9 h-9 rounded-lg bg-primary-50 flex items-center justify-center shrink-0">
-                    <Icon size={16} className="text-primary-600" />
+                  <div className="w-9 h-9 rounded-lg bg-primary-500/15 border border-primary-400/20 flex items-center justify-center shrink-0 backdrop-blur-sm">
+                    <Icon size={16} className="text-primary-300" />
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-gray-900 mb-0.5 leading-snug">
+                    <p className="text-sm font-bold text-white mb-0.5 leading-snug">
                       {title}
                     </p>
-                    <p className="text-sm text-gray-600 leading-relaxed">
+                    <p className="text-sm text-slate-300 leading-relaxed">
                       {text}
                     </p>
                   </div>
@@ -125,17 +146,17 @@ export function TrackingPitch() {
           </div>
         </div>
 
-        {/* CTA */}
-        <div className="rounded-2xl border border-primary-100 bg-primary-50/40 p-6 sm:p-8 text-center">
+        {/* CTA — glass-morphic on dark */}
+        <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-6 sm:p-8 text-center">
           <div className="flex items-center justify-center gap-2 mb-3">
-            <span className="inline-flex items-center text-[10px] font-bold bg-primary-600 text-white px-2 py-0.5 rounded uppercase tracking-wide">
+            <span className="inline-flex items-center text-[10px] font-bold bg-primary-500 text-white px-2 py-0.5 rounded uppercase tracking-wide">
               Premium
             </span>
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-slate-400">
               7 jours gratuits · annulable en 1 clic
             </span>
           </div>
-          <p className="text-lg sm:text-xl font-bold text-gray-900 mb-4 leading-snug">
+          <p className="text-lg sm:text-xl font-bold text-white mb-4 leading-snug">
             Essayez le suivi complet pendant 7 jours
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center mb-4">
@@ -147,22 +168,22 @@ export function TrackingPitch() {
             </Link>
             <Link
               href="/simulateur"
-              className="btn-secondary text-sm px-6 py-2.5 btn-lift"
+              className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 text-white font-medium text-sm transition-colors btn-lift"
             >
               Rester sur le simulateur gratuit
             </Link>
           </div>
-          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-gray-500">
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-slate-400">
             <span className="inline-flex items-center gap-1">
-              <Check size={12} className="text-emerald-500" />
+              <Check size={12} className="text-emerald-400" />
               Pas de carte requise après l&apos;essai
             </span>
             <span className="inline-flex items-center gap-1">
-              <Check size={12} className="text-emerald-500" />
+              <Check size={12} className="text-emerald-400" />
               4,90 €/mois ensuite
             </span>
             <span className="inline-flex items-center gap-1">
-              <Check size={12} className="text-emerald-500" />
+              <Check size={12} className="text-emerald-400" />
               Vos données vous appartiennent
             </span>
           </div>
