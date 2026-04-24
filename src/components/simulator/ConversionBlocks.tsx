@@ -111,8 +111,10 @@ function LossBlock({ output, isPremium }: { output: SimulatorOutput; isPremium: 
   if (gap <= 0) return null;
 
   return (
-    <div className="rounded-2xl border border-red-100 bg-red-50 p-5">
-      <p className="text-xs font-bold text-red-700 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+    <div className="rounded-2xl border border-slate-200/70 bg-white shadow-card p-5">
+      {/* Alerte signalée UNIQUEMENT par l'icône et le label rouge,
+          pas par un gros fond saturé. */}
+      <p className="text-xs font-bold text-red-600 uppercase tracking-wider mb-3 flex items-center gap-1.5">
         <TrendingDown size={14} />
         Vous laissez de l&apos;argent sur la table
       </p>
@@ -124,7 +126,7 @@ function LossBlock({ output, isPremium }: { output: SimulatorOutput; isPremium: 
             {formatEur(current)}
           </span>
         </div>
-        <div className="flex items-baseline justify-between border-t border-red-100 pt-2">
+        <div className="flex items-baseline justify-between border-t border-slate-100 pt-2">
           <span className="text-sm text-emerald-700 font-semibold">
             Avec +50&nbsp;€/mois
           </span>
@@ -134,10 +136,10 @@ function LossBlock({ output, isPremium }: { output: SimulatorOutput; isPremium: 
         </div>
       </div>
 
-      <div className="rounded-xl bg-white border border-red-100 px-4 py-3 mb-4">
+      <div className="rounded-xl bg-slate-50 border border-slate-200/70 px-4 py-3 mb-4">
         <p className="text-sm font-semibold text-gray-900">
           Différence :{" "}
-          <span className="text-xl font-bold text-red-700 tabular-nums">
+          <span className="text-xl font-bold text-red-600 tabular-nums">
             +{formatEur(gap)}
           </span>
         </p>
@@ -195,8 +197,8 @@ function TimeShiftBlock({ output, isPremium }: { output: SimulatorOutput; isPrem
     : `avec +50&nbsp;€/mois`;
 
   return (
-    <div className="rounded-2xl border border-amber-100 bg-amber-50 p-5">
-      <p className="text-xs font-bold text-amber-700 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+    <div className="rounded-2xl border border-slate-200/70 bg-white shadow-card p-5">
+      <p className="text-xs font-bold text-amber-600 uppercase tracking-wider mb-3 flex items-center gap-1.5">
         <Clock size={14} />
         Vous perdez des années
       </p>
@@ -210,7 +212,7 @@ function TimeShiftBlock({ output, isPremium }: { output: SimulatorOutput; isPrem
             {calCurrent}
           </span>
         </div>
-        <div className="flex items-baseline justify-between border-t border-amber-100 pt-2">
+        <div className="flex items-baseline justify-between border-t border-slate-100 pt-2">
           <span
             className="text-sm text-emerald-700 font-semibold"
             dangerouslySetInnerHTML={{
@@ -223,10 +225,10 @@ function TimeShiftBlock({ output, isPremium }: { output: SimulatorOutput; isPrem
         </div>
       </div>
 
-      <div className="rounded-xl bg-white border border-amber-100 px-4 py-3 mb-4">
+      <div className="rounded-xl bg-slate-50 border border-slate-200/70 px-4 py-3 mb-4">
         <p className="text-sm font-semibold text-gray-900">
           Vous perdez{" "}
-          <span className="text-xl font-bold text-amber-700 tabular-nums">
+          <span className="text-xl font-bold text-amber-600 tabular-nums">
             {yearsLost} année{yearsLost > 1 ? "s" : ""}
           </span>{" "}
           de votre vie d&apos;investisseur.
@@ -335,8 +337,8 @@ function ErrorBlock({ output, isPremium }: { output: SimulatorOutput; isPremium:
   const href = isPremium ? "/account" : ctaHref(false, "monte-carlo", output.input);
 
   return (
-    <div className="rounded-2xl border border-red-100 bg-red-50 p-5">
-      <p className="text-xs font-bold text-red-700 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+    <div className="rounded-2xl border border-slate-200/70 bg-white shadow-card p-5">
+      <p className="text-xs font-bold text-red-600 uppercase tracking-wider mb-3 flex items-center gap-1.5">
         <AlertTriangle size={14} />
         Erreur fréquente détectée
       </p>
@@ -348,10 +350,10 @@ function ErrorBlock({ output, isPremium }: { output: SimulatorOutput; isPremium:
       />
 
       {impact > 0 && (
-        <div className="rounded-xl bg-white border border-red-100 px-4 py-3 mb-4">
+        <div className="rounded-xl bg-slate-50 border border-slate-200/70 px-4 py-3 mb-4">
           <p className="text-sm font-semibold text-gray-900">
             Impact estimé :{" "}
-            <span className="text-xl font-bold text-red-700 tabular-nums">
+            <span className="text-xl font-bold text-red-600 tabular-nums">
               −{formatEur(impact)}
             </span>
           </p>
