@@ -47,7 +47,7 @@ export function Testimonials() {
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
             Ce que les investisseurs en disent
           </h2>
-          <p className="text-gray-500 max-w-xl mx-auto">
+          <p className="text-gray-600 max-w-xl mx-auto">
             Des retours authentiques d&apos;investisseurs particuliers
             français qui utilisent l&apos;outil au quotidien.
           </p>

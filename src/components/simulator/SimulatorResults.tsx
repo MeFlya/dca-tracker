@@ -19,10 +19,10 @@ function ScenarioCard({
   return (
     <div
       className={cn(
-        "rounded-2xl border p-5 flex flex-col gap-3 transition-shadow hover:shadow-md",
+        "rounded-2xl border p-5 flex flex-col gap-3 card-hover",
         isMain
           ? "border-primary-200 bg-primary-50 shadow-card"
-          : "border-gray-100 bg-white shadow-card"
+          : "border-slate-200/70 bg-white shadow-card"
       )}
     >
       <div className="flex items-center justify-between">

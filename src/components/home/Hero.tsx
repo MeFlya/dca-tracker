@@ -43,7 +43,7 @@ export function Hero() {
               dans 20 ans ?
             </h1>
 
-            <p className="text-lg md:text-xl text-gray-500 leading-relaxed mb-8 max-w-xl">
+            <p className="text-lg md:text-xl text-gray-600 leading-relaxed mb-8 max-w-xl">
               Simulez votre stratégie DCA, sauvegardez-la, puis suivez votre
               progression mois après mois. Hypothèses transparentes, trois
               scénarios de marché, zéro jargon.

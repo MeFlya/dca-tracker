@@ -47,7 +47,7 @@ export function TrackingPitch() {
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">
             Un cockpit qui grandit avec votre DCA
           </h2>
-          <p className="text-lg text-gray-500 leading-relaxed max-w-2xl mx-auto">
+          <p className="text-lg text-gray-600 leading-relaxed max-w-2xl mx-auto">
             Une simulation vous donne une trajectoire théorique. Un suivi
             mensuel vous donne votre progression réelle. La différence change
             vos décisions.
@@ -115,7 +115,7 @@ export function TrackingPitch() {
                     <p className="text-sm font-bold text-gray-900 mb-0.5 leading-snug">
                       {title}
                     </p>
-                    <p className="text-sm text-gray-500 leading-relaxed">
+                    <p className="text-sm text-gray-600 leading-relaxed">
                       {text}
                     </p>
                   </div>

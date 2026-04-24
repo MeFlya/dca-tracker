@@ -20,9 +20,14 @@ export function StatCard({
       <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">
         {label}
       </p>
+      {/* key={value} re-triggers the fade-in animation whenever the formatted
+          string changes — gives instant "I caused that" feedback when the
+          user drags a slider. The formatted value (not the raw number)
+          means tiny sub-cent changes don't flicker the UI. */}
       <p
+        key={value}
         className={cn(
-          "text-2xl font-semibold tracking-tight",
+          "text-2xl font-semibold tracking-tight animate-fade-in",
           accent === "gain" && "text-gain-dark",
           accent === "loss" && "text-loss-dark",
           accent === "primary" && "text-primary-600",

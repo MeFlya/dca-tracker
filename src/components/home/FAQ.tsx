@@ -13,7 +13,7 @@ export function FAQ() {
           <h2 className="text-3xl font-bold text-gray-900 mb-4">
             Questions fréquentes
           </h2>
-          <p className="text-gray-500">
+          <p className="text-gray-600">
             Les réponses aux questions les plus courantes sur le DCA, les ETF
             et cet outil.
           </p>
@@ -35,7 +35,7 @@ export function FAQ() {
                 </span>
               </button>
               {open === i && (
-                <p className="mt-3 text-sm text-gray-500 leading-relaxed animate-fade-in">
+                <p className="mt-3 text-sm text-gray-600 leading-relaxed animate-fade-in">
                   {item.a}
                 </p>
               )}

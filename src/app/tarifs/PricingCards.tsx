@@ -160,8 +160,8 @@ export function PricingCards() {
               id={plan.id}
               className={`relative flex flex-col rounded-2xl border p-6 transition-all ${
                 isHighlight
-                  ? "border-primary-400 shadow-card-lg ring-2 ring-primary-500 ring-offset-2 bg-white"
-                  : "border-gray-200 bg-white"
+                  ? "border-primary-300 shadow-card-lg bg-white"
+                  : "border-slate-200/70 bg-white"
               }`}
             >
               {plan.badge && (

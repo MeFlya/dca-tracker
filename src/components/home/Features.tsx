@@ -56,7 +56,7 @@ export function Features() {
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight mb-4">
             Des outils simples pour des décisions éclairées
           </h2>
-          <p className="text-lg text-gray-500 leading-relaxed">
+          <p className="text-lg text-gray-600 leading-relaxed">
             Pas de jargon inutile, pas de boîte noire. Chaque outil est conçu
             pour vous donner une image honnête de votre investissement.
           </p>
@@ -81,7 +81,7 @@ export function Features() {
               <h3 className="font-semibold text-gray-900 text-base mb-2 leading-snug">
                 {f.title}
               </h3>
-              <p className="text-sm text-gray-500 leading-relaxed flex-1">
+              <p className="text-sm text-gray-600 leading-relaxed flex-1">
                 {f.description}
               </p>
 
@@ -106,7 +106,7 @@ export function Features() {
             <p className="text-sm font-semibold text-gray-900">
               {SECONDARY_FEATURE.title}
             </p>
-            <p className="text-sm text-gray-500 mt-0.5 leading-snug">
+            <p className="text-sm text-gray-600 mt-0.5 leading-snug">
               {SECONDARY_FEATURE.description}
             </p>
           </div>

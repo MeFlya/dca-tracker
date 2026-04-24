@@ -30,9 +30,10 @@
 }
 
 @layer components {
-  /* Reusable card primitive */
+  /* Reusable card primitive
+     border-slate-200/70 = cooler, more "finance" than gray-100, without feeling cold */
   .card {
-    @apply bg-white rounded-2xl border border-gray-100 shadow-card p-6;
+    @apply bg-white rounded-2xl border border-slate-200/70 shadow-card p-6;
   }
 
   /* Primary CTA button */

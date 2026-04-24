@@ -36,7 +36,7 @@ export function HowItWorks() {
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">
             De la simulation au pilotage réel
           </h2>
-          <p className="text-lg text-gray-500 leading-relaxed max-w-2xl mx-auto">
+          <p className="text-lg text-gray-600 leading-relaxed max-w-2xl mx-auto">
             Le simulateur vous donne une projection. Le suivi mensuel vous
             donne la réalité. Ensemble, vous savez toujours où vous en êtes.
           </p>
@@ -62,7 +62,7 @@ export function HowItWorks() {
               <h3 className="text-base font-bold text-gray-900 mb-2 leading-snug">
                 {title}
               </h3>
-              <p className="text-sm text-gray-500 leading-relaxed">
+              <p className="text-sm text-gray-600 leading-relaxed">
                 {description}
               </p>
             </div>

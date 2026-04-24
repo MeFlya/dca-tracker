@@ -33,7 +33,7 @@ export function ETFCard({ etf, quote, error, providerLabel }: ETFCardProps) {
   const hideQuoteSection = error === "Cours non disponible pour cet ETF";
 
   return (
-    <div className="card hover:shadow-card-hover transition-shadow duration-200 flex flex-col gap-4">
+    <div className="card card-hover flex flex-col gap-4">
       {/* Header — symbol + name link to detail page */}
       <div className="flex items-start justify-between gap-2">
         <Link

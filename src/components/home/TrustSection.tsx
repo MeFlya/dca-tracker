@@ -36,7 +36,7 @@ export function TrustSection() {
           <h2 className="text-3xl font-bold text-gray-900 mb-4">
             Transparent par conception
           </h2>
-          <p className="text-lg text-gray-500 max-w-xl mx-auto">
+          <p className="text-lg text-gray-600 max-w-xl mx-auto">
             La confiance se construit avec l&apos;honnêteté, pas avec des
             promesses de rendement.
           </p>
@@ -50,7 +50,7 @@ export function TrustSection() {
               </div>
               <div>
                 <h3 className="font-semibold text-gray-900 text-sm mb-1.5">{p.title}</h3>
-                <p className="text-sm text-gray-500 leading-relaxed">{p.body}</p>
+                <p className="text-sm text-gray-600 leading-relaxed">{p.body}</p>
               </div>
             </div>
           ))}
