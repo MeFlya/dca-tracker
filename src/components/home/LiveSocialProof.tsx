@@ -54,7 +54,7 @@ export function LiveSocialProof() {
   ];
 
   return (
-    <section className="py-12 border-y border-gray-100 bg-gray-50/50 animate-fade-in">
+    <section className="py-12 border-y border-slate-200/70 bg-white animate-fade-in">
       <div className="max-w-4xl mx-auto px-4 sm:px-6">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-4">
           {cards.map(({ Icon, value, label }) => (

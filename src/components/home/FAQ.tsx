@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { FAQ_ITEMS } from "@/lib/faq-data";
 
 export function FAQ() {
@@ -41,6 +42,18 @@ export function FAQ() {
               )}
             </div>
           ))}
+        </div>
+
+        {/* Lien discret "Qui est derrière DCA Tracker ?" inline sous la FAQ,
+            en remplacement de la bande slate-50 dédiée qui doublonnait
+            la TrustSection juste au-dessus. */}
+        <div className="mt-10 text-center">
+          <Link
+            href="/a-propos"
+            className="text-sm text-gray-500 hover:text-gray-900 underline underline-offset-4 decoration-gray-300 hover:decoration-gray-600 transition-colors"
+          >
+            → Qui est derrière DCA Tracker ?
+          </Link>
         </div>
       </div>
     </section>

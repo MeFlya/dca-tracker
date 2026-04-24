@@ -1,25 +1,25 @@
+// Icon tiles uniformisés : 1 seul bg (bg-primary-500/10) pour les 4.
+// Les icônes SVG gardent leurs strokes individuels (variety discrète,
+// intentionnelle sur le détail). Alignement visuel immédiat avec les
+// icônes des sections TrackingPitch et PremiumFix.
 const TRUST_POINTS = [
   {
     icon: <FormulaIcon />,
-    iconBg: "bg-blue-50",
     title: "Formules vérifiables",
     body: "Le calcul de capitalisation mensuelle est documenté et auditable. Pas de magie, pas d'algorithme opaque.",
   },
   {
     icon: <LabelIcon />,
-    iconBg: "bg-amber-50",
     title: "Simulations clairement étiquetées",
     body: "Chaque résultat est identifié comme hypothétique. Jamais de données simulées présentées comme des cours réels.",
   },
   {
     icon: <SourceIcon />,
-    iconBg: "bg-purple-50",
     title: "Source des données affichée",
     body: "L'origine et le délai de chaque donnée de marché sont toujours visibles. Mode démo explicite sans clé API.",
   },
   {
     icon: <ShieldIcon />,
-    iconBg: "bg-green-50",
     title: "Pas de conseil personnalisé",
     body: "DCA Tracker projette et suit votre stratégie. Il ne remplace pas un conseiller financier agréé (CGP, CIF).",
   },
@@ -45,7 +45,7 @@ export function TrustSection() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {TRUST_POINTS.map((p) => (
             <div key={p.title} className="flex flex-col gap-4">
-              <div className={`w-10 h-10 rounded-xl ${p.iconBg} flex items-center justify-center shrink-0`}>
+              <div className="w-10 h-10 rounded-xl bg-primary-500/10 border border-primary-500/20 flex items-center justify-center shrink-0">
                 {p.icon}
               </div>
               <div>
