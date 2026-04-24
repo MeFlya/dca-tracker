@@ -14,7 +14,7 @@ export default function SignInPage() {
       <div className="w-full max-w-sm">
         {/* Branded header */}
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2 mb-5" aria-label="DCA Tracker">
+          <Link href="/" className="inline-flex items-center gap-2 mb-5" aria-label="DCATracker">
             <LogoMark size={28} />
             <span className="text-base font-bold tracking-tight text-gray-900">
               DCA<span className="font-normal text-gray-500 ml-1">Tracker</span>

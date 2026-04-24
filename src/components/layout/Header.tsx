@@ -29,7 +29,7 @@ export function Header() {
           <Link
             href="/"
             className="flex items-center gap-2.5 hover:opacity-80 transition-opacity"
-            aria-label="DCA Tracker — accueil"
+            aria-label="DCATracker, retour à l'accueil"
           >
             <LogoMark size={28} />
             <span className="text-[15px] font-bold tracking-tight text-gray-900">
