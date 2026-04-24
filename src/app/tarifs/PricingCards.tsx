@@ -135,6 +135,7 @@ export function PricingCards() {
         <button
           role="switch"
           aria-checked={yearly}
+          aria-label="Basculer entre tarif mensuel et annuel"
           onClick={() => setYearly((v) => !v)}
           className={`relative w-11 h-6 rounded-full transition-colors ${yearly ? "bg-primary-600" : "bg-gray-200"}`}
         >

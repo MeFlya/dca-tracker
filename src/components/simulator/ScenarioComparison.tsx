@@ -16,6 +16,7 @@ function Field({
   step,
   unit,
   onChange,
+  scenarioName,
 }: {
   label: string;
   value: number;
@@ -24,7 +25,15 @@ function Field({
   step: number;
   unit: string;
   onChange: (v: number) => void;
+  /** Discriminator for the aria-label so screen readers can tell A vs B sliders apart */
+  scenarioName: string;
 }) {
+  // Compose a screen-reader-only label that includes the scenario name + the
+  // visible label, e.g. "Scénario A — Versement mensuel". Without this, axe
+  // flags 8 type=range inputs as having no accessible name (one per
+  // scenario × 4 fields). Visible UI is unchanged — the <span> above
+  // remains the visual label for sighted users.
+  const ariaLabel = `${scenarioName} — ${label}`;
   return (
     <div>
       <div className="flex justify-between text-xs mb-1">
@@ -41,6 +50,11 @@ function Field({
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
         className="w-full accent-primary-600 h-1.5"
+        aria-label={ariaLabel}
+        aria-valuemin={min}
+        aria-valuemax={max}
+        aria-valuenow={value}
+        aria-valuetext={`${value.toLocaleString("fr-FR")} ${unit}`}
       />
     </div>
   );
@@ -72,10 +86,10 @@ function ScenForm({
   return (
     <div className={`flex-1 rounded-2xl border-2 ${color} p-4 space-y-3`}>
       <p className="font-bold text-sm text-gray-900">{label}</p>
-      <Field label="Versement mensuel" value={values.monthlyAmount} min={50} max={5000} step={50} unit="€" onChange={set("monthlyAmount")} />
-      <Field label="Durée (ans)" value={values.durationYears} min={1} max={30} step={1} unit="ans" onChange={set("durationYears")} />
-      <Field label="Rendement annuel" value={values.annualReturnPct} min={0} max={15} step={0.5} unit="%" onChange={set("annualReturnPct")} />
-      <Field label="Frais (TER)" value={values.annualFeesPct} min={0} max={2} step={0.05} unit="%" onChange={set("annualFeesPct")} />
+      <Field scenarioName={label} label="Versement mensuel" value={values.monthlyAmount} min={50} max={5000} step={50} unit="€" onChange={set("monthlyAmount")} />
+      <Field scenarioName={label} label="Durée (ans)" value={values.durationYears} min={1} max={30} step={1} unit="ans" onChange={set("durationYears")} />
+      <Field scenarioName={label} label="Rendement annuel" value={values.annualReturnPct} min={0} max={15} step={0.5} unit="%" onChange={set("annualReturnPct")} />
+      <Field scenarioName={label} label="Frais (TER)" value={values.annualFeesPct} min={0} max={2} step={0.05} unit="%" onChange={set("annualFeesPct")} />
     </div>
   );
 }

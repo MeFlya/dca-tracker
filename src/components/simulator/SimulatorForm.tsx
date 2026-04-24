@@ -151,6 +151,7 @@ export function SimulatorForm({
             onClick={() => toggleInflation(!showInflation)}
             role="switch"
             aria-checked={showInflation}
+            aria-label="Activer le calcul en pouvoir d'achat réel (déduire l'inflation)"
             tabIndex={0}
             onKeyDown={(e) => {
               if (e.key === " " || e.key === "Enter") toggleInflation(!showInflation);
