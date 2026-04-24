@@ -65,6 +65,12 @@ export function Header() {
                 >
                   Connexion
                 </Link>
+                <Link
+                  href="/sign-up"
+                  className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+                >
+                  S&apos;inscrire
+                </Link>
                 <Link href="/simulateur" className="btn-primary text-xs px-4 py-2">
                   Démarrer la simulation
                 </Link>
@@ -146,13 +152,22 @@ export function Header() {
           </Link>
           <div className="pt-2 pb-1 space-y-2">
             {isLoaded && !isSignedIn && (
-              <Link
-                href="/sign-in"
-                onClick={() => setMobileOpen(false)}
-                className="block px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
-              >
-                Connexion
-              </Link>
+              <>
+                <Link
+                  href="/sign-in"
+                  onClick={() => setMobileOpen(false)}
+                  className="block px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
+                >
+                  Connexion
+                </Link>
+                <Link
+                  href="/sign-up"
+                  onClick={() => setMobileOpen(false)}
+                  className="block px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
+                >
+                  S&apos;inscrire
+                </Link>
+              </>
             )}
             {isLoaded && isSignedIn && (
               <Link
