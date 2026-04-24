@@ -63,7 +63,7 @@ export default async function DonneesArchePage() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       {/* Header */}
       <div className="mb-10">
-        <nav aria-label="Fil d'ariane" className="flex items-center gap-2 text-sm text-gray-400 mb-3">
+        <nav aria-label="Fil d'ariane" className="flex items-center gap-2 text-sm text-gray-500 mb-3">
           <a href="/" className="hover:text-gray-600 transition-colors">Accueil</a>
           <span aria-hidden>/</span>
           <span className="text-gray-600" aria-current="page">Données de marché</span>
@@ -75,7 +75,7 @@ export default async function DonneesArchePage() {
           </h1>
           <div className="flex items-center gap-3">
             {demo && <DemoBadge />}
-            <span className="text-xs text-gray-400">
+            <span className="text-xs text-gray-500">
               Via {provider.name}
             </span>
           </div>
@@ -126,7 +126,7 @@ export default async function DonneesArchePage() {
       </div>
 
       {/* Legal */}
-      <p className="mt-6 text-xs text-gray-400 text-center">
+      <p className="mt-6 text-xs text-gray-500 text-center">
         Données indicatives uniquement. Pas de conseil en investissement. Les
         cours réels peuvent différer.
       </p>

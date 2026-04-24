@@ -129,7 +129,7 @@ export default function Investir200EurosMoisPage() {
       {/* Breadcrumb */}
       <nav
         aria-label="Fil d'ariane"
-        className="flex items-center gap-2 text-sm text-gray-400 mb-8"
+        className="flex items-center gap-2 text-sm text-gray-500 mb-8"
       >
         <Link href="/" className="hover:text-gray-600 transition-colors">
           Accueil
@@ -199,19 +199,19 @@ export default function Investir200EurosMoisPage() {
                 </th>
                 <th className="text-right px-4 py-3 font-semibold text-gray-500 border-b border-gray-100">
                   10 ans
-                  <span className="block text-xs font-normal text-gray-400">
+                  <span className="block text-xs font-normal text-gray-500">
                     investi 24 000€
                   </span>
                 </th>
                 <th className="text-right px-4 py-3 font-semibold text-gray-500 border-b border-gray-100">
                   20 ans
-                  <span className="block text-xs font-normal text-gray-400">
+                  <span className="block text-xs font-normal text-gray-500">
                     investi 48 000€
                   </span>
                 </th>
                 <th className="text-right px-4 py-3 font-semibold text-gray-500 border-b border-gray-100">
                   30 ans
-                  <span className="block text-xs font-normal text-gray-400">
+                  <span className="block text-xs font-normal text-gray-500">
                     investi 72 000€
                   </span>
                 </th>
@@ -227,7 +227,7 @@ export default function Investir200EurosMoisPage() {
                     <span className={`font-bold ${row.color}`}>
                       {row.label}
                     </span>
-                    <span className="block text-xs text-gray-400">
+                    <span className="block text-xs text-gray-500">
                       {row.rate}
                     </span>
                   </td>
@@ -239,7 +239,7 @@ export default function Investir200EurosMoisPage() {
                       <span className={`font-bold text-base block ${row.color}`}>
                         {final}
                       </span>
-                      <span className="text-xs text-gray-400">{pct}</span>
+                      <span className="text-xs text-gray-500">{pct}</span>
                     </td>
                   ))}
                 </tr>
@@ -247,7 +247,7 @@ export default function Investir200EurosMoisPage() {
             </tbody>
           </table>
         </div>
-        <p className="text-sm text-gray-400 mt-3 leading-relaxed">
+        <p className="text-sm text-gray-500 mt-3 leading-relaxed">
           Les rendements historiques du MSCI World se situent autour de 7-8%/an
           sur 30 ans. Ils ne garantissent pas les performances futures.
         </p>
@@ -266,14 +266,14 @@ export default function Investir200EurosMoisPage() {
             <p className="text-3xl font-bold text-primary-700 mb-1">
               104 200 €
             </p>
-            <p className="text-xs text-gray-400">dont 48 000€ investis</p>
+            <p className="text-xs text-gray-500">dont 48 000€ investis</p>
           </div>
           <div className="rounded-2xl border border-gray-100 bg-gray-50 p-5">
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
               Attendre 5 ans · 15 ans
             </p>
             <p className="text-3xl font-bold text-gray-600 mb-1">63 400 €</p>
-            <p className="text-xs text-gray-400">dont 36 000€ investis</p>
+            <p className="text-xs text-gray-500">dont 36 000€ investis</p>
           </div>
         </div>
         <div className="rounded-2xl border border-amber-100 bg-amber-50 p-5">
@@ -342,7 +342,7 @@ export default function Investir200EurosMoisPage() {
                 <p className={`font-semibold text-sm ${row.color}`}>
                   {row.label}
                 </p>
-                <p className="text-xs text-gray-400">TER : {row.ter}</p>
+                <p className="text-xs text-gray-500">TER : {row.ter}</p>
               </div>
               <div className="text-right shrink-0">
                 <p className={`font-bold tabular-nums ${row.color}`}>
@@ -355,7 +355,7 @@ export default function Investir200EurosMoisPage() {
             </div>
           ))}
         </div>
-        <p className="text-sm text-gray-400 mt-4">
+        <p className="text-sm text-gray-500 mt-4">
           Sur 20 ans avec 200€/mois, le choix d&apos;un ETF à 0,12% vs
           une assurance-vie à 1% représente{" "}
           <strong className="text-gray-700">11 400€ de différence</strong>.
@@ -469,7 +469,7 @@ export default function Investir200EurosMoisPage() {
             >
               <summary className="flex items-center justify-between gap-4 px-5 py-4 cursor-pointer font-semibold text-gray-900 text-sm hover:bg-gray-50 transition-colors list-none">
                 {q}
-                <span className="shrink-0 text-gray-400 group-open:rotate-180 transition-transform">
+                <span className="shrink-0 text-gray-500 group-open:rotate-180 transition-transform">
                   ▾
                 </span>
               </summary>

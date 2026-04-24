@@ -90,7 +90,7 @@ export function SaveStrategyButton({ input, plan }: Props) {
       ) : state === "error" ? (
         <>
           <span className="text-red-500">Erreur</span>
-          <button onClick={() => setState("idle")} className="text-gray-400 text-xs underline">
+          <button onClick={() => setState("idle")} className="text-gray-500 text-xs underline">
             réessayer
           </button>
         </>

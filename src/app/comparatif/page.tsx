@@ -35,7 +35,7 @@ export default function ComparatifHubPage() {
         }}
       />
 
-      <nav aria-label="Fil d'ariane" className="flex items-center gap-2 text-sm text-gray-400 mb-8">
+      <nav aria-label="Fil d'ariane" className="flex items-center gap-2 text-sm text-gray-500 mb-8">
         <Link href="/" className="hover:text-gray-600 transition-colors">Accueil</Link>
         <span aria-hidden>/</span>
         <span className="text-gray-600" aria-current="page">Comparatif brokers</span>
@@ -78,7 +78,7 @@ export default function ComparatifHubPage() {
                   {b.specs.pea ? (
                     <span className="text-emerald-600 font-semibold">Oui</span>
                   ) : (
-                    <span className="text-gray-400">Non</span>
+                    <span className="text-gray-500">Non</span>
                   )}
                 </td>
                 <td className="px-4 py-3 text-gray-700 text-xs leading-relaxed">
@@ -95,7 +95,7 @@ export default function ComparatifHubPage() {
                         ? "text-emerald-600"
                         : b.specs.savingsPlan === "Partielle"
                         ? "text-gray-500"
-                        : "text-gray-400"
+                        : "text-gray-500"
                     }`}
                   >
                     {b.specs.savingsPlan}
@@ -120,7 +120,7 @@ export default function ComparatifHubPage() {
               <p className="text-base font-bold text-gray-900 group-hover:text-primary-700 transition-colors">
                 {b.name}
               </p>
-              <div className="flex items-center gap-1.5 text-xs text-gray-400">
+              <div className="flex items-center gap-1.5 text-xs text-gray-500">
                 {b.specs.pea && (
                   <span className="bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded-full font-semibold">PEA</span>
                 )}
@@ -193,7 +193,7 @@ export default function ComparatifHubPage() {
       </div>
 
       {/* Legal */}
-      <p className="mt-10 text-[11px] text-gray-400 leading-relaxed text-center">
+      <p className="mt-10 text-[11px] text-gray-500 leading-relaxed text-center">
         Ce comparatif est fourni à titre informatif et ne constitue pas un
         conseil en investissement. DCA Tracker n&apos;est affilié à aucun des
         courtiers présentés. Tarifs et conditions à vérifier sur les sites

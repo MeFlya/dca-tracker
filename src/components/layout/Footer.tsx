@@ -190,10 +190,10 @@ export function Footer() {
         </div>
 
         <div className="pt-6 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-gray-500">
             © {year} DCA Tracker. Outil éducatif — pas de conseil en investissement.
           </p>
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-gray-500">
             Données de marché potentiellement différées.
           </p>
         </div>

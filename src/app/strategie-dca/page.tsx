@@ -130,7 +130,7 @@ export default function StrategieDCAPage() {
       }} />
 
       {/* Breadcrumb */}
-      <nav aria-label="Fil d'ariane" className="flex items-center gap-2 text-sm text-gray-400 mb-8">
+      <nav aria-label="Fil d'ariane" className="flex items-center gap-2 text-sm text-gray-500 mb-8">
         <Link href="/" className="hover:text-gray-600 transition-colors">Accueil</Link>
         <span aria-hidden>/</span>
         <span className="text-gray-600" aria-current="page">Stratégie DCA</span>
@@ -213,7 +213,7 @@ export default function StrategieDCAPage() {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
           <div className="rounded-xl border border-gray-100 bg-white p-4 text-center">
-            <p className="text-xs text-gray-400 mb-1">Total investi</p>
+            <p className="text-xs text-gray-500 mb-1">Total investi</p>
             <p className="text-xl font-bold text-gray-900">1 800 €</p>
           </div>
           <div className="rounded-xl border border-primary-100 bg-primary-50 p-4 text-center">
@@ -235,7 +235,7 @@ export default function StrategieDCAPage() {
             supplémentaires pendant la correction.
           </p>
         </div>
-        <p className="text-sm text-gray-400 mt-3">
+        <p className="text-sm text-gray-500 mt-3">
           Note : ce scénario favorise le DCA (marché qui baisse puis remonte).
           Sur un marché en hausse continue, le lump sum peut surperformer.{" "}
           <Link href="#dca-vs-lump-sum" className="underline hover:text-gray-600 transition-colors">
@@ -366,7 +366,7 @@ export default function StrategieDCAPage() {
             >
               <summary className="flex items-center justify-between gap-4 px-5 py-4 cursor-pointer font-semibold text-gray-900 text-sm hover:bg-gray-50 transition-colors list-none">
                 {q}
-                <span className="shrink-0 text-gray-400 group-open:rotate-180 transition-transform">
+                <span className="shrink-0 text-gray-500 group-open:rotate-180 transition-transform">
                   ▾
                 </span>
               </summary>

@@ -74,7 +74,7 @@ export function SimulatorForm({
         <button
           type="button"
           onClick={handleReset}
-          className="text-xs text-gray-400 hover:text-gray-600 transition-colors px-2 py-1 rounded-lg hover:bg-gray-50"
+          className="text-xs text-gray-500 hover:text-gray-600 transition-colors px-2 py-1 rounded-lg hover:bg-gray-50"
           title="Réinitialiser les valeurs par défaut"
         >
           Réinitialiser
@@ -185,7 +185,7 @@ export function SimulatorForm({
       </div>
 
       {/* Live indicator */}
-      <div className="flex items-center gap-2 text-xs text-gray-400 pt-1">
+      <div className="flex items-center gap-2 text-xs text-gray-500 pt-1">
         <span className="w-1.5 h-1.5 rounded-full bg-gain animate-pulse" />
         Mise à jour en temps réel
       </div>
@@ -207,7 +207,7 @@ function NetReturnBadge({ gross, fees }: { gross: number; fees: number }) {
         Rendement net après frais
       </span>
       <span className="text-sm font-bold text-primary-800 tabular-nums">
-        {netStr} %<span className="font-normal text-primary-500">/an</span>
+        {netStr} %<span className="font-normal text-primary-700">/an</span>
       </span>
     </div>
   );

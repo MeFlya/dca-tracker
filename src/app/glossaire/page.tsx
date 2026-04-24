@@ -54,7 +54,7 @@ export default function GlossaryHubPage() {
         }}
       />
 
-      <nav aria-label="Fil d'ariane" className="flex items-center gap-2 text-sm text-gray-400 mb-8">
+      <nav aria-label="Fil d'ariane" className="flex items-center gap-2 text-sm text-gray-500 mb-8">
         <Link href="/" className="hover:text-gray-600 transition-colors">Accueil</Link>
         <span aria-hidden>/</span>
         <span className="text-gray-600" aria-current="page">Glossaire</span>

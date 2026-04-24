@@ -103,7 +103,7 @@ function Stat({ value, label }: { value: string; label: string }) {
 function LockedRow({ label, highlight = false }: { label: string; highlight?: boolean }) {
   return (
     <div className={`flex items-center gap-3 px-3 py-2.5 rounded-lg ${highlight ? "bg-blue-50 border border-blue-100" : "bg-gray-50"}`}>
-      <LockIconSmall className={highlight ? "text-blue-500" : "text-gray-400"} />
+      <LockIconSmall className={highlight ? "text-blue-500" : "text-gray-500"} />
       <span className={`text-sm ${highlight ? "text-blue-900 font-semibold" : "text-gray-600"}`}>
         {label}
       </span>

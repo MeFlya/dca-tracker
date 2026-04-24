@@ -53,7 +53,7 @@ export function GainsDonutChart({ base }: GainsDonutChartProps) {
         <h3 className="font-semibold text-gray-900 text-sm">
           Répartition de votre projection
         </h3>
-        <p className="text-xs text-gray-400 mt-0.5">
+        <p className="text-xs text-gray-500 mt-0.5">
           Part du capital versé vs croissance estimée
         </p>
       </div>
@@ -91,7 +91,7 @@ export function GainsDonutChart({ base }: GainsDonutChartProps) {
           <span className="text-lg font-bold text-gray-900 tabular-nums leading-tight">
             {formatEur(finalValue)}
           </span>
-          <span className="text-[10px] text-gray-400 font-medium mt-0.5">
+          <span className="text-[10px] text-gray-500 font-medium mt-0.5">
             Valeur finale
           </span>
         </div>
@@ -117,8 +117,8 @@ export function GainsDonutChart({ base }: GainsDonutChartProps) {
       {/* Multiplier callout — only shown when meaningful */}
       {totalGain > 0 && finalValue / totalInvested >= 1.1 && (
         <div className="pt-3 border-t border-gray-50 flex items-baseline justify-between">
-          <span className="text-xs text-gray-400">Multiplicateur</span>
-          <span className="text-sm font-bold text-gain tabular-nums">
+          <span className="text-xs text-gray-500">Multiplicateur</span>
+          <span className="text-sm font-bold text-gain-dark tabular-nums">
             ×{(finalValue / totalInvested).toFixed(2)}
           </span>
         </div>
@@ -156,7 +156,7 @@ function LegendRow({
           </span>
           <span
             className={`text-xs font-bold tabular-nums ml-2 shrink-0 ${
-              highlight ? "text-gain" : "text-gray-700"
+              highlight ? "text-gain-dark" : "text-gray-700"
             }`}
           >
             {amount}
@@ -169,7 +169,7 @@ function LegendRow({
             style={{ width: `${pct.toFixed(1)}%`, backgroundColor: color }}
           />
         </div>
-        <p className="text-[10px] text-gray-300 mt-0.5 tabular-nums text-right">
+        <p className="text-[10px] text-gray-500 mt-0.5 tabular-nums text-right">
           {pct.toFixed(1)} %
         </p>
       </div>

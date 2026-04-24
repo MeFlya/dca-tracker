@@ -107,7 +107,7 @@ export function InsightsTab() {
                 <p className="text-base font-bold text-gray-900">
                   {rhythmLabel(i.rhythm)}
                 </p>
-                <span className="text-xs text-gray-400 tabular-nums">
+                <span className="text-xs text-gray-500 tabular-nums">
                   {i.avgContribsPerMonth.toFixed(1)} contribution
                   {i.avgContribsPerMonth >= 2 ? "s" : ""} / mois
                 </span>
@@ -222,7 +222,7 @@ export function InsightsTab() {
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
       {children}
     </p>
   );
@@ -238,11 +238,11 @@ function BadgeSection() {
   return (
     <section>
       <div className="flex items-center justify-between mb-3">
-        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
           <Sparkles size={12} />
           Achievements
         </p>
-        <span className="text-xs text-gray-400 tabular-nums">
+        <span className="text-xs text-gray-500 tabular-nums">
           {earned.size}/{BADGES.length} débloqués
         </span>
       </div>
@@ -264,7 +264,7 @@ function BadgeSection() {
                 <span className="text-xl leading-none">{badge.icon}</span>
                 <span
                   className={`text-[9px] leading-tight font-semibold ${
-                    isEarned ? "text-amber-900" : "text-gray-400"
+                    isEarned ? "text-amber-900" : "text-gray-500"
                   }`}
                 >
                   {badge.label}
@@ -281,7 +281,7 @@ function BadgeSection() {
               {next.badge.icon} {next.badge.label}
             </strong>
             {" · "}
-            <span className="text-gray-400">{next.progressText}</span>
+            <span className="text-gray-500">{next.progressText}</span>
           </p>
         )}
       </div>

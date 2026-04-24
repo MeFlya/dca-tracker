@@ -34,41 +34,41 @@ function ScenarioCard({
         >
           {scenario.label}
         </span>
-        <span className="text-xs text-gray-400">
+        <span className="text-xs text-gray-500">
           {scenario.annualReturnPct} %/an brut
         </span>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <p className="text-xs text-gray-400 mb-0.5">Capital final</p>
+          <p className="text-xs text-gray-500 mb-0.5">Capital final</p>
           <p className="text-xl font-bold text-gray-900 tabular-nums">
             {formatEur(scenario.finalValue)}
           </p>
         </div>
         <div>
-          <p className="text-xs text-gray-400 mb-0.5">Gains</p>
+          <p className="text-xs text-gray-500 mb-0.5">Gains</p>
           <p
             className={cn(
               "text-xl font-bold tabular-nums",
-              scenario.totalGain >= 0 ? "text-gain" : "text-loss"
+              scenario.totalGain >= 0 ? "text-gain-dark" : "text-loss-dark"
             )}
           >
             {formatEur(scenario.totalGain)}
           </p>
         </div>
         <div>
-          <p className="text-xs text-gray-400 mb-0.5">Capital investi</p>
+          <p className="text-xs text-gray-500 mb-0.5">Capital investi</p>
           <p className="text-sm font-semibold text-gray-700 tabular-nums">
             {formatEur(scenario.totalInvested)}
           </p>
         </div>
         <div>
-          <p className="text-xs text-gray-400 mb-0.5">Performance</p>
+          <p className="text-xs text-gray-500 mb-0.5">Performance</p>
           <p
             className={cn(
               "text-sm font-semibold tabular-nums",
-              scenario.gainPercent >= 0 ? "text-gain" : "text-loss"
+              scenario.gainPercent >= 0 ? "text-gain-dark" : "text-loss-dark"
             )}
           >
             {formatPct(scenario.gainPercent)}
@@ -78,7 +78,7 @@ function ScenarioCard({
 
       {scenario.inflationAdjustedValue !== undefined && (
         <div className="pt-2 border-t border-gray-200">
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-gray-500">
             Pouvoir d&apos;achat équivalent (€ d&apos;aujourd&apos;hui)
           </p>
           <p className="text-sm font-medium text-gray-700 tabular-nums">
@@ -145,7 +145,7 @@ export function SimulatorResults({ output }: SimulatorResultsProps) {
       <div>
         <div className="flex items-baseline gap-2 mb-3">
           <h3 className="font-semibold text-gray-900">3 scénarios comparés</h3>
-          <span className="text-xs text-gray-400">± 2 % autour de votre hypothèse</span>
+          <span className="text-xs text-gray-500">± 2 % autour de votre hypothèse</span>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <ScenarioCard scenario={conservative} />
@@ -156,7 +156,7 @@ export function SimulatorResults({ output }: SimulatorResultsProps) {
 
       {/* Assumptions — collapsed, less prominent */}
       <details className="group">
-        <summary className="flex items-center gap-2 cursor-pointer text-xs font-medium text-gray-400 hover:text-gray-600 transition-colors list-none w-fit">
+        <summary className="flex items-center gap-2 cursor-pointer text-xs font-medium text-gray-500 hover:text-gray-600 transition-colors list-none w-fit">
           <svg viewBox="0 0 16 16" fill="none" className="w-3.5 h-3.5 group-open:rotate-90 transition-transform shrink-0" aria-hidden>
             <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
           </svg>

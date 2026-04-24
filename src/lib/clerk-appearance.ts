@@ -33,7 +33,7 @@ export const clerkAppearance = {
       "border border-gray-200 rounded-xl normal-case hover:bg-gray-50 transition-colors",
     socialButtonsBlockButtonText: "text-sm font-medium",
     dividerLine: "bg-gray-100",
-    dividerText: "text-xs text-gray-400 font-medium",
+    dividerText: "text-xs text-gray-500 font-medium",
     footerAction: "text-sm",
     footerActionLink:
       "text-primary-600 hover:text-primary-700 font-semibold underline-offset-2",

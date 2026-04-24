@@ -78,7 +78,7 @@ export default function PEAouCTOPage() {
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
 
       {/* Breadcrumb */}
-      <nav aria-label="Fil d'ariane" className="flex items-center gap-2 text-sm text-gray-400 mb-8">
+      <nav aria-label="Fil d'ariane" className="flex items-center gap-2 text-sm text-gray-500 mb-8">
         <Link href="/" className="hover:text-gray-600 transition-colors">Accueil</Link>
         <span aria-hidden>/</span>
         <span className="text-gray-600" aria-current="page">PEA ou CTO</span>
@@ -179,7 +179,7 @@ export default function PEAouCTOPage() {
                   <Link href={`/etf/${etf.symbol}`} className="hover:text-primary-600 transition-colors">
                     {etf.name}
                   </Link>
-                  <span className="ml-2 text-xs font-normal text-gray-400">TER {etf.ter}</span>
+                  <span className="ml-2 text-xs font-normal text-gray-500">TER {etf.ter}</span>
                 </p>
                 <p className="text-xs text-gray-500 mt-0.5">{etf.note}</p>
               </div>
@@ -204,7 +204,7 @@ export default function PEAouCTOPage() {
                   <Link href={`/etf/${etf.symbol}`} className="hover:text-primary-600 transition-colors">
                     {etf.name}
                   </Link>
-                  <span className="ml-2 text-xs font-normal text-gray-400">TER {etf.ter}</span>
+                  <span className="ml-2 text-xs font-normal text-gray-500">TER {etf.ter}</span>
                 </p>
                 <p className="text-xs text-gray-500 mt-0.5">{etf.note}</p>
               </div>
@@ -229,7 +229,7 @@ export default function PEAouCTOPage() {
                 "Vos versements totaux resteront sous 150 000 €",
               ].map((item) => (
                 <li key={item} className="flex items-start gap-2 text-sm text-primary-800">
-                  <span className="shrink-0 text-primary-500 font-bold mt-0.5">✓</span>
+                  <span className="shrink-0 text-primary-700 font-bold mt-0.5">✓</span>
                   {item}
                 </li>
               ))}
@@ -245,7 +245,7 @@ export default function PEAouCTOPage() {
                 "Vous compensez des moins-values avec des plus-values",
               ].map((item) => (
                 <li key={item} className="flex items-start gap-2 text-sm text-gray-600">
-                  <span className="shrink-0 text-gray-400 font-bold mt-0.5">→</span>
+                  <span className="shrink-0 text-gray-500 font-bold mt-0.5">→</span>
                   {item}
                 </li>
               ))}
@@ -278,7 +278,7 @@ export default function PEAouCTOPage() {
               <span>Ne touchez pas à votre PEA pendant 5 ans pour bénéficier de l&apos;avantage fiscal maximum.</span>
             </li>
           </ol>
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-gray-500">
             Ces informations sont à caractère éducatif et ne constituent pas un conseil en investissement personnalisé.
             Consultez un CGP ou CIF agréé AMF pour toute décision patrimoniale.
           </p>

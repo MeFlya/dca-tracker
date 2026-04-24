@@ -67,7 +67,7 @@ export function Hero() {
             </div>
 
             {/* Trust signals */}
-            <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-gray-400">
+            <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-gray-500">
               {[
                 "Sans inscription",
                 "Formules vérifiables",
@@ -89,7 +89,7 @@ export function Hero() {
               {/* Card header */}
               <div className="flex items-start justify-between gap-3 mb-5">
                 <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-400 mb-0.5">
+                  <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-500 mb-0.5">
                     Exemple illustratif
                   </p>
                   <p className="text-sm font-semibold text-gray-700 leading-snug">
@@ -111,7 +111,7 @@ export function Hero() {
               {/* Capital split — bars */}
               <div className="space-y-2.5 mb-4">
                 <div>
-                  <div className="flex justify-between text-[11px] text-gray-400 mb-1">
+                  <div className="flex justify-between text-[11px] text-gray-500 mb-1">
                     <span>Capital investi</span>
                     <span>{DEMO.investedShare} %</span>
                   </div>
@@ -123,7 +123,7 @@ export function Hero() {
                   </div>
                 </div>
                 <div>
-                  <div className="flex justify-between text-[11px] text-gray-400 mb-1">
+                  <div className="flex justify-between text-[11px] text-gray-500 mb-1">
                     <span>Intérêts composés</span>
                     <span>{DEMO.gainsShare} %</span>
                   </div>
@@ -138,7 +138,7 @@ export function Hero() {
 
               {/* Multiplier row */}
               <div className="flex items-center justify-between py-3 border-t border-gray-50">
-                <span className="text-xs text-gray-400">Multiplicateur du capital</span>
+                <span className="text-xs text-gray-500">Multiplicateur du capital</span>
                 <span className="text-sm font-bold text-gray-900">{DEMO.multiplier}</span>
               </div>
 
@@ -177,12 +177,12 @@ function DemoStat({
 
   const valueColor =
     color === "blue"  ? "text-primary-700" :
-    color === "green" ? "text-gain"        :
+    color === "green" ? "text-gain-dark"        :
     "text-gray-700";
 
   return (
     <div className={`rounded-xl border-t-2 border border-gray-100 bg-gray-50 p-2.5 ${accent}`}>
-      <p className="text-[10px] text-gray-400 mb-1 leading-none">{label}</p>
+      <p className="text-[10px] text-gray-500 mb-1 leading-none">{label}</p>
       <p className={`text-sm font-bold tabular-nums leading-tight ${valueColor}`}>
         {value}
       </p>
@@ -198,7 +198,7 @@ function CheckIcon() {
       viewBox="0 0 16 16"
       fill="none"
       aria-hidden="true"
-      className="shrink-0 text-gain"
+      className="shrink-0 text-gain-dark"
     >
       <circle cx="8" cy="8" r="7" fill="currentColor" fillOpacity="0.12" />
       <path

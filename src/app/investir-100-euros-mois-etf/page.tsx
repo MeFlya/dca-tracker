@@ -135,7 +135,7 @@ export default function Investir100EurosMoisPage() {
       {/* Breadcrumb */}
       <nav
         aria-label="Fil d'ariane"
-        className="flex items-center gap-2 text-sm text-gray-400 mb-8"
+        className="flex items-center gap-2 text-sm text-gray-500 mb-8"
       >
         <Link href="/" className="hover:text-gray-600 transition-colors">
           Accueil
@@ -178,7 +178,7 @@ export default function Investir100EurosMoisPage() {
               key={label}
               className="rounded-xl border border-gray-100 bg-gray-50 p-4 text-center"
             >
-              <p className="text-xs text-gray-400 mb-1">{label}</p>
+              <p className="text-xs text-gray-500 mb-1">{label}</p>
               <p className="font-bold text-gray-900">{value}</p>
             </div>
           ))}
@@ -238,13 +238,13 @@ export default function Investir100EurosMoisPage() {
                   ] as const
                 ).map(({ label, data, invested }) => (
                   <div key={label} className="bg-white/70 rounded-xl p-3 text-center">
-                    <p className="text-xs text-gray-400 mb-1 font-medium">
+                    <p className="text-xs text-gray-500 mb-1 font-medium">
                       {label}
                     </p>
                     <p className={`text-lg font-bold tabular-nums ${s.color}`}>
                       {data.final}
                     </p>
-                    <p className="text-xs text-gray-400 mt-1">
+                    <p className="text-xs text-gray-500 mt-1">
                       investi : {invested}
                     </p>
                     <p className="text-xs font-semibold text-gray-600 mt-0.5">
@@ -349,7 +349,7 @@ export default function Investir100EurosMoisPage() {
             <p className="text-2xl font-bold text-primary-700 mb-1">
               52 100 €
             </p>
-            <p className="text-xs text-gray-400">dont 24 000€ investis</p>
+            <p className="text-xs text-gray-500">dont 24 000€ investis</p>
           </div>
           <div className="rounded-2xl border border-gray-100 bg-gray-50 p-5">
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
@@ -359,7 +359,7 @@ export default function Investir100EurosMoisPage() {
               100€/mois × <strong>15 ans</strong>
             </p>
             <p className="text-2xl font-bold text-gray-700 mb-1">31 700 €</p>
-            <p className="text-xs text-gray-400">dont 18 000€ investis</p>
+            <p className="text-xs text-gray-500">dont 18 000€ investis</p>
           </div>
         </div>
         <div className="rounded-2xl border border-amber-100 bg-amber-50 p-5">
@@ -432,7 +432,7 @@ export default function Investir100EurosMoisPage() {
             </tbody>
           </table>
         </div>
-        <p className="text-sm text-gray-400 mt-3 leading-relaxed">
+        <p className="text-sm text-gray-500 mt-3 leading-relaxed">
           Les ETF indiciels à bas coûts ne sont pas juste une préférence
           théorique — ils valent concrètement 2 300 à 5 700€ supplémentaires
           sur 20 ans pour un versement de 100€/mois.
@@ -524,7 +524,7 @@ export default function Investir100EurosMoisPage() {
             au premier versement.
           </p>
         </div>
-        <p className="text-xs text-gray-400 mt-3">
+        <p className="text-xs text-gray-500 mt-3">
           Calcul simplifié. La fiscalité réelle dépend de votre situation
           personnelle.{" "}
           <Link
@@ -549,7 +549,7 @@ export default function Investir100EurosMoisPage() {
             >
               <summary className="flex items-center justify-between gap-4 px-5 py-4 cursor-pointer font-semibold text-gray-900 text-sm hover:bg-gray-50 transition-colors list-none">
                 {q}
-                <span className="shrink-0 text-gray-400 group-open:rotate-180 transition-transform">
+                <span className="shrink-0 text-gray-500 group-open:rotate-180 transition-transform">
                   ▾
                 </span>
               </summary>

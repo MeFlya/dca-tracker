@@ -28,7 +28,7 @@ export function MarketCard({ quote, error }: MarketCardProps) {
           <span className="font-bold text-gray-900">{quote.symbol}</span>
           {quote.isDelayed && <DelayedBadge />}
         </div>
-        <span className="text-xs text-gray-400">{quote.exchange}</span>
+        <span className="text-xs text-gray-500">{quote.exchange}</span>
       </div>
 
       {/* Name */}
@@ -42,7 +42,7 @@ export function MarketCard({ quote, error }: MarketCardProps) {
         <span
           className={cn(
             "flex items-center gap-1 text-sm font-semibold tabular-nums",
-            positive ? "text-gain" : "text-loss"
+            positive ? "text-gain-dark" : "text-loss-dark"
           )}
         >
           <span>{positive ? "▲" : "▼"}</span>
@@ -51,13 +51,13 @@ export function MarketCard({ quote, error }: MarketCardProps) {
       </div>
 
       {/* Change absolute */}
-      <div className="flex justify-between text-xs text-gray-400">
+      <div className="flex justify-between text-xs text-gray-500">
         <span>
           Variation :{" "}
           <span
             className={cn(
               "font-medium",
-              positive ? "text-gain" : "text-loss"
+              positive ? "text-gain-dark" : "text-loss-dark"
             )}
           >
             {positive ? "+" : ""}
@@ -68,7 +68,7 @@ export function MarketCard({ quote, error }: MarketCardProps) {
       </div>
 
       {/* Timestamp */}
-      <p className="mt-3 text-xs text-gray-300 border-t border-gray-50 pt-3">
+      <p className="mt-3 text-xs text-gray-500 border-t border-gray-50 pt-3">
         Mis à jour : {formatDate(quote.lastUpdated)}
       </p>
     </div>

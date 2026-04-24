@@ -33,7 +33,7 @@ export default async function SettingsPage() {
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 py-10">
       {/* Header + back link */}
-      <nav className="flex items-center gap-2 text-sm text-gray-400 mb-6" aria-label="Fil d'ariane">
+      <nav className="flex items-center gap-2 text-sm text-gray-500 mb-6" aria-label="Fil d'ariane">
         <Link href="/account" className="hover:text-gray-600 transition-colors">Dashboard</Link>
         <span aria-hidden>/</span>
         <span className="text-gray-600" aria-current="page">Paramètres</span>
@@ -43,7 +43,7 @@ export default async function SettingsPage() {
 
       {/* ── Profile ──────────────────────────────────────────────────────── */}
       <section className="rounded-2xl border border-gray-100 bg-white p-6 mb-4">
-        <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">
+        <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">
           Profil
         </h2>
         <dl className="space-y-3 text-sm">
@@ -68,7 +68,7 @@ export default async function SettingsPage() {
 
       {/* ── Subscription ─────────────────────────────────────────────────── */}
       <section className="rounded-2xl border border-gray-100 bg-white p-6 mb-4">
-        <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">
+        <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">
           Abonnement
         </h2>
         <div className="flex items-center justify-between gap-3 flex-wrap">
@@ -102,7 +102,7 @@ export default async function SettingsPage() {
 
       {/* ── Data export + import ─────────────────────────────────────────── */}
       <section className="rounded-2xl border border-gray-100 bg-white p-6 mb-4">
-        <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">
+        <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">
           Mes données
         </h2>
         <div className="flex items-start justify-between gap-4 flex-wrap mb-4">
@@ -140,7 +140,7 @@ export default async function SettingsPage() {
 
       {/* ── Security & email (Clerk portal) ──────────────────────────────── */}
       <section className="rounded-2xl border border-gray-100 bg-white p-6 mb-4">
-        <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">
+        <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">
           Sécurité et connexion
         </h2>
         <p className="text-sm text-gray-600 leading-relaxed mb-3">

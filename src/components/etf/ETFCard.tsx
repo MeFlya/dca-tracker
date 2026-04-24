@@ -64,7 +64,7 @@ export function ETFCard({ etf, quote, error, providerLabel }: ETFCardProps) {
 
       {/* Price block */}
       {hideQuoteSection ? (
-        <div className="text-xs text-gray-400 italic">
+        <div className="text-xs text-gray-500 italic">
           Cours non disponible
         </div>
       ) : error ? (
@@ -80,14 +80,14 @@ export function ETFCard({ etf, quote, error, providerLabel }: ETFCardProps) {
             <span
               className={cn(
                 "text-sm font-semibold tabular-nums",
-                positive ? "text-gain" : "text-loss"
+                positive ? "text-gain-dark" : "text-loss-dark"
               )}
             >
               {formatPercent(quote.changePercent)}
             </span>
           </div>
           {providerLabel && quote.lastUpdated && (
-            <p className="text-[11px] text-gray-400">
+            <p className="text-[11px] text-gray-500">
               Source : {providerLabel} · Mis à jour {formatRelativeTime(quote.lastUpdated)}
             </p>
           )}
@@ -142,7 +142,7 @@ function MetaRow({
 }) {
   return (
     <div>
-      <span className="text-gray-400">{label} : </span>
+      <span className="text-gray-500">{label} : </span>
       <span className={cn("text-gray-700 font-medium", mono && "font-mono")}>
         {value}
       </span>

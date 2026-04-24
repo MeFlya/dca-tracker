@@ -54,7 +54,7 @@ export default async function AccountPage() {
           <h1 className="text-2xl font-bold text-gray-900">
             Bonjour{user.firstName ? `, ${user.firstName}` : ""} 👋
           </h1>
-          <p className="text-sm text-gray-400 mt-0.5">Votre tableau de bord DCA</p>
+          <p className="text-sm text-gray-500 mt-0.5">Votre tableau de bord DCA</p>
         </div>
         <div className="flex items-center gap-3 flex-wrap">
           <span className={`px-3 py-1 rounded-full text-sm font-bold ${planMeta.bg} ${planMeta.color}`}>
@@ -142,7 +142,7 @@ export default async function AccountPage() {
             className="group rounded-2xl border border-dashed border-gray-200 bg-gray-50/50 p-5 card-hover"
           >
             <div className="flex items-center gap-2 mb-2">
-              <div className="w-8 h-8 rounded-lg bg-white border border-gray-200 flex items-center justify-center text-gray-400">
+              <div className="w-8 h-8 rounded-lg bg-white border border-gray-200 flex items-center justify-center text-gray-500">
                 <SlidersIcon />
               </div>
             </div>
@@ -182,7 +182,7 @@ export default async function AccountPage() {
             className="group rounded-2xl border border-dashed border-gray-200 bg-gray-50/50 p-5 card-hover"
           >
             <div className="flex items-center gap-2 mb-2">
-              <div className="w-8 h-8 rounded-lg bg-white border border-gray-200 flex items-center justify-center text-gray-400">
+              <div className="w-8 h-8 rounded-lg bg-white border border-gray-200 flex items-center justify-center text-gray-500">
                 <ShieldIcon />
               </div>
             </div>
@@ -213,10 +213,10 @@ export default async function AccountPage() {
               <span className="text-xs text-red-500">Annulé</span>
             )}
             {periodEndDate && (
-              <span className="text-xs text-gray-400">Renouvellement le {periodEndDate}</span>
+              <span className="text-xs text-gray-500">Renouvellement le {periodEndDate}</span>
             )}
           </div>
-          <div className="flex items-center gap-2 text-sm text-gray-400">
+          <div className="flex items-center gap-2 text-sm text-gray-500">
             <span>{user.emailAddresses[0]?.emailAddress}</span>
           </div>
         </div>
@@ -225,7 +225,7 @@ export default async function AccountPage() {
       {/* ── What you get (Premium) / What you unlock (Free) ───────────────── */}
       {!isPremium && (
         <div className="rounded-2xl border border-gray-100 bg-white p-5">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">
             Ce que vous débloquez avec Premium
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -245,7 +245,7 @@ export default async function AccountPage() {
                   <p className="text-sm font-semibold text-gray-700 group-hover:text-primary-700 transition-colors">
                     {label}
                   </p>
-                  <p className="text-xs text-gray-400">{desc}</p>
+                  <p className="text-xs text-gray-500">{desc}</p>
                 </div>
               </Link>
             ))}

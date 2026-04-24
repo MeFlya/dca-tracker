@@ -42,7 +42,7 @@ function Section({
 function Formula({ label, formula }: { label: string; formula: string }) {
   return (
     <div className="my-4 rounded-xl border border-gray-100 bg-gray-50 p-4">
-      <p className="text-xs text-gray-400 mb-1 uppercase tracking-wide">
+      <p className="text-xs text-gray-500 mb-1 uppercase tracking-wide">
         {label}
       </p>
       <code className="text-sm font-mono text-gray-800 whitespace-pre-wrap">
@@ -56,7 +56,7 @@ export default function MethodologiePage() {
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       {/* Breadcrumb */}
-      <nav aria-label="Fil d'ariane" className="flex items-center gap-2 text-sm text-gray-400 mb-8">
+      <nav aria-label="Fil d'ariane" className="flex items-center gap-2 text-sm text-gray-500 mb-8">
         <a href="/" className="hover:text-gray-600 transition-colors">Accueil</a>
         <span aria-hidden>/</span>
         <span className="text-gray-600" aria-current="page">Méthodologie</span>

@@ -23,15 +23,15 @@ export function StatCard({
       <p
         className={cn(
           "text-2xl font-semibold tracking-tight",
-          accent === "gain" && "text-gain",
-          accent === "loss" && "text-loss",
+          accent === "gain" && "text-gain-dark",
+          accent === "loss" && "text-loss-dark",
           accent === "primary" && "text-primary-600",
           accent === "default" && "text-gray-900"
         )}
       >
         {value}
       </p>
-      {sub && <p className="text-xs text-gray-400 mt-0.5">{sub}</p>}
+      {sub && <p className="text-xs text-gray-500 mt-0.5">{sub}</p>}
     </div>
   );
 }

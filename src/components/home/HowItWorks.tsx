@@ -54,7 +54,7 @@ export function HowItWorks() {
                 <div className="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center">
                   <Icon size={18} className="text-primary-600" />
                 </div>
-                <span className="text-xs font-bold text-gray-200 tabular-nums tracking-wider">
+                <span className="text-xs font-bold text-gray-500 tabular-nums tracking-wider">
                   {number}
                 </span>
               </div>
@@ -77,7 +77,7 @@ export function HowItWorks() {
           >
             Lancer ma simulation →
           </Link>
-          <p className="text-xs text-gray-400 mt-3">
+          <p className="text-xs text-gray-500 mt-3">
             Sans inscription · 60 secondes · Hypothèses vérifiables
           </p>
         </div>

@@ -69,7 +69,7 @@ const STEPS = [
               >
                 <span className="font-semibold text-gray-900">{etf.symbol}</span>
                 <span className="text-gray-500 flex-1 px-3 truncate">{etf.name}</span>
-                <span className="text-xs text-gray-400 shrink-0">TER {etf.ter}</span>
+                <span className="text-xs text-gray-500 shrink-0">TER {etf.ter}</span>
                 {etf.pea && (
                   <span className="ml-2 shrink-0 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-primary-100 text-primary-700">PEA</span>
                 )}
@@ -143,7 +143,7 @@ const STEPS = [
               </div>
             ))}
           </div>
-          <p className="mt-2 text-xs text-gray-400">Projections hypothétiques, rendement brut 7 %/an constant. TER non déduit.</p>
+          <p className="mt-2 text-xs text-gray-500">Projections hypothétiques, rendement brut 7 %/an constant. TER non déduit.</p>
         </div>
         <Link
           href="/simulateur"
@@ -203,7 +203,7 @@ export default function InvestirEnETFPage() {
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
 
       {/* Breadcrumb */}
-      <nav aria-label="Fil d'ariane" className="flex items-center gap-2 text-sm text-gray-400 mb-8">
+      <nav aria-label="Fil d'ariane" className="flex items-center gap-2 text-sm text-gray-500 mb-8">
         <Link href="/" className="hover:text-gray-600 transition-colors">Accueil</Link>
         <span aria-hidden>/</span>
         <span className="text-gray-600" aria-current="page">Investir en ETF</span>
@@ -224,7 +224,7 @@ export default function InvestirEnETFPage() {
         {STEPS.map((step) => (
           <section key={step.num}>
             <div className="flex items-center gap-3 mb-4">
-              <span className="text-xs font-bold text-primary-500 font-mono tracking-widest">
+              <span className="text-xs font-bold text-primary-700 font-mono tracking-widest">
                 Étape {step.num}
               </span>
               <div className="flex-1 h-px bg-gray-100" />
@@ -289,7 +289,7 @@ export default function InvestirEnETFPage() {
               <span className="text-sm font-semibold text-gray-900 group-hover:text-primary-700 transition-colors">
                 {link.label} →
               </span>
-              <span className="text-xs text-gray-400">{link.sub}</span>
+              <span className="text-xs text-gray-500">{link.sub}</span>
             </Link>
           ))}
         </div>

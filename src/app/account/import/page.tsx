@@ -19,7 +19,7 @@ export default async function ImportPage() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 py-10">
-      <nav aria-label="Fil d'ariane" className="flex items-center gap-2 text-sm text-gray-400 mb-6">
+      <nav aria-label="Fil d'ariane" className="flex items-center gap-2 text-sm text-gray-500 mb-6">
         <Link href="/account" className="hover:text-gray-600 transition-colors">Dashboard</Link>
         <span aria-hidden>/</span>
         <span className="text-gray-600" aria-current="page">Importer des transactions</span>

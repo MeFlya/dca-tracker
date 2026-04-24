@@ -33,7 +33,7 @@ export default function SignUpPage() {
         />
 
         {/* Footer trust line */}
-        <p className="text-center text-xs text-gray-400 mt-6">
+        <p className="text-center text-xs text-gray-500 mt-6">
           Inscription gratuite · Vos données ne sont jamais vendues
         </p>
       </div>

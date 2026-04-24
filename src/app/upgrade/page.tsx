@@ -597,7 +597,7 @@ export default async function UpgradePage({ searchParams }: Props) {
         {/* Back link */}
         <Link
           href="/simulateur"
-          className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-gray-600 transition-colors mb-8"
+          className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-gray-600 transition-colors mb-8"
         >
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <path d="M10 12L6 8l4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -671,7 +671,7 @@ export default async function UpgradePage({ searchParams }: Props) {
                     row.locked
                       ? "text-primary-700"
                       : row.baseline
-                      ? "text-gray-400"
+                      ? "text-gray-500"
                       : "text-gray-900"
                   }`}
                 >
@@ -690,13 +690,13 @@ export default async function UpgradePage({ searchParams }: Props) {
         <section className="mb-10">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="rounded-2xl border border-gray-200 bg-gray-50 p-5">
-              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
+              <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">
                 {f.beforeAfter.before.label}
               </p>
               <ul className="space-y-2">
                 {f.beforeAfter.before.lines.map((line, i) => (
                   <li key={i} className="flex items-start gap-2 text-sm text-gray-500">
-                    <span className="text-gray-300 mt-0.5">✕</span>
+                    <span className="text-gray-500 mt-0.5">✕</span>
                     <span>{line}</span>
                   </li>
                 ))}
@@ -726,11 +726,11 @@ export default async function UpgradePage({ searchParams }: Props) {
 
         {/* ── PRICE ANCHOR ──────────────────────────────────────────────────── */}
         <section className="mb-10 text-center">
-          <p className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-2">
+          <p className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">
             {f.plan} — {f.price}
           </p>
           <p className="text-xs text-gray-500">
-            {f.priceYear} <span className="text-gray-400">· {f.yearSavings}</span>
+            {f.priceYear} <span className="text-gray-500">· {f.yearSavings}</span>
           </p>
           <div className="mt-5 space-y-1">
             {f.priceAnchors.map((anchor, i) => (
@@ -755,7 +755,7 @@ export default async function UpgradePage({ searchParams }: Props) {
               Continuer en Gratuit
             </Link>
           </div>
-          <p className="text-xs text-gray-400 mt-4 text-center">
+          <p className="text-xs text-gray-500 mt-4 text-center">
             7 jours d&apos;essai gratuit · Annulation en 1 clic · Pas d&apos;engagement
           </p>
         </section>
@@ -772,7 +772,7 @@ export default async function UpgradePage({ searchParams }: Props) {
                 <summary className="cursor-pointer list-none flex items-center justify-between gap-3">
                   <span className="text-sm font-semibold text-gray-900">{item.q}</span>
                   <svg
-                    className="w-4 h-4 text-gray-400 shrink-0 transition-transform group-open:rotate-180"
+                    className="w-4 h-4 text-gray-500 shrink-0 transition-transform group-open:rotate-180"
                     viewBox="0 0 16 16"
                     fill="none"
                     aria-hidden="true"
@@ -788,7 +788,7 @@ export default async function UpgradePage({ searchParams }: Props) {
 
         {/* ── Other features teaser ─────────────────────────────────────────── */}
         <section className="mb-10 pt-8 border-t border-gray-100">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">
             {f.plan} inclut aussi
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

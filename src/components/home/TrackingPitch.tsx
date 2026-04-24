@@ -59,10 +59,10 @@ export function TrackingPitch() {
           {/* Left: visual mockup */}
           <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-card">
             <div className="flex items-center justify-between mb-4">
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
                 Suivi de stratégie
               </p>
-              <span className="text-xs text-gray-400">Mois 6</span>
+              <span className="text-xs text-gray-500">Mois 6</span>
             </div>
 
             <p className="text-sm text-gray-500 mb-5">
@@ -79,7 +79,7 @@ export function TrackingPitch() {
             {/* KPI row */}
             <div className="grid grid-cols-2 gap-3 mb-4">
               <div className="rounded-xl bg-gray-50 border border-gray-100 px-3 py-2.5">
-                <p className="text-[10px] text-gray-400 uppercase tracking-wide mb-0.5">
+                <p className="text-[10px] text-gray-500 uppercase tracking-wide mb-0.5">
                   Théorique
                 </p>
                 <p className="text-lg font-bold text-gray-500 tabular-nums">

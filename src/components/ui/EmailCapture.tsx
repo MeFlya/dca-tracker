@@ -105,7 +105,7 @@ export function EmailCapture({
             </p>
           )}
 
-          <p className="mt-4 text-xs text-gray-400 flex items-center justify-center gap-1.5">
+          <p className="mt-4 text-xs text-gray-500 flex items-center justify-center gap-1.5">
             <LockIcon />
             Désinscription en un clic.
           </p>
@@ -162,7 +162,7 @@ export function EmailCapture({
         </p>
       )}
 
-      <p className="mt-3 text-xs text-gray-400 flex items-center gap-1.5">
+      <p className="mt-3 text-xs text-gray-500 flex items-center gap-1.5">
         <LockIcon />
         Désinscription en un clic.
       </p>

@@ -71,7 +71,7 @@ export function DeleteAccountButton({ userEmail }: Props) {
               </div>
               <button
                 onClick={() => setOpen(false)}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
+                className="text-gray-500 hover:text-gray-600 transition-colors"
                 aria-label="Fermer"
               >
                 <X size={18} />

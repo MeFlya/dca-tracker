@@ -34,7 +34,7 @@ function MCTooltip({
 
   return (
     <div className="bg-white border border-gray-100 rounded-xl shadow-lg p-4 min-w-[220px]">
-      <p className="text-xs font-semibold text-gray-400 mb-3 uppercase tracking-wide">
+      <p className="text-xs font-semibold text-gray-500 mb-3 uppercase tracking-wide">
         Année {label}
       </p>
       {p90 && (
@@ -57,7 +57,7 @@ function MCTooltip({
       )}
       {invested && (
         <div className="flex justify-between gap-6 text-sm mt-2 pt-2 border-t border-gray-100">
-          <span className="text-gray-400 font-medium">Capital investi</span>
+          <span className="text-gray-500 font-medium">Capital investi</span>
           <span className="font-semibold tabular-nums text-gray-500">{formatEur(invested.value)}</span>
         </div>
       )}
@@ -78,7 +78,7 @@ function KpiCard({
 }) {
   return (
     <div className="rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 text-center">
-      <p className="text-xs text-gray-400 mb-1">{label}</p>
+      <p className="text-xs text-gray-500 mb-1">{label}</p>
       <p className={`text-lg font-bold tabular-nums ${color}`}>{value}</p>
     </div>
   );
@@ -107,7 +107,7 @@ function LockedOverlay({ input }: { input?: SimulatorInput }) {
           <span className="font-semibold text-emerald-600">meilleur</span> ?
           Quelle est la probabilité que vous soyez en plus-value ?
         </p>
-        <p className="text-xs text-gray-400 mb-5 leading-relaxed">
+        <p className="text-xs text-gray-500 mb-5 leading-relaxed">
           Le résultat moyen ne suffit pas pour piloter une vraie stratégie.
         </p>
         <Link
@@ -220,7 +220,7 @@ export function MonteCarloChart({
               Premium
             </span>
           </div>
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-gray-500">
             1&nbsp;000 marchés possibles simulés · volatilité historique ETF ≈ 15&nbsp;%/an
           </p>
         </div>
@@ -275,7 +275,7 @@ export function MonteCarloChart({
               color={result.probabilityPositive >= 80 ? "text-emerald-600" : "text-orange-500"}
             />
           </div>
-          <p className="text-xs text-gray-400 mt-3 leading-relaxed">
+          <p className="text-xs text-gray-500 mt-3 leading-relaxed">
             Simulation stochastique (GBM) — ne constitue pas un conseil en investissement. Les rendements passés ne préjugent pas des rendements futurs.
           </p>
         </>

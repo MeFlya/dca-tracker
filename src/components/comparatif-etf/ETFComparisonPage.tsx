@@ -143,7 +143,7 @@ export function ETFComparisonPage({ comparison }: { comparison: ETFComparison })
       />
 
       {/* Breadcrumb */}
-      <nav aria-label="Fil d'ariane" className="flex items-center gap-2 text-sm text-gray-400 mb-8 flex-wrap">
+      <nav aria-label="Fil d'ariane" className="flex items-center gap-2 text-sm text-gray-500 mb-8 flex-wrap">
         <Link href="/" className="hover:text-gray-600 transition-colors">Accueil</Link>
         <span aria-hidden>/</span>
         <Link href="/comparatif-etf" className="hover:text-gray-600 transition-colors">Comparatifs ETF</Link>
@@ -177,7 +177,7 @@ export function ETFComparisonPage({ comparison }: { comparison: ETFComparison })
         <SideCard side={comparison.left} accent="left" />
         <SideCard side={comparison.right} accent="right" />
         {/* VS divider */}
-        <div className="hidden sm:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white border border-gray-100 items-center justify-center text-gray-400 shadow-sm">
+        <div className="hidden sm:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white border border-gray-100 items-center justify-center text-gray-500 shadow-sm">
           <ArrowLeftRight size={14} />
         </div>
       </div>
@@ -238,7 +238,7 @@ export function ETFComparisonPage({ comparison }: { comparison: ETFComparison })
           >
             <summary className="cursor-pointer list-none flex items-center justify-between gap-3">
               <span className="text-sm font-semibold text-gray-900">{q}</span>
-              <span className="text-gray-400 group-open:rotate-180 transition-transform" aria-hidden>▾</span>
+              <span className="text-gray-500 group-open:rotate-180 transition-transform" aria-hidden>▾</span>
             </summary>
             <p className="mt-3 text-sm text-gray-600 leading-relaxed">{a}</p>
           </details>
@@ -264,7 +264,7 @@ export function ETFComparisonPage({ comparison }: { comparison: ETFComparison })
 
       {/* Other comparisons */}
       <div className="pt-8 border-t border-gray-100">
-        <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-4">
+        <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-4">
           Autres comparatifs
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -286,7 +286,7 @@ export function ETFComparisonPage({ comparison }: { comparison: ETFComparison })
       </div>
 
       {/* Legal */}
-      <p className="mt-10 text-[11px] text-gray-400 leading-relaxed">
+      <p className="mt-10 text-[11px] text-gray-500 leading-relaxed">
         Cet article est fourni à titre informatif et ne constitue pas un conseil
         en investissement personnalisé. Les performances historiques ne préjugent
         pas des performances futures. TER et caractéristiques sont indicatifs et

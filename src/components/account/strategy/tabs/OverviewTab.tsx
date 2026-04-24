@@ -120,7 +120,7 @@ export function OverviewTab() {
           {/* Theoretical vs actual */}
           <div className="grid grid-cols-2 gap-3">
             <div className="rounded-xl bg-gray-50 border border-gray-100 px-4 py-3">
-              <p className="text-[11px] text-gray-400 uppercase tracking-wide mb-0.5">
+              <p className="text-[11px] text-gray-500 uppercase tracking-wide mb-0.5">
                 Théorique (mois {Math.max(monthsElapsed, 1)})
               </p>
               <p className="text-xl font-bold text-gray-500 tabular-nums">
@@ -189,7 +189,7 @@ export function OverviewTab() {
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
       {children}
     </p>
   );
@@ -287,7 +287,7 @@ function LongTermProjection() {
         </p>
         <p className="text-3xl font-bold text-gray-900 tabular-nums leading-tight mb-1">
           {formatEur(finalValue)}{" "}
-          <span className="text-base font-semibold text-gray-400">en {endYear}</span>
+          <span className="text-base font-semibold text-gray-500">en {endYear}</span>
         </p>
         <p className="text-xs text-gray-500 leading-relaxed">
           Dont{" "}
@@ -387,7 +387,7 @@ function YearOverYearBlock() {
 
         <div className="grid grid-cols-2 gap-3 mb-3">
           <div>
-            <p className="text-[10px] text-gray-400 uppercase tracking-wide mb-0.5 capitalize">
+            <p className="text-[10px] text-gray-500 uppercase tracking-wide mb-0.5 capitalize">
               {formatMonthLabel(yoy.previousYearMonth)}
             </p>
             <p className="text-lg font-bold text-gray-500 tabular-nums">
@@ -395,7 +395,7 @@ function YearOverYearBlock() {
             </p>
           </div>
           <div>
-            <p className="text-[10px] text-gray-400 uppercase tracking-wide mb-0.5 capitalize">
+            <p className="text-[10px] text-gray-500 uppercase tracking-wide mb-0.5 capitalize">
               {formatMonthLabel(yoy.currentMonth)}
             </p>
             <p className="text-lg font-bold text-gray-900 tabular-nums">
@@ -530,7 +530,7 @@ function EmptyOverview() {
         projection, les intérêts composés générés, et votre progression dans le
         temps.
       </p>
-      <p className="text-xs text-gray-400 mb-5">
+      <p className="text-xs text-gray-500 mb-5">
         Versement estimé : {formatEur(strategy.input.monthlyAmount)}/mois
       </p>
       <button

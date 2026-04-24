@@ -108,7 +108,7 @@ export default function InteretsComposesPage() {
       }} />
 
       {/* Breadcrumb */}
-      <nav aria-label="Fil d'ariane" className="flex items-center gap-2 text-sm text-gray-400 mb-8">
+      <nav aria-label="Fil d'ariane" className="flex items-center gap-2 text-sm text-gray-500 mb-8">
         <Link href="/" className="hover:text-gray-600 transition-colors">Accueil</Link>
         <span aria-hidden>/</span>
         <span className="text-gray-600" aria-current="page">Intérêts composés</span>
@@ -145,7 +145,7 @@ export default function InteretsComposesPage() {
           <p className="text-sm font-semibold text-primary-800 mb-3">La formule</p>
           <div className="bg-white rounded-xl p-4 text-center font-mono text-sm text-gray-800 border border-primary-100 mb-3">
             <p className="mb-1">Valeur finale = Versement × ((1 + r)ⁿ − 1) / r</p>
-            <p className="text-xs text-gray-400 mt-2">r = taux mensuel (rendement annuel ÷ 12) · n = nombre de mois</p>
+            <p className="text-xs text-gray-500 mt-2">r = taux mensuel (rendement annuel ÷ 12) · n = nombre de mois</p>
           </div>
           <p className="text-xs text-primary-700 leading-relaxed">
             Pour 200 €/mois à 7 %/an pendant 20 ans :<br />
@@ -178,7 +178,7 @@ export default function InteretsComposesPage() {
                 <th className="text-center px-3 py-3 font-bold text-primary-700 bg-primary-50/50 border-b border-primary-100 border-l border-gray-100" colSpan={2}>200 €/mois</th>
                 <th className="text-center px-3 py-3 font-semibold text-gray-600 border-b border-gray-100 border-l border-gray-100" colSpan={2}>500 €/mois</th>
               </tr>
-              <tr className="bg-gray-50/50 text-xs text-gray-400">
+              <tr className="bg-gray-50/50 text-xs text-gray-500">
                 <th className="px-4 py-2 text-left border-b border-gray-100"></th>
                 <th className="px-3 py-2 text-center border-b border-gray-100 border-l border-gray-100">Investi</th>
                 <th className="px-3 py-2 text-center border-b border-gray-100">Valeur</th>
@@ -197,7 +197,7 @@ export default function InteretsComposesPage() {
                     {row.val100}
                     <span className="block text-xs font-normal text-gain-default">{row.gain100}</span>
                   </td>
-                  <td className="px-3 py-4 text-center text-primary-500 border-b border-gray-50 border-l border-gray-50 text-xs bg-primary-50/20">{row.inv200}</td>
+                  <td className="px-3 py-4 text-center text-primary-700 border-b border-gray-50 border-l border-gray-50 text-xs bg-primary-50/20">{row.inv200}</td>
                   <td className="px-3 py-4 text-center font-bold text-primary-700 border-b border-gray-50 bg-primary-50/20">
                     {row.val200}
                     <span className="block text-xs font-semibold text-gain-default">{row.gain200}</span>
@@ -212,7 +212,7 @@ export default function InteretsComposesPage() {
             </tbody>
           </table>
         </div>
-        <p className="text-xs text-gray-400 mt-3">
+        <p className="text-xs text-gray-500 mt-3">
           Calcul : FV = PMT × ((1 + r)ⁿ − 1) / r. Les résultats sont indicatifs et ne garantissent pas les performances futures.{" "}
           <Link href="/methodologie" className="underline hover:text-gray-600 transition-colors">Voir la méthodologie →</Link>
         </p>
@@ -279,7 +279,7 @@ export default function InteretsComposesPage() {
               {RULE_72.map((row, i) => (
                 <tr key={row.rate} className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50/50"} ${row.rate === "7 %" ? "bg-primary-50/50" : ""}`}>
                   <td className={`px-4 py-3 font-medium border-b border-gray-50 ${row.rate === "7 %" ? "text-primary-700 font-bold" : "text-gray-700"}`}>
-                    {row.rate} {row.rate === "7 %" && <span className="text-xs font-normal text-primary-500 ml-2">(scénario base)</span>}
+                    {row.rate} {row.rate === "7 %" && <span className="text-xs font-normal text-primary-700 ml-2">(scénario base)</span>}
                   </td>
                   <td className={`px-4 py-3 text-center font-semibold border-b border-gray-50 ${row.rate === "7 %" ? "text-primary-700" : "text-gray-700"}`}>
                     {row.years}
@@ -360,7 +360,7 @@ export default function InteretsComposesPage() {
             >
               <summary className="flex items-center justify-between gap-4 px-5 py-4 cursor-pointer font-semibold text-gray-900 text-sm hover:bg-gray-50 transition-colors list-none">
                 {q}
-                <span className="shrink-0 text-gray-400 group-open:rotate-180 transition-transform">
+                <span className="shrink-0 text-gray-500 group-open:rotate-180 transition-transform">
                   ▾
                 </span>
               </summary>

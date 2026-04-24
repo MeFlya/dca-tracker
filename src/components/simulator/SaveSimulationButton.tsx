@@ -107,7 +107,7 @@ export function SaveSimulationButton({ input, plan, onSaved }: Props) {
           <button
             type="button"
             onClick={() => { setOpen(false); setName(""); }}
-            className="px-2 py-1.5 rounded-lg text-gray-400 hover:text-gray-600 text-xs"
+            className="px-2 py-1.5 rounded-lg text-gray-500 hover:text-gray-600 text-xs"
           >
             ✕
           </button>

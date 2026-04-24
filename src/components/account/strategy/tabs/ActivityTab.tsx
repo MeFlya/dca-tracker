@@ -136,7 +136,7 @@ function MonthCard({
       ? "text-emerald-600"
       : status === "behind"
       ? "text-orange-500"
-      : "text-gray-400";
+      : "text-gray-500";
 
   return (
     <div className="rounded-xl border border-gray-100 bg-white overflow-hidden hover:border-gray-200 transition-colors">
@@ -150,9 +150,9 @@ function MonthCard({
             <span className="text-sm font-semibold text-gray-900 capitalize">
               {formatMonthLabel(month)}
             </span>
-            {note && <MessageSquare size={12} className="text-gray-300 shrink-0" aria-label="commentaire" />}
+            {note && <MessageSquare size={12} className="text-gray-500 shrink-0" aria-label="commentaire" />}
           </div>
-          <p className="text-[11px] text-gray-400 mt-0.5">
+          <p className="text-[11px] text-gray-500 mt-0.5">
             {contributionCount} contribution{contributionCount > 1 ? "s" : ""} ·{" "}
             {formatEur(invested)} investi
           </p>
@@ -170,9 +170,9 @@ function MonthCard({
             </p>
           </div>
           {isOpen ? (
-            <ChevronUp size={16} className="text-gray-400" />
+            <ChevronUp size={16} className="text-gray-500" />
           ) : (
-            <ChevronDown size={16} className="text-gray-400" />
+            <ChevronDown size={16} className="text-gray-500" />
           )}
         </div>
       </button>
@@ -182,7 +182,7 @@ function MonthCard({
         <div className="px-4 pb-4 pt-1 border-t border-gray-50 animate-fade-in">
           <div className="space-y-3">
             <div>
-              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">
+              <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
                 Contributions
               </p>
               {contributionsCompact}
@@ -190,7 +190,7 @@ function MonthCard({
 
             {note && (
               <div>
-                <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">
+                <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
                   Note
                 </p>
                 <p className="text-xs text-gray-600 italic leading-relaxed">

@@ -84,7 +84,7 @@ function PartnerButton({ partner }: { partner: BrokerPartner }) {
 
       {/* Optional highlight badge */}
       {partner.badge && (
-        <span className="hidden sm:inline-block px-1.5 py-0.5 rounded-md bg-gain/10 text-gain text-[10px] font-semibold">
+        <span className="hidden sm:inline-block px-1.5 py-0.5 rounded-md bg-gain/10 text-gain-dark text-[10px] font-semibold">
           {partner.badge}
         </span>
       )}

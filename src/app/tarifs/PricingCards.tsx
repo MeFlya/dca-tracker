@@ -113,7 +113,7 @@ function CheckoutButton({
       >
         {loading ? "Chargement…" : isSignedIn ? `${label} — 7 jours gratuits` : "Créer un compte"}
       </button>
-      <p className="text-[11px] text-gray-400 text-center mt-2">
+      <p className="text-[11px] text-gray-500 text-center mt-2">
         Essai gratuit 7 jours · annulable à tout moment
       </p>
     </div>
@@ -129,7 +129,7 @@ export function PricingCards() {
     <section className="mb-20">
       {/* Billing toggle */}
       <div className="flex items-center justify-center gap-4 mb-10">
-        <span className={`text-sm font-medium ${!yearly ? "text-gray-900" : "text-gray-400"}`}>
+        <span className={`text-sm font-medium ${!yearly ? "text-gray-900" : "text-gray-500"}`}>
           Mensuel
         </span>
         <button
@@ -141,7 +141,7 @@ export function PricingCards() {
         >
           <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform ${yearly ? "translate-x-5" : "translate-x-0"}`} />
         </button>
-        <span className={`text-sm font-medium flex items-center gap-2 ${yearly ? "text-gray-900" : "text-gray-400"}`}>
+        <span className={`text-sm font-medium flex items-center gap-2 ${yearly ? "text-gray-900" : "text-gray-500"}`}>
           Annuel
           <span className="bg-gain-light text-gain-dark text-xs font-bold px-2 py-0.5 rounded-full">−17 %</span>
         </span>
@@ -175,7 +175,7 @@ export function PricingCards() {
               {/* Header */}
               <div className="mb-6">
                 <p className={`text-xs font-semibold uppercase tracking-widest mb-1 ${
-                  isHighlight ? "text-primary-600" : "text-gray-400"
+                  isHighlight ? "text-primary-600" : "text-gray-500"
                 }`}>
                   {plan.tagline}
                 </p>
@@ -196,14 +196,14 @@ export function PricingCards() {
                       <span className="text-4xl font-bold text-gray-900">
                         {price.toFixed(2).replace(".", ",")} €
                       </span>
-                      <span className="text-sm mb-1 text-gray-400">
+                      <span className="text-sm mb-1 text-gray-500">
                         /mois
                       </span>
                     </>
                   )}
                 </div>
                 {plan.monthlyPrice > 0 && yearly && (
-                  <p className="text-xs mt-1 text-gray-400">
+                  <p className="text-xs mt-1 text-gray-500">
                     Facturé {plan.yearlyTotal} € / an
                     <span className="ml-2 font-semibold text-gain-default">
                       (économisez {Math.round(plan.monthlyPrice * 12 - plan.yearlyTotal)} €)
@@ -211,7 +211,7 @@ export function PricingCards() {
                   </p>
                 )}
                 {plan.monthlyPrice > 0 && !yearly && (
-                  <p className="text-xs mt-1 text-gray-400">
+                  <p className="text-xs mt-1 text-gray-500">
                     Ou {plan.yearlyPerMonth.toFixed(2).replace(".", ",")} €/mois facturé annuellement
                   </p>
                 )}
@@ -239,11 +239,11 @@ export function PricingCards() {
                         <path d="M5 8l2.5 2.5L11 5.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     ) : (
-                      <svg className="w-4 h-4 shrink-0 mt-0.5 text-gray-300" viewBox="0 0 16 16" fill="none" aria-hidden>
+                      <svg className="w-4 h-4 shrink-0 mt-0.5 text-gray-500" viewBox="0 0 16 16" fill="none" aria-hidden>
                         <path d="M5 8h6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                       </svg>
                     )}
-                    <span className={`leading-snug ${!f.included ? "text-gray-300" : "text-gray-700"}`}>
+                    <span className={`leading-snug ${!f.included ? "text-gray-500" : "text-gray-700"}`}>
                       {f.label}
                     </span>
                   </li>
@@ -254,7 +254,7 @@ export function PricingCards() {
         })}
       </div>
 
-      <p className="text-center text-xs text-gray-400 mt-6">
+      <p className="text-center text-xs text-gray-500 mt-6">
         7 jours d&apos;essai gratuit · TVA incluse · Annulation en 1 clic
       </p>
     </section>

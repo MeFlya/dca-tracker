@@ -75,7 +75,7 @@ export default function AboutPage() {
         {/* Breadcrumb */}
         <nav
           aria-label="Fil d'ariane"
-          className="flex items-center gap-2 text-sm text-gray-400 mb-8"
+          className="flex items-center gap-2 text-sm text-gray-500 mb-8"
         >
           <Link href="/" className="hover:text-gray-600 transition-colors">
             Accueil
@@ -105,7 +105,7 @@ export default function AboutPage() {
         {/* ── Qui je suis ───────────────────────────────────────────────── */}
         <section className="mb-12">
           <div className="flex items-center gap-3 mb-4">
-            <span className="text-xs font-bold text-primary-500 font-mono tracking-widest">
+            <span className="text-xs font-bold text-primary-700 font-mono tracking-widest">
               QUI JE SUIS
             </span>
             <div className="flex-1 h-px bg-gray-100" />
@@ -140,7 +140,7 @@ export default function AboutPage() {
         {/* ── Pourquoi j'ai construit DCA Tracker ───────────────────────── */}
         <section className="mb-12">
           <div className="flex items-center gap-3 mb-4">
-            <span className="text-xs font-bold text-primary-500 font-mono tracking-widest">
+            <span className="text-xs font-bold text-primary-700 font-mono tracking-widest">
               POURQUOI J&apos;AI CONSTRUIT DCA TRACKER
             </span>
             <div className="flex-1 h-px bg-gray-100" />
@@ -194,7 +194,7 @@ export default function AboutPage() {
         {/* ── Les trois constats ───────────────────────────────────────── */}
         <section className="mb-12">
           <div className="flex items-center gap-3 mb-4">
-            <span className="text-xs font-bold text-primary-500 font-mono tracking-widest">
+            <span className="text-xs font-bold text-primary-700 font-mono tracking-widest">
               LES TROIS CONSTATS QUI M&apos;ONT FAIT CODER CET OUTIL
             </span>
             <div className="flex-1 h-px bg-gray-100" />
@@ -242,7 +242,7 @@ export default function AboutPage() {
         {/* ── Ce que DCA Tracker N'EST PAS ─────────────────────────────── */}
         <section className="mb-12">
           <div className="flex items-center gap-3 mb-4">
-            <span className="text-xs font-bold text-primary-500 font-mono tracking-widest">
+            <span className="text-xs font-bold text-primary-700 font-mono tracking-widest">
               CE QUE DCA TRACKER N&apos;EST PAS
             </span>
             <div className="flex-1 h-px bg-gray-100" />
@@ -275,7 +275,7 @@ export default function AboutPage() {
         {/* ── Mes engagements ──────────────────────────────────────────── */}
         <section className="mb-12">
           <div className="flex items-center gap-3 mb-4">
-            <span className="text-xs font-bold text-primary-500 font-mono tracking-widest">
+            <span className="text-xs font-bold text-primary-700 font-mono tracking-widest">
               MES ENGAGEMENTS
             </span>
             <div className="flex-1 h-px bg-gray-100" />
@@ -285,7 +285,7 @@ export default function AboutPage() {
           </p>
           <ul className="space-y-3">
             <li className="flex gap-3 text-sm text-gray-700 leading-relaxed">
-              <span className="shrink-0 text-loss font-bold" aria-hidden>
+              <span className="shrink-0 text-loss-dark font-bold" aria-hidden>
                 ✗
               </span>
               <span>
@@ -295,7 +295,7 @@ export default function AboutPage() {
               </span>
             </li>
             <li className="flex gap-3 text-sm text-gray-700 leading-relaxed">
-              <span className="shrink-0 text-loss font-bold" aria-hidden>
+              <span className="shrink-0 text-loss-dark font-bold" aria-hidden>
                 ✗
               </span>
               <span>
@@ -307,7 +307,7 @@ export default function AboutPage() {
               </span>
             </li>
             <li className="flex gap-3 text-sm text-gray-700 leading-relaxed">
-              <span className="shrink-0 text-loss font-bold" aria-hidden>
+              <span className="shrink-0 text-loss-dark font-bold" aria-hidden>
                 ✗
               </span>
               <span>
@@ -319,7 +319,7 @@ export default function AboutPage() {
               </span>
             </li>
             <li className="flex gap-3 text-sm text-gray-700 leading-relaxed">
-              <span className="shrink-0 text-gain font-bold" aria-hidden>
+              <span className="shrink-0 text-gain-dark font-bold" aria-hidden>
                 ✓
               </span>
               <span>
@@ -340,7 +340,7 @@ export default function AboutPage() {
         {/* ── Roadmap (id pour ancre footer) ───────────────────────────── */}
         <section id="roadmap" className="mb-12 scroll-mt-20">
           <div className="flex items-center gap-3 mb-4">
-            <span className="text-xs font-bold text-primary-500 font-mono tracking-widest">
+            <span className="text-xs font-bold text-primary-700 font-mono tracking-widest">
               LA ROADMAP, EN TRANSPARENCE
             </span>
             <div className="flex-1 h-px bg-gray-100" />
@@ -389,7 +389,7 @@ export default function AboutPage() {
         {/* ── L'équipe ─────────────────────────────────────────────────── */}
         <section className="mb-12">
           <div className="flex items-center gap-3 mb-4">
-            <span className="text-xs font-bold text-primary-500 font-mono tracking-widest">
+            <span className="text-xs font-bold text-primary-700 font-mono tracking-widest">
               L&apos;ÉQUIPE
             </span>
             <div className="flex-1 h-px bg-gray-100" />

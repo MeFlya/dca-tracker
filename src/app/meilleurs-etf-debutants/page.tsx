@@ -192,7 +192,7 @@ export default function MeilleursETFDebutantsPage() {
       }} />
 
       {/* Breadcrumb */}
-      <nav aria-label="Fil d'ariane" className="flex items-center gap-2 text-sm text-gray-400 mb-8">
+      <nav aria-label="Fil d'ariane" className="flex items-center gap-2 text-sm text-gray-500 mb-8">
         <Link href="/" className="hover:text-gray-600 transition-colors">Accueil</Link>
         <span aria-hidden>/</span>
         <span className="text-gray-600" aria-current="page">Meilleurs ETF débutants</span>
@@ -281,15 +281,15 @@ export default function MeilleursETFDebutantsPage() {
               {/* Key stats */}
               <div className="flex flex-wrap gap-3 mb-4">
                 <div className="bg-white/70 rounded-lg px-3 py-1.5 text-center">
-                  <p className="text-xs text-gray-400">TER</p>
+                  <p className="text-xs text-gray-500">TER</p>
                   <p className="text-sm font-bold text-gray-900">{etf.ter} %</p>
                 </div>
                 <div className="bg-white/70 rounded-lg px-3 py-1.5 text-center">
-                  <p className="text-xs text-gray-400">Réplication</p>
+                  <p className="text-xs text-gray-500">Réplication</p>
                   <p className="text-sm font-bold text-gray-900">{etf.replication}</p>
                 </div>
                 <div className="bg-white/70 rounded-lg px-3 py-1.5 text-center">
-                  <p className="text-xs text-gray-400">Distribution</p>
+                  <p className="text-xs text-gray-500">Distribution</p>
                   <p className="text-sm font-bold text-gray-900">Capitalisant</p>
                 </div>
               </div>
@@ -366,7 +366,7 @@ export default function MeilleursETFDebutantsPage() {
                   <td className="px-3 py-3 text-center border-b border-gray-50">
                     {row.pea
                       ? <span className="text-gain-default font-semibold">✓ Oui</span>
-                      : <span className="text-gray-400">Non</span>
+                      : <span className="text-gray-500">Non</span>
                     }
                   </td>
                   <td className="px-3 py-3 text-center text-gray-600 border-b border-gray-50 text-xs">{row.cover}</td>
@@ -460,13 +460,13 @@ export default function MeilleursETFDebutantsPage() {
                 <p className="text-sm font-semibold text-gray-900 group-hover:text-primary-700 transition-colors truncate">
                   {etf.name}
                 </p>
-                <p className="text-xs text-gray-400">{etf.category} · TER {etf.ter} %</p>
+                <p className="text-xs text-gray-500">{etf.category} · TER {etf.ter} %</p>
               </div>
               <div className="shrink-0 flex items-center gap-2">
                 {etf.peaEligible && (
                   <span className="text-xs text-gain-default font-semibold">PEA</span>
                 )}
-                <span className="text-gray-300 group-hover:text-primary-400 transition-colors">→</span>
+                <span className="text-gray-500 group-hover:text-primary-400 transition-colors">→</span>
               </div>
             </Link>
           ))}
@@ -491,7 +491,7 @@ export default function MeilleursETFDebutantsPage() {
             >
               <summary className="flex items-center justify-between gap-4 px-5 py-4 cursor-pointer font-semibold text-gray-900 text-sm hover:bg-gray-50 transition-colors list-none">
                 {q}
-                <span className="shrink-0 text-gray-400 group-open:rotate-180 transition-transform">
+                <span className="shrink-0 text-gray-500 group-open:rotate-180 transition-transform">
                   ▾
                 </span>
               </summary>

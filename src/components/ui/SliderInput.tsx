@@ -110,7 +110,7 @@ export function SliderInput({
             className="slider-number-input"
             style={{ width: `${Math.max(3.5, displayValue.length * 0.62 + 1)}rem` }}
           />
-          <span className="text-xs font-medium text-gray-400 select-none">{unit}</span>
+          <span className="text-xs font-medium text-gray-500 select-none">{unit}</span>
         </div>
       </div>
 
@@ -132,13 +132,13 @@ export function SliderInput({
       />
 
       {/* Min / max labels */}
-      <div className="flex justify-between text-[10px] text-gray-300 font-medium select-none -mt-1">
+      <div className="flex justify-between text-[10px] text-gray-500 font-medium select-none -mt-1">
         <span>{min} {unit}</span>
         <span>{max} {unit}</span>
       </div>
 
       {/* Hint */}
-      <p className="text-xs text-gray-400 leading-snug">{hint}</p>
+      <p className="text-xs text-gray-500 leading-snug">{hint}</p>
     </div>
   );
 }

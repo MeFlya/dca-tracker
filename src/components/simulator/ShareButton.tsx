@@ -26,7 +26,7 @@ export function ShareButton({ className }: ShareButtonProps) {
 
   return (
     <div className={cn("flex items-center gap-3", className)}>
-      <p className="text-xs text-gray-400 hidden sm:block">
+      <p className="text-xs text-gray-500 hidden sm:block">
         Partagez cette simulation
       </p>
       <button
@@ -39,7 +39,7 @@ export function ShareButton({ className }: ShareButtonProps) {
           state === "idle" &&
             "border-gray-200 bg-white text-gray-600 hover:border-primary-300 hover:text-primary-600 hover:bg-primary-50 focus-visible:ring-primary-500",
           state === "copied" &&
-            "border-gain/30 bg-gain/5 text-gain cursor-default focus-visible:ring-gain",
+            "border-gain/30 bg-gain/5 text-gain-dark cursor-default focus-visible:ring-gain",
           state === "error" &&
             "border-red-200 bg-red-50 text-red-500 cursor-default focus-visible:ring-red-400"
         )}

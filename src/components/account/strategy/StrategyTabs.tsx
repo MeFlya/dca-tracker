@@ -36,7 +36,7 @@ export function StrategyTabs() {
               }`}
             aria-current={isActive ? "page" : undefined}
           >
-            <Icon size={15} className={isActive ? "text-primary-600" : "text-gray-400"} />
+            <Icon size={15} className={isActive ? "text-primary-600" : "text-gray-500"} />
             {label}
             {isActive && (
               <span

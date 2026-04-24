@@ -24,7 +24,7 @@ function YesNo({ value }: { value: boolean }) {
       <Check size={14} strokeWidth={2.5} /> Oui
     </span>
   ) : (
-    <span className="inline-flex items-center gap-1 text-gray-400">
+    <span className="inline-flex items-center gap-1 text-gray-500">
       <X size={14} /> Non
     </span>
   );
@@ -61,7 +61,7 @@ export function BrokerPage({ broker }: { broker: BrokerData }) {
       />
 
       {/* Breadcrumb */}
-      <nav aria-label="Fil d'ariane" className="flex items-center gap-2 text-sm text-gray-400 mb-8 flex-wrap">
+      <nav aria-label="Fil d'ariane" className="flex items-center gap-2 text-sm text-gray-500 mb-8 flex-wrap">
         <Link href="/" className="hover:text-gray-600 transition-colors">Accueil</Link>
         <span aria-hidden>/</span>
         <Link href="/comparatif" className="hover:text-gray-600 transition-colors">Comparatif brokers</Link>
@@ -203,7 +203,7 @@ export function BrokerPage({ broker }: { broker: BrokerData }) {
           <ul className="space-y-1.5">
             {broker.notIdealFor.map((item, i) => (
               <li key={i} className="flex items-start gap-2 text-sm text-gray-500 leading-relaxed">
-                <span className="text-gray-300 mt-0.5">—</span>
+                <span className="text-gray-500 mt-0.5">—</span>
                 <span>{item}</span>
               </li>
             ))}
@@ -221,7 +221,7 @@ export function BrokerPage({ broker }: { broker: BrokerData }) {
           >
             <summary className="cursor-pointer list-none flex items-center justify-between gap-3">
               <span className="text-sm font-semibold text-gray-900">{q}</span>
-              <span className="text-gray-400 group-open:rotate-180 transition-transform" aria-hidden>▾</span>
+              <span className="text-gray-500 group-open:rotate-180 transition-transform" aria-hidden>▾</span>
             </summary>
             <p className="mt-3 text-sm text-gray-600 leading-relaxed">{a}</p>
           </details>
@@ -247,7 +247,7 @@ export function BrokerPage({ broker }: { broker: BrokerData }) {
 
       {/* External link */}
       <div className="rounded-xl border border-gray-100 bg-white p-4 mb-10">
-        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
           Site officiel
         </p>
         <a
@@ -259,7 +259,7 @@ export function BrokerPage({ broker }: { broker: BrokerData }) {
           {broker.homepageUrl.replace(/^https?:\/\//, "")}
           <ExternalLink size={14} />
         </a>
-        <p className="text-xs text-gray-400 mt-1">
+        <p className="text-xs text-gray-500 mt-1">
           Tarifs et conditions susceptibles d&apos;évoluer. Vérifiez toujours sur
           le site officiel avant d&apos;ouvrir un compte.
         </p>
@@ -267,7 +267,7 @@ export function BrokerPage({ broker }: { broker: BrokerData }) {
 
       {/* Other brokers */}
       <div className="pt-8 border-t border-gray-100">
-        <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-4">
+        <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-4">
           Comparer avec d&apos;autres courtiers
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -285,7 +285,7 @@ export function BrokerPage({ broker }: { broker: BrokerData }) {
       </div>
 
       {/* Legal */}
-      <p className="mt-10 text-[11px] text-gray-400 leading-relaxed">
+      <p className="mt-10 text-[11px] text-gray-500 leading-relaxed">
         Cet article est fourni à titre informatif et ne constitue pas un conseil
         en investissement personnalisé. DCA Tracker n&apos;est pas affilié à{" "}
         {broker.name}. Les informations présentées ont été vérifiées à la date de

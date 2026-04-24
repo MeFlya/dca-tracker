@@ -14,7 +14,7 @@ export function ContributionsReadOnlyList({
 }) {
   if (!contributions.length) {
     return (
-      <p className="text-sm text-gray-400 italic">
+      <p className="text-sm text-gray-500 italic">
         Aucune contribution enregistrée ce mois.
       </p>
     );
@@ -128,7 +128,7 @@ export function ContributionsEditableList({
             <button
               type="button"
               onClick={() => removeAt(i)}
-              className="text-gray-300 hover:text-red-500 transition-colors p-1.5"
+              className="text-gray-500 hover:text-red-500 transition-colors p-1.5"
               aria-label="Supprimer cette contribution"
               disabled={contributions.length === 1}
             >
@@ -177,7 +177,7 @@ export function ContributionsCompact({
           title={c.note ? `${formatDayMonth(c.date)} · ${c.note}` : formatDayMonth(c.date)}
           className="inline-flex items-center gap-1 bg-gray-50 border border-gray-100 px-2 py-0.5 rounded-md text-[11px] text-gray-600"
         >
-          <span className="text-gray-400">{formatDayMonth(c.date)}</span>
+          <span className="text-gray-500">{formatDayMonth(c.date)}</span>
           <span className="font-semibold tabular-nums">{formatEur(c.amount)}</span>
         </span>
       ))}

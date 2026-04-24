@@ -220,7 +220,7 @@ function StepRow({ step }: { step: Step }) {
             ? "bg-emerald-600 text-white"
             : status === "current"
             ? "bg-primary-600 text-white"
-            : "bg-gray-200 text-gray-400"
+            : "bg-gray-200 text-gray-500"
         }`}
       >
         {status === "done" ? (
@@ -236,14 +236,14 @@ function StepRow({ step }: { step: Step }) {
       <div className="flex-1 min-w-0">
         <p
           className={`text-sm font-semibold leading-tight mb-0.5 ${
-            status === "locked" ? "text-gray-400" : "text-gray-900"
+            status === "locked" ? "text-gray-500" : "text-gray-900"
           }`}
         >
           {title}
         </p>
         <p
           className={`text-xs leading-relaxed ${
-            status === "locked" ? "text-gray-400" : "text-gray-500"
+            status === "locked" ? "text-gray-500" : "text-gray-500"
           }`}
         >
           {description}

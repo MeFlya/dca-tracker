@@ -82,7 +82,7 @@ export function PortfolioChart({
       <h3 className="font-semibold text-gray-900 mb-1">
         Évolution du portefeuille
       </h3>
-      <p className="text-xs text-gray-400 mb-6">
+      <p className="text-xs text-gray-500 mb-6">
         Projection hypothétique — pas une garantie de rendement
       </p>
       <ResponsiveContainer width="100%" height={340}>

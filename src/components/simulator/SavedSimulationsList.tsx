@@ -31,7 +31,7 @@ export function SavedSimulationsList({ onLoad, refreshKey }: Props) {
     <div className="card">
       <h3 className="font-semibold text-gray-900 mb-4 text-sm">
         Simulations sauvegardées
-        <span className="ml-2 text-xs font-normal text-gray-400">({sims.length})</span>
+        <span className="ml-2 text-xs font-normal text-gray-500">({sims.length})</span>
       </h3>
       <ul className="space-y-2">
         {sims.map((sim) => (
@@ -41,7 +41,7 @@ export function SavedSimulationsList({ onLoad, refreshKey }: Props) {
           >
             <div className="min-w-0 flex-1">
               <p className="text-sm font-medium text-gray-800 truncate">{sim.name}</p>
-              <p className="text-xs text-gray-400 mt-0.5">
+              <p className="text-xs text-gray-500 mt-0.5">
                 {new Date(sim.savedAt).toLocaleDateString("fr-FR", {
                   day: "numeric",
                   month: "short",
@@ -58,7 +58,7 @@ export function SavedSimulationsList({ onLoad, refreshKey }: Props) {
               </button>
               <button
                 onClick={() => handleDelete(sim.id)}
-                className="text-gray-300 hover:text-red-500 p-1 rounded-lg hover:bg-red-50 transition-colors"
+                className="text-gray-500 hover:text-red-500 p-1 rounded-lg hover:bg-red-50 transition-colors"
                 aria-label="Supprimer"
               >
                 <svg viewBox="0 0 16 16" fill="none" className="w-3.5 h-3.5" aria-hidden>

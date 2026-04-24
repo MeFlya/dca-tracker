@@ -73,7 +73,7 @@ export function MonthDetailModal() {
         {/* Header */}
         <div className="flex items-start justify-between p-5 border-b border-gray-100">
           <div>
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-0.5">
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-0.5">
               Mois
             </p>
             <h3 className="font-bold text-gray-900 text-lg capitalize">
@@ -90,7 +90,7 @@ export function MonthDetailModal() {
           </div>
           <button
             onClick={closeMonthDetail}
-            className="text-gray-400 hover:text-gray-600 transition-colors shrink-0"
+            className="text-gray-500 hover:text-gray-600 transition-colors shrink-0"
             aria-label="Fermer"
           >
             <X size={18} />
@@ -111,7 +111,7 @@ export function MonthDetailModal() {
 
           {/* Contributions list */}
           <div>
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
               Contributions détaillées
             </p>
             <ContributionsReadOnlyList contributions={entry.contributions} />
@@ -120,7 +120,7 @@ export function MonthDetailModal() {
           {/* Note */}
           {entry.note && (
             <div>
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
                 Commentaire du mois
               </p>
               <div className="rounded-xl bg-gray-50 border border-gray-100 px-4 py-3">
@@ -193,7 +193,7 @@ function Kpi({
 }) {
   return (
     <div className="rounded-lg bg-gray-50 border border-gray-100 px-3 py-2">
-      <p className="text-[10px] text-gray-400 uppercase tracking-wide leading-tight">
+      <p className="text-[10px] text-gray-500 uppercase tracking-wide leading-tight">
         {label}
       </p>
       <p

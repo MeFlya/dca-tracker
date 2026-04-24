@@ -59,7 +59,7 @@ export default async function PaymentSuccessPage({
                   <circle cx="8" cy="8" r="7" fill="currentColor" opacity="0.15" />
                   <path d="M5 8l2.5 2.5L11 5.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
-                <span className={f.includes("bientôt") ? "text-gray-400" : "text-gray-700 font-medium"}>
+                <span className={f.includes("bientôt") ? "text-gray-500" : "text-gray-700 font-medium"}>
                   {f}
                 </span>
               </li>
@@ -86,7 +86,7 @@ export default async function PaymentSuccessPage({
         <div className="text-center">
           <Link
             href="/account"
-            className="text-sm text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-sm text-gray-500 hover:text-gray-600 transition-colors"
           >
             Voir mon compte →
           </Link>

@@ -106,13 +106,13 @@ export function LogMonthModal() {
             <h3 className="font-bold text-gray-900">
               {isEdit ? "Modifier ce mois" : "Enregistrer un mois"}
             </h3>
-            <p className="text-xs text-gray-400 mt-0.5">
+            <p className="text-xs text-gray-500 mt-0.5">
               Versements et valeur portefeuille
             </p>
           </div>
           <button
             onClick={closeLogModal}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-gray-500 hover:text-gray-600 transition-colors"
             aria-label="Fermer"
           >
             <X size={18} />
@@ -138,7 +138,7 @@ export function LogMonthModal() {
               className="input-field w-full disabled:opacity-60 disabled:cursor-not-allowed"
             />
             {isEdit && (
-              <p className="text-[11px] text-gray-400 mt-1">
+              <p className="text-[11px] text-gray-500 mt-1">
                 Le mois n&apos;est pas modifiable — supprimez et recréez si nécessaire.
               </p>
             )}
@@ -180,7 +180,7 @@ export function LogMonthModal() {
               required
               className="input-field w-full"
             />
-            <p className="text-[11px] text-gray-400 mt-1">
+            <p className="text-[11px] text-gray-500 mt-1">
               Valeur affichée dans votre application courtier.
             </p>
           </div>
@@ -191,7 +191,7 @@ export function LogMonthModal() {
               htmlFor="log-note"
               className="block text-sm font-medium text-gray-700 mb-1.5"
             >
-              Commentaire du mois <span className="text-gray-400 font-normal">(optionnel)</span>
+              Commentaire du mois <span className="text-gray-500 font-normal">(optionnel)</span>
             </label>
             <textarea
               id="log-note"

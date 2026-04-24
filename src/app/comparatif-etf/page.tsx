@@ -35,7 +35,7 @@ export default function ComparatifETFHubPage() {
         }}
       />
 
-      <nav aria-label="Fil d'ariane" className="flex items-center gap-2 text-sm text-gray-400 mb-8">
+      <nav aria-label="Fil d'ariane" className="flex items-center gap-2 text-sm text-gray-500 mb-8">
         <Link href="/" className="hover:text-gray-600 transition-colors">Accueil</Link>
         <span aria-hidden>/</span>
         <span className="text-gray-600" aria-current="page">Comparatifs ETF</span>
@@ -62,7 +62,7 @@ export default function ComparatifETFHubPage() {
               <span className="text-sm font-bold text-primary-700 bg-primary-50 border border-primary-100 px-2.5 py-0.5 rounded-full">
                 {c.left.heading}
               </span>
-              <ArrowLeftRight size={14} className="text-gray-300" />
+              <ArrowLeftRight size={14} className="text-gray-500" />
               <span className="text-sm font-bold text-amber-800 bg-amber-50 border border-amber-100 px-2.5 py-0.5 rounded-full">
                 {c.right.heading}
               </span>
@@ -82,7 +82,7 @@ export default function ComparatifETFHubPage() {
 
       {/* Related */}
       <div className="pt-8 border-t border-gray-100 mb-10">
-        <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-4">
+        <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-4">
           Explorer plus loin
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

@@ -147,7 +147,7 @@ export default function SimulateurRetraitePage() {
         }}
       />
 
-      <nav aria-label="Fil d'ariane" className="flex items-center gap-2 text-sm text-gray-400 mb-8 flex-wrap">
+      <nav aria-label="Fil d'ariane" className="flex items-center gap-2 text-sm text-gray-500 mb-8 flex-wrap">
         <Link href="/" className="hover:text-gray-600 transition-colors">Accueil</Link>
         <span aria-hidden>/</span>
         <span className="text-gray-600" aria-current="page">Simulateur de retraite</span>
@@ -263,7 +263,7 @@ export default function SimulateurRetraitePage() {
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="text-[11px] uppercase tracking-wider text-gray-400">
+                <thead className="text-[11px] uppercase tracking-wider text-gray-500">
                   <tr>
                     <th className="text-left font-semibold py-1">Versement mensuel</th>
                     <th className="text-right font-semibold py-1">Capital à la retraite</th>
@@ -377,7 +377,7 @@ export default function SimulateurRetraitePage() {
           >
             <summary className="cursor-pointer list-none flex items-center justify-between gap-3">
               <span className="text-sm font-semibold text-gray-900">{q}</span>
-              <span className="text-gray-400 group-open:rotate-180 transition-transform" aria-hidden>▾</span>
+              <span className="text-gray-500 group-open:rotate-180 transition-transform" aria-hidden>▾</span>
             </summary>
             <p className="mt-3 text-sm text-gray-600 leading-relaxed">{a}</p>
           </details>
@@ -386,7 +386,7 @@ export default function SimulateurRetraitePage() {
 
       {/* Related */}
       <div className="pt-8 border-t border-gray-100">
-        <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-4">
+        <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-4">
           Articles liés
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

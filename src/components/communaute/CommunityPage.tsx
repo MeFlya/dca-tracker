@@ -66,7 +66,7 @@ export function CommunityPage() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
-      <nav aria-label="Fil d'ariane" className="flex items-center gap-2 text-sm text-gray-400 mb-8">
+      <nav aria-label="Fil d'ariane" className="flex items-center gap-2 text-sm text-gray-500 mb-8">
         <Link href="/" className="hover:text-gray-600 transition-colors">Accueil</Link>
         <span aria-hidden>/</span>
         <span className="text-gray-600" aria-current="page">Communauté</span>
@@ -117,7 +117,7 @@ export function CommunityPage() {
             <div className="rounded-2xl border border-gray-100 bg-white p-5">
               <div className="flex items-center gap-2 mb-2">
                 <Users size={16} className="text-primary-600" />
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
                   Inscrits
                 </p>
               </div>
@@ -128,7 +128,7 @@ export function CommunityPage() {
             <div className="rounded-2xl border border-gray-100 bg-white p-5">
               <div className="flex items-center gap-2 mb-2">
                 <Target size={16} className="text-primary-600" />
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
                   Stratégies suivies
                 </p>
               </div>
@@ -139,7 +139,7 @@ export function CommunityPage() {
             <div className="rounded-2xl border border-gray-100 bg-white p-5">
               <div className="flex items-center gap-2 mb-2">
                 <Activity size={16} className="text-primary-600" />
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
                   Mois enregistrés
                 </p>
               </div>
@@ -255,7 +255,7 @@ export function CommunityPage() {
       </div>
 
       {/* Legal */}
-      <p className="mt-10 text-[11px] text-gray-400 leading-relaxed">
+      <p className="mt-10 text-[11px] text-gray-500 leading-relaxed">
         Les chiffres affichés sont cachés pendant 24 heures maximum et
         agrégés en temps réel depuis les données anonymes de la communauté.
         Aucune information personnelle (nom, email, portefeuille individuel)

@@ -137,7 +137,7 @@ export function ETFGrid({ etfs, quotes, providerLabel }: ETFGridProps) {
         </div>
 
         {/* Count */}
-        <span className="ml-auto text-sm text-gray-400 hidden sm:block">
+        <span className="ml-auto text-sm text-gray-500 hidden sm:block">
           {filtered.length} ETF{filtered.length !== 1 ? "s" : ""}
         </span>
       </div>
@@ -162,7 +162,7 @@ export function ETFGrid({ etfs, quotes, providerLabel }: ETFGridProps) {
 
       {/* Grid */}
       {filtered.length === 0 ? (
-        <div className="text-center py-16 text-gray-400">
+        <div className="text-center py-16 text-gray-500">
           <p className="text-lg font-medium mb-1">Aucun ETF ne correspond aux filtres</p>
           <button
             onClick={() => { setRegion("tous"); setPeaOnly(false); setMaxTer(null); }}

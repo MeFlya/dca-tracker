@@ -157,7 +157,7 @@ export default function Investir300EurosMoisPage() {
       {/* Breadcrumb */}
       <nav
         aria-label="Fil d'ariane"
-        className="flex items-center gap-2 text-sm text-gray-400 mb-8"
+        className="flex items-center gap-2 text-sm text-gray-500 mb-8"
       >
         <Link href="/" className="hover:text-gray-600 transition-colors">
           Accueil
@@ -278,7 +278,7 @@ export default function Investir300EurosMoisPage() {
             </tbody>
           </table>
         </div>
-        <p className="text-sm text-gray-400">
+        <p className="text-sm text-gray-500">
           Rendements nets de frais TER 0,20%/an. Hors inflation et fiscalité.
           Données historiques ne garantissent pas les performances futures.
         </p>
@@ -406,7 +406,7 @@ export default function Investir300EurosMoisPage() {
             <p className="text-3xl font-bold text-primary-700 mb-1">
               156 300 €
             </p>
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-gray-500">
               total investi : 72 000€
             </p>
           </div>
@@ -420,7 +420,7 @@ export default function Investir300EurosMoisPage() {
             <p className="text-3xl font-bold text-gray-700 mb-1">
               126 900 €
             </p>
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-gray-500">
               total investi : 72 000€
             </p>
           </div>
@@ -437,7 +437,7 @@ export default function Investir300EurosMoisPage() {
             à long terme.
           </p>
         </div>
-        <p className="text-sm text-gray-400 mt-3">
+        <p className="text-sm text-gray-500 mt-3">
           Comparez vos propres stratégies en temps réel avec la{" "}
           <Link
             href="/simulateur"
@@ -487,7 +487,7 @@ export default function Investir300EurosMoisPage() {
               key={s.label}
               className={`rounded-xl border p-4 text-center ${s.bg}`}
             >
-              <p className="text-xs text-gray-400 mb-2 leading-snug">
+              <p className="text-xs text-gray-500 mb-2 leading-snug">
                 {s.label}
               </p>
               <p className={`text-2xl font-bold tabular-nums ${s.color}`}>
@@ -529,7 +529,7 @@ export default function Investir300EurosMoisPage() {
             >
               <summary className="flex items-center justify-between gap-4 px-5 py-4 cursor-pointer font-semibold text-gray-900 text-sm hover:bg-gray-50 transition-colors list-none">
                 {q}
-                <span className="shrink-0 text-gray-400 group-open:rotate-180 transition-transform">
+                <span className="shrink-0 text-gray-500 group-open:rotate-180 transition-transform">
                   ▾
                 </span>
               </summary>

@@ -33,7 +33,7 @@ export default function SignInPage() {
         />
 
         {/* Footer trust line */}
-        <p className="text-center text-xs text-gray-400 mt-6">
+        <p className="text-center text-xs text-gray-500 mt-6">
           Vos données ne sont jamais vendues · Hébergement en Europe
         </p>
       </div>

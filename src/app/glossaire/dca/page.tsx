@@ -65,7 +65,7 @@ export default function DCAGlossaryPage() {
       />
 
       {/* Breadcrumb */}
-      <nav aria-label="Fil d'ariane" className="flex items-center gap-2 text-sm text-gray-400 mb-8 flex-wrap">
+      <nav aria-label="Fil d'ariane" className="flex items-center gap-2 text-sm text-gray-500 mb-8 flex-wrap">
         <Link href="/" className="hover:text-gray-600 transition-colors">Accueil</Link>
         <span aria-hidden>/</span>
         <Link href="/glossaire" className="hover:text-gray-600 transition-colors">Glossaire</Link>
@@ -186,7 +186,7 @@ export default function DCAGlossaryPage() {
           >
             <summary className="cursor-pointer list-none flex items-center justify-between gap-3">
               <span className="text-sm font-semibold text-gray-900">{q}</span>
-              <span className="text-gray-400 group-open:rotate-180 transition-transform" aria-hidden>▾</span>
+              <span className="text-gray-500 group-open:rotate-180 transition-transform" aria-hidden>▾</span>
             </summary>
             <p className="mt-3 text-sm text-gray-600 leading-relaxed">{a}</p>
           </details>
@@ -212,7 +212,7 @@ export default function DCAGlossaryPage() {
 
       {/* Related */}
       <div className="pt-8 border-t border-gray-100">
-        <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-4">
+        <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-4">
           Articles liés
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

@@ -114,7 +114,7 @@ function CellValue({ value }: { value: boolean | string }) {
   }
   if (value === false) {
     return (
-      <span className="flex justify-center text-gray-300">
+      <span className="flex justify-center text-gray-500">
         <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none" aria-label="Non inclus">
           <path d="M5 8h6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
         </svg>
@@ -153,7 +153,7 @@ export default function TarifsPage() {
 
       {/* Hero */}
       <div className="max-w-2xl mx-auto px-4 sm:px-6 text-center mb-16">
-        <nav aria-label="Fil d'ariane" className="flex items-center justify-center gap-2 text-sm text-gray-400 mb-8">
+        <nav aria-label="Fil d'ariane" className="flex items-center justify-center gap-2 text-sm text-gray-500 mb-8">
           <Link href="/" className="hover:text-gray-600 transition-colors">Accueil</Link>
           <span aria-hidden>/</span>
           <span className="text-gray-600" aria-current="page">Tarifs</span>
@@ -184,7 +184,7 @@ export default function TarifsPage() {
           <table className="w-full text-sm border-collapse">
             <thead>
               <tr>
-                <th className="text-left px-4 py-3 bg-gray-50 font-medium text-gray-400 border-b border-gray-100 w-2/3" />
+                <th className="text-left px-4 py-3 bg-gray-50 font-medium text-gray-500 border-b border-gray-100 w-2/3" />
                 <th className="text-center px-4 py-3 bg-gray-50 font-semibold text-gray-600 border-b border-gray-100">Gratuit</th>
                 <th className="text-center px-4 py-3 bg-primary-50 font-bold text-primary-700 border-b border-primary-100">Premium</th>
               </tr>
@@ -241,7 +241,7 @@ export default function TarifsPage() {
             <details key={q} className="group rounded-2xl border border-gray-100 bg-white overflow-hidden">
               <summary className="flex items-center justify-between gap-4 px-5 py-4 cursor-pointer font-semibold text-gray-900 text-sm hover:bg-gray-50 transition-colors list-none">
                 {q}
-                <span className="shrink-0 text-gray-400 group-open:rotate-180 transition-transform">▾</span>
+                <span className="shrink-0 text-gray-500 group-open:rotate-180 transition-transform">▾</span>
               </summary>
               <div className="px-5 pb-4 pt-1 text-sm text-gray-600 leading-relaxed border-t border-gray-50">{a}</div>
             </details>

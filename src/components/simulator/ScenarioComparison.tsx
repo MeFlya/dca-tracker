@@ -148,7 +148,7 @@ export function ScenarioComparison({ isPremium, input }: { isPremium: boolean; i
             <h3 className="font-semibold text-gray-900">Comparaison A vs B</h3>
             <span className="bg-primary-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">Premium</span>
           </div>
-          <p className="text-xs text-gray-400">Comparez deux stratégies d&apos;investissement indépendantes</p>
+          <p className="text-xs text-gray-500">Comparez deux stratégies d&apos;investissement indépendantes</p>
         </div>
       </div>
 

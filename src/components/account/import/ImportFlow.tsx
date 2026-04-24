@@ -162,19 +162,19 @@ export function ImportFlow() {
           </p>
           <ul className="space-y-2 text-sm text-gray-600">
             <li className="flex items-start gap-2">
-              <FileText size={14} className="text-gray-400 mt-0.5 shrink-0" />
+              <FileText size={14} className="text-gray-500 mt-0.5 shrink-0" />
               <span><strong>Trade Republic</strong> — export depuis l&apos;appli (Compte → Activité → Exporter)</span>
             </li>
             <li className="flex items-start gap-2">
-              <FileText size={14} className="text-gray-400 mt-0.5 shrink-0" />
+              <FileText size={14} className="text-gray-500 mt-0.5 shrink-0" />
               <span><strong>Boursorama / Fortuneo</strong> — export des mouvements depuis votre espace client</span>
             </li>
             <li className="flex items-start gap-2">
-              <FileText size={14} className="text-gray-400 mt-0.5 shrink-0" />
+              <FileText size={14} className="text-gray-500 mt-0.5 shrink-0" />
               <span><strong>CSV générique</strong> — tout fichier avec au minimum une colonne <code className="bg-gray-100 px-1 rounded text-xs">Date</code> et une colonne <code className="bg-gray-100 px-1 rounded text-xs">Montant</code></span>
             </li>
           </ul>
-          <p className="text-xs text-gray-400 mt-3 leading-relaxed">
+          <p className="text-xs text-gray-500 mt-3 leading-relaxed">
             L&apos;import regroupe automatiquement vos transactions par mois et
             ne prend en compte que les achats / versements positifs (les retraits
             et frais sont ignorés).

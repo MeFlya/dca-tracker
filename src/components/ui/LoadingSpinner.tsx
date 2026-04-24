@@ -17,7 +17,7 @@ export function LoadingCard({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "card flex items-center justify-center min-h-[120px] gap-3 text-gray-400",
+        "card flex items-center justify-center min-h-[120px] gap-3 text-gray-500",
         className
       )}
     >

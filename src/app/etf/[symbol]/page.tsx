@@ -94,7 +94,7 @@ export default async function ETFDetailPage({
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
       {/* ── Breadcrumb ─────────────────────────────────────────────────── */}
-      <nav className="flex items-center gap-2 text-sm text-gray-400 mb-8" aria-label="Fil d'ariane">
+      <nav className="flex items-center gap-2 text-sm text-gray-500 mb-8" aria-label="Fil d'ariane">
         <Link href="/" className="hover:text-gray-600 transition-colors">Accueil</Link>
         <span aria-hidden>/</span>
         <Link href="/comparer-etf" className="hover:text-gray-600 transition-colors">Comparer les ETF</Link>
@@ -161,11 +161,11 @@ export default async function ETFDetailPage({
             <InsightCard
               title="Pourquoi le choisir ?"
               icon="✓"
-              iconColor="text-gain"
+              iconColor="text-gain-dark"
               borderColor="border-green-100"
               bgColor="bg-green-50"
               items={detail.whyChooseIt}
-              itemColor="text-gain"
+              itemColor="text-gain-dark"
             />
             <InsightCard
               title="Points d'attention"
@@ -218,12 +218,12 @@ export default async function ETFDetailPage({
             <DataPoint
               label="Variation"
               value={formatPercent(quote.changePercent)}
-              valueClass={quote.changePercent >= 0 ? "text-gain font-semibold" : "text-loss font-semibold"}
+              valueClass={quote.changePercent >= 0 ? "text-gain-dark font-semibold" : "text-loss-dark font-semibold"}
             />
             <DataPoint label="Devise" value={quote.currency} />
             <DataPoint label="Mis à jour" value={formatDate(quote.lastUpdated)} />
           </div>
-          <p className="mt-3 text-[11px] text-gray-400">
+          <p className="mt-3 text-[11px] text-gray-500">
             {demo
               ? "Mode démo — données illustratives, pas des cours réels."
               : "Données différées (fin de journée). Source : " + provider.name + "."}
@@ -249,14 +249,14 @@ export default async function ETFDetailPage({
               <span className="text-xs font-bold text-gray-900 group-hover:text-primary-700">
                 {other.displaySymbol}
               </span>
-              <span className="text-xs text-gray-400 group-hover:text-primary-500 truncate max-w-[140px]">
+              <span className="text-xs text-gray-500 group-hover:text-primary-700 truncate max-w-[140px]">
                 {other.name}
               </span>
             </Link>
           ))}
           <Link
             href="/comparer-etf"
-            className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-dashed border-gray-200 text-xs text-gray-400 hover:text-primary-600 hover:border-primary-200 transition-colors"
+            className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-dashed border-gray-200 text-xs text-gray-500 hover:text-primary-600 hover:border-primary-200 transition-colors"
           >
             Voir la comparaison complète →
           </Link>
@@ -312,11 +312,11 @@ function PriceBlock({
       <p
         className={cn(
           "text-sm font-semibold tabular-nums mt-0.5",
-          positive ? "text-gain" : "text-loss"
+          positive ? "text-gain-dark" : "text-loss-dark"
         )}
       >
         {positive ? "▲" : "▼"} {formatPercent(Math.abs(quote.changePercent))}
-        <span className="text-gray-400 font-normal ml-1 text-xs">
+        <span className="text-gray-500 font-normal ml-1 text-xs">
           ({positive ? "+" : ""}{formatCurrency(quote.change, quote.currency)})
         </span>
       </p>
@@ -337,7 +337,7 @@ function MetricCell({
 }) {
   return (
     <div className="flex flex-col gap-0.5">
-      <span className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+      <span className="text-[10px] font-semibold uppercase tracking-wider text-gray-500">
         {label}
       </span>
       <span
@@ -420,7 +420,7 @@ function DataPoint({
 }) {
   return (
     <div>
-      <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mb-0.5">
+      <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-0.5">
         {label}
       </p>
       <p className={cn("text-sm font-medium text-gray-800 tabular-nums", valueClass)}>

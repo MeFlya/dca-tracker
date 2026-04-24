@@ -116,7 +116,7 @@ export default function Investir1000Page() {
         }}
       />
 
-      <nav aria-label="Fil d'ariane" className="flex items-center gap-2 text-sm text-gray-400 mb-8 flex-wrap">
+      <nav aria-label="Fil d'ariane" className="flex items-center gap-2 text-sm text-gray-500 mb-8 flex-wrap">
         <Link href="/" className="hover:text-gray-600 transition-colors">Accueil</Link>
         <span aria-hidden>/</span>
         <span className="text-gray-600">Investir 1 000 €/mois en ETF</span>
@@ -176,7 +176,7 @@ export default function Investir1000Page() {
               )}
             </div>
             <table className="w-full text-sm">
-              <thead className="text-[11px] uppercase tracking-wider text-gray-400">
+              <thead className="text-[11px] uppercase tracking-wider text-gray-500">
                 <tr>
                   <th className="text-left font-semibold py-1">Durée</th>
                   <th className="text-right font-semibold py-1">Capital final</th>
@@ -224,7 +224,7 @@ export default function Investir1000Page() {
             </tbody>
           </table>
         </div>
-        <p className="text-xs text-gray-400 mt-4 leading-relaxed">
+        <p className="text-xs text-gray-500 mt-4 leading-relaxed">
           La règle des 4 % est une approximation issue du Trinity Study. Elle
           suppose un portefeuille diversifié et un horizon de retrait de 30 ans.
           L&apos;analyse Monte Carlo du simulateur permet de stress-tester
@@ -265,7 +265,7 @@ export default function Investir1000Page() {
           <details key={q} className="group rounded-xl border border-gray-100 bg-white p-4 open:bg-gray-50/50">
             <summary className="cursor-pointer list-none flex items-center justify-between gap-3">
               <span className="text-sm font-semibold text-gray-900">{q}</span>
-              <span className="text-gray-400 group-open:rotate-180 transition-transform" aria-hidden>▾</span>
+              <span className="text-gray-500 group-open:rotate-180 transition-transform" aria-hidden>▾</span>
             </summary>
             <p className="mt-3 text-sm text-gray-600 leading-relaxed">{a}</p>
           </details>
@@ -292,7 +292,7 @@ export default function Investir1000Page() {
 
       {/* Related */}
       <div className="pt-8 border-t border-gray-100">
-        <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-4">Articles liés</p>
+        <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-4">Articles liés</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Link href="/investir-500-euros-mois-etf" className="rounded-xl border border-gray-100 bg-white p-4 card-hover">
             <p className="text-sm font-semibold text-gray-900 mb-1">Investir 500 €/mois</p>
