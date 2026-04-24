@@ -97,10 +97,9 @@ export default function HomePage() {
           }}
           aria-hidden
         />
-        {/* Floating orbs for depth */}
+        {/* Single ambient orb — kept cost minimal */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden>
-          <div className="absolute -top-32 -left-32 w-[400px] h-[400px] rounded-full bg-primary-400/30 blur-3xl animate-float-a" />
-          <div className="absolute -bottom-32 -right-32 w-[400px] h-[400px] rounded-full bg-indigo-500/20 blur-3xl animate-float-b" />
+          <div className="absolute -bottom-32 -right-32 w-[400px] h-[400px] rounded-full bg-indigo-500/20 blur-3xl animate-float-a" />
         </div>
         {/* Aurora sweep — diagonal light bar that passes left to right */}
         <div

@@ -39,19 +39,28 @@ const BULLETS = [
 export function TrackingPitch() {
   return (
     <section className="relative py-20 bg-slate-950 overflow-hidden">
-      {/* Ambient gradient orbs for depth on dark — same pattern as Hero */}
-      <div className="absolute inset-0 pointer-events-none" aria-hidden>
-        <div className="absolute -top-40 -left-40 w-[520px] h-[520px] rounded-full bg-primary-500/20 blur-3xl animate-float-a" />
-        <div className="absolute bottom-0 -right-40 w-[500px] h-[500px] rounded-full bg-indigo-500/15 blur-3xl animate-float-b" />
-        {/* Subtle dot grid for texture */}
-        <div
-          className="absolute inset-0 opacity-[0.05]"
-          style={{
-            backgroundImage: "radial-gradient(#ffffff 1px, transparent 1px)",
-            backgroundSize: "24px 24px",
-          }}
-        />
-      </div>
+      {/* Ambient effect — radial-gradient based (no blur() filter = cheap).
+          On dark bg, colored glows at control points simulate the orb look
+          without the compositor cost. */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage: [
+            "radial-gradient(900px circle at 10% 15%, rgba(59, 130, 246, 0.25), transparent 50%)",
+            "radial-gradient(700px circle at 90% 85%, rgba(99, 102, 241, 0.20), transparent 55%)",
+          ].join(", "),
+        }}
+        aria-hidden
+      />
+      {/* Subtle dot grid for texture */}
+      <div
+        className="absolute inset-0 opacity-[0.05] pointer-events-none"
+        style={{
+          backgroundImage: "radial-gradient(#ffffff 1px, transparent 1px)",
+          backgroundSize: "24px 24px",
+        }}
+        aria-hidden
+      />
 
       <div className="relative max-w-5xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-14">

@@ -1,47 +1,41 @@
 /**
- * AmbientBackground — animated mesh-gradient page background.
+ * AmbientBackground — animated mesh gradient using pure CSS radial-gradients.
  *
- * Fixed to the viewport so it covers the entire scroll area without
- * having to compute page height. Large blurred orbs drift independently
- * in a slow continuous loop, giving the "video feel" without a video
- * asset or heavy canvas/JS. Everything is CSS / SVG, 0 JS runtime.
+ * Performance-first: NO blur() filters (those were killing GPU/battery),
+ * NO compositor-heavy layers. Just stacked radial-gradients animated via
+ * `background-position`. Essentially free — same cost as a static gradient.
  *
- * Rendered at `z-[-10]` under all content; `pointer-events-none` so it
- * never blocks clicks. Respects `prefers-reduced-motion` via globals.css.
+ * Visual effect: "liquid" mesh that shifts slowly across the viewport.
+ * Rendered at `z-[-10]` under all content; `pointer-events-none`.
  *
- * Designed to be mounted ONCE in app/layout.tsx so every page gets the
- * same ambient depth for free. Sections that want their own local bg
- * (Hero grid, dark TrackingPitch) layer on top via z-0 / opaque bg.
+ * Mounted once in app/layout.tsx so every page gets the same ambient depth.
  */
 export function AmbientBackground() {
   return (
     <div
-      className="fixed inset-0 -z-10 pointer-events-none overflow-hidden"
+      className="fixed inset-0 -z-10 pointer-events-none animate-mesh"
+      style={{
+        /* Stack of 4 radial gradients acting as "mesh control points".
+           Each one is a soft colored blob; overlap creates smooth mesh.
+           Background-size 200% lets us animate the position and have
+           the colors actually shift across the viewport. */
+        backgroundImage: [
+          // Top-left primary blue blob
+          "radial-gradient(800px circle at 15% 20%, rgba(59, 130, 246, 0.28), transparent 50%)",
+          // Top-right sky blue blob
+          "radial-gradient(900px circle at 85% 30%, rgba(14, 165, 233, 0.25), transparent 55%)",
+          // Bottom-left indigo blob
+          "radial-gradient(700px circle at 25% 80%, rgba(99, 102, 241, 0.22), transparent 50%)",
+          // Bottom-right primary light blob
+          "radial-gradient(800px circle at 75% 75%, rgba(96, 165, 250, 0.20), transparent 50%)",
+          // Base gradient — cool tint, never pure white
+          "linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, #eff6ff 100%)",
+        ].join(", "),
+        backgroundSize: "200% 200%, 200% 200%, 200% 200%, 200% 200%, 100% 100%",
+      }}
       aria-hidden
     >
-      {/* Base gradient — subtle cool tint, never pure white */}
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-primary-50/50" />
-
-      {/* Mesh gradient : 4 huge blurred orbs, each on its own drift loop.
-          Sized in vw/vh so they scale with viewport.
-          blur-[120px] is heavier than blur-3xl (64px) but the payoff is
-          real "liquid" look. Modern GPUs handle it fine. */}
-      <div className="absolute top-[-15%] left-[-10%] w-[70vw] h-[60vh] rounded-full bg-primary-400/35 blur-[100px] animate-float-a" />
-      <div
-        className="absolute top-[20%] right-[-15%] w-[65vw] h-[65vh] rounded-full bg-sky-400/30 blur-[100px] animate-float-b"
-        style={{ animationDelay: "-3s" }}
-      />
-      <div
-        className="absolute bottom-[-15%] left-[15%] w-[60vw] h-[55vh] rounded-full bg-indigo-400/25 blur-[100px] animate-float-a"
-        style={{ animationDelay: "-7s" }}
-      />
-      <div
-        className="absolute top-[45%] left-[30%] w-[40vw] h-[40vh] rounded-full bg-primary-300/25 blur-[100px] animate-float-b"
-        style={{ animationDelay: "-11s" }}
-      />
-
-      {/* Ambient grid — keeps the "technical/finance" vibe, very low opacity
-          so it doesn't fight the orbs. */}
+      {/* Ambient grid — kept from before. Cheap (single background-image). */}
       <div
         className="absolute inset-0 opacity-[0.035]"
         style={{

@@ -27,11 +27,12 @@ export function Hero() {
         aria-hidden
       />
 
-      {/* Floating gradient orbs — punchier now, more on-screen, saturated. */}
+      {/* Floating gradient orb — single blur to keep compositor cost low.
+          AmbientBackground (layout) already provides page-wide "liquid" feel
+          via CSS radial-gradients (0 filter cost). This single orb accents
+          the Hero specifically — the rest of the ambience is free. */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden>
-        <div className="absolute -top-20 -left-20 w-[600px] h-[600px] rounded-full bg-primary-400/40 blur-3xl animate-float-a" />
-        <div className="absolute top-1/4 -right-32 w-[700px] h-[700px] rounded-full bg-sky-400/30 blur-3xl animate-float-b" />
-        <div className="absolute -bottom-20 left-1/4 w-[450px] h-[450px] rounded-full bg-indigo-400/25 blur-3xl animate-float-a" style={{ animationDelay: "-5s" }} />
+        <div className="absolute top-1/4 -right-32 w-[500px] h-[500px] rounded-full bg-primary-400/30 blur-3xl animate-float-a" />
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
