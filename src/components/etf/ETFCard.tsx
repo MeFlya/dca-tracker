@@ -68,7 +68,13 @@ export function ETFCard({ etf, quote, error, providerLabel }: ETFCardProps) {
           Cours non disponible
         </div>
       ) : error ? (
-        <div className="text-xs text-red-500 bg-red-50 rounded-lg px-3 py-2">
+        // État erreur — container neutre slate, icône rouge pour signaler
+        // sans fond saturé (cohérent avec la règle des ConversionBlocks).
+        <div className="flex items-center gap-2 text-xs text-gray-600 bg-slate-50 border border-slate-200/70 rounded-lg px-3 py-2">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="text-red-500 shrink-0" aria-hidden>
+            <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.4" />
+            <path d="M8 5v3.5M8 11.5v.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          </svg>
           Cours indisponible
         </div>
       ) : quote ? (

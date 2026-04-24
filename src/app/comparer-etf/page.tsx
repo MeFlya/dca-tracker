@@ -52,40 +52,44 @@ export default async function ComparerETFPage() {
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      {/* Header */}
-      <div className="mb-10">
-        <nav aria-label="Fil d'ariane" className="flex items-center gap-2 text-sm text-gray-500 mb-3">
-          <a href="/" className="hover:text-gray-600 transition-colors">Accueil</a>
-          <span aria-hidden>/</span>
-          <span className="text-gray-600" aria-current="page">Comparer les ETF</span>
-        </nav>
+    // Wrapper bg-slate-50 opaque : page de consultation (fonctionnel/analytique)
+    // → fond calme, stop le leak AmbientBackground mesh.
+    <div className="bg-slate-50 min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Header */}
+        <div className="mb-10">
+          <nav aria-label="Fil d'ariane" className="flex items-center gap-2 text-sm text-gray-500 mb-3">
+            <a href="/" className="hover:text-gray-600 transition-colors">Accueil</a>
+            <span aria-hidden>/</span>
+            <span className="text-gray-600" aria-current="page">Comparer les ETF</span>
+          </nav>
 
-        <div className="flex flex-wrap items-start gap-4 justify-between mb-4">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
-            Comparer les ETF
-          </h1>
-          {demo && <DemoBadge />}
+          <div className="flex flex-wrap items-start gap-4 justify-between mb-4">
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
+              Comparer les ETF
+            </h1>
+            {demo && <DemoBadge />}
+          </div>
+
+          <p className="text-gray-600 text-lg max-w-2xl">
+            {ETF_LIST.length} ETF analysés — monde, USA, Europe, émergents, small cap, obligations.
+            Filtrez par région, éligibilité PEA ou niveau de frais.
+          </p>
         </div>
 
-        <p className="text-gray-500 text-lg max-w-2xl">
-          {ETF_LIST.length} ETF analysés — monde, USA, Europe, émergents, small cap, obligations.
-          Filtrez par région, éligibilité PEA ou niveau de frais.
-        </p>
-      </div>
+        {/* Filterable grid */}
+        <ETFGrid etfs={ETF_LIST} quotes={quotes} providerLabel={demo ? undefined : providerLabel} />
 
-      {/* Filterable grid */}
-      <ETFGrid etfs={ETF_LIST} quotes={quotes} providerLabel={demo ? undefined : providerLabel} />
-
-      {/* Disclaimer */}
-      <div className="mt-10 p-4 rounded-xl bg-amber-50 border border-amber-200">
-        <p className="text-xs text-amber-800 leading-relaxed">
-          <strong>Information :</strong> Les cours affichés sont{" "}
-          {demo ? "illustratifs (mode démo)" : "différés (fin de journée)"} et
-          ne constituent pas un conseil d&apos;achat ou de vente. Les frais TER
-          indiqués proviennent des prospectus publics et peuvent évoluer.
-          Dernière mise à jour des cours : {new Date(batch.fetchedAt).toLocaleString("fr-FR")}.
-        </p>
+        {/* Disclaimer — amber-50 conservé (disclaimer fintech officiel) */}
+        <div className="mt-10 p-4 rounded-xl bg-amber-50 border border-amber-200">
+          <p className="text-xs text-amber-800 leading-relaxed">
+            <strong>Information :</strong> Les cours affichés sont{" "}
+            {demo ? "illustratifs (mode démo)" : "différés (fin de journée)"} et
+            ne constituent pas un conseil d&apos;achat ou de vente. Les frais TER
+            indiqués proviennent des prospectus publics et peuvent évoluer.
+            Dernière mise à jour des cours : {new Date(batch.fetchedAt).toLocaleString("fr-FR")}.
+          </p>
+        </div>
       </div>
     </div>
   );
