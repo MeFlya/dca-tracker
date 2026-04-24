@@ -1,3 +1,4 @@
+import React from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { JsonLd } from "@/components/ui/JsonLd";
@@ -132,7 +133,7 @@ export default function TarifsPage() {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://dcatracker.fr";
 
   return (
-    <div className="py-12">
+    <>
       <JsonLd data={{
         "@context": "https://schema.org",
         "@type": "WebPage",
@@ -151,114 +152,141 @@ export default function TarifsPage() {
         })),
       }} />
 
-      {/* Hero */}
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 text-center mb-16">
-        <nav aria-label="Fil d'ariane" className="flex items-center justify-center gap-2 text-sm text-gray-500 mb-8">
-          <Link href="/" className="hover:text-gray-600 transition-colors">Accueil</Link>
-          <span aria-hidden>/</span>
-          <span className="text-gray-600" aria-current="page">Tarifs</span>
-        </nav>
-        <p className="text-xs font-semibold uppercase tracking-widest text-primary-600 mb-3">Tarifs</p>
-        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">
-          Commencez gratuitement. 7 jours Premium offerts.
-        </h1>
-        <p className="text-lg text-gray-600 leading-relaxed">
-          Le simulateur DCA et tous les guides restent gratuits pour toujours.
-          Essayez Premium 7 jours sans frais — annulation en 1 clic si ça ne
-          vous convient pas.
-        </p>
-      </div>
+      {/* ── Premium section — hero + pricing cards on dark (émotionnel) ──
+          Wrapped in a single opaque slate-950 section so the AmbientBackground
+          mesh can't leak through. Same visual language as TrackingPitch
+          (dot grid + radial glow) for brand coherence. */}
+      <section className="relative bg-slate-950 pt-12 pb-20 overflow-hidden">
+        {/* Dot grid texture */}
+        <div
+          className="absolute inset-0 opacity-[0.05] pointer-events-none"
+          style={{
+            backgroundImage: "radial-gradient(#ffffff 1px, transparent 1px)",
+            backgroundSize: "24px 24px",
+          }}
+          aria-hidden
+        />
+        {/* Radial glows (no blur filter → cheap) */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage: [
+              "radial-gradient(800px circle at 15% 20%, rgba(59, 130, 246, 0.18), transparent 55%)",
+              "radial-gradient(900px circle at 85% 75%, rgba(99, 102, 241, 0.15), transparent 55%)",
+            ].join(", "),
+          }}
+          aria-hidden
+        />
 
-      {/* Pricing cards */}
-      <div className="max-w-5xl mx-auto px-4 sm:px-6">
-        <PricingCards />
-        <PaymentBadge />
-      </div>
-
-      {/* Feature comparison table — opaque bg (ambient was bleeding through
-          at /30, /50, /80 alpha) + Premium column treated visually as
-          "premium dark" via slate-900 header. */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 mb-20">
-        <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">
-          Comparaison détaillée des fonctions
-        </h2>
-        <div className="overflow-hidden rounded-2xl border border-slate-200/70 bg-white shadow-card">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr>
-                <th className="text-left px-4 py-3 bg-white font-medium text-gray-500 border-b border-slate-200 w-2/3" />
-                <th className="text-center px-4 py-3 bg-white font-semibold text-gray-700 border-b border-slate-200">
-                  Gratuit
-                </th>
-                {/* Premium header — dark, matches the "premium identity" used
-                    elsewhere in the app (TrackingPitch section, PremiumFix, etc). */}
-                <th className="text-center px-4 py-3 bg-slate-900 font-bold text-white border-b border-slate-900 relative">
-                  <span className="inline-flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary-400 animate-breathe" />
-                    Premium
-                  </span>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {COMPARISON_SECTIONS.map((section) => (
-                <>
-                  <tr key={`cat-${section.category}`} className="bg-slate-50">
-                    <td colSpan={3} className="px-4 py-2.5 text-xs font-bold text-gray-600 uppercase tracking-wider border-b border-slate-200/60">
-                      {section.category}
-                    </td>
-                  </tr>
-                  {section.rows.map((row) => (
-                    <tr key={row.feature} className="border-b border-slate-100 hover:bg-slate-50/80 transition-colors bg-white">
-                      <td className="px-4 py-3 text-gray-700">{row.feature}</td>
-                      <td className="px-4 py-3"><CellValue value={row.free} /></td>
-                      <td className="px-4 py-3 bg-primary-50/80"><CellValue value={row.premium} /></td>
-                    </tr>
-                  ))}
-                </>
-              ))}
-            </tbody>
-          </table>
+        {/* Hero */}
+        <div className="relative max-w-2xl mx-auto px-4 sm:px-6 text-center mb-16">
+          <nav aria-label="Fil d'ariane" className="flex items-center justify-center gap-2 text-sm text-slate-400 mb-8">
+            <Link href="/" className="hover:text-slate-200 transition-colors">Accueil</Link>
+            <span aria-hidden>/</span>
+            <span className="text-slate-200" aria-current="page">Tarifs</span>
+          </nav>
+          <p className="text-xs font-semibold uppercase tracking-widest text-primary-300 mb-3">Tarifs</p>
+          <h1 className="text-3xl md:text-4xl font-bold text-white mb-4 leading-tight">
+            Commencez gratuitement. 7 jours Premium offerts.
+          </h1>
+          <p className="text-lg text-slate-300 leading-relaxed">
+            Le simulateur DCA et tous les guides restent gratuits pour toujours.
+            Essayez Premium 7 jours sans frais — annulation en 1 clic si ça ne
+            vous convient pas.
+          </p>
         </div>
-      </div>
 
-      {/* Why we built this */}
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 mb-20">
-        <div className="rounded-2xl bg-gray-50 border border-gray-100 p-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Pourquoi un outil payant ?</h2>
-          <div className="space-y-3 text-sm text-gray-600 leading-relaxed">
-            <p>
-              DCA Tracker est développé de manière indépendante — sans investisseurs, sans publicité, sans revente de données. Pour maintenir et améliorer l&apos;outil sur le long terme, un modèle économique viable est nécessaire.
-            </p>
-            <p>
-              Notre engagement : le simulateur, les guides et la comparaison ETF restent{" "}
-              <strong>gratuits et complets pour toujours</strong>. Le Premium finance le développement de fonctions plus complexes qui demandent une infrastructure dédiée.
-            </p>
-            <p>
-              Les prix sont volontairement bas — moins d&apos;un café par mois pour Premium — parce que notre audience investit déjà intelligemment, en ETF à faibles frais. Il serait contradictoire de vous facturer une fortune.
-            </p>
+        {/* Pricing cards */}
+        <div className="relative max-w-5xl mx-auto px-4 sm:px-6">
+          <PricingCards />
+          <PaymentBadge />
+        </div>
+      </section>
+
+      {/* ── Analytical section — white opaque (fonctionnel/lecture) ──
+          Clean cut from dark → white for a premium "layered" feel. */}
+      <section className="relative bg-white py-20">
+        {/* Feature comparison table */}
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 mb-20">
+          <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">
+            Comparaison détaillée des fonctions
+          </h2>
+          <div className="overflow-hidden rounded-2xl border border-slate-200/70 bg-white shadow-card">
+            <table className="w-full text-sm border-collapse">
+              <thead>
+                <tr>
+                  <th className="text-left px-4 py-3 bg-white font-medium text-gray-500 border-b border-slate-200 w-2/3" />
+                  <th className="text-center px-4 py-3 bg-white font-semibold text-gray-700 border-b border-slate-200">
+                    Gratuit
+                  </th>
+                  <th className="text-center px-4 py-3 bg-slate-950 font-bold text-white border-b border-slate-950 relative">
+                    <span className="inline-flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-primary-400 animate-breathe" />
+                      Premium
+                    </span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {COMPARISON_SECTIONS.map((section) => (
+                  <React.Fragment key={`cat-${section.category}`}>
+                    <tr className="bg-slate-50">
+                      <td colSpan={3} className="px-4 py-2.5 text-xs font-bold text-gray-600 uppercase tracking-wider border-b border-slate-200/60">
+                        {section.category}
+                      </td>
+                    </tr>
+                    {section.rows.map((row) => (
+                      <tr key={row.feature} className="border-b border-slate-100 hover:bg-slate-50/80 transition-colors bg-white">
+                        <td className="px-4 py-3 text-gray-700">{row.feature}</td>
+                        <td className="px-4 py-3"><CellValue value={row.free} /></td>
+                        <td className="px-4 py-3 bg-slate-950/5"><CellValue value={row.premium} /></td>
+                      </tr>
+                    ))}
+                  </React.Fragment>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
-      </div>
 
-      {/* Testimonials — auto-hidden until populated */}
-      <Testimonials />
-
-      {/* FAQ */}
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 mb-20">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Questions fréquentes</h2>
-        <div className="space-y-4">
-          {FAQ.map(({ q, a }) => (
-            <details key={q} className="group rounded-2xl border border-gray-100 bg-white overflow-hidden">
-              <summary className="flex items-center justify-between gap-4 px-5 py-4 cursor-pointer font-semibold text-gray-900 text-sm hover:bg-gray-50 transition-colors list-none">
-                {q}
-                <span className="shrink-0 text-gray-500 group-open:rotate-180 transition-transform">▾</span>
-              </summary>
-              <div className="px-5 pb-4 pt-1 text-sm text-gray-600 leading-relaxed border-t border-gray-50">{a}</div>
-            </details>
-          ))}
+        {/* Why we built this — opaque white card on white section */}
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 mb-20">
+          <div className="rounded-2xl bg-white border border-slate-200/70 shadow-card p-8">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Pourquoi un outil payant ?</h2>
+            <div className="space-y-3 text-sm text-gray-600 leading-relaxed">
+              <p>
+                DCA Tracker est développé de manière indépendante — sans investisseurs, sans publicité, sans revente de données. Pour maintenir et améliorer l&apos;outil sur le long terme, un modèle économique viable est nécessaire.
+              </p>
+              <p>
+                Notre engagement : le simulateur, les guides et la comparaison ETF restent{" "}
+                <strong>gratuits et complets pour toujours</strong>. Le Premium finance le développement de fonctions plus complexes qui demandent une infrastructure dédiée.
+              </p>
+              <p>
+                Les prix sont volontairement bas — moins d&apos;un café par mois pour Premium — parce que notre audience investit déjà intelligemment, en ETF à faibles frais. Il serait contradictoire de vous facturer une fortune.
+              </p>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+
+        {/* Testimonials — auto-hidden until populated */}
+        <Testimonials />
+
+        {/* FAQ */}
+        <div className="max-w-3xl mx-auto px-4 sm:px-6">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Questions fréquentes</h2>
+          <div className="space-y-4">
+            {FAQ.map(({ q, a }) => (
+              <details key={q} className="group rounded-2xl border border-slate-200/70 bg-white shadow-card overflow-hidden">
+                <summary className="flex items-center justify-between gap-4 px-5 py-4 cursor-pointer font-semibold text-gray-900 text-sm hover:bg-gray-50 transition-colors list-none">
+                  {q}
+                  <span className="shrink-0 text-gray-500 group-open:rotate-180 transition-transform">▾</span>
+                </summary>
+                <div className="px-5 pb-4 pt-1 text-sm text-gray-600 leading-relaxed border-t border-gray-50">{a}</div>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+    </>
   );
 }
