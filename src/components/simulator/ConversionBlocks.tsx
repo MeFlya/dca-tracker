@@ -36,7 +36,7 @@ function yearReaching(data: MonthlyDataPoint[], target: number): number | null {
 
 function PremiumFix({ bullets }: { bullets: string[] }) {
   return (
-    <div className="mt-4 rounded-xl bg-primary-50/60 border border-primary-100 px-4 py-3">
+    <div className="mt-4 rounded-xl bg-primary-50 border border-primary-100 px-4 py-3">
       <p className="text-xs font-bold text-primary-800 mb-2.5 flex items-center gap-2">
         <span className="inline-flex items-center bg-primary-600 text-white px-1.5 py-0.5 rounded text-[10px] uppercase tracking-wide">
           Premium
@@ -93,7 +93,7 @@ function LossBlock({ output, isPremium }: { output: SimulatorOutput; isPremium: 
   if (gap <= 0) return null;
 
   return (
-    <div className="rounded-2xl border border-red-100 bg-red-50/30 p-5">
+    <div className="rounded-2xl border border-red-100 bg-red-50 p-5">
       <p className="text-xs font-bold text-red-700 uppercase tracking-wider mb-3 flex items-center gap-1.5">
         <TrendingDown size={14} />
         Vous laissez de l&apos;argent sur la table
@@ -177,7 +177,7 @@ function TimeShiftBlock({ output, isPremium }: { output: SimulatorOutput; isPrem
     : `avec +50&nbsp;€/mois`;
 
   return (
-    <div className="rounded-2xl border border-amber-100 bg-amber-50/40 p-5">
+    <div className="rounded-2xl border border-amber-100 bg-amber-50 p-5">
       <p className="text-xs font-bold text-amber-700 uppercase tracking-wider mb-3 flex items-center gap-1.5">
         <Clock size={14} />
         Vous perdez des années
@@ -317,7 +317,7 @@ function ErrorBlock({ output, isPremium }: { output: SimulatorOutput; isPremium:
   const href = isPremium ? "/account" : ctaHref(false, "monte-carlo", output.input);
 
   return (
-    <div className="rounded-2xl border border-red-100 bg-red-50/30 p-5">
+    <div className="rounded-2xl border border-red-100 bg-red-50 p-5">
       <p className="text-xs font-bold text-red-700 uppercase tracking-wider mb-3 flex items-center gap-1.5">
         <AlertTriangle size={14} />
         Erreur fréquente détectée

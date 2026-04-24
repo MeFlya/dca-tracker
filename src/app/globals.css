@@ -15,8 +15,11 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
+  /* body is transparent so AmbientBackground (position: fixed z-[-10])
+     shows through on all pages. Individual opaque sections (cards,
+     dark sections) have their own bg. */
   body {
-    @apply bg-white text-gray-900 font-sans;
+    @apply bg-transparent text-gray-900 font-sans;
   }
 
   h1,
@@ -118,15 +121,20 @@
   to   { transform: scaleX(1); }
 }
 
-/* Floating orbs — slow, subtle drift for ambient backgrounds.
-   Two variants so adjacent orbs don't sync. */
+/* Floating orbs — continuous drift for ambient backgrounds.
+   Two variants so adjacent orbs don't sync. Travel distance is large
+   enough to be visibly perceptible at viewport scale (~100-120px). */
 @keyframes float-slow-a {
-  0%, 100% { transform: translate(0, 0); }
-  50%      { transform: translate(40px, -30px); }
+  0%   { transform: translate(0, 0); }
+  33%  { transform: translate(100px, -60px); }
+  66%  { transform: translate(-40px, 80px); }
+  100% { transform: translate(0, 0); }
 }
 @keyframes float-slow-b {
-  0%, 100% { transform: translate(0, 0); }
-  50%      { transform: translate(-35px, 25px); }
+  0%   { transform: translate(0, 0); }
+  33%  { transform: translate(-90px, 70px); }
+  66%  { transform: translate(60px, -50px); }
+  100% { transform: translate(0, 0); }
 }
 
 /* Animated gradient — shifts background-position left to right.
@@ -172,8 +180,8 @@
 .animate-slide-up  { animation: slide-up 400ms var(--ease-out-expo) both; }
 .animate-badge-pop { animation: badge-pop 350ms cubic-bezier(0.34, 1.56, 0.64, 1) both; }
 .animate-grow-x    { animation: grow-x 700ms var(--ease-out-expo) both; transform-origin: left center; }
-.animate-float-a   { animation: float-slow-a 14s ease-in-out infinite; }
-.animate-float-b   { animation: float-slow-b 18s ease-in-out infinite; }
+.animate-float-a   { animation: float-slow-a 18s ease-in-out infinite; }
+.animate-float-b   { animation: float-slow-b 22s ease-in-out infinite; }
 .animate-gradient  { animation: gradient-shift 4s linear infinite; background-size: 200% 100%; }
 .animate-aurora    { animation: aurora-sweep 6s ease-in-out infinite; }
 .animate-draw-line { stroke-dasharray: 1000; stroke-dashoffset: 1000; animation: draw-line 2.4s var(--ease-out-expo) 0.4s forwards; }

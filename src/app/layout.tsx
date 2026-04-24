@@ -4,6 +4,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { JsonLd } from "@/components/ui/JsonLd";
+import { AmbientBackground } from "@/components/ui/AmbientBackground";
 import { clerkAppearance } from "@/lib/clerk-appearance";
 import { PlausibleScript, GoogleAnalyticsScript } from "@/components/analytics/PlausibleScript";
 import { AnalyticsContextProvider } from "@/components/analytics/AnalyticsContext";
@@ -88,6 +89,9 @@ export default function RootLayout({
         <GoogleAnalyticsScript />
       </head>
       <body className="min-h-screen flex flex-col">
+        {/* Animated ambient background — sits below all content.
+            Provides the "premium feel" on every page for free. */}
+        <AmbientBackground />
         <ClerkProvider appearance={clerkAppearance}>
         <JsonLd
           data={{
