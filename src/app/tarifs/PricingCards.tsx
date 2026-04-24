@@ -179,9 +179,12 @@ export function PricingCards() {
                 }`}>
                   {plan.tagline}
                 </p>
-                <h3 className="text-xl font-bold mb-4 text-gray-900">
+                {/* Plan name: H2 (not H3) to maintain a valid H1→H2→H3 order
+                    — the page H1 is the hero "Commencez gratuitement". Visual
+                    styling preserved via className (text-xl, not h2-default). */}
+                <h2 className="text-xl font-bold mb-4 text-gray-900">
                   {plan.name}
-                </h3>
+                </h2>
 
                 <div className="flex items-end gap-1.5">
                   {plan.monthlyPrice === 0 ? (

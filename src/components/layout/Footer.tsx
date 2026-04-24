@@ -39,9 +39,9 @@ export function Footer() {
 
           {/* Outils */}
           <div>
-            <h3 className="text-xs font-semibold text-gray-900 uppercase tracking-wider mb-3">
+            <h2 className="text-xs font-semibold text-gray-900 uppercase tracking-wider mb-3">
               Outils
-            </h3>
+            </h2>
             <ul className="space-y-2">
               <li>
                 <Link href="/simulateur" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
@@ -78,9 +78,9 @@ export function Footer() {
 
           {/* Simulations */}
           <div>
-            <h3 className="text-xs font-semibold text-gray-900 uppercase tracking-wider mb-3">
+            <h2 className="text-xs font-semibold text-gray-900 uppercase tracking-wider mb-3">
               Simulations
-            </h3>
+            </h2>
             <ul className="space-y-2">
               <li>
                 <Link href="/investir-100-euros-mois-etf" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
@@ -122,9 +122,9 @@ export function Footer() {
 
           {/* Guides */}
           <div>
-            <h3 className="text-xs font-semibold text-gray-900 uppercase tracking-wider mb-3">
+            <h2 className="text-xs font-semibold text-gray-900 uppercase tracking-wider mb-3">
               Guides
-            </h3>
+            </h2>
             <ul className="space-y-2">
               <li>
                 <Link href="/meilleurs-etf-debutants" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
@@ -161,9 +161,9 @@ export function Footer() {
 
           {/* À propos */}
           <div>
-            <h3 className="text-xs font-semibold text-gray-900 uppercase tracking-wider mb-3">
+            <h2 className="text-xs font-semibold text-gray-900 uppercase tracking-wider mb-3">
               À propos
-            </h3>
+            </h2>
             <ul className="space-y-2">
               <li>
                 <Link href="/a-propos" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
