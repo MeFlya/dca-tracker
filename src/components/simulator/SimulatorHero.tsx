@@ -15,6 +15,10 @@ export function SimulatorHero({ output }: Props) {
     : 1;
   const gains = base.finalValue - base.totalInvested;
 
+  // Round + format with French comma — guards against float drift like
+  // 7.149999999999999 % when the value comes from a blended portfolio.
+  const returnFmt = input.annualReturnPct.toFixed(2).replace(".", ",");
+
   return (
     // bg-slate-950 (Premium identity), radial glow primary derrière le
     // chiffre uniquement — pas un fond saturé bleu qui écrase la page.
@@ -49,7 +53,7 @@ export function SimulatorHero({ output }: Props) {
           pendant{" "}
           <span className="font-semibold text-white">{input.durationYears} ans</span>
           {" "}·{" "}
-          rendement {input.annualReturnPct} %/an
+          rendement {returnFmt} %/an
         </p>
 
         {/* Big number — text-white over the radial halo. */}
@@ -59,7 +63,7 @@ export function SimulatorHero({ output }: Props) {
           </p>
         </div>
         <p className="text-slate-400 text-sm mb-6">
-          Scénario moyen basé sur un rendement estimé de {input.annualReturnPct}&nbsp;%/an
+          Scénario moyen basé sur un rendement estimé de {returnFmt}&nbsp;%/an
         </p>
 
         {/* Stats row — glass tiles consistent with TrackingPitch */}

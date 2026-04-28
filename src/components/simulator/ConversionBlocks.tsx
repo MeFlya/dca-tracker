@@ -276,7 +276,7 @@ function detectErrors(input: SimulatorInput): ErrorDef[] {
       id: "fees",
       icon: "",
       title: "Frais ETF trop élevés",
-      desc: `Vos frais sont à ${input.annualFeesPct.toString().replace(".", ",")}&nbsp;%. Les meilleurs ETF du marché sont à 0,1&nbsp;%. Sur ${input.durationYears} ans, chaque 0,1&nbsp;% compte.`,
+      desc: `Vos frais sont à ${input.annualFeesPct.toFixed(2).replace(".", ",")}&nbsp;%. Les meilleurs ETF du marché sont à 0,1&nbsp;%. Sur ${input.durationYears} ans, chaque 0,1&nbsp;% compte.`,
       optimized: { ...input, annualFeesPct: 0.1 },
       ctaLabel: "Corriger cette erreur",
     });
@@ -310,7 +310,7 @@ function detectErrors(input: SimulatorInput): ErrorDef[] {
       id: "volatility",
       icon: "",
       title: "Rendement non validé par la volatilité",
-      desc: `Votre projection de ${input.annualReturnPct}&nbsp;%/an suppose que tout se passe bien. Les marchés ne sont pas linéaires. Monte Carlo teste votre stratégie contre 1 000 scénarios réels.`,
+      desc: `Votre projection de ${input.annualReturnPct.toFixed(2).replace(".", ",")}&nbsp;%/an suppose que tout se passe bien. Les marchés ne sont pas linéaires. Monte Carlo teste votre stratégie contre 1 000 scénarios réels.`,
       optimized: input,
       ctaLabel: "Valider avec Monte Carlo",
       ctaHref: "/upgrade?feature=monte-carlo",

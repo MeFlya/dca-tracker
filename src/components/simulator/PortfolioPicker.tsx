@@ -11,6 +11,7 @@
  */
 
 import { useState } from "react";
+import { AlertTriangle } from "lucide-react";
 import type { ETFConfig } from "@/lib/etf-config";
 import {
   blendPortfolio,
@@ -172,8 +173,9 @@ export function PortfolioPicker({
           </span>
         </div>
         {blend.hasNonPeaEtf && (
-          <p className="text-[11px] text-amber-700 leading-relaxed pt-1.5 border-t border-slate-200/70">
-            ⚠️ Ce mix contient un ETF non éligible PEA — à loger en CTO.
+          <p className="text-[11px] text-amber-700 leading-relaxed pt-1.5 border-t border-slate-200/70 flex items-start gap-1.5">
+            <AlertTriangle size={12} className="shrink-0 mt-0.5" />
+            <span>Ce mix contient un ETF non éligible PEA — à loger en CTO.</span>
           </p>
         )}
       </div>
@@ -206,12 +208,14 @@ function CompactRow({
           style={{ backgroundColor: color }}
           aria-hidden
         />
-        <p className="font-bold text-sm text-gray-900 flex-1 truncate">
-          {item.etf.displaySymbol}
-          <span className="ml-2 text-xs font-normal text-gray-500">
-            TER {item.etf.ter.toString().replace(".", ",")} %
-          </span>
-        </p>
+        <div className="flex-1 min-w-0">
+          <p className="font-bold text-sm text-gray-900 truncate leading-tight">
+            {item.etf.indexLabel}
+          </p>
+          <p className="text-[11px] text-gray-500 leading-tight">
+            {item.etf.displaySymbol} · TER {item.etf.ter.toString().replace(".", ",")} %
+          </p>
+        </div>
         {canRemove && (
           <button
             type="button"
@@ -244,9 +248,12 @@ function CompactRow({
           onChange={(e) => onWeightChange(parseFloat(e.target.value))}
           aria-label={`Poids de ${item.etf.displaySymbol}`}
           className="w-full slider"
-          style={{
-            background: `linear-gradient(to right, ${color} 0%, ${color} ${item.weight}%, #e2e8f0 ${item.weight}%, #e2e8f0 100%)`,
-          }}
+          style={
+            {
+              "--slider-fill-pct": `${item.weight}%`,
+              "--slider-color": color,
+            } as React.CSSProperties
+          }
         />
       </div>
     </div>
@@ -287,14 +294,14 @@ function AddEtfDropdown({
             >
               <div className="flex items-baseline justify-between gap-2 mb-0.5">
                 <span className="font-bold text-xs text-gray-900">
-                  {etf.displaySymbol}
+                  {etf.indexLabel}
                 </span>
                 <span className="text-[10px] text-gray-500">
                   TER {etf.ter.toString().replace(".", ",")} %
                 </span>
               </div>
-              <p className="text-[11px] text-gray-600 leading-snug truncate">
-                {etf.name}
+              <p className="text-[11px] text-gray-500 leading-snug truncate">
+                {etf.displaySymbol} · {etf.peaEligible ? "PEA" : "CTO"}
               </p>
             </button>
           ))}

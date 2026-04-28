@@ -48,9 +48,13 @@ export function SliderInput({
   // Percentage for the filled track, clamped 0–100
   const fillPct = clamp(((value - min) / (max - min)) * 100, 0, 100);
 
+  // Slider styling now uses CSS variables read by `.slider` rules in
+  // globals.css (the linear-gradient is applied to the track pseudo-element,
+  // not to the input itself, for proper click-to-jump on the whole bar).
   const trackStyle = {
-    background: `linear-gradient(to right, #1d4ed8 ${fillPct}%, #e2e8f0 ${fillPct}%)`,
-  };
+    "--slider-fill-pct": `${fillPct}%`,
+    "--slider-color": "#1d4ed8",
+  } as React.CSSProperties;
 
   const handleSlider = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {

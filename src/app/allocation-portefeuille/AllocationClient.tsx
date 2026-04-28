@@ -280,15 +280,15 @@ function EtfRow({
         <div className="flex-1 min-w-0">
           <div className="flex items-baseline justify-between gap-2 flex-wrap">
             <p className="font-bold text-sm text-gray-900">
-              {item.etf.displaySymbol}
+              {item.etf.indexLabel}
             </p>
             <p className="text-xs text-gray-500">
               TER {item.etf.ter.toString().replace(".", ",")} % · Rendement
               attendu {expectedReturn.toFixed(1).replace(".", ",")} %
             </p>
           </div>
-          <p className="text-xs text-gray-600 leading-snug mt-0.5">
-            {item.etf.name}
+          <p className="text-xs text-gray-500 mt-0.5">
+            {item.etf.displaySymbol} · {item.etf.name}
           </p>
           <div className="flex items-center gap-2 mt-1.5 flex-wrap">
             {item.etf.peaEligible ? (
@@ -347,9 +347,12 @@ function EtfRow({
           value={item.weight}
           onChange={(e) => onWeightChange(parseFloat(e.target.value))}
           className="w-full slider"
-          style={{
-            background: `linear-gradient(to right, ${color} 0%, ${color} ${item.weight}%, #e2e8f0 ${item.weight}%, #e2e8f0 100%)`,
-          }}
+          style={
+            {
+              "--slider-fill-pct": `${item.weight}%`,
+              "--slider-color": color,
+            } as React.CSSProperties
+          }
         />
       </div>
     </div>
@@ -395,13 +398,15 @@ function AddEtfDropdown({
             >
               <div className="flex items-baseline justify-between gap-2 mb-0.5">
                 <span className="font-bold text-sm text-gray-900">
-                  {etf.displaySymbol}
+                  {etf.indexLabel}
                 </span>
                 <span className="text-xs text-gray-500">
                   TER {etf.ter.toString().replace(".", ",")} %
                 </span>
               </div>
-              <p className="text-xs text-gray-600 leading-snug">{etf.name}</p>
+              <p className="text-xs text-gray-500 leading-snug">
+                {etf.displaySymbol} · {etf.name}
+              </p>
             </button>
           ))}
         </div>
@@ -422,7 +427,7 @@ function AllocationDonut({
   monthlyAmount: number;
 }) {
   const data = blend.breakdown.map((row, idx) => ({
-    name: row.etf.displaySymbol,
+    name: row.etf.indexLabel,
     value: row.weight,
     fill: colors[idx % colors.length],
     monthlyAmount: row.monthlyAmount,

@@ -124,12 +124,19 @@ export function blendPortfolio(
     };
   });
 
+  // Round to 2-3 decimals at the source — prevents float drift from leaking
+  // into every display site (e.g. "7.149999999 %" instead of "7.15 %").
+  // The DCA simulation engine uses these as inputs so rounding here avoids
+  // the noise everywhere downstream.
+  const round2 = (n: number) => Math.round(n * 100) / 100;
+  const round3 = (n: number) => Math.round(n * 1000) / 1000;
+
   return {
     totalWeight,
     isBalanced,
-    blendedReturn,
-    blendedTer,
-    blendedNetReturn: blendedReturn - blendedTer,
+    blendedReturn: round2(blendedReturn),
+    blendedTer: round3(blendedTer),
+    blendedNetReturn: round2(blendedReturn - blendedTer),
     breakdown,
     hasNonPeaEtf,
   };

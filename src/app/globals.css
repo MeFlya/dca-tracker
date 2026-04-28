@@ -296,21 +296,57 @@
   }
 }
 
-/* ── Range slider — cross-browser reset + custom style ── */
+/* ── Range slider — cross-browser reset + custom style ──
+ *
+ * Design constraints :
+ * 1. Click-anywhere on the track must teleport the thumb (native input
+ *    range behavior). We had 4px-tall track which made the click area
+ *    too thin to consistently hit — bumped to 24px clickable area with
+ *    an inner 6px visual track.
+ * 2. The fill (left = filled, right = empty) is rendered on the
+ *    ::-webkit-slider-runnable-track pseudo-element via CSS variables
+ *    --slider-fill-pct + --slider-color, set inline on the input.
+ *    This avoids inline `background` on the input itself which was
+ *    confusing the click bounds.
+ */
 .slider {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
-  height: 4px;
-  border-radius: 9999px;
+  height: 24px;             /* clickable area */
+  background: transparent;  /* track-only; rendered on ::-track */
   outline: none;
   cursor: pointer;
-  /* active track filled via inline style background gradient.
-     transition on background makes keyboard steps glide instead of snap. */
-  transition: background 120ms var(--ease-out-quart);
+  margin: 0;
+  padding: 0;
 }
 
-/* Thumb — WebKit */
+/* Track — WebKit */
+.slider::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 9999px;
+  background: linear-gradient(
+    to right,
+    var(--slider-color, #1d4ed8) 0%,
+    var(--slider-color, #1d4ed8) var(--slider-fill-pct, 0%),
+    #e2e8f0 var(--slider-fill-pct, 0%),
+    #e2e8f0 100%
+  );
+  transition: background 120ms var(--ease-out-quart);
+}
+/* Track — Firefox */
+.slider::-moz-range-track {
+  height: 6px;
+  border-radius: 9999px;
+  background: #e2e8f0;
+}
+.slider::-moz-range-progress {
+  height: 6px;
+  border-radius: 9999px;
+  background: var(--slider-color, #1d4ed8);
+}
+
+/* Thumb — WebKit. margin-top centers the thumb vertically over the 6px track. */
 .slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
@@ -318,9 +354,10 @@
   height: 18px;
   border-radius: 50%;
   background: #ffffff;
-  border: 2px solid #1d4ed8;
+  border: 2px solid var(--slider-color, #1d4ed8);
   box-shadow: 0 1px 4px rgb(29 78 216 / 0.25);
   cursor: grab;
+  margin-top: -6px;          /* (6px track − 18px thumb) / 2 = −6px */
   transition: box-shadow 0.15s, transform 0.1s;
 }
 .slider::-webkit-slider-thumb:hover {
@@ -339,7 +376,7 @@
   height: 18px;
   border-radius: 50%;
   background: #ffffff;
-  border: 2px solid #1d4ed8;
+  border: 2px solid var(--slider-color, #1d4ed8);
   box-shadow: 0 1px 4px rgb(29 78 216 / 0.25);
   cursor: grab;
   transition: box-shadow 0.15s, transform 0.1s;
@@ -350,10 +387,10 @@
 
 /* Focus ring */
 .slider:focus-visible::-webkit-slider-thumb {
-  box-shadow: 0 0 0 3px #fff, 0 0 0 5px #1d4ed8;
+  box-shadow: 0 0 0 3px #fff, 0 0 0 5px var(--slider-color, #1d4ed8);
 }
 .slider:focus-visible::-moz-range-thumb {
-  box-shadow: 0 0 0 3px #fff, 0 0 0 5px #1d4ed8;
+  box-shadow: 0 0 0 3px #fff, 0 0 0 5px var(--slider-color, #1d4ed8);
 }
 
 /* Number input inside SliderInput — compact inline style */

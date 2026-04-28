@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { Zap, Target } from "lucide-react";
 import { SimulatorInput } from "@/lib/simulator";
 import { ETF_LIST, type ETFConfig } from "@/lib/etf-config";
 import { SliderInput } from "@/components/ui/SliderInput";
@@ -199,14 +200,14 @@ export function SimulatorForm({
         <ModeButton
           active={mode === "rapid"}
           onClick={() => switchMode("rapid")}
-          icon="⚡"
+          Icon={Zap}
           label="Rapide"
           hint="Valeurs directes"
         />
         <ModeButton
           active={mode === "portfolio"}
           onClick={() => switchMode("portfolio")}
-          icon="🎯"
+          Icon={Target}
           label="Mes ETF"
           hint="Choisir les ETF"
         />
@@ -346,13 +347,13 @@ export function SimulatorForm({
 function ModeButton({
   active,
   onClick,
-  icon,
+  Icon,
   label,
   hint,
 }: {
   active: boolean;
   onClick: () => void;
-  icon: string;
+  Icon: React.ComponentType<{ size?: number; className?: string }>;
   label: string;
   hint: string;
 }) {
@@ -367,8 +368,8 @@ function ModeButton({
           : "text-gray-600 hover:text-gray-900"
       }`}
     >
-      <span className="block text-sm font-semibold">
-        <span className="mr-1.5" aria-hidden>{icon}</span>
+      <span className="flex items-center justify-center gap-1.5 text-sm font-semibold">
+        <Icon size={14} className={active ? "text-primary-600" : "text-gray-500"} />
         {label}
       </span>
       <span className="block text-[10px] text-gray-500 mt-0.5">{hint}</span>

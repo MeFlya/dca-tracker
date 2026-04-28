@@ -271,18 +271,20 @@ export default async function AccountPage() {
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {[
-              { feature: "save-strategy", icon: "💾", label: "Suivi de stratégie", desc: "Enregistrez vos performances mensuelles" },
-              { feature: "recap-fiscal",  icon: "🧾", label: "Récap fiscal annuel", desc: "Cases 2042 et 2074 calculées" },
-              { feature: "monte-carlo",   icon: "📊", label: "Monte Carlo",        desc: "1 000 scénarios de marché simulés" },
-              { feature: "pdf-export",    icon: "📄", label: "Export PDF propre",  desc: "Sans filigrane, prêt à partager" },
-              { feature: "ab-comparison", icon: "⚖️", label: "Comparaison A/B",   desc: "Deux stratégies côte à côte" },
-            ].map(({ feature, icon, label, desc }) => (
+              { feature: "save-strategy", Icon: SaveIcon,    label: "Suivi de stratégie", desc: "Enregistrez vos performances mensuelles" },
+              { feature: "recap-fiscal",  Icon: ReceiptIcon, label: "Récap fiscal annuel", desc: "Cases 2042 et 2074 calculées" },
+              { feature: "monte-carlo",   Icon: ChartIcon,   label: "Monte Carlo",        desc: "1 000 scénarios de marché simulés" },
+              { feature: "pdf-export",    Icon: PdfIcon,     label: "Export PDF propre",  desc: "Sans filigrane, prêt à partager" },
+              { feature: "ab-comparison", Icon: ScaleIcon,   label: "Comparaison A/B",   desc: "Deux stratégies côte à côte" },
+            ].map(({ feature, Icon, label, desc }) => (
               <Link
                 key={feature}
                 href={`/upgrade?feature=${feature}`}
                 className="flex items-start gap-3 rounded-xl border border-gray-100 p-3 hover:border-primary-200 hover:bg-primary-50/30 transition-colors group"
               >
-                <span className="text-xl">{icon}</span>
+                <span className="w-9 h-9 rounded-lg bg-primary-50 text-primary-700 flex items-center justify-center shrink-0">
+                  <Icon />
+                </span>
                 <div>
                   <p className="text-sm font-semibold text-gray-700 group-hover:text-primary-700 transition-colors">
                     {label}
@@ -335,6 +337,60 @@ function DocumentIcon() {
       <path d="M7 10h6" />
       <path d="M7 13h6" />
       <path d="M7 16h4" />
+    </svg>
+  );
+}
+
+function SaveIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M4 4h10l3 3v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1Z" />
+      <path d="M6 4v5h7V4" />
+      <rect x="6" y="11" width="8" height="6" />
+    </svg>
+  );
+}
+
+function ReceiptIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M5 2v16l2-1.5L9 18l2-1.5L13 18l2-1.5V2H5Z" />
+      <path d="M8 6h4" />
+      <path d="M8 9h4" />
+      <path d="M8 12h2" />
+    </svg>
+  );
+}
+
+function ChartIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M3 17V5" />
+      <path d="M3 17h14" />
+      <rect x="6" y="10" width="2.5" height="5" />
+      <rect x="11" y="7" width="2.5" height="8" />
+    </svg>
+  );
+}
+
+function PdfIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M5 2h7l4 4v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Z" />
+      <path d="M12 2v5h4" />
+      <text x="6.5" y="14.5" fontSize="4.5" fontWeight="700" fill="currentColor" stroke="none">PDF</text>
+    </svg>
+  );
+}
+
+function ScaleIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M10 3v14" />
+      <path d="M5 17h10" />
+      <path d="M6 9 4 6 8 6Z" />
+      <path d="M14 9 12 6 16 6Z" />
+      <path d="M3 6h14" />
     </svg>
   );
 }

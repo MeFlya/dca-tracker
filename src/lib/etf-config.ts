@@ -12,6 +12,10 @@ export type ETFRegion =
 export interface ETFConfig {
   symbol: string;           // API symbol (e.g. "CW8.PA")
   displaySymbol: string;    // Short label for UI (e.g. "CW8")
+  /** Short, recognizable name of the underlying index — what investors
+   *  actually search for. e.g. "MSCI World", "S&P 500", "Nasdaq 100".
+   *  Display this prominently and keep displaySymbol as a small badge. */
+  indexLabel: string;
   name: string;
   description: string;      // Plain-language explanation for non-experts
   category: string;
@@ -30,6 +34,7 @@ export const ETF_LIST: ETFConfig[] = [
   {
     symbol: "CW8.PA",
     displaySymbol: "CW8",
+    indexLabel: "MSCI World",
     name: "Amundi MSCI World UCITS ETF",
     description:
       "Suit l'indice MSCI World (~1 500 grandes entreprises des pays développés). L'un des ETF monde les plus populaires en France grâce à ses frais bas et son éligibilité PEA via réplication synthétique.",
@@ -46,6 +51,7 @@ export const ETF_LIST: ETFConfig[] = [
     // Le listing Euronext Amsterdam IWDA couvre le même fonds (même ISIN).
     symbol: "IWDA.AS",
     displaySymbol: "IWDA",
+    indexLabel: "MSCI World",
     name: "iShares Core MSCI World UCITS ETF",
     description:
       "Alternative à réplication physique au CW8, également exposée au MSCI World. Convient aux investisseurs qui préfèrent éviter le risque de contrepartie des swaps, tout en conservant l'éligibilité PEA.",
@@ -63,6 +69,7 @@ export const ETF_LIST: ETFConfig[] = [
   {
     symbol: "VWCE.DE",
     displaySymbol: "VWCE",
+    indexLabel: "FTSE All-World",
     name: "Vanguard FTSE All-World UCITS ETF",
     description:
       "Couverture la plus large : pays développés ET émergents, soit ~3 700 entreprises dans 49 pays. Idéal pour une diversification maximale en un seul ETF. Réplication physique — à loger en CTO ou assurance-vie.",
@@ -82,6 +89,7 @@ export const ETF_LIST: ETFConfig[] = [
     // Amundi (2022). Même ISIN.
     symbol: "500.PA",
     displaySymbol: "500",
+    indexLabel: "S&P 500",
     name: "Amundi S&P 500 UCITS ETF",
     description:
       "Version PEA-éligible du S&P 500 par Amundi. Réplication synthétique permettant d'accéder aux 500 plus grandes entreprises américaines dans le cadre fiscal avantageux du PEA. TER très compétitif à 0,15 %.",
@@ -96,6 +104,7 @@ export const ETF_LIST: ETFConfig[] = [
   {
     symbol: "CSPX.L",
     displaySymbol: "CSPX",
+    indexLabel: "S&P 500",
     name: "iShares Core S&P 500 UCITS ETF",
     description:
       "L'ETF S&P 500 physique le moins cher d'Europe (TER 0,07 %), coté à Londres en USD. Réplique fidèlement les 500 plus grandes capitalisations américaines. Non éligible PEA — à loger en CTO.",
@@ -110,6 +119,7 @@ export const ETF_LIST: ETFConfig[] = [
   {
     symbol: "SPY",
     displaySymbol: "SPY",
+    indexLabel: "S&P 500",
     name: "SPDR S&P 500 ETF Trust",
     description:
       "L'ETF le plus échangé au monde. Référence absolue pour l'exposition aux actions US — mais distribuant, libellé en USD et non éligible PEA. Plutôt utilisé comme référence ou sur CTO.",
@@ -124,6 +134,7 @@ export const ETF_LIST: ETFConfig[] = [
   {
     symbol: "VUSA.AS",
     displaySymbol: "VUSA",
+    indexLabel: "S&P 500",
     name: "Vanguard S&P 500 UCITS ETF",
     description:
       "ETF S&P 500 de Vanguard coté à Amsterdam avec des frais parmi les plus bas du marché (TER 0,07 %). Réplication physique, idéal pour un compte-titres ou une assurance-vie.",
@@ -141,6 +152,7 @@ export const ETF_LIST: ETFConfig[] = [
   {
     symbol: "ANX.PA",
     displaySymbol: "ANX",
+    indexLabel: "Nasdaq 100",
     name: "Amundi Nasdaq-100 UCITS ETF",
     description:
       "Seule solution PEA-éligible pour s'exposer au Nasdaq-100 — les 100 plus grandes valeurs tech américaines (Apple, Microsoft, Nvidia…). Réplication synthétique par Amundi, le n°1 européen de la gestion d'actifs.",
@@ -155,6 +167,7 @@ export const ETF_LIST: ETFConfig[] = [
   {
     symbol: "QQQ",
     displaySymbol: "QQQ",
+    indexLabel: "Nasdaq 100",
     name: "Invesco Nasdaq-100 ETF",
     description:
       "La version américaine historique du Nasdaq-100. Très liquide avec des frais raisonnables, mais distribuant, libellé en USD et non éligible PEA. Référence de performance tech aux États-Unis.",
@@ -173,6 +186,7 @@ export const ETF_LIST: ETFConfig[] = [
     // Ex-Lyxor PAEEM — ticker AEEM sur Euronext Paris après rachat Amundi.
     symbol: "AEEM.PA",
     displaySymbol: "AEEM",
+    indexLabel: "Marchés émergents",
     name: "Amundi MSCI Emerging Markets UCITS ETF",
     description:
       "Exposition aux marchés émergents (Chine, Inde, Taïwan, Corée du Sud, Brésil…) via PEA grâce à la réplication synthétique d'Amundi. Complète idéalement un ETF MSCI World pour une diversification mondiale complète.",
@@ -190,6 +204,7 @@ export const ETF_LIST: ETFConfig[] = [
   {
     symbol: "PCEU.PA",
     displaySymbol: "PCEU",
+    indexLabel: "Stoxx Europe 600",
     name: "Amundi STOXX Europe 600 UCITS ETF",
     description:
       "Exposition large à l'économie européenne via les 600 plus grandes capitalisations des 17 principaux pays d'Europe (ASML, LVMH, Novo Nordisk, Shell, Nestlé…). TER ultra-compétitif à 0,07 %. Éligible PEA.",
@@ -207,6 +222,7 @@ export const ETF_LIST: ETFConfig[] = [
   {
     symbol: "RS2K.PA",
     displaySymbol: "RS2K",
+    indexLabel: "Russell 2000",
     name: "Amundi MSCI Russell 2000 UCITS ETF",
     description:
       "Exposition aux 2 000 petites capitalisations américaines via swap, éligible PEA. Complément du S&P 500 pour capturer la croissance des PME américaines avec un risque plus élevé.",
@@ -227,6 +243,7 @@ export const ETF_LIST: ETFConfig[] = [
   {
     symbol: "IUSN.DE",
     displaySymbol: "IUSN",
+    indexLabel: "MSCI World Small Caps",
     name: "iShares MSCI World Small Cap UCITS ETF",
     description:
       "Couvre les petites capitalisations mondiales des pays développés (~3 400 entreprises). Réplication physique, diversification internationale des small caps en un seul ETF. Non éligible PEA.",
@@ -245,6 +262,7 @@ export const ETF_LIST: ETFConfig[] = [
     // Ex-Lyxor LYYA — ticker JPNK sur Euronext Paris après rachat Amundi.
     symbol: "JPNK.PA",
     displaySymbol: "JPNK",
+    indexLabel: "Topix Japon",
     name: "Amundi Japan TOPIX UCITS ETF",
     description:
       "Exposition au marché japonais via l'indice TOPIX (~2 200 entreprises), éligible PEA. Complément géographique pour diversifier hors États-Unis et Europe.",
@@ -263,6 +281,7 @@ export const ETF_LIST: ETFConfig[] = [
     // Ex-Lyxor OBLI — ticker C3M sur Euronext Paris après rachat Amundi.
     symbol: "C3M.PA",
     displaySymbol: "C3M",
+    indexLabel: "Obligations EUR (court terme)",
     name: "Amundi Euro Government Bond UCITS ETF",
     description:
       "ETF obligataire sur les emprunts d'État de la zone euro. Offre une composante défensive dans un portefeuille multi-actifs — contrepoids à la volatilité des ETF actions. Non éligible PEA (obligations), à loger en CTO ou assurance-vie.",
