@@ -1,16 +1,35 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { SimulatorInput } from "@/lib/simulator";
+import { ETF_LIST, type ETFConfig } from "@/lib/etf-config";
 import { SliderInput } from "@/components/ui/SliderInput";
+import {
+  PortfolioPicker,
+  type PortfolioPickerValue,
+} from "@/components/simulator/PortfolioPicker";
+import {
+  PORTFOLIO_PRESETS,
+  type PortfolioItem,
+} from "@/lib/portfolio";
+
+// ─── Types ───────────────────────────────────────────────────────────────────
+
+export type SimulatorMode = "rapid" | "portfolio";
 
 interface SimulatorFormProps {
   /** Called on every value change — no submit click required */
   onChange: (input: SimulatorInput, inflationEnabled: boolean) => void;
+  /** Optional callback when in portfolio mode — gives parent the items so
+   *  it can serialize them in the URL `etfs=...` param. */
+  onPortfolioChange?: (items: PortfolioItem[] | null) => void;
   defaultValues?: Partial<SimulatorInput>;
-  /** Explicitly control whether the inflation row starts toggled on.
-   *  When omitted, derived from defaultValues.annualInflationPct !== undefined. */
+  /** Explicitly control whether the inflation row starts toggled on. */
   defaultInflationEnabled?: boolean;
+  /** Initial mode — defaults to "rapid". Set to "portfolio" if URL has ?etfs=. */
+  defaultMode?: SimulatorMode;
+  /** Initial portfolio items — used when defaultMode = "portfolio". */
+  defaultPortfolio?: PortfolioItem[];
 }
 
 const DEFAULTS: SimulatorInput = {
@@ -21,31 +40,124 @@ const DEFAULTS: SimulatorInput = {
   annualInflationPct: undefined,
 };
 
+/** Default portfolio when user switches to portfolio mode without prior selection. */
+function defaultPortfolioItems(etfs: ETFConfig[]): PortfolioItem[] {
+  const preset = PORTFOLIO_PRESETS.find((p) => p.id === "world-em-80-20")!;
+  return preset.allocation
+    .map(({ displaySymbol, weight }) => {
+      const etf = etfs.find((e) => e.displaySymbol === displaySymbol);
+      return etf ? { etf, weight } : null;
+    })
+    .filter((x): x is PortfolioItem => x !== null);
+}
+
+// ─── Component ───────────────────────────────────────────────────────────────
+
 export function SimulatorForm({
   onChange,
+  onPortfolioChange,
   defaultValues,
   defaultInflationEnabled,
+  defaultMode = "rapid",
+  defaultPortfolio,
 }: SimulatorFormProps) {
+  const [mode, setMode] = useState<SimulatorMode>(defaultMode);
   const [values, setValues] = useState<SimulatorInput>({
     ...DEFAULTS,
     ...defaultValues,
   });
   const [showInflation, setShowInflation] = useState(
-    defaultInflationEnabled ?? (defaultValues?.annualInflationPct !== undefined)
+    defaultInflationEnabled ?? defaultValues?.annualInflationPct !== undefined
   );
 
-  // Fire onChange whenever values or inflation toggle change
+  // Snapshot of the current portfolio items (only meaningful in mode === "portfolio").
+  const [portfolio, setPortfolio] = useState<PortfolioItem[]>(
+    defaultPortfolio && defaultPortfolio.length > 0
+      ? defaultPortfolio
+      : defaultPortfolioItems(ETF_LIST)
+  );
+
+  // Track whether we've sent the URL update for the portfolio yet.
+  // Avoid spamming URL changes on the same allocation.
+  const lastSerializedRef = useRef<string>("");
+
+  // Fire onChange whenever values OR mode-driven derived values change.
+  // In rapid mode → use values.annualReturnPct + values.annualFeesPct.
+  // In portfolio mode → those fields are overridden by the blended values
+  // computed by PortfolioPicker (we keep the rapid values in state for the
+  // round-trip when user switches back).
   useEffect(() => {
     onChange(
       {
         ...values,
         annualInflationPct: showInflation
-          ? (values.annualInflationPct ?? 2)
+          ? values.annualInflationPct ?? 2
           : undefined,
       },
       showInflation
     );
   }, [values, showInflation, onChange]);
+
+  // When user changes portfolio in picker, blend → override return/TER in state.
+  const handlePortfolioChange = useCallback(
+    (v: PortfolioPickerValue) => {
+      setPortfolio(v.items);
+      // Override return + TER with blended values
+      setValues((prev) => ({
+        ...prev,
+        annualReturnPct: v.blend.blendedReturn,
+        annualFeesPct: v.blend.blendedTer,
+      }));
+      // Notify parent for URL serialization (only if balanced AND items present)
+      if (onPortfolioChange) {
+        if (v.blend.isBalanced && v.items.length > 0) {
+          const sig = v.items
+            .map((i) => `${i.etf.displaySymbol}:${i.weight.toFixed(1)}`)
+            .join(",");
+          if (sig !== lastSerializedRef.current) {
+            lastSerializedRef.current = sig;
+            onPortfolioChange(v.items);
+          }
+        } else if (lastSerializedRef.current !== "") {
+          // Unbalanced or empty → clear the URL param
+          lastSerializedRef.current = "";
+          onPortfolioChange(null);
+        }
+      }
+    },
+    [onPortfolioChange]
+  );
+
+  // Switching mode side-effects
+  const switchMode = useCallback(
+    (next: SimulatorMode) => {
+      setMode(next);
+      if (next === "rapid") {
+        // Reset to manual values — clear the picker overrides
+        if (onPortfolioChange) {
+          lastSerializedRef.current = "";
+          onPortfolioChange(null);
+        }
+        // Restore typical defaults if the user comes back to rapid mode
+        setValues((prev) => ({
+          ...prev,
+          annualReturnPct: defaultValues?.annualReturnPct ?? DEFAULTS.annualReturnPct,
+          annualFeesPct: defaultValues?.annualFeesPct ?? DEFAULTS.annualFeesPct,
+        }));
+      } else {
+        // Switching to portfolio — sync the URL with the current portfolio
+        // (the useEffect in handlePortfolioChange path will fire on next render)
+        if (onPortfolioChange && portfolio.length > 0) {
+          const sig = portfolio
+            .map((i) => `${i.etf.displaySymbol}:${i.weight.toFixed(1)}`)
+            .join(",");
+          lastSerializedRef.current = sig;
+          onPortfolioChange(portfolio);
+        }
+      }
+    },
+    [defaultValues, onPortfolioChange, portfolio]
+  );
 
   const set = useCallback(
     (key: keyof SimulatorInput) => (v: number) => {
@@ -57,6 +169,7 @@ export function SimulatorForm({
   const handleReset = () => {
     setValues(DEFAULTS);
     setShowInflation(false);
+    if (mode === "portfolio") switchMode("rapid");
   };
 
   const toggleInflation = (checked: boolean) => {
@@ -81,13 +194,31 @@ export function SimulatorForm({
         </button>
       </div>
 
+      {/* Mode toggle */}
+      <div className="rounded-xl border border-slate-200/70 bg-slate-50 p-1 grid grid-cols-2 gap-1">
+        <ModeButton
+          active={mode === "rapid"}
+          onClick={() => switchMode("rapid")}
+          icon="⚡"
+          label="Rapide"
+          hint="Valeurs directes"
+        />
+        <ModeButton
+          active={mode === "portfolio"}
+          onClick={() => switchMode("portfolio")}
+          icon="🎯"
+          label="Mes ETF"
+          hint="Choisir les ETF"
+        />
+      </div>
+
       {/* Net return preview badge */}
       <NetReturnBadge
         gross={values.annualReturnPct}
         fees={values.annualFeesPct}
       />
 
-      {/* Fields */}
+      {/* Always-shown fields (versement + durée) */}
       <div className="space-y-7">
         <SliderInput
           label="Versement mensuel"
@@ -114,27 +245,45 @@ export function SimulatorForm({
           onChange={set("durationYears")}
         />
 
-        <SliderInput
-          label="Rendement annuel brut"
-          value={values.annualReturnPct}
-          min={1}
-          max={15}
-          step={0.1}
-          unit="%"
-          hint="Rendement attendu avant frais. Le MSCI World a affiché ~7–8 %/an sur 30 ans (dividendes inclus)."
-          onChange={set("annualReturnPct")}
-        />
+        {/* Mode-specific section : sliders rendement/TER en mode rapide,
+            picker ETF en mode portfolio */}
+        {mode === "rapid" ? (
+          <>
+            <SliderInput
+              label="Rendement annuel brut"
+              value={values.annualReturnPct}
+              min={1}
+              max={15}
+              step={0.1}
+              unit="%"
+              hint="Rendement attendu avant frais. Le MSCI World a affiché ~7–8 %/an sur 30 ans (dividendes inclus)."
+              onChange={set("annualReturnPct")}
+            />
 
-        <SliderInput
-          label="Frais annuels (TER)"
-          value={values.annualFeesPct}
-          min={0}
-          max={2}
-          step={0.01}
-          unit="%"
-          hint="Frais de gestion de votre ETF. CW8 : 0,38 %. VWCE : 0,22 %. SPY : 0,09 %."
-          onChange={set("annualFeesPct")}
-        />
+            <SliderInput
+              label="Frais annuels (TER)"
+              value={values.annualFeesPct}
+              min={0}
+              max={2}
+              step={0.01}
+              unit="%"
+              hint="Frais de gestion de votre ETF. CW8 : 0,38 %. VWCE : 0,22 %. SPY : 0,09 %."
+              onChange={set("annualFeesPct")}
+            />
+          </>
+        ) : (
+          <div className="animate-fade-in">
+            <p className="text-xs font-semibold text-gray-700 mb-3">
+              Composition de votre portefeuille
+            </p>
+            <PortfolioPicker
+              etfs={ETF_LIST}
+              initialItems={portfolio}
+              monthlyAmount={values.monthlyAmount}
+              onChange={handlePortfolioChange}
+            />
+          </div>
+        )}
       </div>
 
       {/* Divider */}
@@ -143,7 +292,6 @@ export function SimulatorForm({
       {/* Inflation toggle + slider */}
       <div className="space-y-4">
         <label className="flex items-center gap-3 cursor-pointer group w-fit">
-          {/* Custom toggle */}
           <span
             className={`relative inline-flex h-5 w-9 shrink-0 rounded-full transition-colors duration-200 ${
               showInflation ? "bg-primary-600" : "bg-gray-200"
@@ -190,6 +338,41 @@ export function SimulatorForm({
         Mise à jour en temps réel
       </div>
     </div>
+  );
+}
+
+// ─── Sub-components ──────────────────────────────────────────────────────────
+
+function ModeButton({
+  active,
+  onClick,
+  icon,
+  label,
+  hint,
+}: {
+  active: boolean;
+  onClick: () => void;
+  icon: string;
+  label: string;
+  hint: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={`text-center px-3 py-2 rounded-lg transition-colors ${
+        active
+          ? "bg-white text-slate-950 shadow-card"
+          : "text-gray-600 hover:text-gray-900"
+      }`}
+    >
+      <span className="block text-sm font-semibold">
+        <span className="mr-1.5" aria-hidden>{icon}</span>
+        {label}
+      </span>
+      <span className="block text-[10px] text-gray-500 mt-0.5">{hint}</span>
+    </button>
   );
 }
 

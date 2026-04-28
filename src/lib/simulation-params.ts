@@ -117,3 +117,41 @@ export function hasSimulationParams(search: URLSearchParams): boolean {
     KEYS.fees,
   ].some((k) => search.has(k));
 }
+
+// ─── Portfolio mode (Option C — passe une allocation depuis /allocation-portefeuille) ──
+
+/** Allocation item as serialized in URL : displaySymbol + weight (0-100). */
+export interface PortfolioAllocation {
+  displaySymbol: string;
+  weight: number;
+}
+
+/**
+ * Parse `etfs=CW8:80,AEEM:20` → array of allocations.
+ * Returns null if param missing or invalid.
+ * Caller is responsible for verifying the displaySymbols exist in
+ * the ETF catalog before using them.
+ */
+export function parsePortfolioFromSearch(
+  search: URLSearchParams
+): PortfolioAllocation[] | null {
+  const raw = search.get("etfs");
+  if (!raw) return null;
+  const items = raw
+    .split(",")
+    .map((pair) => {
+      const [sym, w] = pair.split(":");
+      const weight = parseFloat(w);
+      if (!sym || !isFinite(weight) || weight < 0 || weight > 100) return null;
+      return { displaySymbol: sym.trim().toUpperCase(), weight };
+    })
+    .filter((x): x is PortfolioAllocation => x !== null);
+  return items.length > 0 ? items : null;
+}
+
+/** Serialize an allocation into URL fragment `CW8:80.0,AEEM:20.0`. */
+export function portfolioToSearchFragment(items: PortfolioAllocation[]): string {
+  return items
+    .map((i) => `${i.displaySymbol}:${i.weight.toFixed(1)}`)
+    .join(",");
+}

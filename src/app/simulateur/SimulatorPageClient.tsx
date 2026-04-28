@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { SimulatorForm } from "@/components/simulator/SimulatorForm";
+import type { SimulatorMode } from "@/components/simulator/SimulatorForm";
 import { SimulatorHero } from "@/components/simulator/SimulatorHero";
 import { SimulatorResults } from "@/components/simulator/SimulatorResults";
 import { MonteCarloChart } from "@/components/simulator/MonteCarloChart";
@@ -18,7 +19,13 @@ import { runSimulation, SimulatorInput, SimulatorOutput } from "@/lib/simulator"
 import { runMonteCarlo } from "@/lib/monte-carlo";
 import { EmailCapture } from "@/components/ui/EmailCapture";
 import { InvestCTA } from "@/components/ui/InvestCTA";
-import { paramsToSearch } from "@/lib/simulation-params";
+import {
+  paramsToSearch,
+  parsePortfolioFromSearch,
+  portfolioToSearchFragment,
+} from "@/lib/simulation-params";
+import { ETF_LIST } from "@/lib/etf-config";
+import type { PortfolioItem } from "@/lib/portfolio";
 import { track } from "@/lib/analytics";
 
 interface Props {
@@ -42,6 +49,27 @@ export function SimulatorPageClient({ initialOutput }: Props) {
     initialOutput.input.annualInflationPct !== undefined;
   const initialInput = initialOutput.input;
 
+  // Read URL param ?etfs=CW8:80,AEEM:20 to bootstrap portfolio mode.
+  // Done in useState initializer (runs once at mount). Resolves slugs
+  // against ETF_LIST and drops unknowns.
+  const [initialMode, initialPortfolio] = useMemo<
+    [SimulatorMode, PortfolioItem[] | undefined]
+  >(() => {
+    if (typeof window === "undefined") return ["rapid", undefined];
+    const allocs = parsePortfolioFromSearch(
+      new URLSearchParams(window.location.search)
+    );
+    if (!allocs) return ["rapid", undefined];
+    const items = allocs
+      .map(({ displaySymbol, weight }) => {
+        const etf = ETF_LIST.find((e) => e.displaySymbol === displaySymbol);
+        return etf ? { etf, weight } : null;
+      })
+      .filter((x): x is PortfolioItem => x !== null);
+    return items.length > 0 ? ["portfolio", items] : ["rapid", undefined];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const [output, setOutput] = useState<SimulatorOutput>(initialOutput);
 
   // Mark the onboarding "step 2: run first simulation" as complete as soon
@@ -62,6 +90,9 @@ export function SimulatorPageClient({ initialOutput }: Props) {
   const hasScrolled = useRef(false);
   const hasTrackedStart = useRef(false);
   const completeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Holds the current ?etfs= URL fragment, or "" if portfolio mode is off.
+  // Refs (vs state) avoids re-renders on URL serialization.
+  const portfolioFragmentRef = useRef<string>("");
 
   const handleChange = useCallback(
     (input: SimulatorInput, inflationEnabled: boolean) => {
@@ -96,11 +127,31 @@ export function SimulatorPageClient({ initialOutput }: Props) {
 
       if (urlUpdateTimer.current) clearTimeout(urlUpdateTimer.current);
       urlUpdateTimer.current = setTimeout(() => {
-        const qs = paramsToSearch({ input, inflationEnabled }).toString();
-        router.replace(`/simulateur?${qs}`, { scroll: false });
+        const qs = paramsToSearch({ input, inflationEnabled });
+        if (portfolioFragmentRef.current) {
+          qs.set("etfs", portfolioFragmentRef.current);
+        }
+        router.replace(`/simulateur?${qs.toString()}`, { scroll: false });
       }, 300);
     },
     [router]
+  );
+
+  // Fired by SimulatorForm when in portfolio mode — keeps URL ?etfs= in sync.
+  const handlePortfolioChange = useCallback(
+    (items: PortfolioItem[] | null) => {
+      portfolioFragmentRef.current = items
+        ? portfolioToSearchFragment(
+            items.map((i) => ({
+              displaySymbol: i.etf.displaySymbol,
+              weight: i.weight,
+            }))
+          )
+        : "";
+      // The form will fire its own onChange right after, which triggers
+      // the URL update. No need to push immediately here.
+    },
+    []
   );
 
   const [formKey, setFormKey] = useState(0);
@@ -120,8 +171,11 @@ export function SimulatorPageClient({ initialOutput }: Props) {
         <SimulatorForm
           key={formKey}
           onChange={handleChange}
+          onPortfolioChange={handlePortfolioChange}
           defaultValues={loadedInput ?? initialInput}
           defaultInflationEnabled={initialInflationEnabled}
+          defaultMode={initialMode}
+          defaultPortfolio={initialPortfolio}
         />
       </div>
 

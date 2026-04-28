@@ -11,7 +11,8 @@ import {
   type PortfolioItem,
   type BlendedPortfolio,
 } from "@/lib/portfolio";
-import { runSimulation, formatEur } from "@/lib/simulator";
+import { formatEur } from "@/lib/simulator";
+import { portfolioToSearchFragment } from "@/lib/simulation-params";
 import { SliderInput } from "@/components/ui/SliderInput";
 
 // ─── Color palette for the donut — matches site primary tones ───────────────
@@ -52,26 +53,24 @@ export function AllocationClient({ etfs }: { etfs: ETFConfig[] }) {
     [items, monthlyAmount]
   );
 
-  // Run DCA simulation with blended params (gross return + TER)
-  const simulation = useMemo(() => {
-    if (!blend.isBalanced) return null;
-    return runSimulation({
-      monthlyAmount,
-      durationYears,
-      annualReturnPct: blend.blendedReturn,
-      annualFeesPct: blend.blendedTer,
+  // Build the URL to launch the simulator with this allocation pre-loaded
+  const simulatorUrl = useMemo(() => {
+    if (!blend.isBalanced || items.length === 0) return null;
+    const etfsFragment = portfolioToSearchFragment(
+      items.map((i) => ({
+        displaySymbol: i.etf.displaySymbol,
+        weight: i.weight,
+      }))
+    );
+    const params = new URLSearchParams({
+      monthly: String(monthlyAmount),
+      years: String(durationYears),
+      return: blend.blendedReturn.toFixed(2),
+      fees: blend.blendedTer.toFixed(3),
+      etfs: etfsFragment,
     });
-  }, [blend, monthlyAmount, durationYears]);
-
-  // Comparison: same DCA but with a single MSCI World (CW8) ETF
-  const worldOnlySimulation = useMemo(() => {
-    return runSimulation({
-      monthlyAmount,
-      durationYears,
-      annualReturnPct: 7.5,
-      annualFeesPct: 0.38,
-    });
-  }, [monthlyAmount, durationYears]);
+    return `/simulateur?${params.toString()}`;
+  }, [blend, items, monthlyAmount, durationYears]);
 
   // ─── Handlers ─────────────────────────────────────────────────────────────
 
@@ -237,14 +236,11 @@ export function AllocationClient({ etfs }: { etfs: ETFConfig[] }) {
           {/* Blended stats */}
           <BlendedStats blend={blend} />
 
-          {/* Simulation result + comparison vs MSCI World */}
-          {simulation && blend.isBalanced && (
-            <SimulationResult
-              simulation={simulation}
-              worldOnlySimulation={worldOnlySimulation}
-              durationYears={durationYears}
-            />
-          )}
+          {/* Big CTA — push to /simulateur with the allocation preloaded.
+              C'est l'étape suivante : on construit l'allocation ici, on
+              simule en détail là-bas (3 scénarios, Monte Carlo, A/B,
+              sauvegarde, export PDF). */}
+          <SimulateCTA url={simulatorUrl} disabled={!blend.isBalanced} />
 
           {/* Premium nudge */}
           <PremiumNudge />
@@ -567,28 +563,19 @@ function StatRow({
   );
 }
 
-// ─── SimulationResult ────────────────────────────────────────────────────────
+// ─── SimulateCTA — push to /simulateur with the allocation preloaded ──────
 
-function SimulationResult({
-  simulation,
-  worldOnlySimulation,
-  durationYears,
+function SimulateCTA({
+  url,
+  disabled,
 }: {
-  simulation: ReturnType<typeof runSimulation>;
-  worldOnlySimulation: ReturnType<typeof runSimulation>;
-  durationYears: number;
+  url: string | null;
+  disabled: boolean;
 }) {
-  const { base } = simulation;
-  const worldFinalValue = worldOnlySimulation.base.finalValue;
-  const advantage = base.finalValue - worldFinalValue;
-  const advantagePct = (advantage / worldFinalValue) * 100;
-  const portfolioBeats = advantage > 0;
-
   return (
-    <div className="relative rounded-2xl bg-slate-950 p-5 overflow-hidden">
-      {/* Premium identity textures */}
+    <div className="relative rounded-2xl bg-gradient-to-br from-primary-600 to-primary-700 p-5 overflow-hidden">
       <div
-        className="absolute inset-0 opacity-[0.05] pointer-events-none"
+        className="absolute inset-0 opacity-[0.06] pointer-events-none"
         style={{
           backgroundImage: "radial-gradient(#ffffff 1px, transparent 1px)",
           backgroundSize: "20px 20px",
@@ -599,53 +586,39 @@ function SimulationResult({
         className="absolute inset-0 pointer-events-none"
         style={{
           backgroundImage:
-            "radial-gradient(400px circle at 30% 50%, rgba(59, 130, 246, 0.22), transparent 60%)",
+            "radial-gradient(400px circle at 80% 20%, rgba(255, 255, 255, 0.2), transparent 60%)",
         }}
         aria-hidden
       />
       <div className="relative">
-        <p className="text-xs font-semibold uppercase tracking-widest text-primary-300 mb-2">
-          Projection sur {durationYears} ans
+        <p className="text-xs font-semibold uppercase tracking-widest text-primary-100 mb-2">
+          Étape suivante
         </p>
-        <p
-          key={base.finalValue}
-          className="text-3xl font-bold text-white tabular-nums animate-fade-in mb-1"
-        >
-          {formatEur(base.finalValue)}
+        <p className="text-lg font-bold text-white leading-tight mb-1.5">
+          Simulez cette allocation en détail
         </p>
-        <p className="text-sm text-slate-300 mb-4">
-          Capital investi : {formatEur(base.totalInvested)} · Gains :{" "}
-          <span className="text-emerald-400">
-            +{formatEur(base.totalGain)}
-          </span>
+        <p className="text-sm text-primary-100 leading-relaxed mb-4">
+          3 scénarios sur 30 ans, analyse Monte Carlo, comparaison A/B,
+          sauvegarde de stratégie, export PDF.
         </p>
-
-        {/* Comparison vs MSCI World only */}
-        <div className="rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm p-3">
-          <p className="text-[11px] uppercase tracking-wider text-slate-400 mb-1">
-            vs MSCI World seul
-          </p>
-          {Math.abs(advantage) < 100 ? (
-            <p className="text-sm text-slate-300">
-              ≈ équivalent à un MSCI World seul
-            </p>
-          ) : (
-            <p className="text-sm">
-              <span
-                className={
-                  portfolioBeats ? "text-emerald-400 font-bold" : "text-amber-400 font-bold"
-                }
-              >
-                {portfolioBeats ? "+" : ""}
-                {formatEur(advantage)}
-              </span>{" "}
-              <span className="text-slate-300">
-                ({portfolioBeats ? "+" : ""}
-                {advantagePct.toFixed(1).replace(".", ",")} %)
-              </span>
-            </p>
-          )}
-        </div>
+        {url && !disabled ? (
+          <Link
+            href={url}
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-white text-primary-700 font-semibold text-sm hover:bg-primary-50 transition-colors w-full sm:w-auto"
+          >
+            Lancer la simulation détaillée
+            <span aria-hidden>→</span>
+          </Link>
+        ) : (
+          <button
+            type="button"
+            disabled
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-white/40 text-white/70 font-semibold text-sm w-full sm:w-auto cursor-not-allowed"
+            aria-disabled
+          >
+            Équilibrez votre allocation à 100 %
+          </button>
+        )}
       </div>
     </div>
   );
