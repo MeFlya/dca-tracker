@@ -64,6 +64,11 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/allocation-portefeuille" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+                  Allocation portefeuille
+                </Link>
+              </li>
+              <li>
                 <Link href="/comparatif" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
                   Comparatif brokers
                 </Link>
