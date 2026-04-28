@@ -59,6 +59,11 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/calculateur-fiscal-pea-cto" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+                  Calculateur fiscal PEA/CTO
+                </Link>
+              </li>
+              <li>
                 <Link href="/comparatif" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
                   Comparatif brokers
                 </Link>

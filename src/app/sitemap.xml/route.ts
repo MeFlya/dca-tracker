@@ -27,6 +27,7 @@ export async function GET(): Promise<NextResponse> {
     { url: `${base}/strategie-dca`,            changeFreq: "monthly", priority: 0.9  },
     { url: `${base}/interets-composes`,        changeFreq: "monthly", priority: 0.85 },
     { url: `${base}/pea-ou-cto`,               changeFreq: "monthly", priority: 0.85 },
+    { url: `${base}/calculateur-fiscal-pea-cto`, changeFreq: "monthly", priority: 0.9 },
     { url: `${base}/investir-en-etf`,          changeFreq: "monthly", priority: 0.85 },
     { url: `${base}/comparer-etf`,             changeFreq: "weekly",  priority: 0.8  },
     { url: `${base}/donnees-marche`,           changeFreq: "daily",   priority: 0.6  },
