@@ -20,6 +20,27 @@ export const metadata: Metadata = {
 // ─── Only real, shipped features ─────────────────────────────────────────────
 
 const COMPARISON_SECTIONS = [
+  // Le suivi mensuel en 1er — c'est ce qui justifie l'abonnement récurrent
+  {
+    category: "Suivi mensuel",
+    rows: [
+      { feature: "Suivi de stratégie mois après mois",      free: false,       premium: true   },
+      { feature: "Insights automatiques (réel vs projection)", free: false,    premium: true   },
+      { feature: "Email mensuel personnalisé",              free: false,       premium: true   },
+      { feature: "Streak de mois consécutifs",              free: false,       premium: true   },
+      { feature: "Simulations sauvegardées",                free: false,       premium: "10"   },
+    ],
+  },
+  // La fiscalité en 2e — gros levier acquisition mai/juin
+  {
+    category: "Fiscalité",
+    rows: [
+      { feature: "Calculateur fiscal PEA vs CTO",           free: true,        premium: true   },
+      { feature: "Comparaison net après impôt sur 30 ans",  free: true,        premium: true   },
+      { feature: "Récap fiscal annuel pré-rempli (cases 2042)", free: false,   premium: true   },
+      { feature: "Suivi année par année des plus-values",   free: false,       premium: true   },
+    ],
+  },
   {
     category: "Simulateur",
     rows: [
@@ -40,15 +61,6 @@ const COMPARISON_SECTIONS = [
     ],
   },
   {
-    category: "Suivi & Sauvegarde",
-    rows: [
-      { feature: "Simulation sans compte requis",          free: true,        premium: true   },
-      { feature: "Suivi mensuel de stratégie",             free: false,       premium: true   },
-      { feature: "Simulations sauvegardées",               free: false,       premium: "10"   },
-      { feature: "Emails mensuels de suivi",               free: false,       premium: true   },
-    ],
-  },
-  {
     category: "Export & Partage",
     rows: [
       { feature: "Lien de partage de simulation",          free: true,        premium: true   },
@@ -56,14 +68,9 @@ const COMPARISON_SECTIONS = [
     ],
   },
   {
-    category: "Guides",
+    category: "Guides & Support",
     rows: [
       { feature: "Guides PEA / CTO / fiscalité",           free: true,        premium: true   },
-    ],
-  },
-  {
-    category: "Support",
-    rows: [
       { feature: "Support par email",                      free: false,       premium: true   },
     ],
   },
@@ -80,7 +87,11 @@ const FAQ = [
   },
   {
     q: "Qu'est-ce que j'obtiens avec Premium ?",
-    a: "Tout ce que le plan Gratuit inclut, plus : Monte Carlo (1 000 scénarios), suivi mensuel de stratégie avec insights, comparaison A/B de deux stratégies, 10 simulations sauvegardées, export PDF sans filigrane, et emails mensuels personnalisés.",
+    a: "Deux fonctions principales qui justifient l'abonnement : (1) le suivi mensuel de votre stratégie réelle — vous comparez chaque mois votre portefeuille au plan théorique, avec des insights automatiques et un email récapitulatif ; (2) le récap fiscal annuel avec cases 2042 pré-remplies pour votre déclaration. En complément : Monte Carlo (1 000 scénarios), comparaison A/B, 10 simulations sauvegardées, export PDF sans filigrane et support email.",
+  },
+  {
+    q: "Le récap fiscal annuel : qu'est-ce que ça contient exactement ?",
+    a: "Pour chaque année fiscale, un PDF officiel avec : vos plus-values réalisées (PEA et CTO), les prélèvements applicables (PFU 30 % ou 17,2 % selon durée de détention), les cases du formulaire 2042 pré-remplies, et un export comptable en CSV. Le calculateur PEA vs CTO public donne déjà un aperçu — la version Premium suit votre situation réelle année après année.",
   },
   {
     q: "Les simulations sauvegardées sont-elles accessibles sur tous mes appareils ?",
@@ -187,13 +198,30 @@ export default function TarifsPage() {
           </nav>
           <p className="text-xs font-semibold uppercase tracking-widest text-primary-300 mb-3">Tarifs</p>
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-4 leading-tight">
-            Commencez gratuitement. 7 jours Premium offerts.
+            Suivez votre DCA. Optimisez votre fiscalité.
           </h1>
-          <p className="text-lg text-slate-300 leading-relaxed">
-            Le simulateur DCA et tous les guides restent gratuits pour toujours.
-            Essayez Premium 7 jours sans frais — annulation en 1 clic si ça ne
-            vous convient pas.
+          <p className="text-lg text-slate-300 leading-relaxed mb-6">
+            Le simulateur reste gratuit pour toujours. Premium ajoute le{" "}
+            <strong className="text-white">suivi mensuel</strong> de votre
+            stratégie réelle et le{" "}
+            <strong className="text-white">récap fiscal annuel</strong> pour
+            votre déclaration — 7 jours d&apos;essai sans frais.
           </p>
+          {/* 3 mini-points qui résument les 3 vrais bénéfices Premium */}
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm">
+            <span className="inline-flex items-center gap-1.5 text-slate-300">
+              <span className="w-1 h-1 rounded-full bg-primary-400" />
+              Suivi mensuel automatique
+            </span>
+            <span className="inline-flex items-center gap-1.5 text-slate-300">
+              <span className="w-1 h-1 rounded-full bg-primary-400" />
+              Récap fiscal cases 2042
+            </span>
+            <span className="inline-flex items-center gap-1.5 text-slate-300">
+              <span className="w-1 h-1 rounded-full bg-primary-400" />
+              Monte Carlo 1 000 scénarios
+            </span>
+          </div>
         </div>
 
         {/* Pricing cards */}

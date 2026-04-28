@@ -20,11 +20,17 @@ type Plan = {
   badge?: string;
 };
 
+// Pitch repensée — plutôt que de mener avec Monte Carlo (one-shot,
+// rationnel), on met en avant les 2 vrais moats du Premium :
+// 1. Le SUIVI MENSUEL (récurrent → justifie l'abonnement vs achat ponctuel)
+// 2. Le RÉCAP FISCAL annuel (valeur immédiate concrète pour 100 % des
+//    investisseurs FR, surtout en mai pour la déclaration)
+// Monte Carlo + A/B passent en argumentaire #2.
 const PLANS: Plan[] = [
   {
     id: "free",
     name: "Gratuit",
-    tagline: "Pour découvrir et simuler",
+    tagline: "Tout pour démarrer votre DCA",
     monthlyPrice: 0,
     yearlyTotal: 0,
     yearlyPerMonth: 0,
@@ -33,20 +39,20 @@ const PLANS: Plan[] = [
     features: [
       { label: "Simulateur DCA (3 scénarios, 30 ans)", included: true },
       { label: "Comparaison ETF (tous les ETF)", included: true },
+      { label: "Calculateur fiscal PEA vs CTO", included: true },
       { label: "Guides et glossaire", included: true },
       { label: "Lien de partage de simulation", included: true },
       { label: "Export PDF (avec filigrane)", included: true },
-      { label: "Analyse Monte Carlo (1 000 scénarios)", included: false },
       { label: "Suivi mensuel de stratégie", included: false },
+      { label: "Récap fiscal annuel (déclaration 2042)", included: false },
+      { label: "Analyse Monte Carlo (1 000 scénarios)", included: false },
       { label: "Comparaison A vs B", included: false },
-      { label: "Simulations sauvegardées", included: false },
-      { label: "Export PDF sans filigrane", included: false },
     ],
   },
   {
     id: "premium",
     name: "Premium",
-    tagline: "Le cockpit DCA complet",
+    tagline: "Suivez et optimisez votre DCA chaque mois",
     monthlyPrice: 4.9,
     yearlyTotal: 49,
     yearlyPerMonth: 4.08,
@@ -54,13 +60,17 @@ const PLANS: Plan[] = [
     cta: "Choisir Premium",
     ctaHref: "#",
     features: [
-      { label: "Tout du plan Gratuit", included: true },
-      { label: "Analyse Monte Carlo (1 000 scénarios)", included: true },
-      { label: "Suivi mensuel de stratégie + insights", included: true },
+      // Le moat récurrent en 1er
+      { label: "Suivi mensuel de stratégie + emails personnalisés", included: true },
+      // Le moat fiscal en 2e (gros levier mai/juin)
+      { label: "Récap fiscal annuel (cases 2042 pré-remplies)", included: true },
+      // Décisions stratégiques (Monte Carlo + A/B)
+      { label: "Analyse Monte Carlo (1 000 scénarios de marché)", included: true },
       { label: "Comparaison A vs B (deux stratégies)", included: true },
+      // Sauvegarde + outputs propres
       { label: "Simulations sauvegardées (10 slots)", included: true },
       { label: "Export PDF professionnel (sans filigrane)", included: true },
-      { label: "Emails mensuels de suivi", included: true },
+      { label: "Tout du plan Gratuit", included: true },
       { label: "Support par email", included: true },
     ],
   },
