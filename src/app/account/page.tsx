@@ -99,7 +99,7 @@ export default async function AccountPage() {
       )}
 
       {/* ── Quick actions ─────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
         {/* Primary: Simuler */}
         <Link
           href="/simulateur"
@@ -194,6 +194,47 @@ export default async function AccountPage() {
             </p>
           </Link>
         )}
+
+        {/* Récap fiscal annuel (Premium) — bouton 4e action.
+            Free users : redirige vers /upgrade?feature=recap-fiscal. */}
+        {isPremium ? (
+          <Link
+            href="/account/recap-fiscal"
+            className="group rounded-2xl border border-gray-100 bg-white p-5 card-hover relative"
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-700 group-hover:bg-primary-50 group-hover:text-primary-700 transition-colors">
+                <DocumentIcon />
+              </div>
+              <span className="absolute top-3 right-3 bg-primary-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wide">
+                Premium
+              </span>
+            </div>
+            <p className="text-base font-bold text-gray-900 leading-tight mb-1 group-hover:text-primary-700 transition-colors">
+              Récap fiscal annuel
+            </p>
+            <p className="text-xs text-gray-500 leading-snug">
+              Synthèse PDF de votre année — cases 2042 et 2074
+            </p>
+          </Link>
+        ) : (
+          <Link
+            href="/upgrade?feature=recap-fiscal"
+            className="group rounded-2xl border border-dashed border-gray-200 bg-gray-50/50 p-5 card-hover"
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-8 h-8 rounded-lg bg-white border border-gray-200 flex items-center justify-center text-gray-500">
+                <DocumentIcon />
+              </div>
+            </div>
+            <p className="text-base font-bold text-gray-500 leading-tight mb-1 group-hover:text-primary-600 transition-colors">
+              Récap fiscal annuel
+            </p>
+            <p className="text-[10px] text-primary-600 font-bold uppercase tracking-wide mt-1">
+              Premium
+            </p>
+          </Link>
+        )}
       </div>
 
       {/* ── Plan + subscription status ─────────────────────────────────────── */}
@@ -231,9 +272,10 @@ export default async function AccountPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {[
               { feature: "save-strategy", icon: "💾", label: "Suivi de stratégie", desc: "Enregistrez vos performances mensuelles" },
+              { feature: "recap-fiscal",  icon: "🧾", label: "Récap fiscal annuel", desc: "Cases 2042 et 2074 calculées" },
               { feature: "monte-carlo",   icon: "📊", label: "Monte Carlo",        desc: "1 000 scénarios de marché simulés" },
               { feature: "pdf-export",    icon: "📄", label: "Export PDF propre",  desc: "Sans filigrane, prêt à partager" },
-              { feature: "ab-comparison", icon: "⚖️", label: "Comparaison A/B",   desc: "Deux stratégies côte à côte (Pro)" },
+              { feature: "ab-comparison", icon: "⚖️", label: "Comparaison A/B",   desc: "Deux stratégies côte à côte" },
             ].map(({ feature, icon, label, desc }) => (
               <Link
                 key={feature}
@@ -281,6 +323,18 @@ function ShieldIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="M10 2.5 4 4.5v5c0 4 2.5 7 6 8 3.5-1 6-4 6-8v-5l-6-2Z" />
+    </svg>
+  );
+}
+
+function DocumentIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M5 3h7l3 3v11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" />
+      <path d="M12 3v3h3" />
+      <path d="M7 10h6" />
+      <path d="M7 13h6" />
+      <path d="M7 16h4" />
     </svg>
   );
 }

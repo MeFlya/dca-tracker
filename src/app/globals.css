@@ -372,3 +372,46 @@
   -webkit-appearance: none;
   margin: 0;
 }
+
+/* ── Print styles ─────────────────────────────────────────────────────────
+ * Used on /account/recap-fiscal so users can save a clean PDF via Cmd+P.
+ * - Hide navigation, footer, and all `print:hidden` elements.
+ * - Force opaque white background everywhere (kills the AmbientBackground
+ *   that would render as fuzzy gray on the printed page).
+ * - Drop animations and shadows for a cleaner output. */
+@media print {
+  html, body {
+    background: #ffffff !important;
+    color: #111 !important;
+  }
+  /* Hide chrome */
+  header, footer, nav[aria-label="Navigation principale"] {
+    display: none !important;
+  }
+  /* Kill the global animated background */
+  .fixed.inset-0.-z-10,
+  .pointer-events-none.fixed {
+    display: none !important;
+  }
+  /* Explicit print hiding (Tailwind's `print:hidden` does this too,
+     but this catches any element using the bracket-arbitrary syntax) */
+  .print\:hidden {
+    display: none !important;
+  }
+  /* Strip animations + shadows for cleaner PDF */
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+    box-shadow: none !important;
+  }
+  /* Force borders to be printed (browsers strip them by default) */
+  .card,
+  [class*="border"] {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  /* Page margins */
+  @page {
+    margin: 1.5cm;
+  }
+}
