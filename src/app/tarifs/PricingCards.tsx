@@ -44,7 +44,7 @@ const PLANS: Plan[] = [
       { label: "Lien de partage de simulation", included: true },
       { label: "Export PDF (avec filigrane)", included: true },
       { label: "Suivi mensuel de stratégie", included: false },
-      { label: "Récap fiscal annuel (déclaration 2042)", included: false },
+      { label: "Récap fiscal annuel (cases 2042 et 2074 calculées)", included: false },
       { label: "Analyse Monte Carlo (1 000 scénarios)", included: false },
       { label: "Comparaison A vs B", included: false },
     ],
@@ -63,7 +63,7 @@ const PLANS: Plan[] = [
       // Le moat récurrent en 1er
       { label: "Suivi mensuel de stratégie + emails personnalisés", included: true },
       // Le moat fiscal en 2e (gros levier mai/juin)
-      { label: "Récap fiscal annuel (cases 2042 pré-remplies)", included: true },
+      { label: "Récap fiscal annuel (cases 2042 et 2074 calculées)", included: true },
       // Décisions stratégiques (Monte Carlo + A/B)
       { label: "Analyse Monte Carlo (1 000 scénarios de marché)", included: true },
       { label: "Comparaison A vs B (deux stratégies)", included: true },

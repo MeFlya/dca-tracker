@@ -37,7 +37,7 @@ const COMPARISON_SECTIONS = [
     rows: [
       { feature: "Calculateur fiscal PEA vs CTO",           free: true,        premium: true   },
       { feature: "Comparaison net après impôt sur 30 ans",  free: true,        premium: true   },
-      { feature: "Récap fiscal annuel pré-rempli (cases 2042)", free: false,   premium: true   },
+      { feature: "Récap fiscal annuel (cases 2042 et 2074 calculées)", free: false, premium: true },
       { feature: "Suivi année par année des plus-values",   free: false,       premium: true   },
     ],
   },
@@ -87,11 +87,11 @@ const FAQ = [
   },
   {
     q: "Qu'est-ce que j'obtiens avec Premium ?",
-    a: "Deux fonctions principales qui justifient l'abonnement : (1) le suivi mensuel de votre stratégie réelle — vous comparez chaque mois votre portefeuille au plan théorique, avec des insights automatiques et un email récapitulatif ; (2) le récap fiscal annuel avec cases 2042 pré-remplies pour votre déclaration. En complément : Monte Carlo (1 000 scénarios), comparaison A/B, 10 simulations sauvegardées, export PDF sans filigrane et support email.",
+    a: "Deux fonctions principales qui justifient l'abonnement : (1) le suivi mensuel de votre stratégie réelle — vous comparez chaque mois votre portefeuille au plan théorique, avec des insights automatiques et un email récapitulatif ; (2) le récap fiscal annuel — une synthèse PDF qui calcule les montants à reporter dans les cases 2042 et 2074 de votre déclaration. En complément : Monte Carlo (1 000 scénarios), comparaison A/B, 10 simulations sauvegardées, export PDF sans filigrane et support email.",
   },
   {
     q: "Le récap fiscal annuel : qu'est-ce que ça contient exactement ?",
-    a: "Pour chaque année fiscale, un PDF officiel avec : vos plus-values réalisées (PEA et CTO), les prélèvements applicables (PFU 30 % ou 17,2 % selon durée de détention), les cases du formulaire 2042 pré-remplies, et un export comptable en CSV. Le calculateur PEA vs CTO public donne déjà un aperçu — la version Premium suit votre situation réelle année après année.",
+    a: "Pour chaque année fiscale, une synthèse PDF qui contient : vos plus-values réalisées (PEA et CTO), les prélèvements applicables (PFU 30 % ou 17,2 % selon durée de détention), les montants à reporter dans les cases 2042 et 2074 de votre déclaration, et un export en CSV. Le calculateur PEA vs CTO public donne déjà un aperçu — la version Premium suit votre situation réelle année après année. Cette synthèse est une aide à la déclaration, pas un document fiscal officiel — elle ne remplace pas l'IFU fourni par votre courtier ni la consultation d'un expert-comptable pour les cas complexes.",
   },
   {
     q: "Les simulations sauvegardées sont-elles accessibles sur tous mes appareils ?",
@@ -215,7 +215,7 @@ export default function TarifsPage() {
             </span>
             <span className="inline-flex items-center gap-1.5 text-slate-300">
               <span className="w-1 h-1 rounded-full bg-primary-400" />
-              Récap fiscal cases 2042
+              Récap fiscal cases 2042 + 2074
             </span>
             <span className="inline-flex items-center gap-1.5 text-slate-300">
               <span className="w-1 h-1 rounded-full bg-primary-400" />

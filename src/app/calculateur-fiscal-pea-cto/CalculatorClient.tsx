@@ -400,7 +400,8 @@ function PremiumNudge() {
           </div>
           <p className="text-xs text-slate-300 leading-relaxed">
             Suivez chaque année vos plus-values, dividendes et impôt à payer.
-            Cases 2042 pré-remplies. Export PDF officiel.
+            Synthèse PDF avec les montants à reporter dans vos cases 2042
+            et 2074.
           </p>
         </div>
         <Link
