@@ -1,19 +1,13 @@
-// Dynamic favicon — generated server-side at build time via next/og.
-// Reproduces the LogoMark visual (blue square + upward trend curve + dot)
-// so the favicon stays in sync with the in-page logo.
-//
-// Auto-served by Next.js at /icon (and exposed as <link rel="icon"> in
-// the document head). Replaces the missing /favicon.ico that was logging
-// a 404 on every page load (cf Lighthouse Best Practices audit).
+// Apple touch icon (180x180) — used by iOS home screen and improves
+// recognition in some search engines / link previews.
 
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
-// Google recommends multiples of 48px and ≥48px for favicons in search results.
-export const size = { width: 48, height: 48 };
+export const size = { width: 180, height: 180 };
 export const contentType = "image/png";
 
-export default function Icon() {
+export default function AppleIcon() {
   return new ImageResponse(
     (
       <div
@@ -21,16 +15,15 @@ export default function Icon() {
           width: "100%",
           height: "100%",
           background: "#1d4ed8",
-          borderRadius: "10px",
+          borderRadius: "40px",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          position: "relative",
         }}
       >
         <svg
-          width="38"
-          height="38"
+          width="140"
+          height="140"
           viewBox="0 0 28 28"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"

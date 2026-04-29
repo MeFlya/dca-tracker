@@ -69,6 +69,11 @@ export const metadata: Metadata = {
   alternates: {
     canonical: CANONICAL_ORIGIN,
   },
+  icons: {
+    icon: "/icon",
+    apple: "/apple-icon",
+    shortcut: "/icon",
+  },
 };
 
 export default function RootLayout({
@@ -102,6 +107,29 @@ export default function RootLayout({
             description:
               "Le cockpit DCA ETF long-terme : simulez votre stratégie, sauvegardez-la, suivez votre progression mois après mois. Transparent, sans inscription.",
             inLanguage: "fr-FR",
+            publisher: {
+              "@type": "Organization",
+              name: "DCA Tracker",
+              url: CANONICAL_ORIGIN,
+              logo: {
+                "@type": "ImageObject",
+                url: `${CANONICAL_ORIGIN}/api/logo`,
+                width: 512,
+                height: 512,
+              },
+            },
+          }}
+        />
+        <JsonLd
+          data={{
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            name: "DCA Tracker",
+            url: CANONICAL_ORIGIN,
+            logo: `${CANONICAL_ORIGIN}/api/logo`,
+            description:
+              "Outil pédagogique français pour simuler et suivre une stratégie d'investissement progressif (DCA) en ETF.",
+            sameAs: [],
           }}
         />
         <AnalyticsContextProvider />
