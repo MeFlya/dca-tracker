@@ -5,6 +5,7 @@ import {
   type AccountType,
   type BrokerPartner,
 } from "@/lib/broker-config";
+import { AffiliateDisclaimer } from "@/components/ui/AffiliateDisclaimer";
 import { cn } from "@/lib/utils";
 
 interface InvestCTAProps {
@@ -47,14 +48,19 @@ export function InvestCTA({ accountType, className }: InvestCTAProps) {
         chez un courtier adapté à une stratégie long terme.
       </p>
 
+      {/* Disclosure visible AVANT le clic — obligation LCEN /
+          Code de la consommation art. L.111-7. À garder ici, pas en
+          fine print du bas de bloc. */}
+      <AffiliateDisclaimer className="mt-4" />
+
       {/* Partner buttons */}
-      <div className="mt-5 flex flex-col sm:flex-row flex-wrap gap-2.5">
+      <div className="mt-4 flex flex-col sm:flex-row flex-wrap gap-2.5">
         {partners.map((partner) => (
           <PartnerButton key={partner.id} partner={partner} />
         ))}
       </div>
 
-      {/* Disclosure */}
+      {/* Complément en fine print sur la non-influence du classement */}
       <p className="mt-4 flex items-start gap-1.5 text-[11px] text-slate-400 leading-relaxed">
         <InfoIcon />
         {BROKER_CONFIG.disclosureText}

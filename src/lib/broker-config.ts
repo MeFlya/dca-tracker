@@ -1,6 +1,29 @@
 /**
  * Broker / affiliate partner configuration.
  *
+ * ─── ⚠️ Pré-requis avant activation (3 actions humaines) ────────────────────
+ *
+ *  A. Créer les comptes affiliés sur les plateformes broker :
+ *     - Trade Republic — https://trade.re/refer (programme d'apporteur)
+ *     - Boursorama Bourse — programme de parrainage en self-service
+ *     - Fortuneo — affiliation via Awin ou TimeOne (selon disponibilité FR)
+ *     Récupérer pour chacun l'URL d'affiliation unique.
+ *
+ *  B. Vérifier la conformité AMF — un site pédagogique qui présente plusieurs
+ *     courtiers et touche une commission est légal MAIS doit afficher la
+ *     mention "lien affilié" avant le clic (Code de la consommation L.111-7
+ *     + LCEN). Le composant <AffiliateDisclaimer /> s'en charge automatiquement
+ *     dès que isBrokerCTAActive() = true.
+ *     Ressources :
+ *       - https://www.amf-france.org/fr/espace-professionnels/agent-lie
+ *       - https://www.economie.gouv.fr/dgccrf/influenceurs-information-consommateur
+ *
+ *  C. Une fois A + B faits :
+ *     1. enabled: true (ci-dessous)
+ *     2. Décommenter et remplir les 3 partenaires PEA+CTO
+ *     3. Push → Vercel deploy → vérifier le rendu sur /simulateur,
+ *        /comparatif, /etf/<symbol>
+ *
  * ─── How to add a partner ────────────────────────────────────────────────────
  *
  * 1. Set  enabled: true
@@ -61,25 +84,29 @@ export const BROKER_CONFIG: BrokerCTAConfig = {
 
   partners: [
     // ── Recommandés pour débutants français (PEA + CTO) ──────────────────────
+    // Décommenter et remplacer [À REMPLIR PAR MAEL] par les vraies URLs
+    // affiliées une fois les comptes créés (cf pré-requis A en haut du
+    // fichier). Garder enabled: false jusqu'à ce qu'au moins 1 partenaire
+    // soit configuré avec une URL réelle.
     //
     // {
     //   id: "trade-republic",
     //   name: "Trade Republic",
-    //   url: "https://refer.trade.to/VOTRE_CODE",
+    //   url: "[À REMPLIR PAR MAEL — URL d'affiliation Trade Republic]",
     //   accountTypes: ["PEA", "CTO"],
     //   badge: "Sans commission",
     // },
     // {
     //   id: "boursorama",
     //   name: "Boursorama Bourse",
-    //   url: "https://clients.boursorama.com/parrainage/...",
+    //   url: "[À REMPLIR PAR MAEL — URL parrainage Boursorama]",
     //   accountTypes: ["PEA", "CTO"],
     //   badge: "Banque en ligne",
     // },
     // {
     //   id: "fortuneo",
     //   name: "Fortuneo",
-    //   url: "https://www.fortuneo.fr/...",
+    //   url: "[À REMPLIR PAR MAEL — URL d'affiliation Fortuneo via Awin/TimeOne]",
     //   accountTypes: ["PEA", "CTO"],
     // },
     //
@@ -88,14 +115,17 @@ export const BROKER_CONFIG: BrokerCTAConfig = {
     // {
     //   id: "degiro",
     //   name: "Degiro",
-    //   url: "https://www.degiro.fr/...",
+    //   url: "[À REMPLIR PAR MAEL — URL d'affiliation Degiro]",
     //   accountTypes: ["CTO"],
     //   badge: "Frais réduits",
     // },
   ],
 
+  // Texte court rendu en fine print dans <InvestCTA />, en complément du
+  // composant <AffiliateDisclaimer /> qui assure la mention LCEN visible
+  // avant le clic (Code de la consommation art. L.111-7).
   disclosureText:
-    "Certains liens pourront être affiliés à l'avenir. DCA Tracker perçoit alors une commission si vous ouvrez un compte via ces liens, sans frais supplémentaires pour vous.",
+    "DCA Tracker peut percevoir une commission si vous ouvrez un compte via les liens ci-dessus. Cela ne change rien au coût pour vous. Aucun classement payant — l'ordre des courtiers est uniquement basé sur leur pertinence pour un DCA ETF.",
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
