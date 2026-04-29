@@ -99,7 +99,7 @@ export default async function AccountPage() {
       )}
 
       {/* ── Quick actions ─────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 mb-6">
         {/* Primary: Simuler */}
         <Link
           href="/simulateur"
@@ -229,6 +229,48 @@ export default async function AccountPage() {
             </div>
             <p className="text-base font-bold text-gray-500 leading-tight mb-1 group-hover:text-primary-600 transition-colors">
               Récap fiscal annuel
+            </p>
+            <p className="text-[10px] text-primary-600 font-bold uppercase tracking-wide mt-1">
+              Premium
+            </p>
+          </Link>
+        )}
+
+        {/* Importer CSV — surface l'import broker comme une vraie quick action.
+            Sinon, la page /account/import reste cachée et beaucoup d'users
+            ne savent pas qu'elle existe. */}
+        {isPremium ? (
+          <Link
+            href="/account/import"
+            className="group rounded-2xl border border-gray-100 bg-white p-5 card-hover relative"
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-700 group-hover:bg-primary-50 group-hover:text-primary-700 transition-colors">
+                <UploadIcon />
+              </div>
+              <span className="absolute top-3 right-3 bg-primary-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wide">
+                Premium
+              </span>
+            </div>
+            <p className="text-base font-bold text-gray-900 leading-tight mb-1 group-hover:text-primary-700 transition-colors">
+              Importer mes positions
+            </p>
+            <p className="text-xs text-gray-500 leading-snug">
+              CSV Trade Republic, Boursorama, Fortuneo
+            </p>
+          </Link>
+        ) : (
+          <Link
+            href="/upgrade?feature=save-strategy"
+            className="group rounded-2xl border border-dashed border-gray-200 bg-gray-50/50 p-5 card-hover"
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-8 h-8 rounded-lg bg-white border border-gray-200 flex items-center justify-center text-gray-500">
+                <UploadIcon />
+              </div>
+            </div>
+            <p className="text-base font-bold text-gray-500 leading-tight mb-1 group-hover:text-primary-600 transition-colors">
+              Importer mes positions
             </p>
             <p className="text-[10px] text-primary-600 font-bold uppercase tracking-wide mt-1">
               Premium
@@ -391,6 +433,16 @@ function ScaleIcon() {
       <path d="M6 9 4 6 8 6Z" />
       <path d="M14 9 12 6 16 6Z" />
       <path d="M3 6h14" />
+    </svg>
+  );
+}
+
+function UploadIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M10 3v10" />
+      <path d="M6 7l4-4 4 4" />
+      <path d="M4 14v2a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-2" />
     </svg>
   );
 }
