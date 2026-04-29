@@ -1,17 +1,18 @@
-// Fires the 4-email onboarding sequence (D+0 immediate, then +3, +7, +14 via Resend scheduled_at).
-// Deduped via Clerk privateMetadata.onboardingEmailsSent.
-// Called client-side on first /account visit; idempotent.
+// Triggers the onboarding sequence: D+0 sent immediately, D+3/+7/+14
+// scheduled by writing target dates into Clerk privateMetadata. The
+// cron at /api/cron/onboarding-emails picks them up day-by-day.
+//
+// Why not Resend `scheduled_at`? On the free plan it's capped at 72h,
+// so D+7 and D+14 emails were silently sent immediately. Switching to
+// our own cron gives accurate timing at any horizon.
 
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-import {
-  sendOnboardingWelcome,
-  sendOnboardingDay3,
-  sendOnboardingDay7,
-  sendOnboardingDay14,
-} from "@/lib/emails/send";
+import { sendOnboardingWelcome } from "@/lib/emails/send";
 
 export const dynamic = "force-dynamic";
+
+const DAY_MS = 24 * 60 * 60 * 1000;
 
 export async function POST() {
   const { userId } = await auth();
@@ -21,6 +22,7 @@ export async function POST() {
   const user = await clerk.users.getUser(userId);
   const meta = user.privateMetadata as Record<string, unknown>;
 
+  // Idempotent — once the welcome was fired, never re-trigger
   if (meta.onboardingEmailsSent) {
     return NextResponse.json({ success: true, skipped: true });
   }
@@ -29,25 +31,31 @@ export async function POST() {
   if (!email) return NextResponse.json({ error: "No email" }, { status: 400 });
 
   const firstName = user.firstName ?? "Investisseur";
+  const now = Date.now();
 
+  // Send the welcome email immediately. If it fails, we still write the
+  // schedule so the rest of the sequence reaches the user.
   try {
-    await Promise.all([
-      sendOnboardingWelcome(email, firstName),
-      sendOnboardingDay3(email, firstName),
-      sendOnboardingDay7(email, firstName),
-      sendOnboardingDay14(email, firstName),
-    ]);
+    await sendOnboardingWelcome(email, firstName);
   } catch (err) {
-    console.error("[onboarding/welcome] Failed:", err);
-    // Still mark as sent to prevent hammering Resend on retries.
-    // If the first email failed, the user can still use the product.
+    console.error("[onboarding/welcome] Welcome send failed:", err);
   }
 
   await clerk.users.updateUserMetadata(userId, {
     privateMetadata: {
       ...meta,
       onboardingEmailsSent: true,
-      onboardingEmailsSentAt: new Date().toISOString(),
+      onboardingEmailsSentAt: new Date(now).toISOString(),
+      onboarding: {
+        welcomeSentAt: new Date(now).toISOString(),
+        // Future emails — the cron checks these dates daily.
+        scheduledDay3At: new Date(now + 3 * DAY_MS).toISOString(),
+        scheduledDay7At: new Date(now + 7 * DAY_MS).toISOString(),
+        scheduledDay14At: new Date(now + 14 * DAY_MS).toISOString(),
+        day3SentAt: null,
+        day7SentAt: null,
+        day14SentAt: null,
+      },
     },
   });
 

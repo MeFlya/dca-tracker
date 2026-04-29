@@ -164,150 +164,254 @@ function emailShell(body: string): string {
 </html>`;
 }
 
-/** D+0 — Immediate welcome with quick-start guide. */
+/** D+0 — Welcome + valeur immédiate (sauvegarde de stratégie, le reflexe
+ * que peu de débutants connaissent). On n'explique PAS comment utiliser
+ * le simulateur (ils le savent déjà), on pousse l'étape "save" qui
+ * débloque le suivi mensuel. */
 export async function sendOnboardingWelcome(email: string, firstName: string) {
   const body = `
     <h1 style="font-size:22px;font-weight:700;color:#0f172a;margin:0 0 12px 0;line-height:1.3">
-      Bienvenue ${firstName}, voici comment démarrer
+      Bienvenue ${firstName} 👋
     </h1>
-    <p style="font-size:15px;color:#475569;line-height:1.7;margin:0 0 20px 0">
-      Vous avez accès à tout le simulateur DCA gratuitement. En 60 secondes,
-      vous saurez ce que peut devenir votre épargne sur 20 ans.
+    <p style="font-size:15px;color:#475569;line-height:1.7;margin:0 0 14px 0">
+      Vous venez de créer votre compte DCA Tracker. Je vais vous envoyer
+      <strong>3 emails sur les 2 prochaines semaines</strong> pour vous
+      faire découvrir des fonctionnalités peu connues qui peuvent vraiment
+      changer votre DCA.
+    </p>
+    <p style="font-size:15px;color:#475569;line-height:1.7;margin:0 0 22px 0">
+      Mais d&apos;abord, un truc que la plupart des gens ratent : la
+      <strong>sauvegarde de stratégie</strong>.
     </p>
 
-    <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:18px 20px;margin:20px 0">
+    <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:20px;margin:20px 0">
       <p style="margin:0 0 10px 0;font-size:13px;font-weight:700;color:#1e40af;text-transform:uppercase;letter-spacing:0.06em">
-        3 étapes
+        Pourquoi sauvegarder ?
       </p>
-      <ol style="margin:0;padding-left:20px;color:#1e3a8a;font-size:14px;line-height:1.9">
-        <li>Entrez votre montant mensuel (ex : 200 €)</li>
-        <li>Choisissez une durée (ex : 20 ans)</li>
-        <li>Voyez la projection avec les intérêts composés</li>
-      </ol>
+      <p style="margin:0 0 12px 0;color:#1e3a8a;font-size:14px;line-height:1.7">
+        Une simulation seule, c&apos;est une projection théorique. Une
+        stratégie sauvegardée, c&apos;est un <strong>plan de référence</strong>
+        contre lequel vous comparez votre portefeuille réel chaque mois.
+        Vous voyez si vous êtes en avance, en retard, ou pile dans le plan.
+      </p>
+      <p style="margin:0;color:#1e3a8a;font-size:14px;line-height:1.7">
+        C&apos;est ce qui transforme un calculateur ponctuel en
+        <strong>vrai outil de pilotage</strong>.
+      </p>
     </div>
 
+    <p style="font-size:14px;color:#475569;line-height:1.7;margin:0 0 8px 0">
+      <strong>3 étapes :</strong>
+    </p>
+    <ol style="font-size:14px;color:#475569;line-height:1.9;padding-left:20px;margin:0 0 22px 0">
+      <li>Lancez une simulation avec vos paramètres réels</li>
+      <li>Cliquez sur <strong>"Sauvegarder ma stratégie"</strong> en bas du simulateur</li>
+      <li>Chaque mois, entrez votre vraie valeur de portefeuille → écart automatique calculé</li>
+    </ol>
+
     <a href="https://dcatracker.fr/simulateur" style="display:inline-block;background:#2563eb;color:#fff;padding:12px 26px;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px">
-      Lancer ma première simulation →
+      Sauvegarder ma stratégie →
     </a>
 
     <p style="margin-top:28px;font-size:13px;color:#64748b;line-height:1.6">
-      Des questions ? Répondez simplement à cet email — c'est moi qui le lis.
+      Note : la sauvegarde est une fonction Premium. Vous avez 7 jours
+      gratuits pour tester — annulation en 1 clic.
+    </p>
+
+    <p style="margin-top:20px;font-size:13px;color:#64748b;line-height:1.6">
+      Des questions ? Répondez simplement à cet email — c&apos;est moi qui le lis.
     </p>
   `;
   await resend.emails.send({
     from: FROM,
     to: email,
-    subject: "Bienvenue sur DCA Tracker — voici comment démarrer",
+    subject: "Bienvenue — la fonctionnalité que la plupart des gens ratent",
     html: emailShell(body),
   });
 }
 
-/** D+3 — Nudge for users who haven't run a simulation yet. */
+/** D+3 — PEA vs CTO : combien d'impôt vous coûte un mauvais choix
+ * d'enveloppe. Pousse vers le calculateur fiscal public. */
 export async function sendOnboardingDay3(email: string, firstName: string) {
   const body = `
     <h1 style="font-size:22px;font-weight:700;color:#0f172a;margin:0 0 12px 0;line-height:1.3">
-      ${firstName}, une simulation prend 60 secondes
+      ${firstName}, PEA ou CTO : la décision à 6 900 €
     </h1>
     <p style="font-size:15px;color:#475569;line-height:1.7;margin:0 0 14px 0">
-      La plupart des gens pensent qu&apos;une projection DCA, c&apos;est
-      complexe. En fait, c&apos;est 3 nombres :
+      Voici le calcul qui surprend tout le monde. Prenons une stratégie
+      simple : <strong>200 €/mois pendant 20 ans</strong>, à 7 %/an net.
     </p>
-    <ul style="font-size:15px;color:#475569;line-height:1.9;padding-left:20px;margin:0 0 20px 0">
-      <li><strong>Montant mensuel</strong> — ce que vous pouvez épargner sans stress</li>
-      <li><strong>Durée</strong> — 10, 20, 30 ans selon votre horizon</li>
-      <li><strong>Rendement cible</strong> — 7 %/an est réaliste pour un ETF MSCI World</li>
-    </ul>
-    <p style="font-size:15px;color:#475569;line-height:1.7;margin:0 0 22px 0">
-      Avec ces 3 entrées, vous verrez exactement ce que peut valoir votre
-      épargne dans 20 ans — et combien vient des intérêts composés.
-    </p>
-
-    <a href="https://dcatracker.fr/simulateur" style="display:inline-block;background:#2563eb;color:#fff;padding:12px 26px;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px">
-      Ouvrir le simulateur →
-    </a>
-  `;
-  await resend.emails.send({
-    from: FROM,
-    to: email,
-    subject: "Votre simulation DCA prend 60 secondes",
-    html: emailShell(body),
-    scheduled_at: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
-  } as Parameters<typeof resend.emails.send>[0]);
-}
-
-/** D+7 — Introduce the tracking value prop (Premium teaser). */
-export async function sendOnboardingDay7(email: string, firstName: string) {
-  const body = `
-    <h1 style="font-size:22px;font-weight:700;color:#0f172a;margin:0 0 12px 0;line-height:1.3">
-      Simuler, c'est bien. Suivre, c'est autre chose.
-    </h1>
     <p style="font-size:15px;color:#475569;line-height:1.7;margin:0 0 14px 0">
-      ${firstName}, le simulateur vous montre votre projection. Mais dans
-      6 mois, dans 1 an, comment savez-vous si vous êtes en avance ou en
-      retard ?
+      Capital investi : 48 000 €. Capital final : ~102 000 €. Soit
+      <strong>54 000 € de plus-values</strong>.
     </p>
 
     <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:18px 20px;margin:20px 0">
-      <p style="margin:0 0 10px 0;font-size:13px;font-weight:700;color:#0f172a">
-        Avec un suivi mensuel, vous voyez :
+      <p style="margin:0 0 8px 0;font-size:14px;color:#0f172a">
+        <strong>En PEA</strong> (≥ 5 ans) : 54 000 € × 17,2 % =
+        <strong>9 288 €</strong> d&apos;impôt → net 92 712 €
       </p>
-      <ul style="margin:0;padding-left:20px;color:#475569;font-size:14px;line-height:1.9">
-        <li>Votre avance ou retard en € chaque mois</li>
-        <li>Ce que les intérêts composés ont généré sans effort</li>
-        <li>Votre série de mois consécutifs de suivi</li>
-        <li>Des emails mensuels avec vos chiffres réels</li>
-      </ul>
+      <p style="margin:0 0 8px 0;font-size:14px;color:#0f172a">
+        <strong>En CTO</strong> : 54 000 € × 30 % =
+        <strong>16 200 €</strong> d&apos;impôt → net 85 800 €
+      </p>
+      <p style="margin:12px 0 0 0;padding-top:10px;border-top:1px solid #e2e8f0;font-size:14px;color:#1e40af;font-weight:700">
+        Différence : <span style="color:#15803d">+6 912 €</span>
+        (+ 8 % de net) — juste en choisissant le bon support fiscal
+      </p>
     </div>
 
-    <p style="font-size:15px;color:#475569;line-height:1.7;margin:0 0 22px 0">
-      Premium ajoute le tracking au simulateur. <strong>7 jours gratuits</strong>,
-      annulation en 1 clic.
+    <p style="font-size:15px;color:#475569;line-height:1.7;margin:0 0 14px 0">
+      Le piège : tous les ETF ne sont pas éligibles PEA. <strong>VWCE</strong>
+      par exemple n&apos;y va pas — il doit être logé en CTO. Tandis que
+      <strong>CW8</strong> fonctionne dans les deux.
     </p>
 
-    <a href="https://dcatracker.fr/tarifs" style="display:inline-block;background:#2563eb;color:#fff;padding:12px 26px;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px">
-      Essayer Premium 7 jours →
+    <p style="font-size:15px;color:#475569;line-height:1.7;margin:0 0 22px 0">
+      J&apos;ai mis en ligne un calculateur qui fait le calcul pour
+      <strong>vos</strong> chiffres en 5 secondes — règle des 5 ans
+      incluse, plafond 150 000 € géré.
+    </p>
+
+    <a href="https://dcatracker.fr/calculateur-fiscal-pea-cto" style="display:inline-block;background:#2563eb;color:#fff;padding:12px 26px;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px">
+      Calculer ma fiscalité PEA vs CTO →
     </a>
+
+    <p style="margin-top:28px;font-size:13px;color:#64748b;line-height:1.6">
+      Bonus : la version Premium calcule chaque année les montants à
+      reporter dans vos cases 2042 et 2074 quand vous ferez votre
+      déclaration.
+    </p>
   `;
   await resend.emails.send({
     from: FROM,
     to: email,
-    subject: "Simuler, c'est bien. Suivre, c'est autre chose.",
+    subject: "PEA ou CTO : combien ça change vraiment (le calcul)",
     html: emailShell(body),
-    scheduled_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-  } as Parameters<typeof resend.emails.send>[0]);
+  });
 }
 
-/** D+14 — Final conversion nudge. */
-export async function sendOnboardingDay14(email: string, firstName: string) {
+/** D+7 — Allocation multi-ETF : pourquoi 100 % MSCI World n'est pas
+ * forcément optimal. Pousse vers /allocation-portefeuille. */
+export async function sendOnboardingDay7(email: string, firstName: string) {
   const body = `
     <h1 style="font-size:22px;font-weight:700;color:#0f172a;margin:0 0 12px 0;line-height:1.3">
-      Une dernière idée, ${firstName}
+      ${firstName}, le piège du "100 % MSCI World"
     </h1>
     <p style="font-size:15px;color:#475569;line-height:1.7;margin:0 0 14px 0">
-      Vous suivez DCA Tracker depuis 2 semaines. Si vous n&apos;avez pas encore
-      activé Premium, voici ce que vous ratez — concrètement.
+      Le MSCI World, c&apos;est l&apos;ETF que tout le monde recommande
+      aux débutants. Et c&apos;est légitime : 1 500 entreprises, 23 pays
+      développés, frais bas, éligible PEA. Difficile de faire mieux pour
+      démarrer.
     </p>
 
-    <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:18px 20px;margin:20px 0">
-      <p style="margin:0 0 10px 0;font-size:13px;font-weight:700;color:#92400e">
-        Pour 4,90 €/mois :
+    <p style="font-size:15px;color:#475569;line-height:1.7;margin:0 0 14px 0">
+      Mais sur le long terme (15-20 ans), il a deux <strong>angles
+      morts</strong> :
+    </p>
+
+    <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:18px 20px;margin:20px 0">
+      <p style="margin:0 0 10px 0;font-size:14px;color:#0f172a">
+        <strong>1. Pas de marchés émergents</strong>
       </p>
-      <ul style="margin:0;padding-left:20px;color:#78350f;font-size:14px;line-height:1.9">
-        <li>Monte Carlo : 1 000 scénarios de marché simulés</li>
-        <li>Suivi mensuel de votre stratégie vs projection</li>
-        <li>Comparaison A/B de deux stratégies côte à côte</li>
-        <li>Export PDF propre, sans filigrane</li>
-        <li>Emails mensuels personnalisés</li>
-      </ul>
+      <p style="margin:0 0 16px 0;font-size:14px;color:#475569;line-height:1.7">
+        Chine, Inde, Brésil, Taïwan : ~10 % du capital mondial absent.
+        Sur 30 ans, c&apos;est 0,5 à 1 point de rendement annuel laissé
+        sur la table.
+      </p>
+      <p style="margin:0 0 10px 0;font-size:14px;color:#0f172a">
+        <strong>2. Pas de small caps</strong>
+      </p>
+      <p style="margin:0;font-size:14px;color:#475569;line-height:1.7">
+        Le MSCI World ne contient que des grandes capitalisations. Le
+        "premium small-cap" historique (excès de rendement) est documenté
+        depuis 50 ans — 10 % d&apos;allocation suffit pour le capter.
+      </p>
     </div>
 
     <p style="font-size:15px;color:#475569;line-height:1.7;margin:0 0 14px 0">
-      Moins d&apos;un café par mois. Sur 20 ans, c&apos;est 0,01 % de votre
-      portefeuille final. Pour un suivi qui change vos décisions.
+      Concrètement, un mix <strong>70 % MSCI World + 20 % Émergents +
+      10 % Small Caps</strong> rapporte historiquement ~7 % vs 6,8 % pour
+      le World seul. Sur 200 €/mois × 20 ans, c&apos;est ~3 000 € de plus.
+    </p>
+
+    <p style="font-size:15px;color:#475569;line-height:1.7;margin:0 0 22px 0">
+      J&apos;ai créé un outil qui vous laisse construire votre allocation
+      en 30 secondes, voir le rendement pondéré, le TER moyen, et comparer
+      à un mono-MSCI World. Avec 4 presets éducatifs.
+    </p>
+
+    <a href="https://dcatracker.fr/allocation-portefeuille" style="display:inline-block;background:#2563eb;color:#fff;padding:12px 26px;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px">
+      Construire mon allocation →
+    </a>
+
+    <p style="margin-top:28px;font-size:13px;color:#64748b;line-height:1.6">
+      Note : tout n&apos;est pas éligible PEA — l&apos;outil le signale
+      automatiquement pour chaque ETF.
+    </p>
+  `;
+  await resend.emails.send({
+    from: FROM,
+    to: email,
+    subject: "Le piège du \"100 % MSCI World\" (et comment le contourner)",
+    html: emailShell(body),
+  });
+}
+
+/** D+14 — Récap fiscal annuel + Monte Carlo : ce que Premium débloque
+ * vraiment (les 2 fonctionnalités à plus haute valeur). */
+export async function sendOnboardingDay14(email: string, firstName: string) {
+  const body = `
+    <h1 style="font-size:22px;font-weight:700;color:#0f172a;margin:0 0 12px 0;line-height:1.3">
+      ${firstName}, les 2 fonctions Premium qui changent vraiment vos décisions
+    </h1>
+    <p style="font-size:15px;color:#475569;line-height:1.7;margin:0 0 14px 0">
+      C&apos;est mon dernier email de cette série. Je voulais finir sur
+      les 2 outils Premium qui valent vraiment 4,90 €/mois — pas Monte
+      Carlo qui est joli mais ponctuel, mais ceux qui vous suivent
+      <strong>année après année</strong>.
+    </p>
+
+    <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin:24px 0">
+      <p style="margin:0 0 8px 0;font-size:13px;font-weight:700;color:#1e40af;text-transform:uppercase;letter-spacing:0.06em">
+        1. Suivi mensuel + emails automatiques
+      </p>
+      <p style="margin:0 0 12px 0;font-size:14px;color:#0f172a;line-height:1.7">
+        Chaque mois, vous entrez la valeur réelle de votre portefeuille
+        broker. L&apos;outil calcule l&apos;écart vs votre projection,
+        envoie un récap par email avec un insight ("vous êtes en avance
+        de +133 €", "vous avez tenu votre cap 6 mois consécutifs", etc.).
+      </p>
+      <p style="margin:0;font-size:14px;color:#475569;line-height:1.7">
+        C&apos;est ce qui fait la différence entre <strong>simuler une
+        fois</strong> et <strong>piloter sur 20 ans</strong>.
+      </p>
+    </div>
+
+    <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin:24px 0">
+      <p style="margin:0 0 8px 0;font-size:13px;font-weight:700;color:#1e40af;text-transform:uppercase;letter-spacing:0.06em">
+        2. Récap fiscal annuel
+      </p>
+      <p style="margin:0 0 12px 0;font-size:14px;color:#0f172a;line-height:1.7">
+        Chaque année en mai, votre déclaration. La synthèse Premium calcule
+        les montants exacts à reporter dans <strong>les cases 2042 et
+        2074</strong> selon votre situation (PEA &lt; 5 ans, PEA ≥ 5 ans,
+        ou CTO).
+      </p>
+      <p style="margin:0;font-size:14px;color:#475569;line-height:1.7">
+        Pas besoin de réfléchir aux taux applicables ou au formulaire
+        à utiliser — tout est pré-calculé, exportable en PDF.
+      </p>
+    </div>
+
+    <p style="font-size:15px;color:#475569;line-height:1.7;margin:0 0 14px 0">
+      <strong>4,90 €/mois</strong> en mensuel, ou <strong>49 €/an</strong>
+      (économisez 17 %). Sur un portefeuille de 100 000 € à 20 ans,
+      c&apos;est 0,01 % de votre capital final.
     </p>
     <p style="font-size:15px;color:#475569;line-height:1.7;margin:0 0 22px 0">
-      <strong>7 jours gratuits pour tester.</strong> Vous pouvez annuler en
-      1 clic avant la fin de l&apos;essai.
+      <strong>7 jours d&apos;essai gratuit</strong> — vous testez tout,
+      vous annulez en 1 clic si ça ne vous convient pas.
     </p>
 
     <a href="https://dcatracker.fr/tarifs" style="display:inline-block;background:#2563eb;color:#fff;padding:12px 26px;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px">
@@ -315,17 +419,21 @@ export async function sendOnboardingDay14(email: string, firstName: string) {
     </a>
 
     <p style="margin-top:28px;font-size:13px;color:#64748b;line-height:1.6">
-      Si Premium n&apos;est pas pour vous, aucun problème — le simulateur
-      reste gratuit pour toujours. Aucun spam après cet email.
+      Si Premium n&apos;est pas pour vous, aucun souci — le simulateur,
+      le calculateur fiscal et l&apos;allocation portefeuille restent
+      gratuits pour toujours. Aucun spam après cet email.
+    </p>
+    <p style="margin-top:14px;font-size:13px;color:#64748b;line-height:1.6">
+      Bon DCA,<br/>
+      <strong>L&apos;équipe DCA Tracker</strong>
     </p>
   `;
   await resend.emails.send({
     from: FROM,
     to: email,
-    subject: "Une dernière idée avant que je ne vous écrive plus",
+    subject: "Les 2 fonctions Premium qui valent vraiment 4,90 €/mois",
     html: emailShell(body),
-    scheduled_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
-  } as Parameters<typeof resend.emails.send>[0]);
+  });
 }
 
 export type AnnualPushMilestone = "month-3" | "month-6" | "month-12";

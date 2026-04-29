@@ -11,6 +11,10 @@
     {
       "path": "/api/cron/annual-push",
       "schedule": "0 10 * * 1"
+    },
+    {
+      "path": "/api/cron/onboarding-emails",
+      "schedule": "0 9 * * *"
     }
   ]
 }
