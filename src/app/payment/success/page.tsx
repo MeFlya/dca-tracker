@@ -67,28 +67,41 @@ export default async function PaymentSuccessPage({
           </ul>
         </div>
 
-        {/* Primary CTA — Monte Carlo */}
+        {/* Primary CTA — sauvegarder la stratégie (le vrai aha moment Premium).
+            Monte Carlo est plus "wow" mais one-shot ; sauvegarder déclenche
+            le suivi mensuel récurrent qui justifie l'abonnement sur le long
+            terme. C'est le bon premier pas pour activer la valeur. */}
         <div className="bg-slate-900 rounded-2xl p-5 mb-4 text-center">
           <p className="text-white font-semibold mb-1">
-            Commencez par l&apos;analyse Monte Carlo
+            Commencez par sauvegarder votre 1ʳᵉ stratégie
           </p>
-          <p className="text-slate-400 text-xs mb-4">
-            Votre première fonctionnalité Premium — visualisez 1&nbsp;000 scénarios possibles pour votre épargne.
+          <p className="text-slate-400 text-xs mb-4 leading-relaxed">
+            C&apos;est en sauvegardant ta stratégie que tu actives le suivi
+            mensuel — la vraie valeur de ton abonnement Premium.
           </p>
           <Link
             href="/simulateur"
             className="inline-block bg-white text-slate-900 font-bold text-sm px-6 py-2.5 rounded-xl hover:bg-gray-100 transition-colors"
           >
-            Découvrir le Monte Carlo →
+            Sauvegarder ma 1ʳᵉ stratégie →
           </Link>
         </div>
 
-        <div className="text-center">
+        {/* Secondary CTA — Monte Carlo en fallback pour les users qui
+            préfèrent explorer avant de s'engager dans le tracking. */}
+        <div className="flex items-center justify-center gap-4 text-sm text-gray-500 mb-2">
+          <Link
+            href="/simulateur#monte-carlo"
+            className="hover:text-gray-700 transition-colors"
+          >
+            Ou explorer Monte Carlo →
+          </Link>
+          <span aria-hidden className="text-gray-300">·</span>
           <Link
             href="/account"
-            className="text-sm text-gray-500 hover:text-gray-600 transition-colors"
+            className="hover:text-gray-700 transition-colors"
           >
-            Voir mon compte →
+            Voir mon compte
           </Link>
         </div>
 
