@@ -6,6 +6,7 @@ import { PricingCards } from "./PricingCards";
 import { LifetimePricingCard } from "./LifetimePricingCard";
 import { PaymentBadge } from "@/components/ui/PaymentBadge";
 import { Testimonials } from "@/components/home/Testimonials";
+import { LiveSocialProof } from "@/components/home/LiveSocialProof";
 
 const TITLE = "Tarifs — DCA Tracker";
 const DESCRIPTION =
@@ -302,6 +303,9 @@ export default function TarifsPage() {
 
         {/* Testimonials — auto-hidden until populated */}
         <Testimonials />
+
+        {/* Social proof — auto-hidden quand stats <5 users (LiveSocialProof) */}
+        <LiveSocialProof />
 
         {/* FAQ */}
         <div className="max-w-3xl mx-auto px-4 sm:px-6">
