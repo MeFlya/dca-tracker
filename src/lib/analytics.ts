@@ -7,13 +7,13 @@
  *
  * ─── Connecting a provider ───────────────────────────────────────────────────
  *
- * Plausible (recommended — cookie-free, GDPR-compliant by default):
+ * Plausible (sole supported provider — cookie-free, GDPR-compliant by default,
+ * exempt from prior consent per CNIL guidance):
  *   NEXT_PUBLIC_ANALYTICS_PROVIDER=plausible
  *   NEXT_PUBLIC_SITE_DOMAIN=dcatracker.fr
  *
- * Google Analytics 4:
- *   NEXT_PUBLIC_ANALYTICS_PROVIDER=ga
- *   NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+ * Note (2026-04-29): Google Analytics support was removed to keep the site
+ * cookieless and avoid the consent-banner requirement.
  *
  * ─── Event naming convention ─────────────────────────────────────────────────
  *
@@ -116,15 +116,6 @@ export function track(event: AnalyticsEvent): void {
     return;
   }
 
-  if (provider === "ga") {
-    // Google Analytics 4 custom events: https://developers.google.com/analytics/devguides/collection/ga4/events
-    const gtag = (window as Window & { gtag?: GtagFn }).gtag;
-    if (typeof gtag === "function") {
-      gtag("event", event.name, mergedProps);
-    }
-    return;
-  }
-
   // No provider configured — already logged in dev above, silent in prod.
 }
 
@@ -133,10 +124,4 @@ export function track(event: AnalyticsEvent): void {
 type PlausibleFn = (
   name: string,
   options?: { props?: Record<string, unknown>; callback?: () => void }
-) => void;
-
-type GtagFn = (
-  command: "event" | "config" | "js",
-  target: string,
-  params?: Record<string, unknown>
 ) => void;

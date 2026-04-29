@@ -9,6 +9,10 @@
 //
 // We replicate that here, with the src URL coming from env.
 // Only renders when NEXT_PUBLIC_PLAUSIBLE_SRC is set.
+//
+// Note (2026-04-29): the Google Analytics loader has been removed from this
+// module to keep the site cookieless and exempt from prior-consent requirement
+// (CNIL guidance). Plausible is the sole analytics provider.
 
 import Script from "next/script";
 
@@ -27,30 +31,6 @@ export function PlausibleScript() {
       />
       <Script id="plausible-init" strategy="afterInteractive">
         {PLAUSIBLE_INIT}
-      </Script>
-    </>
-  );
-}
-
-export function GoogleAnalyticsScript() {
-  const provider = process.env.NEXT_PUBLIC_ANALYTICS_PROVIDER;
-  const measurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
-
-  if (provider !== "ga" || !measurementId) return null;
-
-  return (
-    <>
-      <Script
-        src={`https://www.googletagmanager.com/gtag/js?id=${measurementId}`}
-        strategy="afterInteractive"
-      />
-      <Script id="ga-init" strategy="afterInteractive">
-        {`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', '${measurementId}', { anonymize_ip: true });
-        `}
       </Script>
     </>
   );

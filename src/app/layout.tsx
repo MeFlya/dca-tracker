@@ -6,7 +6,7 @@ import { Footer } from "@/components/layout/Footer";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { AmbientBackground } from "@/components/ui/AmbientBackground";
 import { clerkAppearance } from "@/lib/clerk-appearance";
-import { PlausibleScript, GoogleAnalyticsScript } from "@/components/analytics/PlausibleScript";
+import { PlausibleScript } from "@/components/analytics/PlausibleScript";
 import { AnalyticsContextProvider } from "@/components/analytics/AnalyticsContext";
 
 // Hardcoded — never trust NEXT_PUBLIC_SITE_URL for canonical/metadataBase
@@ -94,7 +94,6 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
         <PlausibleScript />
-        <GoogleAnalyticsScript />
       </head>
       <body className="min-h-screen flex flex-col">
         {/* Animated ambient background — sits below all content.
