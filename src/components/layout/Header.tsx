@@ -19,7 +19,9 @@ const NAV_LINKS = [
 export function Header() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { isSignedIn, isLoaded } = useUser();
+  const { isSignedIn, isLoaded, user } = useUser();
+  const plan = (user?.publicMetadata?.plan as string | undefined) ?? "free";
+  const isPremium = plan === "premium";
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100">
@@ -84,13 +86,15 @@ export function Header() {
                 >
                   Dashboard
                 </Link>
-                <Link
-                  href="/tarifs"
-                  className="inline-flex items-center gap-1.5 text-sm font-medium text-primary-700 hover:bg-primary-50 px-3 py-1.5 rounded-lg transition-colors"
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-primary-500" />
-                  Passer à Premium
-                </Link>
+                {!isPremium && (
+                  <Link
+                    href="/tarifs"
+                    className="inline-flex items-center gap-1.5 text-sm font-medium text-primary-700 hover:bg-primary-50 px-3 py-1.5 rounded-lg transition-colors"
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary-500" />
+                    Passer à Premium
+                  </Link>
+                )}
                 <UserButton />
               </>
             )}
