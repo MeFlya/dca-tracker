@@ -162,6 +162,11 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/guide-5-etf-pea-premium" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+                  5 ETF Premium pour PEA
+                </Link>
+              </li>
+              <li>
                 <Link href="/glossaire" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
                   Glossaire
                 </Link>

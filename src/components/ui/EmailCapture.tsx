@@ -16,6 +16,10 @@ interface EmailCaptureProps {
   className?: string;
 }
 
+const HEADLINE = "5 ETF Premium pour PEA — la cheat sheet 2026";
+const SUBLINE =
+  "Le PDF récap : indice répliqué, TER, 3 modèles d'allocation prêts à l'emploi. Livré gratuitement par email.";
+
 export function EmailCapture({
   variant = "section",
   source = "website",
@@ -62,20 +66,17 @@ export function EmailCapture({
   if (variant === "section") {
     return (
       <section
-        aria-label="Inscription à la newsletter"
+        aria-label="Recevoir la cheat sheet 5 ETF Premium pour PEA"
         className={cn("py-16 sm:py-20 border-y border-gray-100 bg-gradient-to-b from-white to-primary-50/30", className)}
       >
         <div className="max-w-2xl mx-auto px-4 sm:px-6 text-center">
-          <EnvelopeIcon className="mx-auto mb-5" />
+          <GuideIcon className="mx-auto mb-5" />
 
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">
-            Voyez ce que{" "}
-            <span className="text-primary-600">200&nbsp;€/mois</span>{" "}
-            peuvent devenir
+            {HEADLINE}
           </h2>
           <p className="mt-3 text-base text-gray-500 leading-relaxed">
-            Un exemple concret sur 10, 20 et 30 ans avec les intérêts composés.{" "}
-            <span className="font-medium text-gray-700">Gratuit, livré par email.</span>
+            {SUBLINE}
           </p>
 
           <form
@@ -123,14 +124,13 @@ export function EmailCapture({
       )}
     >
       <div className="flex items-start gap-4">
-        <EnvelopeIcon />
+        <GuideIcon />
         <div className="min-w-0">
           <h3 className="text-base font-semibold text-gray-900 leading-snug">
-            Voyez ce que 200&nbsp;€/mois peuvent devenir
+            {HEADLINE}
           </h3>
           <p className="mt-1 text-sm text-gray-500 leading-relaxed">
-            Un exemple concret sur 10, 20 et 30&nbsp;ans avec les intérêts composés.
-            Gratuit, livré par email.
+            {SUBLINE}
           </p>
         </div>
       </div>
@@ -182,15 +182,16 @@ function SuccessState({
   if (variant === "section") {
     return (
       <section
-        aria-label="Inscription confirmée"
+        aria-label="Cheat sheet envoyée"
         className={cn("py-16 sm:py-20 border-y border-gray-100 bg-gradient-to-b from-white to-primary-50/30", className)}
       >
-        <div className="max-w-sm mx-auto px-4 text-center">
+        <div className="max-w-md mx-auto px-4 text-center">
           <CheckCircleIcon className="mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-gray-900">Exemple envoyé ✅</h2>
+          <h2 className="text-xl font-bold text-gray-900">Cheat sheet envoyée ✅</h2>
           <p className="mt-2 text-sm text-gray-500 leading-relaxed">
-            Vérifiez votre boîte mail.
-            Si vous ne le recevez pas dans 2 minutes, vérifiez les spams.
+            Vérifiez votre boîte mail dans les 2 prochaines minutes.
+            Pas reçue ? Pensez à regarder dans les spams ou la
+            catégorie « Promotions ».
           </p>
         </div>
       </section>
@@ -206,9 +207,9 @@ function SuccessState({
     >
       <CheckCircleIcon />
       <div>
-        <p className="text-sm font-semibold text-gray-900">Exemple envoyé ✅</p>
+        <p className="text-sm font-semibold text-gray-900">Cheat sheet envoyée ✅</p>
         <p className="mt-0.5 text-sm text-gray-500 leading-snug">
-          Vérifiez votre boîte mail.
+          Vérifiez votre boîte mail (et les spams).
         </p>
       </div>
     </div>
@@ -230,13 +231,13 @@ function SubmitButton({ state }: { state: SubmitState }) {
           Envoi…
         </span>
       ) : (
-        "Recevoir l'exemple"
+        "Recevoir la cheat sheet"
       )}
     </button>
   );
 }
 
-function EnvelopeIcon({ className }: { className?: string }) {
+function GuideIcon({ className }: { className?: string }) {
   return (
     <div
       className={cn(
@@ -245,24 +246,23 @@ function EnvelopeIcon({ className }: { className?: string }) {
       )}
     >
       <svg
-        width="18"
-        height="18"
-        viewBox="0 0 20 20"
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
         fill="none"
         aria-hidden="true"
       >
         <path
-          d="M2.5 5.5A1.5 1.5 0 0 1 4 4h12a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 16 16H4a1.5 1.5 0 0 1-1.5-1.5v-9Z"
+          d="M5 4.5A1.5 1.5 0 0 1 6.5 3h11A1.5 1.5 0 0 1 19 4.5v15a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 5 19.5v-15Z"
           stroke="#1d4ed8"
-          strokeWidth="1.4"
+          strokeWidth="1.5"
           strokeLinejoin="round"
         />
         <path
-          d="M2.5 6 10 11l7.5-5"
+          d="M8.5 8h7M8.5 11.5h7M8.5 15h4"
           stroke="#1d4ed8"
-          strokeWidth="1.4"
+          strokeWidth="1.5"
           strokeLinecap="round"
-          strokeLinejoin="round"
         />
       </svg>
     </div>
