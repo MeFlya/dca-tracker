@@ -684,3 +684,218 @@ export async function sendMonthlyUpdate({
 </html>`,
   });
 }
+
+// ─── Trial-ending reminder (sent ~2 days before trial ends) ───────────────────
+//
+// Triggered by Stripe webhook `customer.subscription.trial_will_end`. Stripe
+// fires this event 3 days before the trial converts to a paid subscription.
+//
+// Goals:
+// - Avoid surprise charges (regulatory risk: Stripe disputes + bad reviews)
+// - Anchor on what the user has used during the trial (engagement → retention)
+// - Make cancellation visible and easy (paradoxically improves trust + conversion)
+
+export interface TrialEndingFeatures {
+  hasSavedStrategy: boolean;
+  monthsLogged: number;
+  hasUsedMonteCarlo: boolean;
+  hasImportedCsv: boolean;
+}
+
+export async function sendTrialEndingSoon({
+  email,
+  firstName,
+  trialEndDate,
+  amountCents,
+  currency,
+  interval,
+  manageUrl,
+  features,
+}: {
+  email: string;
+  firstName: string;
+  trialEndDate: Date;
+  amountCents: number;
+  currency: string;
+  interval: "month" | "year";
+  /** Stripe billing portal URL where the user can cancel before charge. */
+  manageUrl: string;
+  features: TrialEndingFeatures;
+}) {
+  const SITE_URL = "https://dcatracker.fr";
+
+  const dateLabel = trialEndDate.toLocaleDateString("fr-FR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+  const amountLabel = (amountCents / 100)
+    .toFixed(2)
+    .replace(".", ",") + " " + (currency.toUpperCase() === "EUR" ? "€" : currency.toUpperCase());
+  const intervalLabel = interval === "year" ? "an" : "mois";
+
+  // Engagement bullets — we celebrate what they've actually used during trial.
+  // If they've used nothing, we still nudge gently (no shaming).
+  const used: string[] = [];
+  if (features.hasSavedStrategy) {
+    used.push("Vous avez sauvegardé votre stratégie DCA — le suivi mensuel automatique est activé.");
+  }
+  if (features.monthsLogged > 0) {
+    const plural = features.monthsLogged > 1 ? "s" : "";
+    used.push(`Vous avez enregistré <strong>${features.monthsLogged} mois</strong> de suivi.`);
+  }
+  if (features.hasUsedMonteCarlo) {
+    used.push("Vous avez exploré l'analyse Monte Carlo (1 000 scénarios).");
+  }
+  if (features.hasImportedCsv) {
+    used.push("Vous avez importé l'historique de votre courtier.");
+  }
+
+  const usedHtml = used.length > 0
+    ? `<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:18px 20px;margin:20px 0">
+        <p style="margin:0 0 10px 0;font-size:13px;font-weight:700;color:#15803d;text-transform:uppercase;letter-spacing:0.06em">
+          Pendant votre essai, vous avez :
+        </p>
+        <ul style="margin:0;padding-left:20px;color:#14532d;font-size:14px;line-height:1.8">
+          ${used.map((u) => `<li>${u}</li>`).join("")}
+        </ul>
+      </div>`
+    : `<div style="background:#fef3c7;border:1px solid #fde68a;border-radius:10px;padding:18px 20px;margin:20px 0">
+        <p style="margin:0;font-size:14px;color:#854d0e;line-height:1.7">
+          Vous n&apos;avez pas encore eu le temps d&apos;explorer Premium ?
+          C&apos;est le bon moment pour <a href="${SITE_URL}/account" style="color:#b45309;font-weight:700">sauvegarder votre première stratégie</a>{" "}
+          — c&apos;est ce qui active le suivi mensuel automatique.
+        </p>
+      </div>`;
+
+  const subject = `Plus que 2 jours d'essai — prélèvement de ${amountLabel} le ${dateLabel}`;
+
+  const html = `<!DOCTYPE html>
+<html lang="fr">
+<body style="margin:0;padding:0;background:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;padding:40px 16px">
+    <tr>
+      <td align="center">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:16px;border:1px solid #e2e8f0;overflow:hidden">
+
+          <tr>
+            <td style="padding:24px 32px;border-bottom:1px solid #f1f5f9">
+              <a href="${SITE_URL}" style="text-decoration:none">
+                <span style="font-size:16px;font-weight:700;color:#1d4ed8">DCA</span><span style="font-size:16px;color:#6b7280">Tracker</span>
+              </a>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:36px 32px 16px">
+              <p style="margin:0 0 6px 0;font-size:12px;font-weight:600;color:#2563eb;text-transform:uppercase;letter-spacing:0.06em">
+                Rappel essai gratuit
+              </p>
+              <h1 style="margin:0 0 14px 0;font-size:22px;font-weight:700;color:#0f172a;line-height:1.3">
+                ${firstName}, votre essai se termine dans 2 jours
+              </h1>
+              <p style="margin:0 0 14px 0;font-size:15px;color:#475569;line-height:1.7">
+                Petit rappel pour que rien ne vous surprenne. Votre essai gratuit
+                de 7 jours sur DCA Tracker Premium se termine le
+                <strong>${dateLabel}</strong>.
+              </p>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:0 32px 16px">
+              <table width="100%" cellpadding="0" cellspacing="0" style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px">
+                <tr>
+                  <td style="padding:18px 22px">
+                    <p style="margin:0 0 6px 0;font-size:13px;font-weight:600;color:#2563eb;text-transform:uppercase;letter-spacing:0.06em">
+                      À cette date sera prélevé
+                    </p>
+                    <p style="margin:0;font-size:28px;font-weight:800;color:#1e40af;line-height:1.1">
+                      ${amountLabel}
+                    </p>
+                    <p style="margin:6px 0 0 0;font-size:13px;color:#3b82f6">
+                      Pour 1 ${intervalLabel} d&apos;abonnement Premium, renouvelable.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:0 32px">
+              ${usedHtml}
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:8px 32px 16px">
+              <p style="margin:0 0 14px 0;font-size:14px;color:#0f172a;line-height:1.6;font-weight:700">
+                Vous avez 2 options :
+              </p>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:0 32px 12px" align="left">
+              <table cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="border-radius:10px;background:#2563eb">
+                    <a href="${SITE_URL}/account"
+                       style="display:inline-block;padding:13px 24px;color:#ffffff;font-size:14px;font-weight:700;text-decoration:none;border-radius:10px;line-height:1">
+                      ✓ Continuer mon abonnement
+                    </a>
+                  </td>
+                </tr>
+              </table>
+              <p style="margin:8px 0 0 0;font-size:12px;color:#64748b">
+                Aucune action nécessaire — le prélèvement est automatique.
+              </p>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:8px 32px 32px" align="left">
+              <table cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="border-radius:10px;background:#ffffff;border:1px solid #cbd5e1">
+                    <a href="${manageUrl}"
+                       style="display:inline-block;padding:12px 22px;color:#475569;font-size:14px;font-weight:600;text-decoration:none;border-radius:10px;line-height:1">
+                      Annuler avant prélèvement
+                    </a>
+                  </td>
+                </tr>
+              </table>
+              <p style="margin:8px 0 0 0;font-size:12px;color:#64748b">
+                Annulation en 1 clic via le portail Stripe — sans frais ni justification.
+              </p>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:18px 32px;background:#f8fafc;border-top:1px solid #f1f5f9">
+              <p style="margin:0;font-size:11px;color:#9ca3af;line-height:1.6">
+                Vous recevez cet email parce que votre essai gratuit Premium se
+                termine bientôt. DCA Tracker · outil éducatif, pas de conseil
+                en investissement.<br/>
+                <a href="${SITE_URL}/account" style="color:#9ca3af">Gérer mon compte</a>
+                ·
+                <a href="${SITE_URL}/cgv" style="color:#9ca3af">CGV</a>
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+
+  await resend.emails.send({
+    from: FROM,
+    to: email,
+    subject,
+    html,
+  });
+}

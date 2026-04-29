@@ -6,7 +6,10 @@ import {
   sendSubscriptionConfirmed,
   sendSubscriptionCancelled,
   sendOnboardingDay1,
+  sendTrialEndingSoon,
+  type TrialEndingFeatures,
 } from "@/lib/emails/send";
+import { getStrategyData } from "@/lib/user-strategy";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import type Stripe from "stripe";
@@ -103,6 +106,87 @@ export async function POST(req: Request) {
 (sub as any).current_period_end as number ?? null,
             subscriptionInterval: interval,
           },
+        });
+        break;
+      }
+
+      // ── Essai bientôt terminé → email de rappel anti-surprise ──────────
+      // Stripe émet ce hook automatiquement à T-3 jours de la fin d'essai.
+      // On envoie un récap + montant + 2 CTAs (continuer / annuler avant
+      // prélèvement). Évite les chargebacks et les "j'ai été prélevé sans
+      // m'en rendre compte".
+      //
+      // TESTED MANUALLY:
+      //   1. stripe trigger customer.subscription.trial_will_end
+      //   2. Vérifier dans la console webhook que l'email est expédié
+      //   3. Vérifier le contenu de l'email (date, montant, manageUrl)
+      case "customer.subscription.trial_will_end": {
+        const sub = event.data.object as Stripe.Subscription;
+        const clerkUserId = sub.metadata?.clerkUserId;
+        if (!clerkUserId) break;
+
+        const item = sub.items.data[0];
+        const priceObject = item?.price;
+        const interval = (priceObject?.recurring?.interval ?? "month") as "month" | "year";
+        const amountCents = priceObject?.unit_amount ?? 0;
+        const currency = priceObject?.currency ?? "eur";
+        const trialEnd = sub.trial_end ? new Date(sub.trial_end * 1000) : null;
+
+        if (!trialEnd) {
+          log.event("webhook/stripe", "trial_will_end_no_date", { id: sub.id });
+          break;
+        }
+
+        const user = await clerk.users.getUser(clerkUserId);
+        const email = user.emailAddresses[0]?.emailAddress;
+        if (!email) break;
+        const firstName = user.firstName ?? "Investisseur";
+
+        // Read engagement signals — tells us what the user has actually done.
+        const { strategy, entries } = await getStrategyData(clerkUserId);
+        const features: TrialEndingFeatures = {
+          hasSavedStrategy: !!strategy,
+          monthsLogged: entries.length,
+          // We don't track Monte Carlo / CSV import server-side today; default
+          // to false. Wire when those events are persisted.
+          hasUsedMonteCarlo: false,
+          hasImportedCsv: false,
+        };
+
+        // Build a Stripe billing portal session so the user can cancel cleanly.
+        // Falls back to /account if portal session can't be created.
+        const customerId = sub.customer as string;
+        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://dcatracker.fr";
+        let manageUrl = `${siteUrl}/account`;
+        try {
+          const portal = await stripe.billingPortal.sessions.create({
+            customer: customerId,
+            return_url: `${siteUrl}/account`,
+          });
+          manageUrl = portal.url;
+        } catch (err) {
+          console.warn("[webhook] billingPortal create failed, falling back to /account:", err);
+        }
+
+        await sendTrialEndingSoon({
+          email,
+          firstName,
+          trialEndDate: trialEnd,
+          amountCents,
+          currency,
+          interval,
+          manageUrl,
+          features,
+        });
+
+        log.event("webhook/stripe", "trial_ending_email_sent", {
+          userId: clerkUserId,
+          subId: sub.id,
+          trialEnd: trialEnd.toISOString(),
+          amountCents,
+          interval,
+          hasSavedStrategy: features.hasSavedStrategy,
+          monthsLogged: features.monthsLogged,
         });
         break;
       }
