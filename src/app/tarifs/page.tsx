@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { PricingCards } from "./PricingCards";
+import { LifetimePricingCard } from "./LifetimePricingCard";
 import { PaymentBadge } from "@/components/ui/PaymentBadge";
 import { Testimonials } from "@/components/home/Testimonials";
 
@@ -223,6 +224,9 @@ export default function TarifsPage() {
             </span>
           </div>
         </div>
+
+        {/* Lifetime Deal — feature-flagged, returns null when disabled */}
+        <LifetimePricingCard />
 
         {/* Pricing cards */}
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6">
