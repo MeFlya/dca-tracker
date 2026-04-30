@@ -24,6 +24,9 @@ export const metadata: Metadata = {
   verification: {
   google: "lvfKBxYVpHuIHP-gtnSN7ka9Z4U2gHWLpsPeZLaQnJU",
 },
+  other: {
+    "impact-site-verification": "73406bba-b2fb-472c-b6ee-a2977543d2b0",
+  },
   keywords: [
     "DCA",
     "Dollar Cost Averaging",
