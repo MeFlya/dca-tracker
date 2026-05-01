@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type FeatureKey = "monte-carlo" | "save-strategy" | "pdf-export" | "ab-comparison";
+type FeatureKey = "monte-carlo" | "save-strategy" | "pdf-export" | "ab-comparison" | "recap-fiscal";
 
 type FeatureCopy = {
   plan: "Premium";
@@ -444,6 +444,108 @@ const AB_COMPARISON: FeatureCopy = {
   ],
 };
 
+// ─── Copy — Récap fiscal annuel ──────────────────────────────────────────────
+
+const RECAP_FISCAL: FeatureCopy = {
+  plan: "Premium",
+  planColor: "bg-primary-600",
+  price: "4,90 €/mois",
+  priceYear: "49 €/an",
+  yearSavings: "soit 2 mois offerts",
+  icon: "🧾",
+
+  hero: {
+    eyebrow: "❌ Mai approche. Vous savez quoi reporter dans la 2074 ?",
+    title: "Votre récap fiscal pré-calculé chaque année.",
+    pain: "Plus-values PEA, prélèvements selon durée de détention, cases 2042 et 2074 : sans outil, c'est des heures sur les forums et un risque réel d'erreur de déclaration.",
+  },
+
+  loss: {
+    headline: "Sans le récap fiscal, vous devez :",
+    items: [
+      {
+        icon: "🔒",
+        title: "Reconstituer vos plus-values manuellement",
+        desc: "Recouper l'IFU de votre courtier, calculer les gains réalisés vs latents, gérer les prélèvements selon durée de détention.",
+      },
+      {
+        icon: "🔒",
+        title: "Identifier les bonnes cases 2042 et 2074",
+        desc: "PFU 30 % ou 17,2 % ? Quelle case selon le type de gain ? Vous googlez, vous lisez, vous doutez.",
+      },
+      {
+        icon: "🔒",
+        title: "Stocker votre historique année par année",
+        desc: "Pour les contrôles fiscaux (3-10 ans), il faut conserver tous les détails. Excel devient vite ingérable.",
+      },
+    ],
+  },
+
+  projection: {
+    title: "Ce que contient votre récap fiscal annuel",
+    intro: "Pour chaque année fiscale, une synthèse PDF prête pour votre déclaration :",
+    rows: [
+      { label: "Plus-values réalisées (PEA et CTO)", value: "Calculées", baseline: true },
+      { label: "Prélèvements applicables (PFU 30 % ou PS 17,2 %)", value: "Pré-déterminés", locked: true },
+      { label: "Montants à reporter case 2042", value: "Calculés", locked: true },
+      { label: "Montants à reporter case 2074", value: "Calculés", locked: true },
+      { label: "Export CSV pour archivage", value: "Inclus", locked: true },
+    ],
+    conclusion: "Une aide à la déclaration concrète — qui ne remplace ni l'IFU de votre courtier ni un expert-comptable pour les cas complexes, mais qui élimine 80 % du travail manuel et des risques d'erreur.",
+  },
+
+  beforeAfter: {
+    before: {
+      label: "Sans récap fiscal",
+      lines: [
+        "Recouper l'IFU à la main",
+        "Googler les bonnes cases",
+        "Risque d'erreur de déclaration",
+        "Aucun historique structuré",
+      ],
+    },
+    after: {
+      label: "Avec récap fiscal Premium",
+      lines: [
+        "Synthèse PDF en 2 clics",
+        "Cases 2042 et 2074 pré-calculées",
+        "PFU vs PS automatiquement appliqués",
+        "Historique année par année",
+      ],
+    },
+  },
+
+  value: {
+    title: "Pourquoi cet outil change la déclaration",
+    body: "La fiscalité du DCA en France est simple sur le papier mais piégeuse en pratique : règle des 5 ans pour le PEA, PFU vs prélèvements sociaux, cases différentes selon retrait/cession, plafond 150 000 €, etc. Le récap fiscal annuel élimine la friction : vous voyez chaque année les bons chiffres et les bonnes cases. C'est le seul outil français qui suit votre situation réelle année après année — pas une simulation générique.",
+  },
+
+  priceAnchors: [
+    "≈ 1 café par mois",
+    "1 erreur de déclaration évitée = bien plus que l'abonnement annuel",
+    "Inclus : tout Premium + récap fiscal pour les années suivantes",
+  ],
+
+  faq: [
+    {
+      q: "C'est un document fiscal officiel ?",
+      a: "Non — c'est une aide à la déclaration. L'IFU fourni par votre courtier reste le document de référence. Le récap Premium calcule pour vous les montants à reporter case 2042 et 2074, mais ne remplace pas un expert-comptable pour les situations complexes (succession, étranger, optimisation pluriannuelle).",
+    },
+    {
+      q: "Le calcul fonctionne pour PEA et CTO ?",
+      a: "Oui. Le récap distingue automatiquement les plus-values PEA (PFU 30 % avant 5 ans, PS 17,2 % après) et CTO (PFU 30 % systématique sauf option barème).",
+    },
+    {
+      q: "Et si je n'ai rien retiré dans l'année ?",
+      a: "Pas de souci — le récap est utile aussi pour visualiser vos plus-values latentes et préparer les retraits futurs. La déclaration n'est nécessaire que sur les gains réalisés (cessions, retraits PEA, dividendes).",
+    },
+    {
+      q: "Puis-je annuler à tout moment ?",
+      a: "Oui, en 1 clic depuis votre dashboard. Vos données fiscales restent stockées et accessibles si vous réactivez.",
+    },
+  ],
+};
+
 // ─── Registry ─────────────────────────────────────────────────────────────────
 
 const FEATURES: Record<FeatureKey, FeatureCopy> = {
@@ -451,6 +553,7 @@ const FEATURES: Record<FeatureKey, FeatureCopy> = {
   "save-strategy": SAVE_STRATEGY,
   "pdf-export": PDF_EXPORT,
   "ab-comparison": AB_COMPARISON,
+  "recap-fiscal": RECAP_FISCAL,
 };
 
 const FALLBACK = MONTE_CARLO;
