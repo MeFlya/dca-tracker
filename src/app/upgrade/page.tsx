@@ -1,10 +1,29 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import {
+  Activity,
+  Save,
+  FileText,
+  Scale,
+  Receipt,
+  ArrowRight,
+} from "lucide-react";
 import { runSimulation, formatEur } from "@/lib/simulator";
 import { VisitTracker } from "@/components/analytics/VisitTracker";
 import type { SimulatorInput } from "@/lib/simulator";
 import { runMonteCarlo } from "@/lib/monte-carlo";
 import { theoreticalValueAtMonth } from "@/lib/strategy-math";
+
+// Icône Lucide associée à chaque feature pour la section "inclut aussi".
+// Garde l'emoji (FeatureCopy.icon) pour le hero, et un SVG propre pour la
+// liste des features sœurs en bas de page.
+const FEATURE_ICONS: Record<string, React.ComponentType<{ size?: number; strokeWidth?: number; className?: string }>> = {
+  "monte-carlo": Activity,
+  "save-strategy": Save,
+  "pdf-export": FileText,
+  "ab-comparison": Scale,
+  "recap-fiscal": Receipt,
+};
 
 export const metadata: Metadata = {
   title: "Passer Premium — DCA Tracker",
@@ -22,6 +41,11 @@ type FeatureCopy = {
   priceYear: string;
   yearSavings: string;
   icon: string;
+
+  /** Short noun for the "X inclut aussi" cards — 2-4 words max. */
+  shortLabel: string;
+  /** One-line tagline for the same cards — 5-9 words. */
+  shortDesc: string;
 
   hero: {
     eyebrow: string;
@@ -65,6 +89,8 @@ const MONTE_CARLO: FeatureCopy = {
   priceYear: "49 €/an",
   yearSavings: "soit 2 mois offerts",
   icon: "📊",
+  shortLabel: "Monte Carlo",
+  shortDesc: "1 000 scénarios de marché simulés",
 
   hero: {
     eyebrow: "❌ Vous voyez un seul chiffre.",
@@ -162,6 +188,8 @@ const SAVE_STRATEGY: FeatureCopy = {
   priceYear: "49 €/an",
   yearSavings: "soit 2 mois offerts",
   icon: "💾",
+  shortLabel: "Suivi de stratégie",
+  shortDesc: "Comparez votre portefeuille au plan, mois après mois",
 
   hero: {
     eyebrow: "❌ Votre stratégie disparaît à chaque fermeture d'onglet.",
@@ -259,6 +287,8 @@ const PDF_EXPORT: FeatureCopy = {
   priceYear: "49 €/an",
   yearSavings: "soit 2 mois offerts",
   icon: "📄",
+  shortLabel: "Export PDF propre",
+  shortDesc: "Sans filigrane, prêt à partager",
 
   hero: {
     eyebrow: "❌ Un filigrane sur votre plan financier.",
@@ -356,6 +386,8 @@ const AB_COMPARISON: FeatureCopy = {
   priceYear: "49 €/an",
   yearSavings: "soit 2 mois offerts",
   icon: "⚖️",
+  shortLabel: "Comparaison A/B",
+  shortDesc: "Deux stratégies côte à côte, écart chiffré",
 
   hero: {
     eyebrow: "❌ Vous choisissez à l'aveugle.",
@@ -453,6 +485,8 @@ const RECAP_FISCAL: FeatureCopy = {
   priceYear: "49 €/an",
   yearSavings: "soit 2 mois offerts",
   icon: "🧾",
+  shortLabel: "Récap fiscal annuel",
+  shortDesc: "Cases 2042 et 2074 pré-calculées",
 
   hero: {
     eyebrow: "❌ Mai approche. Vous savez quoi reporter dans la 2074 ?",
@@ -890,29 +924,53 @@ export default async function UpgradePage({ searchParams }: Props) {
         </section>
 
         {/* ── Other features teaser ─────────────────────────────────────────── */}
-        <section className="mb-10 pt-8 border-t border-gray-100">
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">
-            {f.plan} inclut aussi
-          </p>
+        <section className="mb-10 pt-10 border-t border-gray-100">
+          <div className="flex items-end justify-between mb-5 flex-wrap gap-2">
+            <div>
+              <p className="text-xs font-semibold text-primary-700 uppercase tracking-wider mb-1">
+                {f.plan} inclut aussi
+              </p>
+              <h2 className="text-lg font-bold text-gray-900 leading-tight">
+                Tout ce que vous débloquez en 1 abonnement
+              </h2>
+            </div>
+            <Link
+              href="/tarifs"
+              className="text-xs font-semibold text-primary-700 hover:text-primary-800 transition-colors"
+            >
+              Voir tout sur /tarifs →
+            </Link>
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {Object.entries(FEATURES)
               .filter(([k, copy]) => k !== key && copy.plan === f.plan)
-              .map(([k, copy]) => (
-                <Link
-                  key={k}
-                  href={`/upgrade?feature=${k}`}
-                  className="flex items-start gap-3 rounded-xl border border-gray-100 bg-white p-4 hover:border-primary-200 hover:bg-primary-50/30 transition-colors group"
-                >
-                  <span className="text-xl">{copy.icon}</span>
-                  <div className="min-w-0">
-                    <p className="text-sm font-semibold text-gray-900 group-hover:text-primary-700 transition-colors">
-                      {copy.hero.title.length > 50
-                        ? copy.hero.title.slice(0, 50) + "…"
-                        : copy.hero.title}
-                    </p>
-                  </div>
-                </Link>
-              ))}
+              .map(([k, copy]) => {
+                const Icon = FEATURE_ICONS[k] ?? Activity;
+                return (
+                  <Link
+                    key={k}
+                    href={`/upgrade?feature=${k}`}
+                    className="group relative flex items-start gap-3.5 rounded-2xl border border-gray-100 bg-white p-4 hover:border-primary-300 hover:bg-primary-50/30 hover:shadow-sm transition-all"
+                  >
+                    <span className="shrink-0 w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center text-primary-700 group-hover:bg-primary-100 transition-colors">
+                      <Icon size={18} strokeWidth={1.75} />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold text-gray-900 group-hover:text-primary-700 transition-colors leading-tight">
+                        {copy.shortLabel}
+                      </p>
+                      <p className="mt-0.5 text-xs text-gray-500 leading-snug">
+                        {copy.shortDesc}
+                      </p>
+                    </div>
+                    <ArrowRight
+                      size={14}
+                      className="shrink-0 mt-1 text-gray-300 group-hover:text-primary-600 group-hover:translate-x-0.5 transition-all"
+                      aria-hidden
+                    />
+                  </Link>
+                );
+              })}
           </div>
         </section>
       </div>
