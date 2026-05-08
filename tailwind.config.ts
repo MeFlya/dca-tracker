@@ -49,6 +49,16 @@ const config: Config = {
           "-apple-system",
           "sans-serif",
         ],
+        // Display font — appliquée automatiquement sur h1/h2 via globals.css.
+        // Fraunces (variable, opsz/wght) apporte une signature éditoriale
+        // "finance/sérieux" qui démarque DCA Tracker du look "SaaS Inter"
+        // générique, tout en gardant Inter pour le body (lisibilité).
+        display: [
+          "Fraunces",
+          "ui-serif",
+          "Georgia",
+          "serif",
+        ],
         mono: ["JetBrains Mono", "ui-monospace", "monospace"],
       },
       boxShadow: {
