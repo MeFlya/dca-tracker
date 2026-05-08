@@ -19,14 +19,7 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
     url: CANONICAL,
     type: "website",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "Allocation portefeuille ETF — DCA Tracker",
-      },
-    ],
+    images: [{ url: "https://dcatracker.fr/opengraph-image", width: 1200, height: 630 }],
   },
 };
 

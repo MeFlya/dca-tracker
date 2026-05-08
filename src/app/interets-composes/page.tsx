@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
     url: "/interets-composes",
     type: "article",
-    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Intérêts composés — DCA Tracker" }],
+    images: [{ url: "https://dcatracker.fr/opengraph-image", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",

@@ -18,14 +18,6 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
     url: CANONICAL,
     type: "article",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "Investir 200€ par mois en ETF — DCA Tracker",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",

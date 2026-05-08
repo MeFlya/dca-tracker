@@ -49,17 +49,25 @@ export const metadata: Metadata = {
     title: "DCA Tracker — Simulateur ETF & Investissement Progressif",
     description:
       "Simulez vos versements mensuels en ETF avec les intérêts composés. Gratuit, sans inscription, hypothèses transparentes.",
-    // OG images : générées par convention via app/.../opengraph-image.tsx.
-    // Pas d'override `images` ici sinon Next priorise l'override sur la
-    // convention (et /og-image.png n'existe pas).
+    // Fallback explicite vers la home OG dynamique. Les pages qui ont leur
+    // propre opengraph-image.tsx l'override automatiquement (convention
+    // Next.js). Les autres héritent de cette image — meilleur que rien
+    // pour les social previews.
+    images: [
+      {
+        url: `${CANONICAL_ORIGIN}/opengraph-image`,
+        width: 1200,
+        height: 630,
+        alt: "DCA Tracker — Simulateur d'investissement progressif en ETF",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "DCA Tracker — Simulateur ETF & Investissement Progressif",
     description:
       "Projetez vos versements mensuels en ETF avec les intérêts composés. Gratuit, sans inscription.",
-    // Twitter images héritent automatiquement de l'OG image (convention
-    // opengraph-image.tsx). Pas d'override.
+    images: [`${CANONICAL_ORIGIN}/opengraph-image`],
   },
   robots: {
     index: true,
