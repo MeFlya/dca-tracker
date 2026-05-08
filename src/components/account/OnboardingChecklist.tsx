@@ -53,34 +53,41 @@ export function OnboardingChecklist({ isPremium, hasStrategy, firstName }: Props
   const completed = steps.filter((s) => s.status === "done").length;
 
   return (
-    <section className="rounded-2xl border border-primary-100 bg-white p-6 sm:p-8 mb-6">
-      {/* Header */}
-      <div className="flex items-start justify-between gap-4 flex-wrap mb-6">
-        <div>
-          <p className="text-xs font-semibold text-primary-600 uppercase tracking-wider mb-1">
-            Premiers pas
-          </p>
-          <h2 className="text-xl font-bold text-gray-900 leading-tight">
-            {firstName
-              ? `Bienvenue, ${firstName}`
-              : "Bienvenue sur DCA Tracker"}
-          </h2>
-          <p className="text-sm text-gray-500 mt-1">
-            3 étapes pour démarrer votre suivi DCA.
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="flex-1 bg-gray-100 rounded-full h-1.5 w-24">
-            <div
-              className="bg-primary-600 h-1.5 rounded-full transition-all"
-              style={{ width: `${(completed / steps.length) * 100}%` }}
-            />
+    <section className="rounded-2xl border border-primary-100 bg-white overflow-hidden mb-6">
+      {/* Hero illustration — courbe DCA stylisée évoquant le "voyage
+          d'investissement" du new user. Fond gradient bleu pâle, courbe
+          ascendante avec milestone dots et endpoint qui pulse.
+          Pas d'image externe — SVG inline, rapide, accessible. */}
+      <OnboardingIllustration completed={completed} total={steps.length} />
+
+      <div className="p-6 sm:p-8 pt-6">
+        {/* Header */}
+        <div className="flex items-start justify-between gap-4 flex-wrap mb-6">
+          <div>
+            <p className="text-xs font-semibold text-accent-700 uppercase tracking-wider mb-1">
+              Premiers pas
+            </p>
+            <h2 className="text-xl font-bold text-gray-900 leading-tight">
+              {firstName
+                ? `Bienvenue, ${firstName}`
+                : "Bienvenue sur DCA Tracker"}
+            </h2>
+            <p className="text-sm text-gray-500 mt-1">
+              3 étapes pour démarrer votre suivi DCA.
+            </p>
           </div>
-          <span className="text-xs font-semibold text-gray-500 tabular-nums">
-            {completed}/{steps.length}
-          </span>
+          <div className="flex items-center gap-2">
+            <div className="flex-1 bg-gray-100 rounded-full h-1.5 w-24">
+              <div
+                className="bg-primary-600 h-1.5 rounded-full transition-all"
+                style={{ width: `${(completed / steps.length) * 100}%` }}
+              />
+            </div>
+            <span className="text-xs font-semibold text-gray-500 tabular-nums">
+              {completed}/{steps.length}
+            </span>
+          </div>
         </div>
-      </div>
 
       {/* Steps */}
       <div className="space-y-2.5">
@@ -133,7 +140,142 @@ export function OnboardingChecklist({ isPremium, hasStrategy, firstName }: Props
           </div>
         </div>
       )}
+      </div>
     </section>
+  );
+}
+
+// ─── Onboarding illustration ─────────────────────────────────────────────────
+//
+// SVG inline custom — courbe DCA stylisée évoquant le voyage d'investissement.
+// Pas une icône Lucide générique, pas une stock photo : un dessin spécifique
+// au produit. 3 milestone dots correspondent aux 3 étapes (compte créé,
+// simulation lancée, stratégie sauvegardée). Le dot actif est plus grand.
+//
+// Responsive : full-width, height fixe 140px (bon ratio sur mobile et desktop).
+// Performance : SVG inline, pas d'image à fetcher, animations CSS only.
+
+function OnboardingIllustration({
+  completed,
+  total,
+}: {
+  completed: number;
+  total: number;
+}) {
+  // Position du "you are here" sur la courbe selon progression
+  const progress = completed / total;
+  const dotX = 60 + progress * 480; // de 60 à 540 sur viewBox 600
+  // Approximation visuelle de la y position sur la courbe (y diminue avec progress)
+  const dotY = 110 - progress * 80;
+
+  return (
+    <div className="relative w-full h-[140px] bg-gradient-to-br from-primary-50/60 via-white to-accent-50/40 border-b border-primary-100 overflow-hidden">
+      {/* Dot grid texture subtile en arrière-plan */}
+      <div
+        className="absolute inset-0 opacity-[0.06] pointer-events-none"
+        style={{
+          backgroundImage: "radial-gradient(#1d4ed8 1px, transparent 1px)",
+          backgroundSize: "16px 16px",
+        }}
+        aria-hidden
+      />
+      <svg
+        viewBox="0 0 600 140"
+        className="absolute inset-0 w-full h-full"
+        preserveAspectRatio="none"
+        aria-hidden
+      >
+        <defs>
+          <linearGradient id="onboardingArea" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#0d9488" stopOpacity="0.18" />
+            <stop offset="100%" stopColor="#0d9488" stopOpacity="0" />
+          </linearGradient>
+          <linearGradient id="onboardingStroke" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="#60a5fa" />
+            <stop offset="50%" stopColor="#0d9488" />
+            <stop offset="100%" stopColor="#1d4ed8" />
+          </linearGradient>
+        </defs>
+
+        {/* Aire sous la courbe */}
+        <path
+          d="M 0 120 C 100 118, 180 110, 260 90 S 440 50, 600 20 L 600 140 L 0 140 Z"
+          fill="url(#onboardingArea)"
+        />
+        {/* Courbe principale — animation draw on mount */}
+        <path
+          d="M 0 120 C 100 118, 180 110, 260 90 S 440 50, 600 20"
+          fill="none"
+          stroke="url(#onboardingStroke)"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          className="animate-draw-line"
+        />
+
+        {/* 3 milestone dots — un par étape, position fixe */}
+        {[
+          { x: 60,  y: 116, label: "Compte" },
+          { x: 300, y: 78,  label: "Simulation" },
+          { x: 540, y: 30,  label: "Stratégie" },
+        ].map((m, i) => {
+          const reached = i < completed;
+          return (
+            <g key={i}>
+              <circle
+                cx={m.x}
+                cy={m.y}
+                r="4"
+                fill={reached ? "#0d9488" : "#cbd5e1"}
+                className="animate-fade-in"
+                style={{ animationDelay: `${600 + i * 200}ms` }}
+              />
+              {reached && (
+                <circle
+                  cx={m.x}
+                  cy={m.y}
+                  r="4"
+                  fill="none"
+                  stroke="#0d9488"
+                  strokeWidth="1.5"
+                  opacity="0.4"
+                >
+                  <animate attributeName="r" from="4" to="10" dur="2s" repeatCount="indefinite" />
+                  <animate attributeName="opacity" from="0.4" to="0" dur="2s" repeatCount="indefinite" />
+                </circle>
+              )}
+            </g>
+          );
+        })}
+
+        {/* "You are here" dot — position fonction de progress */}
+        <circle
+          cx={dotX}
+          cy={dotY}
+          r="6"
+          fill="#1d4ed8"
+          className="animate-fade-in"
+          style={{ animationDelay: "1200ms" }}
+        />
+        <circle
+          cx={dotX}
+          cy={dotY}
+          r="6"
+          fill="none"
+          stroke="#1d4ed8"
+          strokeWidth="2"
+        >
+          <animate attributeName="r" from="6" to="14" dur="1.6s" repeatCount="indefinite" />
+          <animate attributeName="opacity" from="0.6" to="0" dur="1.6s" repeatCount="indefinite" />
+        </circle>
+      </svg>
+
+      {/* Caption en bas — contextualise visuellement l'illustration */}
+      <div className="absolute bottom-2 left-4 right-4 flex items-center justify-between text-[10px] font-semibold uppercase tracking-widest text-gray-400 pointer-events-none">
+        <span>Aujourd&apos;hui</span>
+        <span>Votre progression</span>
+        <span>Long terme</span>
+      </div>
+    </div>
   );
 }
 
