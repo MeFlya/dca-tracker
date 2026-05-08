@@ -25,14 +25,7 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
     url: "/",
     type: "website",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "DCA Tracker — Simulateur d'investissement progressif en ETF",
-      },
-    ],
+    // OG image générée par convention via app/opengraph-image.tsx
   },
   twitter: {
     card: "summary_large_image",

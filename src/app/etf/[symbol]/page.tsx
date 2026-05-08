@@ -47,14 +47,7 @@ export async function generateMetadata({
       description,
       url: `/etf/${etf.displaySymbol}`,
       type: "website",
-      images: [
-        {
-          url: "/og-image.png",
-          width: 1200,
-          height: 630,
-          alt: `ETF ${etf.displaySymbol} — ${etf.name} | DCA Tracker`,
-        },
-      ],
+      // OG image générée dynamiquement par convention via etf/[symbol]/opengraph-image.tsx
     },
     twitter: {
       card: "summary_large_image",

@@ -26,14 +26,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description: comp.metaDescription,
       url: canonical,
       type: "article",
-      images: [
-        {
-          url: "/og-image.png",
-          width: 1200,
-          height: 630,
-          alt: `${comp.left.heading} vs ${comp.right.heading}`,
-        },
-      ],
+      // OG image générée dynamiquement par convention via comparatif-etf/[slug]/opengraph-image.tsx
     },
     twitter: {
       card: "summary_large_image",
