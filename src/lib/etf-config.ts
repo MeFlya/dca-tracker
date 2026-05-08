@@ -240,21 +240,11 @@ export const ETF_LIST: ETFConfig[] = [
   // incorrect — c'était un doublon trompeur. Un vrai ETF Europe Small Cap
   // pourra être ajouté ultérieurement (candidat : ZPRS / SPDR MSCI Europe
   // Small Cap Value Weighted, ISIN IE00BSPLC413, non PEA).
-  {
-    symbol: "IUSN.DE",
-    displaySymbol: "IUSN",
-    indexLabel: "MSCI World Small Caps",
-    name: "iShares MSCI World Small Cap UCITS ETF",
-    description:
-      "Couvre les petites capitalisations mondiales des pays développés (~3 400 entreprises). Réplication physique, diversification internationale des small caps en un seul ETF. Non éligible PEA.",
-    category: "Actions petites caps monde",
-    ter: 0.35,
-    replicationMethod: "Physique optimisé",
-    distributionPolicy: "Capitalisant",
-    isin: "IE00BF4RFH31",
-    peaEligible: false,
-    region: "small-cap",
-  },
+  // Note (2026-05-08) : IUSN (iShares MSCI World Small Cap, IE00BF4RFH31)
+  // retiré du sitemap. Niche faible volume FR, réservé CTO, pas de detail
+  // content rédigé → page tombait sur le template thin et était classée
+  // "détectée non indexée" par Google. Pas de redirect (pas de successeur
+  // direct) — Google va la drop naturellement.
 
   // ── Japon ─────────────────────────────────────────────────────────────────
 

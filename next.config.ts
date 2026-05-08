@@ -32,6 +32,17 @@ const nextConfig: NextConfig = {
       // SMAE supprimé (ISIN pointait sur un doublon Russell 2000). On
       // redirige vers la liste complète des ETF — pas d'équivalent direct.
       { source: "/etf/SMAE", destination: "/comparer-etf", permanent: true },
+
+      // ── SEO thin content cleanup (2026-05-08) ──────────────────────────
+      // /investir-1000-euros-mois-etf : page thin (317 lignes vs 619/653
+      // pour les pages 100/300 €), niche faible volume FR (au-delà de
+      // 500 €/mois les requêtes deviennent "investir mon épargne" plutôt
+      // que "investir 1000 €/mois"). Redirige vers la page mère.
+      {
+        source: "/investir-1000-euros-mois-etf",
+        destination: "/investir-en-etf",
+        permanent: true,
+      },
     ];
   },
 

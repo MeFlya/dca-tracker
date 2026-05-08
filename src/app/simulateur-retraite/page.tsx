@@ -394,9 +394,9 @@ export default function SimulateurRetraitePage() {
             <p className="text-sm font-semibold text-gray-900 mb-1">Investir 500 €/mois</p>
             <p className="text-xs text-gray-500">Simulation détaillée + FIRE.</p>
           </Link>
-          <Link href="/investir-1000-euros-mois-etf" className="rounded-xl border border-gray-100 bg-white p-4 card-hover">
-            <p className="text-sm font-semibold text-gray-900 mb-1">Investir 1 000 €/mois</p>
-            <p className="text-xs text-gray-500">Objectif indépendance financière.</p>
+          <Link href="/investir-en-etf" className="rounded-xl border border-gray-100 bg-white p-4 card-hover">
+            <p className="text-sm font-semibold text-gray-900 mb-1">Investir en ETF — guide complet</p>
+            <p className="text-xs text-gray-500">Tout pour bien démarrer son DCA en ETF.</p>
           </Link>
           <Link href="/interets-composes" className="rounded-xl border border-gray-100 bg-white p-4 card-hover">
             <p className="text-sm font-semibold text-gray-900 mb-1">Intérêts composés</p>

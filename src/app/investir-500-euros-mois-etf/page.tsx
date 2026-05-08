@@ -297,9 +297,9 @@ export default function Investir500Page() {
             <p className="text-sm font-semibold text-gray-900 mb-1">Investir 300 €/mois</p>
             <p className="text-xs text-gray-500">La même simulation pour un versement plus modeste.</p>
           </Link>
-          <Link href="/investir-1000-euros-mois-etf" className="rounded-xl border border-gray-100 bg-white p-4 card-hover">
-            <p className="text-sm font-semibold text-gray-900 mb-1">Investir 1 000 €/mois</p>
-            <p className="text-xs text-gray-500">Simulation pour un budget confortable — FIRE accessible.</p>
+          <Link href="/investir-en-etf" className="rounded-xl border border-gray-100 bg-white p-4 card-hover">
+            <p className="text-sm font-semibold text-gray-900 mb-1">Investir en ETF — guide complet</p>
+            <p className="text-xs text-gray-500">Choisir le montant, la durée, l&apos;enveloppe — tout y est.</p>
           </Link>
           <Link href="/pea-ou-cto" className="rounded-xl border border-gray-100 bg-white p-4 card-hover">
             <p className="text-sm font-semibold text-gray-900 mb-1">PEA ou CTO ?</p>

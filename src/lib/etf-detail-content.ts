@@ -38,25 +38,30 @@ Les dividendes versés par les entreprises de l'indice ne sont pas distribués a
     suggestedReturn: 7,
   },
 
-  EWLD: {
-    whatItTracks: `L'EWLD réplique le même indice MSCI World que le CW8, mais avec une méthode de réplication physique optimisée. Contrairement à la réplication synthétique, l'ETF détient directement un sous-ensemble représentatif des actions composant l'indice (réplication par échantillonnage). iShares, la branche ETF de BlackRock, est le plus grand émetteur d'ETF au monde.
+  // IWDA = iShares Core MSCI World UCITS ETF (ISIN IE00B4L5Y983), listing
+  // Amsterdam. Concurrent direct du CW8 sur le marché français — même
+  // indice, méthode différente. Contenu hérité de l'ancienne entrée EWLD
+  // (ticker Lyxor désormais redirigé) car il s'agit du même type d'ETF
+  // (iShares MSCI World physique).
+  IWDA: {
+    whatItTracks: `L'IWDA réplique le même indice MSCI World que le CW8, mais avec une méthode de réplication physique optimisée. Contrairement à la réplication synthétique par swap, l'ETF détient directement un sous-ensemble représentatif des actions composant l'indice (réplication par échantillonnage). iShares, la branche ETF de BlackRock, est le plus grand émetteur d'ETF au monde.
 
-La réplication physique signifie que le fonds possède réellement des parts d'entreprises comme Apple, Microsoft, LVMH ou Toyota. Cela élimine le risque de contrepartie propre aux swaps, au prix d'une légère imperfection de tracking (l'ETF ne détient pas les ~1 500 titres de l'indice, mais une sélection optimisée).
+La réplication physique signifie que le fonds possède réellement des parts d'entreprises comme Apple, Microsoft, LVMH ou Toyota. Cela élimine le risque de contrepartie propre aux swaps, au prix d'une légère imperfection de tracking (l'ETF ne détient pas les ~1 500 titres de l'indice, mais une sélection optimisée d'environ 90 % d'entre eux).
 
-L'EWLD est également capitalisant et éligible PEA, ce qui en fait un concurrent direct du CW8 sur le marché français. Son TER (0,20 %) est inférieur à celui du CW8, bien que d'autres frais implicites (coûts de transaction, écart de suivi) puissent nuancer cet avantage en pratique.`,
+L'IWDA est également capitalisant et éligible PEA — un cas rare pour un ETF physique exposé au marché américain, rendu possible par sa structure de fonds irlandais (ISIN IE00B4L5Y983). Son TER (0,20 %) est inférieur à celui du CW8 (0,38 %), bien que d'autres frais implicites (coûts de transaction, écart de suivi) puissent nuancer cet avantage en pratique.`,
     whyChooseIt: [
       "Réplication physique — le fonds détient réellement des actions, éliminant le risque de contrepartie des swaps",
-      "TER parmi les plus bas du marché pour un ETF MSCI World (0,20 %)",
-      "Éligible PEA — même avantage fiscal que le CW8",
-      "iShares (BlackRock) : l'émetteur le plus important au monde, avec une infrastructure solide et une grande transparence",
+      "TER parmi les plus bas du marché pour un ETF MSCI World (0,20 %), inférieur au CW8",
+      "Éligible PEA — même avantage fiscal que le CW8, sans recours à un swap",
+      "iShares (BlackRock) : l'émetteur le plus important au monde, infrastructure solide et grande transparence sur les holdings",
     ],
     watchOut: [
-      "Liquidité légèrement inférieure au CW8 sur Euronext Paris — le spread peut être plus large sur de petits volumes",
-      "L'écart de suivi réel peut dépasser le TER affiché selon les conditions de marché",
-      "Disponibilité variable selon les courtiers — à vérifier avant d'ouvrir une position",
+      "Liquidité légèrement inférieure au CW8 sur les marchés français — le spread peut être plus large sur de petits volumes",
+      "L'écart de suivi réel peut dépasser le TER affiché selon les conditions de marché (réplication par échantillonnage)",
+      "Disponibilité variable selon les courtiers français — à vérifier avant d'ouvrir une position (Trade Republic et Bourse Direct le proposent en PEA, certaines banques traditionnelles non)",
     ],
     suitableFor:
-      "Convient aux investisseurs qui préfèrent la réplication physique pour des raisons de transparence ou d'aversion au risque de contrepartie, tout en restant sur l'exposition MSCI World avec éligibilité PEA.",
+      "Convient aux investisseurs qui préfèrent la réplication physique pour des raisons de transparence ou d'aversion au risque de contrepartie, tout en restant sur l'exposition MSCI World avec éligibilité PEA. Excellent choix pour qui veut maximiser la pureté de la réplication sans sacrifier la fiscalité PEA.",
     suggestedReturn: 7,
   },
 
@@ -105,12 +110,16 @@ Contrairement aux ETF UCITS européens, le SPY est un trust américain (grantor 
     suggestedReturn: 8,
   },
 
-  SP5: {
-    whatItTracks: `Le SP5 réplique le S&P 500, l'indice des 500 plus grandes entreprises américaines cotées, tout en étant éligible au PEA grâce à la réplication synthétique d'Amundi. L'ETF ne détient pas directement les actions américaines mais conclut un contrat swap avec une contrepartie bancaire qui livre la performance du S&P 500. Le portefeuille physique du fonds est constitué d'actions européennes éligibles PEA — la mécanique du swap fait le reste.
+  // 500 = Amundi S&P 500 UCITS ETF (ISIN LU1681048804), ticker Euronext
+  // Paris "500" depuis le rebrand Lyxor → Amundi (2022). Contenu hérité
+  // de l'ancienne entrée SP5 (ticker historique) puisqu'il s'agit du même
+  // fonds, simplement renommé.
+  "500": {
+    whatItTracks: `Le 500 réplique le S&P 500, l'indice des 500 plus grandes entreprises américaines cotées, tout en étant éligible au PEA grâce à la réplication synthétique d'Amundi. L'ETF ne détient pas directement les actions américaines mais conclut un contrat swap avec une contrepartie bancaire qui livre la performance du S&P 500. Le portefeuille physique du fonds est constitué d'actions européennes éligibles PEA — la mécanique du swap fait le reste.
 
 Le S&P 500 est l'indice de référence de la gestion d'actifs mondiale. Il couvre environ 80 % de la capitalisation boursière américaine et surpondère fortement la technologie : les dix premières positions (Apple, Microsoft, Nvidia, Amazon, Meta, Alphabet, Tesla, Berkshire Hathaway, JPMorgan, Broadcom) représentent plus de 35 % de l'indice.
 
-Avec un TER de 0,15 %, le SP5 est l'une des façons les moins chères d'accéder au S&P 500 en Europe, et la seule solution PEA-éligible à ce niveau de frais.`,
+Avec un TER de 0,15 %, l'Amundi S&P 500 est l'une des façons les moins chères d'accéder au S&P 500 en Europe, et la seule solution PEA-éligible à ce niveau de frais. Note : le ticker historique "SP5" (Lyxor avant 2022) reste actif via redirection — le fonds est aujourd'hui le même, sous bannière Amundi.`,
     whyChooseIt: [
       "Éligible PEA — le seul moyen d'investir sur le S&P 500 avec la fiscalité avantageuse du PEA (17,2 % après 5 ans)",
       "TER ultra-compétitif à 0,15 % — parmi les moins chers de l'univers ETF S&P 500 accessibles en Europe",
@@ -149,15 +158,18 @@ Le Nasdaq-100 est l'indice le plus performant de l'histoire sur les 20 dernière
     suggestedReturn: 9,
   },
 
-  PAEEM: {
-    whatItTracks: `Le PAEEM réplique le MSCI Emerging Markets, l'indice de référence des marchés en développement. Il regroupe environ 1 400 entreprises dans 24 pays émergents : Chine (~27 %), Inde (~18 %), Taïwan (~15 %), Corée du Sud (~11 %), Brésil (~5 %), Arabie Saoudite, Afrique du Sud, etc. Ces marchés représentent plus de 40 % du PIB mondial mais restent sous-représentés dans les indices développés comme le MSCI World.
+  // AEEM = Amundi MSCI Emerging Markets UCITS ETF (ISIN LU1681045370),
+  // ticker Euronext Paris "AEEM" depuis le rebrand Lyxor → Amundi (2022).
+  // Contenu hérité de l'ancienne entrée PAEEM (ticker historique).
+  AEEM: {
+    whatItTracks: `L'AEEM réplique le MSCI Emerging Markets, l'indice de référence des marchés en développement. Il regroupe environ 1 400 entreprises dans 24 pays émergents : Chine (~27 %), Inde (~18 %), Taïwan (~15 %), Corée du Sud (~11 %), Brésil (~5 %), Arabie Saoudite, Afrique du Sud, etc. Ces marchés représentent plus de 40 % du PIB mondial mais restent sous-représentés dans les indices développés comme le MSCI World.
 
 Grâce à la réplication synthétique d'Amundi, cet ETF est éligible au PEA — une exception notable, car les marchés émergents sont normalement inaccessibles via PEA. C'est l'un des rares ETF qui permettent une diversification réelle (développés + émergents) entièrement dans le cadre fiscal du PEA.
 
-Les émergents offrent un potentiel de croissance long terme supérieur aux marchés développés, mais avec une volatilité et des risques spécifiques plus importants (risque politique, risque de change, gouvernance d'entreprise, liquidité).`,
+Les émergents offrent un potentiel de croissance long terme supérieur aux marchés développés, mais avec une volatilité et des risques spécifiques plus importants (risque politique, risque de change, gouvernance d'entreprise, liquidité). Note : le ticker historique "PAEEM" (Lyxor avant 2022) reste actif via redirection — c'est le même fonds, désormais sous bannière Amundi.`,
     whyChooseIt: [
       "Exposition aux marchés émergents dans le PEA — une rareté qui permet une diversification mondiale fiscalement optimisée",
-      "Complète idéalement un CW8 ou EWLD : MSCI World (développés) + PAEEM (émergents) = couverture mondiale quasi-totale",
+      "Complète idéalement un CW8 ou IWDA : MSCI World (développés) + AEEM (émergents) = couverture mondiale quasi-totale",
       "TER compétitif à 0,20 % pour un ETF marchés émergents",
       "Amundi : structure swap maîtrisée, ETF coté sur Euronext Paris",
     ],
@@ -212,6 +224,35 @@ Capitalisant : les dividendes ne sont pas versés mais réinvestis dans le fonds
     ],
     suitableFor:
       "Idéal pour les investisseurs qui veulent le S&P 500 physique le moins cher disponible en Europe, dans un CTO ou une assurance-vie. Solution de référence pour ceux qui préfèrent éviter les swaps et maximiser la transparence.",
+    suggestedReturn: 8,
+  },
+
+  // VUSA = Vanguard S&P 500 UCITS ETF (ISIN IE00B3XXRP09), TER 0,07 %,
+  // listing Euronext Amsterdam. Concurrent direct du CSPX (iShares) sur le
+  // segment S&P 500 physique CTO, avec la signature Vanguard (modèle
+  // coopératif, frais bas par construction).
+  VUSA: {
+    whatItTracks: `Le VUSA réplique le S&P 500 par réplication physique complète — le fonds détient directement les 500 actions composant l'indice, dans des proportions reflétant exactement leur poids dans le S&P 500. Vanguard, le gestionnaire, est l'un des deux pionniers historiques de l'investissement passif (avec State Street). Sa structure coopérative unique — les fonds appartiennent à leurs investisseurs — l'incite structurellement à minimiser les frais sur la durée.
+
+Le VUSA est domicilié en Irlande (ISIN IE00B3XXRP09), coté à Amsterdam en USD. Avec un TER de 0,07 %, il est à parité avec le CSPX d'iShares pour le titre de l'ETF S&P 500 physique le moins cher d'Europe. La domiciliation irlandaise bénéficie d'une convention fiscale avantageuse avec les États-Unis : la retenue à la source sur les dividendes est de 15 % au lieu des 30 % standards, réduisant la friction fiscale sur les dividendes réinvestis.
+
+Politique capitalisante : les dividendes ne sont pas distribués mais réinvestis dans le fonds, optimisant l'effet des intérêts composés et simplifiant la gestion fiscale pour l'investisseur français (pas de revenus annuels à déclarer en CTO).
+
+Le S&P 500 lui-même couvre environ 80 % de la capitalisation boursière américaine. Les dix premières positions (Apple, Microsoft, Nvidia, Amazon, Meta, Alphabet, Tesla, Berkshire Hathaway, JPMorgan, Broadcom) représentent plus de 35 % de l'indice, avec une forte concentration sur la technologie (~30 % du poids).`,
+    whyChooseIt: [
+      "TER ultra-compétitif (0,07 %) — à parité avec le CSPX iShares pour le titre du S&P 500 physique le moins cher d'Europe",
+      "Vanguard : modèle coopératif unique qui aligne structurellement les intérêts du gestionnaire et des investisseurs",
+      "Réplication physique complète — le fonds détient les 500 actions du S&P 500, transparence maximale",
+      "Domiciliation irlandaise : convention fiscale US-Irlande avantageuse (retenue à la source 15 % vs 30 %), capitalisant pour optimiser la fiscalité",
+    ],
+    watchOut: [
+      "Non éligible PEA — à loger impérativement en CTO, PER ou assurance-vie. Pour le S&P 500 en PEA, voir l'Amundi 500.",
+      "Coté en USD — exposition au risque de change EUR/USD pour un investisseur européen (peut amplifier ou atténuer les performances selon la parité)",
+      "100 % américain — concentration géographique importante, surpondération technologique (>30 %) qui rend l'ETF sensible aux corrections du secteur",
+      "Choix entre VUSA et CSPX : à TER égal (0,07 %), le choix se fait essentiellement sur la disponibilité chez votre courtier et les volumes de marché — les deux sont des solutions équivalentes",
+    ],
+    suitableFor:
+      "Idéal pour les investisseurs qui veulent le S&P 500 physique le moins cher disponible en Europe, dans un CTO ou une assurance-vie. Particulièrement adapté à ceux qui privilégient l'écosystème Vanguard (cohérence avec d'autres ETF Vanguard comme le VWCE pour une couverture monde) ou qui souhaitent un alignement d'intérêts maximal avec leur gestionnaire.",
     suggestedReturn: 8,
   },
 

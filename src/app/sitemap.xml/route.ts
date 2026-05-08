@@ -22,7 +22,6 @@ export async function GET(): Promise<NextResponse> {
     { url: `${base}/investir-200-euros-mois-etf`, changeFreq: "monthly", priority: 0.9 },
     { url: `${base}/investir-300-euros-mois-etf`, changeFreq: "monthly", priority: 0.9 },
     { url: `${base}/investir-500-euros-mois-etf`, changeFreq: "monthly", priority: 0.9 },
-    { url: `${base}/investir-1000-euros-mois-etf`, changeFreq: "monthly", priority: 0.9 },
     { url: `${base}/meilleurs-etf-debutants`,  changeFreq: "monthly", priority: 0.9  },
     { url: `${base}/strategie-dca`,            changeFreq: "monthly", priority: 0.9  },
     { url: `${base}/interets-composes`,        changeFreq: "monthly", priority: 0.85 },
