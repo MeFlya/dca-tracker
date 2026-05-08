@@ -38,7 +38,7 @@ export function Testimonials() {
   if (TESTIMONIALS.length === 0) return null;
 
   return (
-    <section className="py-20 bg-white">
+    <section className="py-16 bg-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <p className="text-xs font-semibold uppercase tracking-widest text-accent-700 mb-3">

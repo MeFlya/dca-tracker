@@ -27,9 +27,9 @@ const TRUST_POINTS = [
 
 export function TrustSection() {
   return (
-    <section className="py-20 bg-slate-50 border-y border-gray-100">
+    <section className="py-16 bg-slate-50 border-y border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-14">
+        <div className="text-center mb-12">
           <p className="text-xs font-semibold uppercase tracking-widest text-accent-700 mb-3">
             Nos engagements
           </p>
