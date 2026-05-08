@@ -65,6 +65,18 @@ const SCENARIOS = [
   },
 ];
 
+// Progression année par année à 7 %/an avec capitalisation mensuelle.
+// Chiffres calculés ex-ante : FV = 500 × ((1+r/12)^(12y) − 1) / (r/12).
+const YEARLY_PROGRESSION = [
+  { year: 1,  invested: "6 000 €",   value: "6 200 €",   gains: "+200 €" },
+  { year: 5,  invested: "30 000 €",  value: "35 800 €",  gains: "+5 800 €" },
+  { year: 10, invested: "60 000 €",  value: "86 500 €",  gains: "+26 500 €" },
+  { year: 15, invested: "90 000 €",  value: "158 700 €", gains: "+68 700 €" },
+  { year: 20, invested: "120 000 €", value: "260 500 €", gains: "+140 500 €" },
+  { year: 25, invested: "150 000 €", value: "405 300 €", gains: "+255 300 €" },
+  { year: 30, invested: "180 000 €", value: "610 500 €", gains: "+430 500 €" },
+];
+
 const FAQ = [
   {
     q: "Combien vaut 500€ par mois investi en ETF sur 20 ans ?",
@@ -85,6 +97,14 @@ const FAQ = [
   {
     q: "Que se passe-t-il si j'arrête après 10 ans ?",
     a: "Si vous versez 500€/mois pendant 10 ans (60 000€ investis) puis laissez l'argent fructifier 10 ans de plus sans nouveaux versements, à 7 %/an vous finissez à environ 170 300€ au bout de 20 ans — vs 260 500€ si vous aviez continué. Écart : ~90 000€. La moitié droite de la courbe est la plus productive : c'est là que les intérêts composés travaillent le plus.",
+  },
+  {
+    q: "Quels ETF concrets pour investir 500€/mois en PEA ?",
+    a: "Pour un cœur de portefeuille en PEA, les choix les plus utilisés sont CW8 (Amundi MSCI World, TER 0,38 %, swap synthétique) et IWDA (iShares Core MSCI World, TER 0,20 %, réplication physique). Pour surpondérer les États-Unis, l'Amundi 500 (S&P 500 PEA, TER 0,15 %) est imbattable côté frais. Pour diversifier vers les émergents, AEEM (Amundi MSCI Emerging Markets, TER 0,20 %) est l'un des rares ETF émergents éligibles PEA. Une allocation simple et défendable : 80 % CW8/IWDA + 20 % AEEM, qui vous donne une couverture mondiale quasi-complète à frais bas.",
+  },
+  {
+    q: "Faut-il privilégier un seul gros versement mensuel ou fractionner ?",
+    a: "À 500€/mois, un versement unique en début de mois est largement suffisant. Fractionner en deux versements de 250€ (par exemple le 1er et le 15) peut théoriquement lisser légèrement le risque de timing, mais l'effet est marginal sur le long terme — les études montrent un écart de moins de 0,1 % de performance annuelle entre les deux approches. Choisissez la fréquence qui correspond le mieux à votre flux de revenus (un seul versement le 5 du mois si vous êtes salarié payé fin de mois) et automatisez. La régularité prime sur le timing.",
   },
 ];
 
@@ -154,6 +174,58 @@ export default function Investir500Page() {
         </Link>
       </div>
 
+      {/* Capacité d'épargne — angle "à qui ça parle" */}
+      <h2 className="text-xl font-bold text-gray-900 mb-4">
+        500 €/mois : à partir de quel revenu c&apos;est réaliste ?
+      </h2>
+      <p className="text-sm text-gray-600 leading-relaxed mb-5">
+        L&apos;effort d&apos;épargne se mesure en pourcentage du revenu net,
+        pas en valeur absolue. Voici les profils-type pour qui 500 €/mois
+        correspond à un taux d&apos;épargne sain (ni trop ambitieux, ni
+        sous-utilisé) :
+      </p>
+      <div className="rounded-2xl border border-gray-100 bg-white overflow-hidden mb-4">
+        <table className="w-full text-sm">
+          <thead className="bg-gray-50 text-xs uppercase tracking-wider text-gray-500">
+            <tr>
+              <th className="text-left px-4 py-2.5 font-semibold">Revenu net mensuel</th>
+              <th className="text-right px-4 py-2.5 font-semibold">500 € représente</th>
+              <th className="text-left px-4 py-2.5 font-semibold">Niveau d&apos;effort</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100">
+            <tr>
+              <td className="px-4 py-2.5 text-gray-700">2 000 €</td>
+              <td className="px-4 py-2.5 text-right tabular-nums font-semibold text-orange-600">25 %</td>
+              <td className="px-4 py-2.5 text-orange-600">Très ambitieux — possible mais demande un budget serré</td>
+            </tr>
+            <tr>
+              <td className="px-4 py-2.5 text-gray-700">3 000 €</td>
+              <td className="px-4 py-2.5 text-right tabular-nums font-semibold text-amber-600">17 %</td>
+              <td className="px-4 py-2.5 text-amber-700">Engagé — au-dessus de la moyenne française (~15 %)</td>
+            </tr>
+            <tr className="bg-emerald-50/40">
+              <td className="px-4 py-2.5 text-gray-700">4 000 €</td>
+              <td className="px-4 py-2.5 text-right tabular-nums font-semibold text-emerald-700">12,5 %</td>
+              <td className="px-4 py-2.5 text-emerald-700 font-medium">Confortable — taux d&apos;épargne sain</td>
+            </tr>
+            <tr>
+              <td className="px-4 py-2.5 text-gray-700">5 000 €+</td>
+              <td className="px-4 py-2.5 text-right tabular-nums font-semibold text-emerald-700">≤ 10 %</td>
+              <td className="px-4 py-2.5 text-gray-600">Sous-utilisé — vous pouvez probablement viser plus</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p className="text-xs text-gray-500 leading-relaxed mb-10">
+        Le taux d&apos;épargne médian en France est d&apos;environ 15 % du
+        revenu disponible (INSEE, 2024). 500 €/mois constituent un objectif
+        atteignable pour un revenu net entre 3 000 € et 4 500 €,
+        c&apos;est-à-dire un cadre solo en région ou un couple double-revenu
+        moyen. Si vous gagnez plus, viser 600–800 €/mois fait sens — chaque
+        100 € supplémentaires représentent ~52 000 € de plus à 20 ans.
+      </p>
+
       {/* Scenarios grid */}
       <h2 className="text-xl font-bold text-gray-900 mb-4">
         Projection selon votre horizon et votre rendement cible
@@ -195,6 +267,49 @@ export default function Investir500Page() {
           </div>
         ))}
       </div>
+
+      {/* Yearly progression — concrete, year-by-year breakdown */}
+      <h2 className="text-xl font-bold text-gray-900 mb-2">
+        La progression année par année (scénario 7 %/an)
+      </h2>
+      <p className="text-sm text-gray-500 mb-5 leading-relaxed">
+        Voici l&apos;effet des intérêts composés sur 30 ans. Notez la
+        moitié droite de la courbe : entre l&apos;année 20 et l&apos;année 30,
+        votre capital plus que double — alors que vous ne versez que
+        60 000 € de plus.
+      </p>
+      <div className="rounded-2xl border border-gray-100 bg-white overflow-hidden mb-4">
+        <table className="w-full text-sm">
+          <thead className="bg-gray-50 text-xs uppercase tracking-wider text-gray-500">
+            <tr>
+              <th className="text-left px-4 py-2.5 font-semibold">Année</th>
+              <th className="text-right px-4 py-2.5 font-semibold">Total versé</th>
+              <th className="text-right px-4 py-2.5 font-semibold">Capital final</th>
+              <th className="text-right px-4 py-2.5 font-semibold">Intérêts composés</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100">
+            {YEARLY_PROGRESSION.map((y) => (
+              <tr
+                key={y.year}
+                className={y.year === 20 ? "bg-primary-50/40" : undefined}
+              >
+                <td className="px-4 py-2.5 text-gray-700 font-medium">{y.year} ans</td>
+                <td className="px-4 py-2.5 text-right text-gray-600 tabular-nums">{y.invested}</td>
+                <td className="px-4 py-2.5 text-right font-semibold text-gray-900 tabular-nums">{y.value}</td>
+                <td className="px-4 py-2.5 text-right text-emerald-700 tabular-nums font-medium">{y.gains}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p className="text-xs text-gray-500 leading-relaxed mb-10">
+        Calculs avec capitalisation mensuelle. À l&apos;année 30, sur les
+        610 500 € de capital, vous n&apos;aurez versé que 180 000 € de votre
+        propre poche — le reste est intégralement généré par les intérêts
+        composés. C&apos;est ce qui rend le DCA puissant uniquement sur le
+        long terme.
+      </p>
 
       {/* FIRE angle */}
       <h2 className="text-xl font-bold text-gray-900 mb-4">
@@ -253,8 +368,113 @@ export default function Investir500Page() {
       </div>
       <p className="text-sm text-gray-600 leading-relaxed mb-10">
         Sur 20 ans, chaque 0,1 % de frais supplémentaire coûte environ 4 800 €.
-        Privilégiez les ETF à TER inférieur à 0,3 % — types CW8 (0,38 %), ESE
-        (0,15 %), EWLD (0,20 %).
+        Privilégiez les ETF à TER inférieur à 0,3 % — types CW8 (0,38 %), 500
+        (0,15 %), IWDA (0,20 %).
+      </p>
+
+      {/* PEA vs CTO sur 20 ans */}
+      <h2 className="text-xl font-bold text-gray-900 mb-4">
+        PEA ou CTO sur 20 ans : ça change combien ?
+      </h2>
+      <p className="text-sm text-gray-600 leading-relaxed mb-5">
+        Au scénario réaliste (260 500 € au bout de 20 ans, dont 140 500 € de
+        plus-values), le choix de l&apos;enveloppe fiscale fait une vraie
+        différence sur le net qui finit dans votre poche :
+      </p>
+      <div className="rounded-2xl border border-gray-100 bg-white overflow-hidden mb-4">
+        <table className="w-full text-sm">
+          <thead className="bg-gray-50 text-xs uppercase tracking-wider text-gray-500">
+            <tr>
+              <th className="text-left px-4 py-2.5 font-semibold">Enveloppe</th>
+              <th className="text-right px-4 py-2.5 font-semibold">Plus-values</th>
+              <th className="text-right px-4 py-2.5 font-semibold">Imposition</th>
+              <th className="text-right px-4 py-2.5 font-semibold">Net après impôt</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100">
+            <tr className="bg-emerald-50/40">
+              <td className="px-4 py-2.5">
+                <p className="text-gray-700 font-medium">PEA (≥ 5 ans)</p>
+                <p className="text-xs text-gray-500">Prélèvements sociaux uniquement</p>
+              </td>
+              <td className="px-4 py-2.5 text-right tabular-nums text-gray-600">140 500 €</td>
+              <td className="px-4 py-2.5 text-right tabular-nums text-emerald-700 font-medium">−24 166 € (17,2 %)</td>
+              <td className="px-4 py-2.5 text-right tabular-nums font-bold text-gray-900">236 334 €</td>
+            </tr>
+            <tr>
+              <td className="px-4 py-2.5">
+                <p className="text-gray-700 font-medium">CTO</p>
+                <p className="text-xs text-gray-500">Flat tax 30 % systématique</p>
+              </td>
+              <td className="px-4 py-2.5 text-right tabular-nums text-gray-600">140 500 €</td>
+              <td className="px-4 py-2.5 text-right tabular-nums text-red-600 font-medium">−42 150 € (30 %)</td>
+              <td className="px-4 py-2.5 text-right tabular-nums font-bold text-gray-900">218 350 €</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p className="text-sm text-gray-600 leading-relaxed mb-2">
+        <strong className="text-emerald-700">Économie via PEA : 17 984 €</strong> sur 20 ans —
+        plus de 3 ans de versements à 500 €/mois épargnés simplement en
+        choisissant la bonne enveloppe.
+      </p>
+      <p className="text-sm text-gray-600 leading-relaxed mb-3">
+        <strong>Attention au plafond du PEA</strong> : 150 000 € de versements
+        maximum. À 500 €/mois, vous l&apos;atteignez en{" "}
+        <strong>25 ans exactement</strong>. Stratégie classique : maximiser le
+        PEA jusqu&apos;au plafond, puis ouvrir un CTO en parallèle pour
+        continuer à investir au-delà.
+      </p>
+      <Link
+        href="/calculateur-fiscal-pea-cto"
+        className="inline-flex items-center gap-1 text-sm text-primary-700 font-semibold hover:text-primary-800 transition-colors mb-10"
+      >
+        Calculer pour vos chiffres exacts →
+      </Link>
+
+      {/* Coût de l'attente */}
+      <h2 className="text-xl font-bold text-gray-900 mb-4">
+        Le coût de l&apos;attente : commencer maintenant vs dans 5 ans
+      </h2>
+      <p className="text-sm text-gray-600 leading-relaxed mb-5">
+        L&apos;intuition trompe ici. Reporter de 5 ans le démarrage de votre
+        DCA ne coûte pas seulement les 30 000 € que vous n&apos;avez pas
+        versés sur cette période — ça coûte beaucoup plus, parce que ces
+        premières années sont celles où les intérêts composés ont le plus de
+        temps pour travailler.
+      </p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+        <div className="rounded-2xl border-2 border-emerald-200 bg-emerald-50/60 p-5">
+          <p className="text-xs font-bold text-emerald-700 uppercase tracking-wider mb-2">
+            Vous démarrez maintenant
+          </p>
+          <p className="text-3xl font-bold text-emerald-900 tabular-nums mb-1">260 500 €</p>
+          <p className="text-xs text-emerald-800 leading-relaxed">
+            500 €/mois × 20 ans à 7 %/an. Versé : 120 000 €. Gains : 140 500 €.
+          </p>
+        </div>
+        <div className="rounded-2xl border-2 border-orange-200 bg-orange-50/60 p-5">
+          <p className="text-xs font-bold text-orange-700 uppercase tracking-wider mb-2">
+            Vous démarrez dans 5 ans
+          </p>
+          <p className="text-3xl font-bold text-orange-900 tabular-nums mb-1">158 700 €</p>
+          <p className="text-xs text-orange-800 leading-relaxed">
+            500 €/mois × 15 ans à 7 %/an, sur la même horizon de 20 ans
+            (5 ans d&apos;attente + 15 ans de DCA). Versé : 90 000 €.
+          </p>
+        </div>
+      </div>
+      <p className="text-sm text-gray-600 leading-relaxed mb-2">
+        <strong className="text-red-600">Coût de 5 ans d&apos;attente : 101 800 €</strong> de
+        capital final perdu. Vous économisez 30 000 € de versements, mais
+        vous renoncez à <strong>3 fois cette somme</strong> en intérêts
+        composés non générés.
+      </p>
+      <p className="text-sm text-gray-500 leading-relaxed mb-10">
+        C&apos;est mathématique : les premiers euros versés sont ceux qui ont
+        le plus de temps devant eux pour fructifier. Un euro versé à
+        l&apos;année 1 vaut bien plus à terme qu&apos;un euro versé à
+        l&apos;année 6 — même avec le même horizon final.
       </p>
 
       {/* FAQ */}

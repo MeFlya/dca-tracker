@@ -256,6 +256,35 @@ Le S&P 500 lui-même couvre environ 80 % de la capitalisation boursière améric
     suggestedReturn: 8,
   },
 
+  // RS2K = Amundi MSCI Russell 2000 UCITS ETF (ISIN LU1681038755), TER
+  // 0,35 %, listing Euronext Paris. Exposition small caps US éligible PEA
+  // — combinaison rare et différenciante côté français.
+  RS2K: {
+    whatItTracks: `Le RS2K réplique le Russell 2000, l'indice de référence des petites et moyennes capitalisations américaines. Il regroupe environ 2 000 entreprises dont la capitalisation se situe entre 300 millions et 2 milliards de dollars — un segment radicalement différent du S&P 500, qui ne couvre que les 500 plus grandes valeurs américaines. Là où le S&P 500 reflète les multinationales matures (Apple, Microsoft, JPMorgan), le Russell 2000 capte les entreprises en croissance, plus régionales, souvent encore en phase d'expansion.
+
+Cet ETF d'Amundi présente une particularité quasi-unique sur le marché européen : il est **éligible au PEA** grâce à la réplication synthétique par swap, alors que les small caps américaines sont normalement inaccessibles via cette enveloppe fiscale. Le fonds détient un portefeuille d'actions européennes éligibles PEA et conclut un contrat d'échange avec une contrepartie bancaire qui livre la performance du Russell 2000.
+
+Historiquement, les small caps américaines ont surperformé les large caps sur le long terme — un phénomène documenté par les chercheurs depuis les travaux de Banz (1981) et popularisé par Fama et French sous le nom de "small cap premium". Sur 30+ ans, l'écart de performance annualisé peut atteindre 1 à 2 points, ce qui se traduit par une différence considérable en cumulé. **Mais ce premium n'est pas garanti** : sur les 5 dernières années, le S&P 500 a largement battu le Russell 2000, principalement à cause de la concentration tech qui a tiré les large caps.
+
+Le RS2K capitalise les dividendes (peu nombreux dans le segment small caps de toute façon) et présente un TER de 0,35 % — supérieur à un ETF S&P 500 PEA (le 500 Amundi est à 0,15 %), ce qui se justifie par la complexité de gestion du swap sur 2 000 sous-jacents.`,
+    whyChooseIt: [
+      "**Éligible PEA** — l'un des très rares ETF qui permettent une exposition aux small caps américaines dans le cadre fiscal du PEA (17,2 % après 5 ans au lieu de 30 %)",
+      "Capture le \"small cap premium\" historiquement observé sur le long terme — diversification de style en plus de la diversification sectorielle",
+      "Complète parfaitement un cœur MSCI World ou S&P 500 : le MSCI World ne contient que des large/mid caps, le RS2K vient ajouter le segment des petites capi US",
+      "Amundi : émetteur n°1 européen, structure swap éprouvée et liquide, ETF coté sur Euronext Paris",
+    ],
+    watchOut: [
+      "**Volatilité nettement supérieure** aux large caps : drawdowns plus profonds (-30 à -40 % en cas de crise contre -20 à -30 % pour le S&P 500), récupérations plus lentes",
+      "**Sous-performance des 5 dernières années** : depuis 2020, le Russell 2000 a sous-performé le S&P 500 de plus de 30 points cumulés. Le \"small cap premium\" est un pari long terme, pas un free lunch sur 5 ans",
+      "Réplication synthétique : risque de contrepartie résiduel encadré à 10 % de l'actif net par la réglementation UCITS",
+      "TER plus élevé (0,35 %) que les ETF large caps PEA (0,15–0,20 %) — pèse davantage sur la performance long terme",
+      "Composition sectorielle déséquilibrée par rapport au S&P 500 : sous-représentation tech, surreprésentation des financières régionales et de l'industrie — peut amplifier les cycles économiques",
+    ],
+    suitableFor:
+      "Convient aux investisseurs qui ont déjà un cœur de portefeuille MSCI World ou S&P 500 (cf CW8, IWDA, 500) et qui veulent ajouter une diversification de style vers les small caps US, tout en restant dans le cadre fiscal du PEA. Une allocation de 5 à 15 % en RS2K, aux côtés d'un ETF monde, est une approche défendable pour qui croit au small cap premium long terme. **À éviter** comme unique ETF — la volatilité et la concentration géographique seraient excessives.",
+    suggestedReturn: 8,
+  },
+
   QQQ: {
     whatItTracks: `Le QQQ réplique le Nasdaq-100, un indice regroupant les 100 plus grandes entreprises non-financières listées sur le Nasdaq. Il est extrêmement concentré sur la technologie et la croissance : Apple, Microsoft, Nvidia, Amazon, Meta, Alphabet, Broadcom, Tesla, Costco et Netflix constituent les dix premières positions et représentent généralement plus de 50 % de l'indice.
 
