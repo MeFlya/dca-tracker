@@ -30,7 +30,7 @@ export function TrustSection() {
     <section className="py-20 bg-slate-50 border-y border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-14">
-          <p className="text-xs font-semibold uppercase tracking-widest text-primary-600 mb-3">
+          <p className="text-xs font-semibold uppercase tracking-widest text-accent-700 mb-3">
             Nos engagements
           </p>
           <h2 className="text-3xl font-bold text-gray-900 mb-4">

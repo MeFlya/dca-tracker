@@ -41,7 +41,7 @@ export function Testimonials() {
     <section className="py-20 bg-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <p className="text-xs font-semibold uppercase tracking-widest text-primary-600 mb-3">
+          <p className="text-xs font-semibold uppercase tracking-widest text-accent-700 mb-3">
             Ils utilisent DCA Tracker
           </p>
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">

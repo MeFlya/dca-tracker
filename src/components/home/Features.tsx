@@ -50,7 +50,7 @@ export function Features() {
 
         {/* Header */}
         <div className="max-w-2xl mb-14">
-          <p className="text-xs font-semibold uppercase tracking-widest text-primary-600 mb-3">
+          <p className="text-xs font-semibold uppercase tracking-widest text-accent-700 mb-3">
             Ce que vous pouvez faire dès maintenant
           </p>
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight mb-4">

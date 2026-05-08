@@ -30,7 +30,7 @@ export function HowItWorks() {
     <section className="py-20 bg-white">
       <div className="max-w-5xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-14">
-          <p className="text-xs font-semibold text-primary-600 uppercase tracking-widest mb-3">
+          <p className="text-xs font-semibold text-accent-700 uppercase tracking-widest mb-3">
             Comment ça marche
           </p>
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">

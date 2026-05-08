@@ -22,6 +22,23 @@ const config: Config = {
           800: "#1e3a8a",
           900: "#1e3163",
         },
+        // Accent — teal/sage profond pour signature visuelle.
+        // Utilisé sur les eyebrows uppercase, certains états hover, et les
+        // touches "premium" qui doivent se démarquer du blue dominant.
+        // Choisi pour son ton "finance/sage" qui contraste avec primary
+        // sans entrer dans les conventions tech (purple) ou alerte (rouge).
+        accent: {
+          50: "#f0fdfa",
+          100: "#ccfbf1",
+          200: "#99f6e4",
+          300: "#5eead4",
+          400: "#2dd4bf",
+          500: "#14b8a6",
+          600: "#0d9488",
+          700: "#0f766e",
+          800: "#115e59",
+          900: "#134e4a",
+        },
         // Gain/positive indicators
         gain: {
           DEFAULT: "#059669",
