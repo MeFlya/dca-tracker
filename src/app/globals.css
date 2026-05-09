@@ -2,10 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Inter pour le body, Fraunces pour les headings (display).
-   Fraunces : variable font (opsz 9-144, wght 100-900) — on charge wght 600/700
-   uniquement et opsz min/max pour ne pas alourdir. */
-@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@300;400;500;600;700&display=swap");
+/* Inter pour le body, Instrument Serif pour les headings (display).
+   Instrument Serif : serif moderne avec personnalité géométrique distinctive.
+   N'a qu'un seul poids (400) + italique sur Google Fonts — c'est intentionnel,
+   le serif s'utilise mieux en weight régulier sur les gros titres (élégant)
+   plutôt qu'en bold synthétique (laid). On override font-bold dans @layer base. */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap");
 
 @layer base {
   * {
@@ -42,12 +44,17 @@
   h1,
   h2 {
     @apply font-display;
-    /* Fraunces a un look légèrement plus large par défaut — on resserre un
-       chouia le tracking sur les gros titres pour garder de la densité. */
-    letter-spacing: -0.025em;
-    /* Optical sizing : Fraunces ajuste automatiquement le contraste des
-       glyphes selon la taille — meilleur rendu sur les gros titres hero. */
-    font-optical-sizing: auto;
+    /* Instrument Serif est élégant en weight 400 sur les gros titres —
+       le bold serait synthétique (Google Fonts ne fournit que weight 400)
+       et viendrait casser les proportions du dessin. !important nécessaire
+       pour neutraliser le `font-bold` qui reste sur certains composants
+       (utilities Tailwind ont une spécificité plus haute que @layer base).
+       Synthesis désactivée pour que le browser n'invente pas de fake-bold. */
+    font-weight: 400 !important;
+    font-synthesis: none;
+    /* Tracking légèrement resserré sur les gros titres — Instrument Serif
+       a un dessin assez ouvert par défaut, on garde de la densité. */
+    letter-spacing: -0.02em;
   }
 }
 

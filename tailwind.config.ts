@@ -67,11 +67,12 @@ const config: Config = {
           "sans-serif",
         ],
         // Display font — appliquée automatiquement sur h1/h2 via globals.css.
-        // Fraunces (variable, opsz/wght) apporte une signature éditoriale
-        // "finance/sérieux" qui démarque DCA Tracker du look "SaaS Inter"
-        // générique, tout en gardant Inter pour le body (lisibilité).
+        // Instrument Serif (Google Fonts) — serif moderne avec personnalité
+        // géométrique distinctive. Vibe : intello mais chaleureux. Une seule
+        // graisse 400 (régulière) — le browser ne doit pas faker du bold
+        // (font-synthesis: none dans globals.css).
         display: [
-          "Fraunces",
+          "Instrument Serif",
           "ui-serif",
           "Georgia",
           "serif",

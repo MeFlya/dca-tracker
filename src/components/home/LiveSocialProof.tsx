@@ -78,10 +78,12 @@ export function LiveSocialProof() {
                   {label}
                 </span>
               </div>
-              {/* Big number — Fraunces (font-display) pour signature
-                  éditoriale, tabular-nums pour l'alignement parfait des
-                  chiffres. */}
-              <p className="font-display text-5xl sm:text-6xl font-bold text-gray-900 tabular-nums leading-none tracking-tight">
+              {/* Big number — Instrument Serif (font-display) pour signature
+                  éditoriale. Pas de font-bold : la display font n'a qu'un
+                  seul poids (400) et le serif élégant porte mieux les gros
+                  chiffres en regular qu'en bold synthétique. tabular-nums
+                  pour l'alignement parfait des chiffres. */}
+              <p className="font-display text-5xl sm:text-6xl text-gray-900 tabular-nums leading-none tracking-tight">
                 {value}
               </p>
             </div>
