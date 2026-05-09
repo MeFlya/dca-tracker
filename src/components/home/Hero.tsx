@@ -64,11 +64,15 @@ export function Hero() {
                 Voir ce que vaut mon argent
                 <span aria-hidden className="arrow-nudge">→</span>
               </Link>
+              {/* CTA secondaire — destination différente du primary pour
+                  diversifier les entry points. Capture les visiteurs qui
+                  cherchent à comparer avant de simuler (mental model
+                  "explorateur" vs "actionneur"). */}
               <Link
-                href="/simulateur"
+                href="/comparer-etf"
                 className="btn-secondary text-base px-6 py-3"
               >
-                Tester avec 200 €/mois
+                Comparer les ETF
               </Link>
             </div>
 

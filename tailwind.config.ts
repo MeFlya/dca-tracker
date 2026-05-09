@@ -67,12 +67,13 @@ const config: Config = {
           "sans-serif",
         ],
         // Display font — appliquée automatiquement sur h1/h2 via globals.css.
-        // Instrument Serif (Google Fonts) — serif moderne avec personnalité
-        // géométrique distinctive. Vibe : intello mais chaleureux. Une seule
-        // graisse 400 (régulière) — le browser ne doit pas faker du bold
-        // (font-synthesis: none dans globals.css).
+        // Newsreader (Production Type via Google Fonts) — serif éditorial
+        // moderne. Variable wght 200-800 + opsz axis 6..72 → bold propre,
+        // optical sizing automatique selon font-size. Vibe : intello,
+        // chaleureux, distinctif (cousin moderne d'Instrument Serif avec
+        // un vrai bold).
         display: [
-          "Instrument Serif",
+          "Newsreader",
           "ui-serif",
           "Georgia",
           "serif",

@@ -2,12 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Inter pour le body, Instrument Serif pour les headings (display).
-   Instrument Serif : serif moderne avec personnalité géométrique distinctive.
-   N'a qu'un seul poids (400) + italique sur Google Fonts — c'est intentionnel,
-   le serif s'utilise mieux en weight régulier sur les gros titres (élégant)
-   plutôt qu'en bold synthétique (laid). On override font-bold dans @layer base. */
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap");
+/* Inter pour le body, Newsreader pour les headings (display).
+   Newsreader (Production Type via Google Fonts) : serif éditorial moderne
+   avec personnalité géométrique. Vibe proche d'Instrument Serif (intello
+   chaleureux) MAIS variable font wght 200-800 + opsz axis → vrai bold
+   propre, contrairement à Instrument Serif qui n'a que 400. On charge
+   wght 400 (regular) + 700 (bold) avec opsz 6..72 (auto-tuning du
+   contraste selon font-size). */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,700&display=swap");
 
 @layer base {
   * {
@@ -44,15 +46,15 @@
   h1,
   h2 {
     @apply font-display;
-    /* Instrument Serif n'a qu'un poids 400 sur Google Fonts. On ré-active
-       le bold : le browser synthétise (épaississement du tracé). Sur un
-       serif moderne comme Instrument Serif rendu à grande taille, le
-       fake-bold reste lisible et apporte la présence visuelle attendue
-       sur les titres. Si le rendu te déplaît, switcher pour une font
-       avec un vrai bold (Newsreader, Fraunces, EB Garamond). */
-    font-synthesis: weight;
-    /* Tracking légèrement resserré sur les gros titres — Instrument Serif
-       a un dessin assez ouvert par défaut, on garde de la densité. */
+    /* Newsreader a un vrai bold dans son fichier (variable wght 200-800).
+       Plus besoin de fake-bold synthétique — on désactive la synthèse pour
+       éviter tout artefact si un browser synthétise quand même. */
+    font-synthesis: none;
+    /* opsz axis activé : Newsreader ajuste automatiquement le contraste
+       et les proportions des glyphes selon la font-size. Meilleur rendu
+       sur les gros titres (text-5xl+) qui demandent plus de contraste. */
+    font-optical-sizing: auto;
+    /* Tracking légèrement resserré pour densité visuelle sur les gros titres. */
     letter-spacing: -0.02em;
   }
 }
