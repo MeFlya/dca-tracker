@@ -52,10 +52,26 @@
 }
 
 @layer components {
-  /* Reusable card primitive
+  /* Reusable card primitive (default — équilibré).
      border-slate-200/70 = cooler, more "finance" than gray-100, without feeling cold */
   .card {
     @apply bg-white rounded-2xl border border-slate-200/70 shadow-card p-6;
+  }
+
+  /* .card-primary — variante "hero" : plus de présence visuelle pour les
+     blocs centraux d'une section. Padding plus généreux, shadow plus marquée,
+     border accent qui démarque de la card par défaut. À utiliser pour les
+     cards qui doivent être le focal point (ex: card de récap fiscal sur
+     /account, card stratégie principale, card "le plus populaire" sur tarifs). */
+  .card-primary {
+    @apply bg-white rounded-3xl border border-primary-100 shadow-card-lg p-7 sm:p-9;
+  }
+
+  /* .card-dense — variante "compacte" : pour les listes denses où on veut
+     présenter beaucoup de cards (grids 4+ colonnes, listes secondaires).
+     Padding réduit, border + radius plus discret, shadow minimale. */
+  .card-dense {
+    @apply bg-white rounded-xl border border-slate-200/60 shadow-sm p-4;
   }
 
   /* Primary CTA button */
