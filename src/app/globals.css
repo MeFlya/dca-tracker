@@ -44,14 +44,13 @@
   h1,
   h2 {
     @apply font-display;
-    /* Instrument Serif est élégant en weight 400 sur les gros titres —
-       le bold serait synthétique (Google Fonts ne fournit que weight 400)
-       et viendrait casser les proportions du dessin. !important nécessaire
-       pour neutraliser le `font-bold` qui reste sur certains composants
-       (utilities Tailwind ont une spécificité plus haute que @layer base).
-       Synthesis désactivée pour que le browser n'invente pas de fake-bold. */
-    font-weight: 400 !important;
-    font-synthesis: none;
+    /* Instrument Serif n'a qu'un poids 400 sur Google Fonts. On ré-active
+       le bold : le browser synthétise (épaississement du tracé). Sur un
+       serif moderne comme Instrument Serif rendu à grande taille, le
+       fake-bold reste lisible et apporte la présence visuelle attendue
+       sur les titres. Si le rendu te déplaît, switcher pour une font
+       avec un vrai bold (Newsreader, Fraunces, EB Garamond). */
+    font-synthesis: weight;
     /* Tracking légèrement resserré sur les gros titres — Instrument Serif
        a un dessin assez ouvert par défaut, on garde de la densité. */
     letter-spacing: -0.02em;

@@ -70,10 +70,11 @@ export function BrokerPage({ broker }: { broker: BrokerData }) {
         <span className="text-gray-600" aria-current="page">{broker.shortName ?? broker.name}</span>
       </nav>
 
-      {/* Hero — mark stylisé du broker à gauche du titre pour identifiant
-          visuel immédiat. Pas le logo officiel (cf BrokerLogoMark). */}
+      {/* Hero — badge identifiant du broker à gauche du titre. Wordmark +
+          couleur de marque, pas le logo officiel (cf BrokerLogoMark.tsx
+          pour la justification IP). */}
       <div className="flex items-start gap-4 mb-8">
-        <BrokerLogoMark slug={broker.slug} size={56} className="mt-2" />
+        <BrokerLogoMark slug={broker.slug} height={44} className="mt-2" />
         <div className="min-w-0">
           <p className="text-xs font-semibold text-accent-700 uppercase tracking-widest mb-2">
             Avis courtier DCA
@@ -284,7 +285,7 @@ export function BrokerPage({ broker }: { broker: BrokerData }) {
               href={`/comparatif/${b.slug}`}
               className="rounded-xl border border-gray-100 bg-white p-4 card-hover flex items-start gap-3"
             >
-              <BrokerLogoMark slug={b.slug} size={36} className="mt-0.5" />
+              <BrokerLogoMark slug={b.slug} height={28} className="mt-0.5" />
               <div className="min-w-0">
                 <p className="text-sm font-semibold text-gray-900 mb-1">{b.name}</p>
                 <p className="text-xs text-gray-500 leading-relaxed">{b.tagline}</p>

@@ -119,7 +119,7 @@ export default function ComparatifHubPage() {
           >
             <div className="flex items-start justify-between gap-4 mb-2 flex-wrap">
               <div className="flex items-center gap-3">
-                <BrokerLogoMark slug={b.slug} size={36} />
+                <BrokerLogoMark slug={b.slug} height={28} />
                 <p className="text-base font-bold text-gray-900 group-hover:text-primary-700 transition-colors">
                   {b.name}
                 </p>
