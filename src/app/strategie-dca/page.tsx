@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Repeat } from "lucide-react";
 import { EmailCapture } from "@/components/ui/EmailCapture";
 import { JsonLd } from "@/components/ui/JsonLd";
+import { EducationalHeader } from "@/components/ui/EducationalHeader";
 
 const TITLE = "La stratégie DCA : investir régulièrement pour lisser le risque";
 const DESCRIPTION =
@@ -136,16 +138,12 @@ export default function StrategieDCAPage() {
         <span className="text-gray-600" aria-current="page">Stratégie DCA</span>
       </nav>
 
-      <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">
-        La stratégie DCA : investir régulièrement pour lisser le risque
-      </h1>
-      <p className="text-lg text-gray-500 mb-12 leading-relaxed">
-        Le DCA (Dollar Cost Averaging) est la stratégie d&apos;investissement
-        la plus simple et la plus efficace pour les investisseurs particuliers.
-        Pas de prédiction de marché, pas de stress du timing — juste une
-        régularité disciplinée qui, sur le long terme, bat la majorité des
-        approches actives.
-      </p>
+      <EducationalHeader
+        icon={Repeat}
+        eyebrow="Stratégie passive"
+        title="La stratégie DCA : investir régulièrement pour lisser le risque"
+        subtitle="Le DCA (Dollar Cost Averaging) est la stratégie d'investissement la plus simple et la plus efficace pour les investisseurs particuliers. Pas de prédiction de marché, pas de stress du timing — juste une régularité disciplinée qui, sur le long terme, bat la majorité des approches actives."
+      />
 
       {/* ── Section 1: Définition ──────────────────────────────────────────── */}
       <section className="mb-14">

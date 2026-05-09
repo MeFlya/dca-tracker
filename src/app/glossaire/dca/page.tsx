@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Repeat } from "lucide-react";
 import { JsonLd } from "@/components/ui/JsonLd";
+import { EducationalHeader } from "@/components/ui/EducationalHeader";
 
 const TITLE = "Qu'est-ce que le DCA (Dollar Cost Averaging) ?";
 const DESCRIPTION =
@@ -74,16 +76,12 @@ export default function DCAGlossaryPage() {
       </nav>
 
       {/* Hero */}
-      <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">
-        Qu&apos;est-ce que le DCA (Dollar Cost Averaging) ?
-      </h1>
-      <p className="text-lg text-gray-500 leading-relaxed mb-10">
-        Le DCA (<em>Dollar Cost Averaging</em>) est une méthode
-        d&apos;investissement qui consiste à acheter le même montant
-        d&apos;un actif à intervalles réguliers — peu importe son prix.
-        En français, on parle aussi d&apos;<strong>investissement progressif</strong> ou{" "}
-        <strong>d&apos;achats échelonnés</strong>.
-      </p>
+      <EducationalHeader
+        icon={Repeat}
+        eyebrow="Glossaire DCA"
+        title="Qu'est-ce que le DCA (Dollar Cost Averaging) ?"
+        subtitle="Le DCA est une méthode d'investissement qui consiste à acheter le même montant d'un actif à intervalles réguliers — peu importe son prix. En français, on parle aussi d'investissement progressif ou d'achats échelonnés."
+      />
 
       {/* Quick definition */}
       <div className="rounded-2xl border border-primary-100 bg-primary-50/40 p-6 mb-10">

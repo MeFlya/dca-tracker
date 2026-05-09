@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { TrendingUp } from "lucide-react";
 import { EmailCapture } from "@/components/ui/EmailCapture";
 import { JsonLd } from "@/components/ui/JsonLd";
+import { EducationalHeader } from "@/components/ui/EducationalHeader";
 
 const TITLE = "Intérêts composés : comment ça marche et simulateur gratuit";
 const DESCRIPTION =
@@ -114,16 +116,12 @@ export default function InteretsComposesPage() {
         <span className="text-gray-600" aria-current="page">Intérêts composés</span>
       </nav>
 
-      <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">
-        Les intérêts composés : le moteur silencieux de la richesse à long terme
-      </h1>
-      <p className="text-lg text-gray-500 mb-12 leading-relaxed">
-        Les intérêts composés, c&apos;est le principe selon lequel vos gains
-        génèrent à leur tour des gains. Une mécanique simple qui, sur 20 ou
-        30 ans, transforme un investissement modeste en capital significatif.
-        Comprendre ce principe, c&apos;est comprendre pourquoi commencer tôt
-        est la décision financière la plus importante de votre vie.
-      </p>
+      <EducationalHeader
+        icon={TrendingUp}
+        eyebrow="Concept clé"
+        title="Les intérêts composés : le moteur silencieux de la richesse à long terme"
+        subtitle="Vos gains génèrent à leur tour des gains. Sur 20 ou 30 ans, cette mécanique simple transforme un investissement modeste en capital significatif. Comprendre ce principe, c'est comprendre pourquoi commencer tôt est la décision financière la plus importante de votre vie."
+      />
 
       {/* ── Section 1: Le principe ─────────────────────────────────────────── */}
       <section className="mb-14">

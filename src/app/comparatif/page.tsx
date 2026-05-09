@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { BROKER_LIST } from "@/lib/brokers";
+import { BrokerLogoMark } from "@/components/ui/BrokerLogoMark";
 
 const TITLE =
   "Comparatif des meilleurs courtiers pour un DCA ETF en 2026";
@@ -117,9 +118,12 @@ export default function ComparatifHubPage() {
             className="group block rounded-2xl border border-gray-100 bg-white p-5 card-hover"
           >
             <div className="flex items-start justify-between gap-4 mb-2 flex-wrap">
-              <p className="text-base font-bold text-gray-900 group-hover:text-primary-700 transition-colors">
-                {b.name}
-              </p>
+              <div className="flex items-center gap-3">
+                <BrokerLogoMark slug={b.slug} size={36} />
+                <p className="text-base font-bold text-gray-900 group-hover:text-primary-700 transition-colors">
+                  {b.name}
+                </p>
+              </div>
               <div className="flex items-center gap-1.5 text-xs text-gray-500">
                 {b.specs.pea && (
                   <span className="bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded-full font-semibold">PEA</span>

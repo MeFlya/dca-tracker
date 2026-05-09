@@ -3,6 +3,7 @@ import { Check, X, ExternalLink, Smartphone, Shield, Euro } from "lucide-react";
 import type { BrokerData } from "@/lib/brokers";
 import { BROKER_LIST } from "@/lib/brokers";
 import { JsonLd } from "@/components/ui/JsonLd";
+import { BrokerLogoMark } from "@/components/ui/BrokerLogoMark";
 
 function MobileRating({ rating }: { rating: number }) {
   return (
@@ -69,16 +70,22 @@ export function BrokerPage({ broker }: { broker: BrokerData }) {
         <span className="text-gray-600" aria-current="page">{broker.shortName ?? broker.name}</span>
       </nav>
 
-      {/* Hero */}
-      <p className="text-xs font-semibold text-primary-600 uppercase tracking-widest mb-2">
-        Avis courtier DCA
-      </p>
-      <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3 leading-tight">
-        {broker.name} pour un DCA ETF
-      </h1>
-      <p className="text-lg text-gray-500 leading-relaxed mb-8">
-        {broker.tagline}
-      </p>
+      {/* Hero — mark stylisé du broker à gauche du titre pour identifiant
+          visuel immédiat. Pas le logo officiel (cf BrokerLogoMark). */}
+      <div className="flex items-start gap-4 mb-8">
+        <BrokerLogoMark slug={broker.slug} size={56} className="mt-2" />
+        <div className="min-w-0">
+          <p className="text-xs font-semibold text-accent-700 uppercase tracking-widest mb-2">
+            Avis courtier DCA
+          </p>
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3 leading-tight">
+            {broker.name} pour un DCA ETF
+          </h1>
+          <p className="text-lg text-gray-500 leading-relaxed">
+            {broker.tagline}
+          </p>
+        </div>
+      </div>
 
       <p className="text-base text-gray-700 leading-relaxed mb-10">
         {broker.heroIntro}
@@ -275,10 +282,13 @@ export function BrokerPage({ broker }: { broker: BrokerData }) {
             <Link
               key={b.slug}
               href={`/comparatif/${b.slug}`}
-              className="rounded-xl border border-gray-100 bg-white p-4 card-hover"
+              className="rounded-xl border border-gray-100 bg-white p-4 card-hover flex items-start gap-3"
             >
-              <p className="text-sm font-semibold text-gray-900 mb-1">{b.name}</p>
-              <p className="text-xs text-gray-500 leading-relaxed">{b.tagline}</p>
+              <BrokerLogoMark slug={b.slug} size={36} className="mt-0.5" />
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-gray-900 mb-1">{b.name}</p>
+                <p className="text-xs text-gray-500 leading-relaxed">{b.tagline}</p>
+              </div>
             </Link>
           ))}
         </div>
