@@ -307,8 +307,9 @@ export default function TarifsPage() {
         {/* Social proof — auto-hidden quand stats <5 users (LiveSocialProof) */}
         <LiveSocialProof />
 
-        {/* FAQ */}
-        <div className="max-w-3xl mx-auto px-4 sm:px-6">
+        {/* FAQ — mt-16 pour aérer après LiveSocialProof (qui a sa propre
+            border-y et pas de margin-bottom interne, sinon "trop collé"). */}
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 mt-16">
           <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Questions fréquentes</h2>
           <div className="space-y-4">
             {FAQ.map(({ q, a }) => (

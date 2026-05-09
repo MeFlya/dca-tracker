@@ -38,7 +38,7 @@ const BULLETS = [
 
 export function TrackingPitch() {
   return (
-    <section className="relative py-28 md:py-32 bg-slate-950 overflow-hidden">
+    <section className="relative py-24 md:py-28 bg-slate-950 overflow-hidden">
       {/* Ambient effect — radial-gradient based (no blur() filter = cheap).
           On dark bg, colored glows at control points simulate the orb look
           without the compositor cost. */}

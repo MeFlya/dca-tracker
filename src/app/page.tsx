@@ -67,7 +67,7 @@ export default function HomePage() {
       <EmailCapture source="homepage" />
 
       {/* CTA band — gradient + subtle grid + aurora sweep for visual depth. */}
-      <section className="relative overflow-hidden py-24 bg-gradient-to-br from-primary-700 via-primary-600 to-primary-700">
+      <section className="relative overflow-hidden py-20 bg-gradient-to-br from-primary-700 via-primary-600 to-primary-700">
         {/* Ambient grid (matches Hero for visual rhyme) */}
         <div
           className="absolute inset-0 opacity-[0.05] pointer-events-none"
