@@ -191,7 +191,7 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <a href="mailto:contact@dcatracker.fr" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+                <a href="mailto:hello@dcatracker.fr" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
                   Contact
                 </a>
               </li>
@@ -199,13 +199,27 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="pt-6 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-xs text-gray-500">
-            © {year} DCA Tracker. Outil éducatif — pas de conseil en investissement.
-          </p>
-          <p className="text-xs text-gray-500">
-            Données de marché potentiellement différées.
-          </p>
+        {/* Liens légaux — obligatoires pour un site commercial FR (LCEN, RGPD) */}
+        <div className="pt-6 border-t border-gray-200">
+          <nav aria-label="Liens légaux" className="flex flex-wrap gap-x-5 gap-y-2 mb-4">
+            <Link href="/mentions-legales" className="text-xs text-gray-500 hover:text-gray-900 transition-colors">
+              Mentions légales
+            </Link>
+            <Link href="/cgv" className="text-xs text-gray-500 hover:text-gray-900 transition-colors">
+              CGV
+            </Link>
+            <Link href="/confidentialite" className="text-xs text-gray-500 hover:text-gray-900 transition-colors">
+              Politique de confidentialité
+            </Link>
+          </nav>
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p className="text-xs text-gray-500">
+              © {year} DCA Tracker. Outil éducatif — pas de conseil en investissement.
+            </p>
+            <p className="text-xs text-gray-500">
+              Données de marché potentiellement différées.
+            </p>
+          </div>
         </div>
       </div>
     </footer>
