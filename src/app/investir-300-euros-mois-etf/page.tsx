@@ -530,7 +530,7 @@ export default function Investir300EurosMoisPage() {
           ].map((s) => (
             <div
               key={s.label}
-              className="rounded-xl border border-slate-200/70 bg-white shadow-card p-4 text-center"
+              className="card-dense text-center"
             >
               <p className="text-xs text-gray-500 mb-2 leading-snug">
                 {s.label}

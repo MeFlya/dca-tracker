@@ -95,8 +95,8 @@ export default async function ETFDetailPage({
         <span className="text-gray-700 font-medium">{etf.displaySymbol}</span>
       </nav>
 
-      {/* ── Hero card ──────────────────────────────────────────────────── */}
-      <header className="card mb-8">
+      {/* ── Hero card — focal point de la page ETF (.card-primary) ──────── */}
+      <header className="card-primary mb-8">
         <div className="flex flex-wrap items-start justify-between gap-4 mb-5">
           {/* Left: identity */}
           <div className="flex items-start gap-4">
