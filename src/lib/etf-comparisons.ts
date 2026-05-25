@@ -355,12 +355,129 @@ const VWCE_VS_CW8: ETFComparison = {
   tags: ["CTO", "VWCE", "CW8", "Vanguard"],
 };
 
+// ─── CW8 vs WPEA ──────────────────────────────────────────────────────────────
+// Requête GSC captée : 15 impressions/mois, 0 clic. Capter ce trafic latent.
+// WPEA = iShares Core MSCI World UCITS ETF (PEA), arrivé fin 2024 — alternative
+// récente au CW8 historique d'Amundi, avec un TER deux fois plus bas.
+
+const CW8_VS_WPEA: ETFComparison = {
+  slug: "cw8-vs-wpea",
+  title: "CW8 vs WPEA : quel ETF MSCI World pour votre PEA ?",
+  metaTitle: "CW8 ou WPEA : comparatif ETF MSCI World PEA 2026",
+  metaDescription:
+    "CW8 (Amundi) ou WPEA (iShares) ? Comparatif détaillé des deux ETF MSCI World éligibles PEA : TER, frais cumulés sur 20 ans, liquidité, encours. Notre verdict.",
+
+  left: {
+    heading: "CW8",
+    subheading: "Amundi MSCI World UCITS ETF — ISIN LU1681043599",
+    type: "ETF",
+    coverage: "MSCI World — ~1 500 sociétés des 23 pays développés",
+    issuer: "Amundi ETF",
+    ter: "0,38 %/an",
+    replication: "Synthétique (swap)",
+    distribution: "Capitalisant",
+    currency: "EUR",
+    peaEligible: "Oui",
+    strongPoint: "Référence historique du MSCI World en PEA · gros encours · liquidité maximale",
+    weakPoint: "TER élevé (0,38 %) — le plus cher des ETF MSCI World PEA en 2026",
+  },
+
+  right: {
+    heading: "WPEA",
+    subheading: "iShares Core MSCI World UCITS ETF (PEA) — ISIN IE0006WW1TQ4",
+    type: "ETF",
+    coverage: "MSCI World — ~1 500 sociétés des 23 pays développés",
+    issuer: "iShares (BlackRock)",
+    ter: "0,20 %/an",
+    replication: "Synthétique (swap)",
+    distribution: "Capitalisant",
+    currency: "EUR",
+    peaEligible: "Oui",
+    strongPoint: "TER deux fois inférieur au CW8 · iShares = leader mondial ETF",
+    weakPoint: "ETF récent (lancé fin 2024) — encours et liquidité encore inférieurs au CW8",
+  },
+
+  verdict:
+    "WPEA gagne sur les frais (0,20 % vs 0,38 %) pour la même exposition MSCI World et la même éligibilité PEA. Sur 20 ans à 200 €/mois et 7 %/an net, ces 0,18 % de TER en moins représentent environ 4 500 € de capital final supplémentaire. CW8 garde l'avantage de l'antériorité (gros encours, liquidité, présence chez tous les courtiers). Pour une ouverture de position en 2026, WPEA est probablement le meilleur choix.",
+
+  intro:
+    "Pendant des années, CW8 (Amundi MSCI World) a été l'ETF de référence pour s'exposer au monde développé dans un PEA français. Fin 2024, iShares a sorti WPEA — un MSCI World PEA-éligible à un TER deux fois plus bas. Deux ETF qui répliquent le même indice, avec des frais qui changent significativement la performance à long terme. Voici comment trancher.",
+
+  keyDifferences: [
+    { criterion: "Indice répliqué", leftValue: "MSCI World", rightValue: "MSCI World (identique)" },
+    { criterion: "Émetteur", leftValue: "Amundi", rightValue: "iShares (BlackRock)" },
+    { criterion: "TER", leftValue: "0,38 %/an", rightValue: "0,20 %/an" },
+    { criterion: "Encours (AUM)", leftValue: "Plusieurs Md€ — large", rightValue: "Encours en croissance — ETF récent" },
+    { criterion: "Liquidité", leftValue: "Très élevée — spreads faibles", rightValue: "Bonne mais inférieure au CW8" },
+    { criterion: "Éligibilité PEA", leftValue: "Oui", rightValue: "Oui" },
+    { criterion: "Réplication", leftValue: "Synthétique", rightValue: "Synthétique" },
+    { criterion: "Distribution", leftValue: "Capitalisant", rightValue: "Capitalisant" },
+    { criterion: "Impact TER sur 20 ans (200 €/mois, 7 %)", leftValue: "−7 400 €", rightValue: "−2 900 €" },
+  ],
+
+  useCases: [
+    {
+      profile: "Vous ouvrez votre PEA en 2026",
+      winner: "right",
+      explanation:
+        "WPEA est probablement le meilleur choix : même indice, moitié des frais. Sur un horizon 20-30 ans, l'écart de TER se traduit directement en capital final. L'argument 'CW8 a plus de liquidité' compte peu pour un investisseur DCA long terme qui passe des ordres mensuels de quelques centaines d'euros.",
+    },
+    {
+      profile: "Vous avez déjà du CW8 dans votre PEA",
+      winner: "left",
+      explanation:
+        "Inutile de tout basculer dans la précipitation. Vous pouvez arrêter d'alimenter CW8 et orienter vos versements suivants vers WPEA — votre encours CW8 historique continue de capitaliser. Bascule complète seulement si vous avez peu de plus-values latentes (les frais d'ordre pour vendre + racheter peuvent dépasser l'économie de TER sur petits montants).",
+    },
+    {
+      profile: "Vous valorisez la simplicité maximale",
+      winner: "left",
+      explanation:
+        "CW8 reste l'ETF qui se trouve partout, recommandé partout, sans surprise. Si vous voulez zéro friction (disponibilité chez tous les courtiers, ETF que vos proches reconnaissent), CW8 fonctionne. C'est un compromis confort/coût.",
+    },
+    {
+      profile: "Vous êtes pure performance",
+      winner: "right",
+      explanation:
+        "TER plus bas + même indice = surperformance mécanique sur le long terme. iShares est aussi un émetteur de référence (filiale de BlackRock, premier gestionnaire d'actifs mondial). Aucune raison rationnelle de payer 90 % de frais en plus pour exactement la même exposition.",
+    },
+  ],
+
+  analysis:
+    "L'arrivée de WPEA en 2024 a cassé un quasi-monopole : pendant des années, CW8 était LA solution MSCI World pour PEA, sans alternative crédible à frais bas. iShares a comblé ce vide en proposant exactement le même indice, à un TER moitié moins cher, via un swap synthétique conforme à l'éligibilité PEA. Pour qui démarre aujourd'hui, le calcul est net : 0,18 % de TER en moins par an, ça représente environ 4 % de capital final en plus sur 20 ans (à hypothèses constantes 7 %/an). Pour qui a déjà construit une position CW8 significative, la question est plus nuancée : vendre génère des frais d'ordre + casse l'historique de la ligne — pas critique en PEA (zéro friction fiscale tant qu'on ne retire pas) mais demande un calcul cas par cas. La règle de pouce : si votre encours CW8 est < 10 000 €, basculer reste avantageux long terme. Au-delà, garder CW8 et alimenter WPEA pour les versements futurs.",
+
+  faq: [
+    {
+      q: "WPEA est-il vraiment équivalent à CW8 ?",
+      a: "Oui, sur l'exposition : même indice MSCI World, même couverture (1 500 sociétés, 23 pays développés), même politique capitalisante, même éligibilité PEA via réplication synthétique. La seule vraie différence est le TER (0,20 % vs 0,38 %) et l'émetteur (iShares vs Amundi). En termes de risque sous-jacent, ils sont substituables.",
+    },
+    {
+      q: "Pourquoi WPEA est-il moins cher que CW8 ?",
+      a: "iShares (BlackRock) est le plus gros gestionnaire d'ETF au monde et bénéficie d'économies d'échelle massives. Le marché ETF français étant longtemps verrouillé par Amundi sur le segment PEA, l'arrivée d'iShares en 2024 a dû s'accompagner d'un prix agressif pour gagner des parts. Avantage pour les investisseurs particuliers.",
+    },
+    {
+      q: "WPEA est-il disponible chez tous les courtiers ?",
+      a: "WPEA est disponible chez la plupart des courtiers français modernes (Trade Republic, Bourse Direct, Boursorama, Fortuneo). À vérifier chez votre courtier avant d'ouvrir la position — certaines banques traditionnelles tardent à référencer les ETF récents. Si non disponible, demandez-le au service client : la pression utilisateur fait souvent débloquer.",
+    },
+    {
+      q: "Le risque de contrepartie est-il identique entre CW8 et WPEA ?",
+      a: "Les deux utilisent une réplication synthétique par swap. Le risque de contrepartie est encadré par la réglementation UCITS (limite à 10 % de l'actif net) et collatéralisé. En pratique, ni Amundi ni iShares n'ont causé de pertes de ce type à leurs porteurs. Le risque est équivalent et négligeable pour un investisseur particulier.",
+    },
+    {
+      q: "Vaut-il le coup de vendre mon CW8 pour racheter du WPEA ?",
+      a: "Cela dépend de votre encours et de votre horizon. Sous 10 000 € d'encours CW8 + horizon 15+ ans : oui, l'économie de TER cumulée justifie la bascule (en PEA, la vente n'a aucun coût fiscal). Au-dessus de 10 000 € ou horizon < 10 ans : pas urgent, vous pouvez simplement orienter vos versements futurs vers WPEA et laisser CW8 capitaliser de son côté.",
+    },
+  ],
+
+  tags: ["PEA", "CW8", "WPEA", "MSCI World", "iShares", "Amundi"],
+};
+
 // ─── Registry ─────────────────────────────────────────────────────────────────
 
 export const ETF_COMPARISONS: Record<string, ETFComparison> = {
   [MSCI_WORLD_VS_SP500.slug]: MSCI_WORLD_VS_SP500,
   [CW8_VS_ESE.slug]: CW8_VS_ESE,
   [VWCE_VS_CW8.slug]: VWCE_VS_CW8,
+  [CW8_VS_WPEA.slug]: CW8_VS_WPEA,
 };
 
 export const ETF_COMPARISON_LIST: ETFComparison[] = Object.values(ETF_COMPARISONS);
