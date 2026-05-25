@@ -8,6 +8,7 @@ import { ManageSubscriptionButton } from "./ManageSubscriptionButton";
 import { StrategyTracker } from "@/components/account/StrategyTracker";
 import { ReLockedStrategy } from "@/components/account/ReLockedStrategy";
 import { OnboardingChecklist } from "@/components/account/OnboardingChecklist";
+import { AnnualPushBanner } from "@/components/account/AnnualPushBanner";
 import { OnboardingEmailTrigger } from "@/components/account/OnboardingEmailTrigger";
 import { DashboardEntryTracker } from "@/components/analytics/DashboardEntryTracker";
 
@@ -82,6 +83,15 @@ export default async function AccountPage() {
           3. Premium + no strategy yet → OnboardingChecklist (activation flow)
           4. Free + no data → OnboardingChecklist (activation flow + trial pitch)
       ─────────────────────────────────────────────────────────────────── */}
+      {/* Push annuel — uniquement aux Premium mensuels souscrits ≥ 14 jours.
+          Le composant gère lui-même les conditions d'affichage + dismiss. */}
+      {isPremium && (
+        <AnnualPushBanner
+          subscriptionInterval={sub.subscriptionInterval}
+          subscribedAt={sub.subscribedAt}
+        />
+      )}
+
       {isPremium && strategy ? (
         <div className="mb-6">
           <StrategyTracker initialStrategy={strategy} initialEntries={entries} />

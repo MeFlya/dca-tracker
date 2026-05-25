@@ -55,6 +55,13 @@ export type AnalyticsEvent =
   | { name: "start_trial"; props: { billing: "monthly" | "yearly" } }
   | { name: "complete_payment"; props: { plan: string } }
   | { name: "cancel_subscription" }
+  // ── Trial conversion funnel (pour A/B test CB vs sans CB)
+  | { name: "trial_canceled_during_period"; props: { day_of_trial: number } }
+  | { name: "trial_converted_to_paid"; props: { billing: "monthly" | "yearly" } }
+  // ── Annual push banner (in-app)
+  | { name: "annual_banner_shown" }
+  | { name: "annual_banner_click" }
+  | { name: "annual_banner_dismiss" }
 
   // ── Account
   | { name: "import_csv"; props: { months: number; detected_format: string } }

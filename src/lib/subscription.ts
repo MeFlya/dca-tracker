@@ -7,6 +7,10 @@ export type UserSubscription = {
   stripeSubscriptionId: string | null;
   subscriptionStatus: string | null;
   periodEnd: number | null;
+  /** "month" | "year" — set by Stripe webhook from price.recurring.interval. */
+  subscriptionInterval: "month" | "year" | null;
+  /** ISO datetime — when the user first subscribed. */
+  subscribedAt: string | null;
 };
 
 export async function getUserSubscription(): Promise<UserSubscription> {
@@ -19,6 +23,8 @@ export async function getUserSubscription(): Promise<UserSubscription> {
       stripeSubscriptionId: null,
       subscriptionStatus: null,
       periodEnd: null,
+      subscriptionInterval: null,
+      subscribedAt: null,
     };
   }
 
@@ -30,6 +36,9 @@ export async function getUserSubscription(): Promise<UserSubscription> {
     stripeSubscriptionId: (priv?.stripeSubscriptionId as string) ?? null,
     subscriptionStatus: (priv?.subscriptionStatus as string) ?? null,
     periodEnd: (priv?.periodEnd as number) ?? null,
+    subscriptionInterval:
+      (priv?.subscriptionInterval as "month" | "year" | undefined) ?? null,
+    subscribedAt: (priv?.subscribedAt as string) ?? null,
   };
 }
 
