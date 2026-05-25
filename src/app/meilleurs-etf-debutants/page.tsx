@@ -3,6 +3,8 @@ import Link from "next/link";
 import { ETF_LIST } from "@/lib/etf-config";
 import { EmailCapture } from "@/components/ui/EmailCapture";
 import { JsonLd } from "@/components/ui/JsonLd";
+import { ArticleByline } from "@/components/ui/ArticleByline";
+import { BreadcrumbSchema } from "@/components/ui/BreadcrumbSchema";
 
 const TITLE = "Meilleurs ETF pour débutants en 2026 : notre sélection commentée";
 const DESCRIPTION =
@@ -191,6 +193,13 @@ export default function MeilleursETFDebutantsPage() {
         })),
       }} />
 
+      <BreadcrumbSchema
+        items={[
+          { name: "Accueil", url: "/" },
+          { name: "Meilleurs ETF débutants" },
+        ]}
+      />
+
       {/* Breadcrumb */}
       <nav aria-label="Fil d'ariane" className="flex items-center gap-2 text-sm text-gray-500 mb-8">
         <Link href="/" className="hover:text-gray-600 transition-colors">Accueil</Link>
@@ -201,12 +210,21 @@ export default function MeilleursETFDebutantsPage() {
       <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">
         Meilleurs ETF pour débutants : notre sélection pour 2026
       </h1>
-      <p className="text-lg text-gray-500 mb-12 leading-relaxed">
+      <p className="text-lg text-gray-500 mb-6 leading-relaxed">
         Vous voulez investir en bourse mais vous ne savez pas quel ETF
         choisir ? Pas de jargon superflu : voici les ETF que nous
         recommandons aux débutants en France, avec les critères de
         sélection et les points d&apos;attention pour chacun.
       </p>
+
+      <ArticleByline
+        publishedAt="2026-04-20"
+        updatedAt="2026-05-25"
+        readingMinutes={11}
+        url="/meilleurs-etf-debutants"
+        headline={TITLE}
+        description={DESCRIPTION}
+      />
 
       {/* ── Section 1: Disclaimer ──────────────────────────────────────────── */}
       <div className="disclaimer-banner mb-10">

@@ -4,6 +4,8 @@ import { Repeat } from "lucide-react";
 import { EmailCapture } from "@/components/ui/EmailCapture";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { EducationalHeader } from "@/components/ui/EducationalHeader";
+import { ArticleByline } from "@/components/ui/ArticleByline";
+import { BreadcrumbSchema } from "@/components/ui/BreadcrumbSchema";
 
 const TITLE = "La stratégie DCA : investir régulièrement pour lisser le risque";
 const DESCRIPTION =
@@ -131,6 +133,13 @@ export default function StrategieDCAPage() {
         })),
       }} />
 
+      <BreadcrumbSchema
+        items={[
+          { name: "Accueil", url: "/" },
+          { name: "Stratégie DCA" },
+        ]}
+      />
+
       {/* Breadcrumb */}
       <nav aria-label="Fil d'ariane" className="flex items-center gap-2 text-sm text-gray-500 mb-8">
         <Link href="/" className="hover:text-gray-600 transition-colors">Accueil</Link>
@@ -143,6 +152,15 @@ export default function StrategieDCAPage() {
         eyebrow="Stratégie passive"
         title="La stratégie DCA : investir régulièrement pour lisser le risque"
         subtitle="Le DCA (Dollar Cost Averaging) est la stratégie d'investissement la plus simple et la plus efficace pour les investisseurs particuliers. Pas de prédiction de marché, pas de stress du timing — juste une régularité disciplinée qui, sur le long terme, bat la majorité des approches actives."
+      />
+
+      <ArticleByline
+        publishedAt="2026-04-10"
+        updatedAt="2026-05-25"
+        readingMinutes={10}
+        url="/strategie-dca"
+        headline={TITLE}
+        description={DESCRIPTION}
       />
 
       {/* ── Section 1: Définition ──────────────────────────────────────────── */}

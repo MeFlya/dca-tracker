@@ -30,11 +30,22 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   const siteUrl = "https://dcatracker.fr";
 
+  // Person schema enrichi pour E-E-A-T (YMYL finance) : Google a besoin
+  // d'identifier l'auteur réel + ses credentials + ses comptes externes
+  // (sameAs) pour traçer l'expertise. C'est crucial pour qu'il accepte
+  // d'indexer du contenu finance.
   const personSchema = {
     "@context": "https://schema.org",
     "@type": "Person",
-    name: "Maël",
+    "@id": `${siteUrl}/a-propos#person`,
+    name: "Maël Faleyras",
+    givenName: "Maël",
+    familyName: "Faleyras",
     jobTitle: "Fondateur",
+    description:
+      "Investisseur particulier français, créateur de DCA Tracker. Investit en DCA sur ETF depuis janvier 2025.",
+    url: `${siteUrl}/a-propos`,
+    email: "hello@dcatracker.fr",
     worksFor: {
       "@type": "Organization",
       name: "DCA Tracker",
@@ -47,24 +58,30 @@ export default function AboutPage() {
       "Investissement passif long terme",
       "MSCI World",
       "Finance personnelle",
+      "Fiscalité française des placements",
     ],
     address: {
       "@type": "PostalAddress",
       addressLocality: "Lille",
       addressCountry: "FR",
     },
+    // sameAs : connecte ce profil aux comptes externes vérifiables.
+    // Permet à Google de relier l'auteur à son audience publique
+    // (Knowledge Graph + signal d'expertise).
+    sameAs: ["https://x.com/mael_invest"],
   };
 
   const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
+    "@id": `${siteUrl}#organization`,
     name: "DCA Tracker",
     url: siteUrl,
-    founder: { "@type": "Person", name: "Maël" },
+    founder: { "@id": `${siteUrl}/a-propos#person` },
     foundingDate: "2025",
     description:
       "Simulateur et tracker DCA ETF pour investisseurs particuliers français. Outil indépendant, bootstrappé, sans affiliation.",
-    email: "contact@dcatracker.fr",
+    email: "hello@dcatracker.fr",
   };
 
   return (

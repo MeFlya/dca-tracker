@@ -3,6 +3,8 @@ import Link from "next/link";
 import { Landmark } from "lucide-react";
 import { EmailCapture } from "@/components/ui/EmailCapture";
 import { EducationalHeader } from "@/components/ui/EducationalHeader";
+import { ArticleByline } from "@/components/ui/ArticleByline";
+import { BreadcrumbSchema } from "@/components/ui/BreadcrumbSchema";
 
 const TITLE = "PEA ou CTO : quelle enveloppe pour investir en ETF ?";
 const DESCRIPTION =
@@ -79,6 +81,13 @@ export default function PEAouCTOPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
 
+      <BreadcrumbSchema
+        items={[
+          { name: "Accueil", url: "/" },
+          { name: "PEA ou CTO" },
+        ]}
+      />
+
       {/* Breadcrumb */}
       <nav aria-label="Fil d'ariane" className="flex items-center gap-2 text-sm text-gray-500 mb-8">
         <Link href="/" className="hover:text-gray-600 transition-colors">Accueil</Link>
@@ -91,6 +100,15 @@ export default function PEAouCTOPage() {
         eyebrow="Fiscalité"
         title="PEA ou CTO : quelle enveloppe pour investir en ETF ?"
         subtitle="Avant d'acheter votre premier ETF, vous devrez choisir une enveloppe fiscale. Ce choix a un impact direct sur vos impôts — et sur les ETF auxquels vous avez accès. Voici tout ce qu'il faut savoir."
+      />
+
+      <ArticleByline
+        publishedAt="2026-04-12"
+        updatedAt="2026-05-25"
+        readingMinutes={12}
+        url="/pea-ou-cto"
+        headline={TITLE}
+        description={DESCRIPTION}
       />
 
       {/* ── Section 1: Comparaison ─────────────────────────────────────── */}

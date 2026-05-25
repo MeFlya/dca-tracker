@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ArticleByline } from "@/components/ui/ArticleByline";
+import { BreadcrumbSchema } from "@/components/ui/BreadcrumbSchema";
 
 const TITLE = "5 ETF Premium pour PEA : la cheat sheet 2026";
 const DESCRIPTION =
@@ -146,6 +148,13 @@ const ALLOCATION_EXAMPLES = [
 export default function GuideCinqETFPEAPremiumPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <BreadcrumbSchema
+        items={[
+          { name: "Accueil", url: "/" },
+          { name: "Guide — 5 ETF Premium pour PEA" },
+        ]}
+      />
+
       {/* Breadcrumb */}
       <nav aria-label="Fil d'ariane" className="mb-6 text-xs text-gray-500">
         <Link href="/" className="hover:text-gray-900">Accueil</Link>
@@ -167,10 +176,18 @@ export default function GuideCinqETFPEAPremiumPage() {
           répliqué et limites concrètes.
         </p>
         <p className="mt-3 text-sm text-gray-500">
-          Mise à jour : avril 2026 · Outil pédagogique — pas de conseil
-          en investissement.
+          Outil pédagogique — pas de conseil en investissement.
         </p>
       </header>
+
+      <ArticleByline
+        publishedAt="2026-04-29"
+        updatedAt="2026-05-25"
+        readingMinutes={6}
+        url="/guide-5-etf-pea-premium"
+        headline={TITLE}
+        description={DESCRIPTION}
+      />
 
       {/* Selection criteria */}
       <section aria-labelledby="criteres" className="mb-12 rounded-2xl border border-gray-200 bg-white p-6 sm:p-8">

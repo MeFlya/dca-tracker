@@ -4,6 +4,8 @@ import { TrendingUp } from "lucide-react";
 import { EmailCapture } from "@/components/ui/EmailCapture";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { EducationalHeader } from "@/components/ui/EducationalHeader";
+import { ArticleByline } from "@/components/ui/ArticleByline";
+import { BreadcrumbSchema } from "@/components/ui/BreadcrumbSchema";
 
 const TITLE = "Intérêts composés : comment ça marche et simulateur gratuit";
 const DESCRIPTION =
@@ -109,6 +111,13 @@ export default function InteretsComposesPage() {
         })),
       }} />
 
+      <BreadcrumbSchema
+        items={[
+          { name: "Accueil", url: "/" },
+          { name: "Intérêts composés" },
+        ]}
+      />
+
       {/* Breadcrumb */}
       <nav aria-label="Fil d'ariane" className="flex items-center gap-2 text-sm text-gray-500 mb-8">
         <Link href="/" className="hover:text-gray-600 transition-colors">Accueil</Link>
@@ -121,6 +130,15 @@ export default function InteretsComposesPage() {
         eyebrow="Concept clé"
         title="Les intérêts composés : le moteur silencieux de la richesse à long terme"
         subtitle="Vos gains génèrent à leur tour des gains. Sur 20 ou 30 ans, cette mécanique simple transforme un investissement modeste en capital significatif. Comprendre ce principe, c'est comprendre pourquoi commencer tôt est la décision financière la plus importante de votre vie."
+      />
+
+      <ArticleByline
+        publishedAt="2026-04-15"
+        updatedAt="2026-05-25"
+        readingMinutes={8}
+        url="/interets-composes"
+        headline={TITLE}
+        description={DESCRIPTION}
       />
 
       {/* ── Section 1: Le principe ─────────────────────────────────────────── */}
