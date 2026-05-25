@@ -197,12 +197,20 @@ export async function POST(req: Request) {
         const clerkUserId = sub.metadata?.clerkUserId;
         if (!clerkUserId) break;
 
+        // canceledAt timestamp ISO → utilisé par le cron win-back pour
+        // envoyer les emails J+7 et J+30. winBackJ7Sent / winBackJ30Sent
+        // sont initialisés à false pour le cron.
+        const canceledAt = new Date().toISOString();
+
         await clerk.users.updateUserMetadata(clerkUserId, {
           publicMetadata: { plan: "free" },
           privateMetadata: {
             stripeSubscriptionId: null,
             subscriptionStatus: "canceled",
             periodEnd: null,
+            canceledAt,
+            winBackJ7Sent: false,
+            winBackJ30Sent: false,
           },
         });
 

@@ -112,6 +112,140 @@ export async function sendSubscriptionCancelled(
   });
 }
 
+// ─── Win-back sequence ────────────────────────────────────────────────────────
+//
+// Séquence post-annulation : récupérer 5-15 % des churns avec 2 emails ciblés.
+// - J+7 : check-in honnête, demande de feedback, rappel des données préservées
+// - J+30 : pitch "ce qui a changé depuis ton départ" + offre soft de réactivation
+//
+// Déclenchement : cron quotidien /api/cron/winback-emails qui scanne les users
+// avec canceledAt set et winBackJ7Sent/J30Sent = false.
+
+/** J+7 — Ton honnête, demande feedback. Pas de pitch. */
+export async function sendWinBackJ7(email: string, firstName: string) {
+  const SITE_URL = "https://dcatracker.fr";
+  await resend.emails.send({
+    from: FROM,
+    to: email,
+    subject: "Une semaine sans Premium — comment ça se passe ?",
+    html: `<!DOCTYPE html>
+<html lang="fr">
+<body style="font-family:sans-serif;color:#1f2937;max-width:560px;margin:0 auto;padding:32px 16px">
+  <p style="color:#6b7280;margin-bottom:4px;font-size:14px">Une semaine après votre annulation</p>
+  <h1 style="font-size:22px;font-weight:700;margin:0 0 20px 0;line-height:1.3">
+    Bonjour ${firstName}, comment ça se passe ?
+  </h1>
+
+  <p style="font-size:15px;color:#374151;margin:0 0 16px 0;line-height:1.7">
+    Une semaine s'est écoulée depuis votre annulation. Je voulais juste prendre
+    de vos nouvelles — pas vous vendre Premium à nouveau.
+  </p>
+
+  <p style="font-size:15px;color:#374151;margin:0 0 16px 0;line-height:1.7">
+    Si vous avez 30 secondes, j'aimerais comprendre <strong>pourquoi</strong> vous
+    avez résilié. Ça m'aide vraiment à améliorer le produit. Vous pouvez juste
+    répondre à cet email — un mot, une phrase, ce que vous voulez.
+  </p>
+
+  <p style="font-size:15px;color:#374151;margin:0 0 20px 0;line-height:1.7">
+    Les raisons les plus fréquentes que j'entends :
+  </p>
+
+  <ul style="color:#4b5563;padding-left:20px;line-height:1.9;font-size:14px;margin:0 0 24px 0">
+    <li>Le prix (4,90 €/mois reste trop pour mon usage)</li>
+    <li>Pas le temps de loguer mes mois</li>
+    <li>Il manque une fonctionnalité spécifique</li>
+    <li>J'ai juste oublié — l'essai s'est transformé sans que je m'en rende compte</li>
+    <li>Autre chose</li>
+  </ul>
+
+  <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:18px;margin:24px 0">
+    <p style="margin:0;font-size:14px;color:#15803d;line-height:1.7">
+      <strong>À noter :</strong> vos données (stratégie sauvegardée, historique mensuel)
+      sont conservées. Si vous réactivez un jour, tout est retrouvé à l'identique.
+    </p>
+  </div>
+
+  <p style="font-size:14px;color:#6b7280;margin-top:24px;line-height:1.6">
+    Le plan Gratuit reste complet (simulateur, guides, comparateur ETF) — pas de
+    pression. Bon DCA dans tous les cas.
+  </p>
+  <p style="font-size:14px;color:#6b7280;margin-top:14px;line-height:1.6">
+    Maël<br/>
+    <a href="${SITE_URL}" style="color:#2563eb">dcatracker.fr</a>
+  </p>
+
+  <p style="margin-top:32px;color:#9ca3af;font-size:11px;line-height:1.6">
+    Cet email s'arrête là. Vous en recevrez un dernier dans 3 semaines avec les
+    nouveautés du produit, puis plus rien sauf si vous réactivez.
+  </p>
+</body>
+</html>`,
+  });
+}
+
+/** J+30 — Soft pitch : nouveautés depuis le départ + offre soft */
+export async function sendWinBackJ30(email: string, firstName: string) {
+  const SITE_URL = "https://dcatracker.fr";
+  await resend.emails.send({
+    from: FROM,
+    to: email,
+    subject: "Ce qui a changé sur DCA Tracker depuis votre départ",
+    html: `<!DOCTYPE html>
+<html lang="fr">
+<body style="font-family:sans-serif;color:#1f2937;max-width:560px;margin:0 auto;padding:32px 16px">
+  <p style="color:#6b7280;margin-bottom:4px;font-size:14px">Récap produit · 1 mois après annulation</p>
+  <h1 style="font-size:22px;font-weight:700;margin:0 0 20px 0;line-height:1.3">
+    ${firstName}, 1 mois plus tard
+  </h1>
+
+  <p style="font-size:15px;color:#374151;margin:0 0 16px 0;line-height:1.7">
+    Si vous êtes parti à cause d'une fonctionnalité manquante, voici ce qui a
+    été ajouté depuis. Pas de pitch, juste les faits.
+  </p>
+
+  <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin:20px 0">
+    <p style="margin:0 0 10px 0;font-size:13px;font-weight:700;color:#1e40af;text-transform:uppercase;letter-spacing:0.06em">
+      Ajouté récemment
+    </p>
+    <ul style="margin:0;padding-left:20px;color:#374151;line-height:1.8;font-size:14px">
+      <li>Récap fiscal annuel (cases 2042 et 2074 pré-calculées)</li>
+      <li>Allocation portefeuille multi-ETF avec pondérations</li>
+      <li>Comparaison A vs B de deux stratégies côte à côte</li>
+      <li>Simulations sauvegardées (jusqu'à 10 slots)</li>
+    </ul>
+  </div>
+
+  <p style="font-size:15px;color:#374151;margin:0 0 16px 0;line-height:1.7">
+    Vos données (stratégie + historique) sont toujours là, intactes. Si vous
+    réactivez, vous retrouvez tout en un clic.
+  </p>
+
+  <p style="font-size:15px;color:#374151;margin:0 0 24px 0;line-height:1.7">
+    <strong>Et si le prix bloque :</strong> l'annuel à 49 €/an (au lieu de 4,90 €/mois
+    en mensuel) revient à 4,08 €/mois — économie de 17 %, et c'est le bon moment
+    pour bloquer le tarif actuel.
+  </p>
+
+  <a href="${SITE_URL}/tarifs"
+     style="display:inline-block;background:#2563eb;color:#fff;padding:12px 26px;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px">
+    Réactiver Premium →
+  </a>
+
+  <p style="margin-top:28px;font-size:13px;color:#64748b;line-height:1.6">
+    Si Premium n'est toujours pas pour vous, aucun souci — c'est mon dernier
+    email de cette série. Le plan Gratuit reste complet. Bon DCA.
+  </p>
+
+  <p style="margin-top:14px;font-size:13px;color:#64748b;line-height:1.6">
+    Maël<br/>
+    <a href="${SITE_URL}" style="color:#2563eb">dcatracker.fr</a>
+  </p>
+</body>
+</html>`,
+  });
+}
+
 export async function sendWelcome(email: string, firstName: string) {
   await resend.emails.send({
     from: FROM,
