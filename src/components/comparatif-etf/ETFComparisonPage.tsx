@@ -224,9 +224,32 @@ export function ETFComparisonPage({ comparison }: { comparison: ETFComparison })
 
       {/* Long-form analysis */}
       <h2 className="text-xl font-bold text-gray-900 mb-4">Analyse approfondie</h2>
-      <p className="text-base text-gray-700 leading-relaxed mb-10">
+      <p className={`text-base text-gray-700 leading-relaxed ${comparison.slug === "cw8-vs-wpea" ? "mb-4" : "mb-10"}`}>
         {comparison.analysis}
       </p>
+      {comparison.slug === "cw8-vs-wpea" && (
+        <p className="text-base text-gray-700 leading-relaxed mb-10">
+          Pour situer ce face-à-face dans l&apos;univers plus large des trackers
+          disponibles aux investisseurs français, notre{" "}
+          <Link href="/comparatif-etf" className="text-primary-700 font-medium hover:underline">
+            vue d&apos;ensemble des comparatifs ETF
+          </Link>
+          {" "}met en regard les autres décisions classiques (MSCI World vs
+          S&amp;P 500, VWCE vs CW8, IWDA vs CW8). Si vous cherchez plutôt une
+          short-list opérationnelle de cinq trackers fréquemment retenus en
+          PEA, le guide{" "}
+          <Link href="/guide-5-etf-pea-premium" className="text-primary-700 font-medium hover:underline">
+            5 ETF Premium pour PEA
+          </Link>
+          {" "}détaille critères de sélection et allocations types. Et avant de
+          trancher entre CW8 et WPEA, vérifiez que le{" "}
+          <Link href="/pea-ou-cto" className="text-primary-700 font-medium hover:underline">
+            cadre fiscal du PEA
+          </Link>
+          {" "}est bien celui qui correspond à votre horizon : l&apos;arbitrage
+          PEA vs CTO conditionne l&apos;intérêt réel de ces deux MSCI World.
+        </p>
+      )}
 
       {/* FAQ */}
       <h2 className="text-xl font-bold text-gray-900 mb-4">Questions fréquentes</h2>

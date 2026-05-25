@@ -191,6 +191,15 @@ export default function StrategieDCAPage() {
             comme un risque — en avantage mécanique pour l&apos;investisseur patient.
           </p>
         </div>
+        <p className="text-gray-600 leading-relaxed mt-4">
+          Le moteur mathématique sous-jacent, ce sont{" "}
+          <Link href="/interets-composes" className="text-primary-700 font-medium hover:underline">
+            les intérêts composés
+          </Link>
+          {" "}: chaque versement mensuel s&apos;ajoute au capital qui produit
+          déjà des gains, et ce sont ces gains réinvestis qui font la différence
+          sur 20-30 ans.
+        </p>
       </section>
 
       {/* ── Section 2: Exemple chiffré ────────────────────────────────────── */}
@@ -309,6 +318,15 @@ export default function StrategieDCAPage() {
             mauvais timing vous préoccupe.
           </p>
         </div>
+        <p className="text-gray-600 leading-relaxed mt-5">
+          Quelle que soit l&apos;approche retenue, le choix du support compte
+          autant que le rythme : notre{" "}
+          <Link href="/comparatif-etf" className="text-primary-700 font-medium hover:underline">
+            comparatif des ETF
+          </Link>
+          {" "}met face à face les principales options MSCI World et S&amp;P 500
+          pour vous aider à choisir le bon ETF avant de lancer vos versements.
+        </p>
       </section>
 
       {/* ── Section 4: Comment démarrer ───────────────────────────────────── */}
@@ -316,6 +334,16 @@ export default function StrategieDCAPage() {
         <h2 className="text-2xl font-bold text-gray-900 mb-6">
           Comment démarrer une stratégie DCA avec des ETF
         </h2>
+        <p className="text-gray-600 leading-relaxed mb-6">
+          Avant les quatre étapes pratiques, une décision en amont conditionne
+          tout : le choix de l&apos;enveloppe fiscale. Notre comparatif{" "}
+          <Link href="/pea-ou-cto" className="text-primary-700 font-medium hover:underline">
+            PEA ou CTO
+          </Link>
+          {" "}détaille l&apos;enveloppe qui maximise un DCA long terme en
+          France, avec un calcul chiffré de l&apos;économie d&apos;impôt sur
+          20 ans.
+        </p>
         <div className="space-y-4">
           {STEPS.map((step) => (
             <div key={step.n} className="flex gap-4 p-5 rounded-2xl border border-gray-100 bg-white">

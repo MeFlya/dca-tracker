@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { ArticleByline } from "@/components/ui/ArticleByline";
 import { BreadcrumbSchema } from "@/components/ui/BreadcrumbSchema";
@@ -75,9 +76,18 @@ export default function MethodologiePage() {
       <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
         Méthodologie & sources
       </h1>
-      <p className="text-lg text-gray-500 mb-6">
+      <p className="text-lg text-gray-500 mb-4">
         Transparence totale sur les formules, les hypothèses et les sources de
         données utilisées. Pas de boîte noire.
+      </p>
+      <p className="text-base text-gray-500 mb-6 leading-relaxed">
+        L&apos;auteur de cette méthodologie,{" "}
+        <Link href="/a-propos" className="text-primary-700 font-medium hover:underline">
+          Maël Faleyras
+        </Link>
+        , détaille sur la page À propos les raisons d&apos;être de cet outil et
+        son parti pris éditorial — utile pour comprendre pourquoi nous
+        privilégions des hypothèses conservatrices.
       </p>
 
       <ArticleByline
@@ -117,6 +127,15 @@ où rendement_net_annuel = rendement_brut_annuel - frais_annuels (TER)`}
           Cette approche est mathématiquement équivalente à la formule de valeur
           future d&apos;une rente (annuity), mais la boucle explicite permet
           d&apos;exporter des données point par point pour le graphique.
+        </p>
+        <p>
+          Concrètement, la meilleure façon de tester ces calculs reste
+          d&apos;ouvrir{" "}
+          <Link href="/simulateur" className="text-primary-700 font-medium hover:underline">
+            le simulateur
+          </Link>
+          {" "}avec vos propres hypothèses (montant mensuel, durée, TER,
+          rendement attendu) et de comparer les trois scénarios.
         </p>
       </Section>
 
@@ -215,6 +234,15 @@ Optimiste   : rendement_brut + 2 %`}
           documentés mais ne garantissent en rien que ces rendements se
           reproduiront à l&apos;avenir. Les marchés peuvent sous-performer
           pendant des décennies.
+        </p>
+        <p className="text-sm">
+          Pour comprendre pourquoi nous insistons autant sur l&apos;effet du
+          temps dans nos projections, voyez notre dossier sur{" "}
+          <Link href="/interets-composes" className="text-primary-700 font-medium hover:underline">
+            les intérêts composés
+          </Link>
+          {" "}— la formule, les exemples chiffrés sur 10/20/30 ans et la règle
+          des 72 y sont détaillés.
         </p>
       </Section>
 

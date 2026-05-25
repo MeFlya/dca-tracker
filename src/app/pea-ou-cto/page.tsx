@@ -167,6 +167,16 @@ export default function PEAouCTOPage() {
           Après 5 ans, les retraits partiels sont possibles sans fermer le PEA —
           vous conservez l&apos;antériorité fiscale sur le solde restant.
         </p>
+        <p className="text-gray-600 leading-relaxed mt-5">
+          Cette enveloppe fiscale prend tout son sens couplée à des versements
+          mensuels : une{" "}
+          <Link href="/strategie-dca" className="text-primary-700 font-medium hover:underline">
+            stratégie DCA
+          </Link>
+          {" "}consiste précisément à investir mois après mois pour lisser le
+          risque de marché tout en laissant l&apos;exonération d&apos;IR jouer
+          à plein.
+        </p>
       </section>
 
       {/* ── Section 3: ETF éligibles PEA ──────────────────────────────── */}
@@ -178,7 +188,12 @@ export default function PEAouCTOPage() {
           Pour être éligible au PEA, un ETF doit être coté sur un marché européen
           et respecter les critères de l&apos;AMF. Les ETF MSCI World et FTSE
           All-World sont accessibles via réplication synthétique (swap) ou
-          physique avec domiciliation européenne.
+          physique avec domiciliation européenne. Pour une sélection plus
+          étoffée que la liste ci-dessous, voyez notre guide{" "}
+          <Link href="/guide-5-etf-pea-premium" className="text-primary-700 font-medium hover:underline">
+            5 ETF éligibles PEA
+          </Link>
+          {" "}avec critères de tri, allocations types et points d&apos;attention.
         </p>
 
         <h3 className="text-base font-semibold text-gray-900 mb-3">
@@ -302,6 +317,15 @@ export default function PEAouCTOPage() {
             Consultez un CGP ou CIF agréé AMF pour toute décision patrimoniale.
           </p>
         </div>
+        <p className="text-gray-600 leading-relaxed mt-5">
+          Si vous hésitez encore entre les deux MSCI World les plus utilisés en
+          PEA, notre face-à-face{" "}
+          <Link href="/comparatif-etf/cw8-vs-wpea" className="text-primary-700 font-medium hover:underline">
+            CW8 vs WPEA pour PEA
+          </Link>
+          {" "}chiffre l&apos;impact du TER sur 20 ans et tranche selon votre
+          situation (ouverture, encours existant, simplicité).
+        </p>
       </section>
 
       {/* ── CTA simulateur ─────────────────────────────────────────────── */}

@@ -174,7 +174,12 @@ export default function GuideCinqETFPEAPremiumPage() {
         <p className="mt-5 text-lg text-gray-600 leading-relaxed">
           Une sélection courte de 5 ETF éligibles PEA fréquemment retenus
           par les investisseurs long terme — avec leurs critères, TER, indice
-          répliqué et limites concrètes.
+          répliqué et limites concrètes. Pour une vue d&apos;ensemble plus
+          large des face-à-face possibles, voyez d&apos;abord nos{" "}
+          <Link href="/comparatif-etf" className="text-primary-700 font-medium hover:underline">
+            comparatifs ETF
+          </Link>
+          {" "}thématiques.
         </p>
         <p className="mt-3 text-sm text-gray-500">
           Outil pédagogique — pas de conseil en investissement.
@@ -195,8 +200,18 @@ export default function GuideCinqETFPEAPremiumPage() {
         <h2 id="criteres" className="text-xl font-bold text-gray-900 mb-1">
           Comment ces 5 ETF ont été sélectionnés
         </h2>
-        <p className="text-sm text-gray-500 mb-5">
+        <p className="text-sm text-gray-500 mb-3">
           Quatre filtres simples et objectifs.
+        </p>
+        <p className="text-sm text-gray-600 leading-relaxed mb-5">
+          Le critère du TER est le plus mécanique : sur le très long terme,
+          chaque dixième de point de frais en moins est un dixième de point qui
+          continue de produire des{" "}
+          <Link href="/interets-composes" className="text-primary-700 font-medium hover:underline">
+            intérêts composés
+          </Link>
+          {" "}à votre profit — d&apos;où l&apos;impact démesuré des frais à 20
+          ou 30 ans.
         </p>
         <div className="grid sm:grid-cols-2 gap-5">
           {SELECTION_CRITERIA.map((c) => (
@@ -286,8 +301,17 @@ export default function GuideCinqETFPEAPremiumPage() {
         <h2 id="allocations" className="text-2xl font-bold text-gray-900 mb-2">
           3 façons concrètes de combiner ces ETF
         </h2>
-        <p className="text-sm text-gray-500 mb-6">
+        <p className="text-sm text-gray-500 mb-3">
           Du plus simple au plus diversifié — choisissez selon votre profil.
+        </p>
+        <p className="text-sm text-gray-600 leading-relaxed mb-6">
+          Si vous hésitez encore entre les deux MSCI World les plus utilisés en
+          PEA aujourd&apos;hui, notre comparatif{" "}
+          <Link href="/comparatif-etf/cw8-vs-wpea" className="text-primary-700 font-medium hover:underline">
+            CW8 vs WPEA
+          </Link>
+          {" "}chiffre l&apos;impact du TER sur 20 ans et donne un verdict
+          opérationnel selon votre situation.
         </p>
 
         <div className="space-y-4">
@@ -327,7 +351,7 @@ export default function GuideCinqETFPEAPremiumPage() {
       {/* Disclaimer */}
       <section className="mb-12 rounded-2xl border border-gray-200 bg-gray-50 p-6">
         <h2 className="text-sm font-bold text-gray-900 mb-2">À lire avant d&apos;agir</h2>
-        <p className="text-sm text-gray-600 leading-relaxed">
+        <p className="text-sm text-gray-600 leading-relaxed mb-3">
           Cette sélection est <strong>pédagogique</strong>, pas un conseil
           en investissement personnalisé. Les ETF présentés sont fréquemment
           cités, mais le choix dépend toujours de votre situation, horizon et
@@ -335,6 +359,15 @@ export default function GuideCinqETFPEAPremiumPage() {
           performances futures. Investir comporte un risque de perte en
           capital — consultez un conseiller financier agréé avant toute
           décision.
+        </p>
+        <p className="text-sm text-gray-600 leading-relaxed">
+          Avant d&apos;allouer le moindre euro, assurez-vous aussi d&apos;avoir
+          tranché la question{" "}
+          <Link href="/pea-ou-cto" className="text-primary-700 font-medium hover:underline">
+            PEA ou CTO
+          </Link>
+          {" "}— ces 5 ETF étant tous éligibles PEA, le cadre fiscal du PEA
+          conditionne directement leur intérêt à long terme.
         </p>
       </section>
 

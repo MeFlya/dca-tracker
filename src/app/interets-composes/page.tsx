@@ -174,7 +174,13 @@ export default function InteretsComposesPage() {
           La subtilité est dans la progression non linéaire : vos 10 premières
           années génèrent beaucoup moins de gains que vos 10 dernières.
           C&apos;est pourquoi commencer tôt a une valeur très difficile à
-          rattraper en investissant plus tard.
+          rattraper en investissant plus tard. La meilleure façon de passer de
+          la théorie à l&apos;application reste d&apos;adopter une{" "}
+          <Link href="/strategie-dca" className="text-primary-700 font-medium hover:underline">
+            stratégie DCA
+          </Link>
+          {" "}— versements réguliers, automatisés, qui laissent le temps faire
+          son travail.
         </p>
       </section>
 
@@ -233,6 +239,14 @@ export default function InteretsComposesPage() {
           Calcul : FV = PMT × ((1 + r)ⁿ − 1) / r. Les résultats sont indicatifs et ne garantissent pas les performances futures.{" "}
           <Link href="/methodologie" className="underline hover:text-gray-600 transition-colors">Voir la méthodologie →</Link>
         </p>
+        <p className="text-sm text-gray-600 leading-relaxed mt-4">
+          Pour un exemple concret au-delà du tableau, voyez ce que donne{" "}
+          <Link href="/investir-300-euros-mois-etf" className="text-primary-700 font-medium hover:underline">
+            300 €/mois investis dans un ETF
+          </Link>
+          {" "}sur différents horizons — avec frais réels, fiscalité PEA et trois
+          hypothèses de rendement détaillées.
+        </p>
       </section>
 
       {/* ── Section 3: Le temps est l'ingrédient principal ────────────────── */}
@@ -242,7 +256,12 @@ export default function InteretsComposesPage() {
         </h2>
         <p className="text-gray-600 leading-relaxed mb-6">
           Voici une comparaison qui illustre mieux que tout discours pourquoi
-          commencer tôt est la décision la plus impactante.
+          commencer tôt est la décision la plus impactante. Pour visualiser vos
+          propres chiffres avec vos hypothèses, le{" "}
+          <Link href="/simulateur" className="text-primary-700 font-medium hover:underline">
+            simulateur DCA
+          </Link>
+          {" "}calcule la courbe de composition en temps réel selon trois scénarios.
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
           <div className="rounded-2xl border border-primary-100 bg-primary-50 p-5">

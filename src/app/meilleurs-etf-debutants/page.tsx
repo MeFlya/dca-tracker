@@ -211,11 +211,19 @@ export default function MeilleursETFDebutantsPage() {
       <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">
         Meilleurs ETF pour débutants : notre sélection pour 2026
       </h1>
-      <p className="text-lg text-gray-500 mb-6 leading-relaxed">
+      <p className="text-lg text-gray-500 mb-4 leading-relaxed">
         Vous voulez investir en bourse mais vous ne savez pas quel ETF
         choisir ? Pas de jargon superflu : voici les ETF que nous
         recommandons aux débutants en France, avec les critères de
         sélection et les points d&apos;attention pour chacun.
+      </p>
+      <p className="text-base text-gray-500 mb-6 leading-relaxed">
+        Une fois à l&apos;aise avec cette short-list, notre{" "}
+        <Link href="/guide-5-etf-pea-premium" className="text-primary-700 font-medium hover:underline">
+          guide 5 ETF Premium pour PEA
+        </Link>
+        {" "}propose une sélection plus avancée, avec critères de tri et
+        allocations types.
       </p>
 
       <ArticleByline
@@ -240,10 +248,19 @@ export default function MeilleursETFDebutantsPage() {
         <h2 className="text-2xl font-bold text-gray-900 mb-4">
           Les 5 critères d&apos;un bon ETF pour débutant
         </h2>
-        <p className="text-gray-600 leading-relaxed mb-6">
+        <p className="text-gray-600 leading-relaxed mb-4">
           Avant de présenter notre sélection, voici les critères qui
           guident nos recommandations — et que vous devriez utiliser pour
           évaluer n&apos;importe quel ETF par vous-même.
+        </p>
+        <p className="text-gray-600 leading-relaxed mb-6">
+          Le premier critère, et de loin le plus impactant, est le cadre
+          fiscal :{" "}
+          <Link href="/pea-ou-cto" className="text-primary-700 font-medium hover:underline">
+            PEA ou CTO
+          </Link>
+          {" "}conditionne l&apos;univers d&apos;ETF accessibles avant même la
+          question du TER ou de l&apos;indice répliqué.
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {CRITERIA.map((c) => (
@@ -357,6 +374,15 @@ export default function MeilleursETFDebutantsPage() {
         <h2 className="text-2xl font-bold text-gray-900 mb-6">
           Tableau comparatif de notre sélection
         </h2>
+        <p className="text-gray-600 leading-relaxed mb-6">
+          Les écarts de TER paraissent minimes (0,15 % à 0,38 %), mais sur
+          20 ans de capitalisation, l&apos;effet sur le capital final est
+          loin d&apos;être négligeable — c&apos;est la mécanique des{" "}
+          <Link href="/interets-composes" className="text-primary-700 font-medium hover:underline">
+            intérêts composés
+          </Link>
+          {" "}qui amplifie chaque dixième de point de frais payé en trop.
+        </p>
         <div className="overflow-x-auto rounded-2xl border border-gray-100">
           <table className="w-full text-sm border-collapse">
             <thead>
@@ -402,6 +428,16 @@ export default function MeilleursETFDebutantsPage() {
         <h2 className="text-2xl font-bold text-gray-900 mb-6">
           Comment commencer en 3 étapes
         </h2>
+        <p className="text-gray-600 leading-relaxed mb-6">
+          Choisir un ETF n&apos;est qu&apos;une partie de l&apos;équation : la
+          méthode d&apos;achat compte tout autant. Pour un débutant, la{" "}
+          <Link href="/strategie-dca" className="text-primary-700 font-medium hover:underline">
+            stratégie DCA
+          </Link>
+          {" "}— versements mensuels fixes, quel que soit le niveau du marché —
+          reste l&apos;approche la plus simple et la plus robuste à tenir dans
+          la durée.
+        </p>
         <div className="space-y-4">
           {[
             {
