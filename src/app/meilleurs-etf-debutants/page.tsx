@@ -5,10 +5,11 @@ import { EmailCapture } from "@/components/ui/EmailCapture";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { ArticleByline } from "@/components/ui/ArticleByline";
 import { BreadcrumbSchema } from "@/components/ui/BreadcrumbSchema";
+import { SourcesReferences } from "@/components/ui/SourcesReferences";
 
-const TITLE = "Meilleurs ETF pour débutants en 2026 : notre sélection commentée";
+const TITLE = "Meilleurs ETF pour débutants 2026 : CW8, IWDA, VWCE comparés";
 const DESCRIPTION =
-  "Quel ETF choisir pour commencer à investir en bourse ? Notre sélection des meilleurs ETF pour débutants en France : MSCI World, S&P 500, FTSE All-World — avec TER, éligibilité PEA et recommandations claires.";
+  "Quel ETF choisir pour commencer en 2026 ? Comparatif CW8 (MSCI World), IWDA, VWCE, S&P 500 : TER, encours, éligibilité PEA et notre recommandation pour un premier DCA serein.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -544,6 +545,37 @@ export default function MeilleursETFDebutantsPage() {
           ))}
         </div>
       </section>
+
+      <SourcesReferences
+        sources={[
+          {
+            label: "Amundi MSCI World UCITS ETF (CW8) — Factsheet",
+            url: "https://www.amundietf.fr/fr/particuliers",
+            publisher: "Amundi ETF",
+            note: "TER, encours, réplication, performance historique de l'ETF CW8 / EWLD.",
+          },
+          {
+            label: "iShares Core MSCI World UCITS ETF (IWDA) — Factsheet",
+            url: "https://www.ishares.com/fr/individual/fr/produits/251882/",
+            publisher: "BlackRock — iShares",
+          },
+          {
+            label: "Vanguard FTSE All-World UCITS ETF (VWCE) — Factsheet",
+            url: "https://www.fr.vanguard/professional/produits/etf",
+            publisher: "Vanguard",
+          },
+          {
+            label: "Comprendre les ETF (trackers)",
+            url: "https://www.amf-france.org/fr/espace-epargnants/comprendre-les-produits-financiers/produits-collectifs/fonds-indiciels-cotes-etf",
+            publisher: "Autorité des marchés financiers (AMF)",
+          },
+          {
+            label: "Règlement UCITS — cadre européen des fonds de placement",
+            url: "https://www.esma.europa.eu/about-esma/whats-esma",
+            publisher: "ESMA (Autorité européenne des marchés financiers)",
+          },
+        ]}
+      />
 
       <EmailCapture source="guide_meilleurs_etf_debutants" />
     </div>

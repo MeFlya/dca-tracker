@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArticleByline } from "@/components/ui/ArticleByline";
 import { BreadcrumbSchema } from "@/components/ui/BreadcrumbSchema";
+import { SourcesReferences } from "@/components/ui/SourcesReferences";
 
 const TITLE = "5 ETF Premium pour PEA : la cheat sheet 2026";
 const DESCRIPTION =
@@ -337,8 +338,37 @@ export default function GuideCinqETFPEAPremiumPage() {
         </p>
       </section>
 
+      {/* Sources */}
+      <SourcesReferences
+        sources={[
+          {
+            label: "Catalogue ETF Amundi — éligibles PEA",
+            url: "https://www.amundietf.fr/fr/particuliers",
+            publisher: "Amundi ETF",
+            note: "Factsheets officielles : CW8 (MSCI World), PE500 (S&P 500), AEEM (MSCI Emerging Markets).",
+          },
+          {
+            label: "BNP Paribas Easy — ETF éligibles PEA",
+            url: "https://www.bnpparibas-am.fr/particulier/",
+            publisher: "BNP Paribas Asset Management",
+          },
+          {
+            label: "Plan d'Épargne en Actions — règles d'éligibilité",
+            url: "https://www.service-public.fr/particuliers/vosdroits/F2385",
+            publisher: "service-public.fr",
+            note: "Conditions pour qu'un ETF soit éligible au PEA (75 % d'actions UE ou réplication synthétique conforme).",
+          },
+          {
+            label: "Comprendre les ETF synthétiques (swap)",
+            url: "https://www.amf-france.org/fr/espace-epargnants/comprendre-les-produits-financiers/produits-collectifs/fonds-indiciels-cotes-etf",
+            publisher: "Autorité des marchés financiers (AMF)",
+            note: "Le mécanisme de swap qui permet aux ETF World/EM d'être PEA-compatibles.",
+          },
+        ]}
+      />
+
       {/* CTA */}
-      <section className="rounded-2xl bg-gradient-to-br from-primary-600 to-blue-700 p-8 text-center">
+      <section className="mt-12 rounded-2xl bg-gradient-to-br from-primary-600 to-blue-700 p-8 text-center">
         <h2 className="text-2xl font-bold text-white mb-2">
           Testez ces ETF dans le simulateur
         </h2>

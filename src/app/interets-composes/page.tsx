@@ -6,10 +6,11 @@ import { JsonLd } from "@/components/ui/JsonLd";
 import { EducationalHeader } from "@/components/ui/EducationalHeader";
 import { ArticleByline } from "@/components/ui/ArticleByline";
 import { BreadcrumbSchema } from "@/components/ui/BreadcrumbSchema";
+import { SourcesReferences } from "@/components/ui/SourcesReferences";
 
-const TITLE = "Intérêts composés : comment ça marche et simulateur gratuit";
+const TITLE = "Intérêts composés : formule, exemples chiffrés et simulateur";
 const DESCRIPTION =
-  "Les intérêts composés sont la force la plus puissante de l'investissement long terme. Comprendre le principe, le calculer et l'appliquer avec des ETF pour maximiser votre patrimoine.";
+  "Comprendre les intérêts composés en finance : formule mathématique, exemples chiffrés sur 10, 20 et 30 ans, et simulateur gratuit pour visualiser l'effet sur un portefeuille ETF en DCA.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -411,6 +412,34 @@ export default function InteretsComposesPage() {
           ))}
         </div>
       </section>
+
+      <SourcesReferences
+        sources={[
+          {
+            label: "Notion d'intérêts composés — éducation financière",
+            url: "https://www.amf-france.org/fr/espace-epargnants/comprendre-les-produits-financiers",
+            publisher: "Autorité des marchés financiers (AMF)",
+          },
+          {
+            label: "MSCI World Index — Factsheet officielle",
+            url: "https://www.msci.com/indexes/index/990100",
+            publisher: "MSCI Inc.",
+            note: "Performance historique du MSCI World — utilisée pour les hypothèses de rendement (~7 %/an net réel sur 30 ans).",
+          },
+          {
+            label: "Indice des prix à la consommation (IPC)",
+            url: "https://www.insee.fr/fr/statistiques/2122401",
+            publisher: "INSEE",
+            note: "Référence pour la conversion rendement nominal → réel (inflation France).",
+          },
+          {
+            label: "Plan d'Épargne en Actions — fiscalité après 5 ans",
+            url: "https://www.service-public.fr/particuliers/vosdroits/F2385",
+            publisher: "service-public.fr",
+            note: "Exonération d'impôt sur le revenu pour amplifier la composition (PS 17,2 % restent dus).",
+          },
+        ]}
+      />
 
       <EmailCapture source="guide_interets_composes" />
     </div>

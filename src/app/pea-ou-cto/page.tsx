@@ -5,10 +5,11 @@ import { EmailCapture } from "@/components/ui/EmailCapture";
 import { EducationalHeader } from "@/components/ui/EducationalHeader";
 import { ArticleByline } from "@/components/ui/ArticleByline";
 import { BreadcrumbSchema } from "@/components/ui/BreadcrumbSchema";
+import { SourcesReferences } from "@/components/ui/SourcesReferences";
 
-const TITLE = "PEA ou CTO : quelle enveloppe pour investir en ETF ?";
+const TITLE = "PEA ou CTO en 2026 : comparatif fiscal complet pour vos ETF";
 const DESCRIPTION =
-  "PEA ou compte-titres ordinaire : comparatif complet pour investisseurs en ETF. Fiscalité, plafond, ETF éligibles (CW8, EWLD, VWCE) et notre recommandation concrète.";
+  "PEA vs compte-titres ordinaire pour vos ETF : fiscalité (17,2 % vs 30 %), plafond (150 000 €), ETF éligibles (CW8, EWLD, AEEM) et recommandation chiffrée selon votre profil.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -336,6 +337,40 @@ export default function PEAouCTOPage() {
           ))}
         </div>
       </section>
+
+      {/* ── Sources & références ───────────────────────────────────────── */}
+      <SourcesReferences
+        sources={[
+          {
+            label: "Plan d'Épargne en Actions (PEA) — règles et fiscalité",
+            url: "https://www.service-public.fr/particuliers/vosdroits/F2385",
+            publisher: "service-public.fr",
+            note: "Plafond 150 000 €, exonération d'IR après 5 ans, prélèvements sociaux 17,2 %.",
+          },
+          {
+            label: "Imposition des plus-values mobilières (CTO)",
+            url: "https://www.service-public.fr/particuliers/vosdroits/F1404",
+            publisher: "service-public.fr",
+            note: "Prélèvement forfaitaire unique (PFU/Flat Tax) à 30 % sur CTO.",
+          },
+          {
+            label: "Guide pratique du PEA",
+            url: "https://www.amf-france.org/fr/espace-epargnants/comprendre-les-produits-financiers/marches-financiers-et-produits-financiers/plan-depargne-en-actions-pea",
+            publisher: "Autorité des marchés financiers (AMF)",
+          },
+          {
+            label: "Code monétaire et financier — articles L221-30 et suivants",
+            url: "https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006072026/LEGISCTA000006153523/",
+            publisher: "Légifrance",
+            note: "Cadre légal du PEA — éligibilité, fonctionnement, conditions de clôture.",
+          },
+          {
+            label: "BoFiP — Régime fiscal du PEA",
+            url: "https://bofip.impots.gouv.fr/bofip/3220-PGP.html",
+            publisher: "Bulletin Officiel des Finances Publiques",
+          },
+        ]}
+      />
 
       {/* ── Email capture ──────────────────────────────────────────────── */}
       <EmailCapture variant="card" source="guide_pea_cto" />

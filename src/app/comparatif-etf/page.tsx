@@ -4,9 +4,9 @@ import { ArrowLeftRight } from "lucide-react";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { ETF_COMPARISON_LIST } from "@/lib/etf-comparisons";
 
-const TITLE = "Comparatifs ETF : guides pour choisir entre deux ETF populaires";
+const TITLE = "Comparatifs ETF 2026 : CW8, IWDA, VWCE, WPEA face à face";
 const DESCRIPTION =
-  "MSCI World vs S&P 500, CW8 vs ESE, VWCE vs CW8… Guides comparatifs détaillés pour choisir l'ETF adapté à votre DCA, selon votre enveloppe fiscale et votre profil.";
+  "Comparatifs ETF actualisés 2026 : CW8 vs ESE, CW8 vs WPEA, VWCE vs CW8, IWDA vs CW8. TER, encours, éligibilité PEA et notre recommandation pour chaque face-à-face.";
 
 export const metadata: Metadata = {
   title: TITLE,

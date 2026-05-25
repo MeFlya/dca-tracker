@@ -6,10 +6,11 @@ import { JsonLd } from "@/components/ui/JsonLd";
 import { EducationalHeader } from "@/components/ui/EducationalHeader";
 import { ArticleByline } from "@/components/ui/ArticleByline";
 import { BreadcrumbSchema } from "@/components/ui/BreadcrumbSchema";
+import { SourcesReferences } from "@/components/ui/SourcesReferences";
 
-const TITLE = "La stratégie DCA : investir régulièrement pour lisser le risque";
+const TITLE = "Stratégie DCA expliquée : avantages, limites et application ETF";
 const DESCRIPTION =
-  "Qu'est-ce que le DCA (Dollar Cost Averaging) ? Comment ça marche, ses avantages face au lump sum, et comment l'appliquer concrètement avec des ETF en France.";
+  "DCA (Dollar Cost Averaging) : définition, comparatif vs lump sum (étude Vanguard), avantages psychologiques, et mise en pratique concrète sur ETF MSCI World en France.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -419,6 +420,33 @@ export default function StrategieDCAPage() {
           ))}
         </div>
       </section>
+
+      <SourcesReferences
+        sources={[
+          {
+            label: "Dollar-Cost Averaging Just Means Taking Risk Later (étude)",
+            url: "https://corporate.vanguard.com/content/dam/corp/research/pdf/Dollar-cost-averaging-just-means-taking-risk-later.pdf",
+            publisher: "Vanguard Research",
+            note: "Whitepaper de référence comparant DCA vs Lump Sum sur 64 ans de données US/UK/Australie.",
+          },
+          {
+            label: "Espace épargnants — investir progressivement",
+            url: "https://www.amf-france.org/fr/espace-epargnants",
+            publisher: "Autorité des marchés financiers (AMF)",
+          },
+          {
+            label: "MSCI World Index — méthodologie et historique",
+            url: "https://www.msci.com/indexes/index/990100",
+            publisher: "MSCI Inc.",
+            note: "Indice de référence pour la diversification mondiale utilisée dans les exemples DCA.",
+          },
+          {
+            label: "Risques liés à l'investissement en actions",
+            url: "https://www.amf-france.org/fr/espace-epargnants/savoir-bien-investir/principes-pour-bien-investir/diversifier",
+            publisher: "AMF",
+          },
+        ]}
+      />
 
       <EmailCapture source="guide_dca" />
     </div>

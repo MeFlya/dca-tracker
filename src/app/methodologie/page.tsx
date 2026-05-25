@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/ui/JsonLd";
+import { ArticleByline } from "@/components/ui/ArticleByline";
+import { BreadcrumbSchema } from "@/components/ui/BreadcrumbSchema";
+import { SourcesReferences } from "@/components/ui/SourcesReferences";
 
-const TITLE = "Méthodologie — Formules et hypothèses du simulateur DCA";
+const TITLE = "Méthodologie DCA Tracker : formules, hypothèses et sources";
 const DESCRIPTION =
-  "Transparence totale sur les calculs du simulateur DCA : formule de capitalisation mensuelle, déduction des frais (TER), correction de l'inflation et construction des 3 scénarios. Aucune boîte noire.";
+  "Transparence totale sur le simulateur DCA : formule de capitalisation mensuelle, gestion des frais (TER), correction de l'inflation INSEE, sources de données et limites assumées. Aucune boîte noire.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -62,13 +65,29 @@ export default function MethodologiePage() {
         <span className="text-gray-600" aria-current="page">Méthodologie</span>
       </nav>
 
+      <BreadcrumbSchema
+        items={[
+          { name: "Accueil", url: "https://dcatracker.fr/" },
+          { name: "Méthodologie" },
+        ]}
+      />
+
       <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
         Méthodologie & sources
       </h1>
-      <p className="text-lg text-gray-500 mb-12">
+      <p className="text-lg text-gray-500 mb-6">
         Transparence totale sur les formules, les hypothèses et les sources de
         données utilisées. Pas de boîte noire.
       </p>
+
+      <ArticleByline
+        publishedAt="2026-04-01"
+        updatedAt="2026-05-25"
+        readingMinutes={6}
+        url="/methodologie"
+        headline={TITLE}
+        description={DESCRIPTION}
+      />
 
       <Section title="Comment fonctionne le simulateur DCA ?">
         <p>
@@ -199,19 +218,67 @@ Optimiste   : rendement_brut + 2 %`}
         </p>
       </Section>
 
+      <SourcesReferences
+        sources={[
+          {
+            label: "Indice des prix à la consommation (IPC) — série mensuelle",
+            url: "https://www.insee.fr/fr/statistiques/2122401",
+            publisher: "INSEE",
+            note: "Référence pour le calcul de la valeur réelle (corrigée de l'inflation).",
+          },
+          {
+            label: "MSCI World Index — méthodologie et historique",
+            url: "https://www.msci.com/indexes/index/990100",
+            publisher: "MSCI Inc.",
+            note: "Indice utilisé comme référence pour les hypothèses de rendement annuel brut (~7-10 % USD).",
+          },
+          {
+            label: "Espace épargnants — risque et rendement",
+            url: "https://www.amf-france.org/fr/espace-epargnants",
+            publisher: "Autorité des marchés financiers (AMF)",
+          },
+          {
+            label: "Mathématiques financières — capitalisation et actualisation",
+            url: "https://www.banque-france.fr/fr/publications-et-statistiques/publications",
+            publisher: "Banque de France",
+          },
+          {
+            label: "Plan d'Épargne en Actions — règles fiscales",
+            url: "https://www.service-public.fr/particuliers/vosdroits/F2385",
+            publisher: "service-public.fr",
+            note: "Conditions d'exonération d'IR après 5 ans (prélèvements sociaux 17,2 % maintenus).",
+          },
+          {
+            label: "Document d'Informations Clés (DIC) — règles d'information investisseur",
+            url: "https://www.amf-france.org/fr/espace-epargnants/comprendre-les-produits-financiers/produits-collectifs/fonds-indiciels-cotes-etf",
+            publisher: "AMF",
+            note: "Les TER cités dans nos hypothèses sont issus des DIC officiels des émetteurs.",
+          },
+        ]}
+      />
+
       <JsonLd
         data={{
           "@context": "https://schema.org",
           "@type": "Article",
-          headline: "Méthodologie — Formules et hypothèses du simulateur DCA",
+          headline: TITLE,
           description: DESCRIPTION,
           url: `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://dcatracker.fr"}/methodologie`,
           inLanguage: "fr-FR",
+          author: {
+            "@type": "Person",
+            "@id": "https://dcatracker.fr/a-propos#person",
+            name: "Maël Faleyras",
+            url: "https://dcatracker.fr/a-propos",
+          },
           publisher: {
             "@type": "Organization",
+            "@id": "https://dcatracker.fr#organization",
             name: "DCA Tracker",
             url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://dcatracker.fr",
           },
+          datePublished: "2026-04-01",
+          dateModified: "2026-05-25",
           about: {
             "@type": "Thing",
             name: "Dollar Cost Averaging",
