@@ -93,7 +93,10 @@ function CheckoutButton({
       window.location.href = `/sign-up?redirect_url=${encodeURIComponent("/tarifs")}`;
       return;
     }
-    track({ name: "start_trial", props: { billing } });
+    // with_cb: true → flux actuel = Stripe Checkout standard (CB collectée à
+    // l'entrée). Le futur A/B test introduira un flux with_cb=false pour mesurer
+    // l'impact sur conversion trial → paid.
+    track({ name: "start_trial", props: { billing, with_cb: true } });
     setLoading(true);
     try {
       const res = await fetch("/api/stripe/checkout", {

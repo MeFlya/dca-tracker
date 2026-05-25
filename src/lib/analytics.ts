@@ -52,12 +52,25 @@ export type AnalyticsEvent =
 
   // ── Upgrade + payment
   | { name: "open_upgrade"; props: { feature: string } }
-  | { name: "start_trial"; props: { billing: "monthly" | "yearly" } }
+  /**
+   * Démarre la période d'essai.
+   *   - billing : "monthly" | "yearly"
+   *   - with_cb : true si CB collectée à l'entrée (Stripe Checkout standard),
+   *               false si essai sans CB (flux "trial-then-paywall").
+   *               C'est l'axe de l'A/B test Sprint 2 #10 — ne jamais confondre.
+   */
+  | { name: "start_trial"; props: { billing: "monthly" | "yearly"; with_cb: boolean } }
   | { name: "complete_payment"; props: { plan: string } }
   | { name: "cancel_subscription" }
   // ── Trial conversion funnel (pour A/B test CB vs sans CB)
-  | { name: "trial_canceled_during_period"; props: { day_of_trial: number } }
-  | { name: "trial_converted_to_paid"; props: { billing: "monthly" | "yearly" } }
+  | { name: "trial_canceled_during_period"; props: { day_of_trial: number; with_cb: boolean } }
+  | { name: "trial_converted_to_paid"; props: { billing: "monthly" | "yearly"; with_cb: boolean } }
+  /**
+   * Tiré par le cron J+7 post-paiement réussi. Permet de mesurer la rétention
+   * "early churn" — bien plus prédictive que le simple paid_count brut.
+   * Si ce nombre / start_trial.with_cb=true est < 60 %, le funnel CB est cassé.
+   */
+  | { name: "subscription_active_j7"; props: { billing: "monthly" | "yearly" } }
   // ── Annual push banner (in-app)
   | { name: "annual_banner_shown" }
   | { name: "annual_banner_click" }
