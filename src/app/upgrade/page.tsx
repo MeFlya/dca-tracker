@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { runSimulation, formatEur } from "@/lib/simulator";
 import { VisitTracker } from "@/components/analytics/VisitTracker";
+import { PremiumCheckoutButton } from "@/components/checkout/PremiumCheckoutButton";
 import type { SimulatorInput } from "@/lib/simulator";
 import { runMonteCarlo } from "@/lib/monte-carlo";
 import { theoreticalValueAtMonth } from "@/lib/strategy-math";
@@ -909,15 +910,20 @@ export default async function UpgradePage({ searchParams }: Props) {
           </div>
         </section>
 
-        {/* ── CTA ───────────────────────────────────────────────────────────── */}
+        {/* ── CTA ─────────────────────────────────────────────────────────────
+            Le bouton "Essayer Premium" déclenche DIRECTEMENT Stripe Checkout
+            (pas de redirection vers /tarifs) — un step intermédiaire en moins
+            dans le funnel. Le bouton "Continuer en Gratuit" reste un Link
+            classique (pas de payment flow). */}
         <section id="cta" className="mb-10">
-          <div className="flex flex-col sm:flex-row gap-3">
-            <Link
-              href="/tarifs#premium"
-              className="btn-primary text-base px-8 py-4 text-center flex-1"
-            >
-              Essayer Premium — 7 jours gratuits →
-            </Link>
+          <div className="flex flex-col sm:flex-row gap-3 items-stretch">
+            <div className="flex-1">
+              <PremiumCheckoutButton
+                billing="yearly"
+                className="btn-primary text-base px-8 py-4 text-center inline-flex items-center justify-center w-full"
+                fineprint={null}
+              />
+            </div>
             <Link
               href="/simulateur"
               className="btn-secondary text-base px-6 py-4 text-center"
@@ -1008,14 +1014,14 @@ export default async function UpgradePage({ searchParams }: Props) {
         </section>
       </div>
 
-      {/* ── Sticky mobile CTA ────────────────────────────────────────────────── */}
+      {/* ── Sticky mobile CTA ──────────────────────────────────────────────────
+          Idem : checkout direct, pas de redirection /tarifs. */}
       <div className="sm:hidden fixed bottom-0 left-0 right-0 z-40 p-3 bg-white border-t border-gray-100 shadow-lg">
-        <Link
-          href="/tarifs#premium"
-          className="btn-primary w-full justify-center text-sm py-3"
-        >
-          Essayer Premium — 7 jours gratuits →
-        </Link>
+        <PremiumCheckoutButton
+          billing="yearly"
+          className="btn-primary w-full justify-center text-sm py-3 inline-flex items-center"
+          fineprint={null}
+        />
       </div>
     </div>
   );
