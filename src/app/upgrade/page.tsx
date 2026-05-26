@@ -7,6 +7,7 @@ import {
   Scale,
   Receipt,
   ArrowRight,
+  Lock,
 } from "lucide-react";
 import { runSimulation, formatEur } from "@/lib/simulator";
 import { VisitTracker } from "@/components/analytics/VisitTracker";
@@ -769,17 +770,49 @@ export default async function UpgradePage({ searchParams }: Props) {
         </section>
 
         {/* ── LOSS AVERSION ─────────────────────────────────────────────────── */}
-        <section className="mb-10 rounded-2xl border-2 border-red-100 bg-red-50/40 p-6">
-          <p className="text-xs font-bold text-red-700 uppercase tracking-wider mb-4">
+        {/*
+          Reskin DA Premium dark (cohérence avec PremiumLockedOverlay /
+          PremiumFix / UpgradePrompt). Le bloc qui ÉNUMÈRE ce qui est
+          verrouillé doit visuellement APPARTENIR à l'identité Premium —
+          pas être un encart rouge alerte indépendant. Le rouge alerte
+          du eyebrow ("❌ Vous voyez un seul chiffre") porte déjà le
+          signal pain ; ici on bascule sur "valeur exclusive".
+        */}
+        <section className="relative mb-10 rounded-2xl border border-slate-800 bg-slate-950 p-6 overflow-hidden">
+          {/* Dot texture */}
+          <div
+            className="absolute inset-0 opacity-[0.08] pointer-events-none"
+            style={{
+              backgroundImage: "radial-gradient(#ffffff 1px, transparent 1px)",
+              backgroundSize: "18px 18px",
+            }}
+            aria-hidden
+          />
+          {/* Soft blue glow */}
+          <div
+            className="absolute -top-16 -right-16 w-56 h-56 pointer-events-none"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle, rgba(59, 130, 246, 0.3), transparent 70%)",
+            }}
+            aria-hidden
+          />
+
+          <p className="relative text-xs font-bold text-primary-300 uppercase tracking-wider mb-4">
             {f.loss.headline}
           </p>
-          <div className="space-y-4">
+          <div className="relative space-y-4">
             {f.loss.items.map((item, i) => (
               <div key={i} className="flex items-start gap-3">
-                <span className="text-xl shrink-0">{item.icon}</span>
+                <Lock
+                  size={18}
+                  strokeWidth={1.8}
+                  className="text-primary-400 mt-0.5 shrink-0"
+                  aria-hidden
+                />
                 <div>
-                  <p className="text-sm font-bold text-gray-900 mb-0.5">{item.title}</p>
-                  <p className="text-sm text-gray-600 leading-relaxed">{item.desc}</p>
+                  <p className="text-sm font-bold text-white mb-0.5">{item.title}</p>
+                  <p className="text-sm text-slate-300 leading-relaxed">{item.desc}</p>
                 </div>
               </div>
             ))}
