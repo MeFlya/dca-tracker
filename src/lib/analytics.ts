@@ -76,6 +76,12 @@ export type AnalyticsEvent =
   | { name: "annual_banner_click" }
   | { name: "annual_banner_dismiss" }
 
+  // ── Backtest historique (feature Premium récurrente — moat n°1)
+  | { name: "backtest_started"; props: { monthly_amount: number; start_date: string; end_date: string } }
+  | { name: "backtest_completed"; props: { monthly_amount: number; months_invested: number; gain_pct: number; irr_pct: number | null } }
+  | { name: "backtest_premium_locked_cta_clicked" }
+  | { name: "backtest_quick_scenario_used"; props: { scenario_name: string } }
+
   // ── Account
   | { name: "import_csv"; props: { months: number; detected_format: string } }
   | { name: "export_data" }

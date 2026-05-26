@@ -49,6 +49,11 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/backtest" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+                  Backtest historique
+                </Link>
+              </li>
+              <li>
                 <Link href="/comparer-etf" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
                   Comparer les ETF
                 </Link>
