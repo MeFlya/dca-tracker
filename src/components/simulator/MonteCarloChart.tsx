@@ -110,9 +110,9 @@ function LockedOverlay({ input }: { input?: SimulatorInput }) {
 
 // ─── Chart ────────────────────────────────────────────────────────────────────
 
-function MCAreaChart({ data }: { data: MonteCarloDataPoint[] }) {
+function MCAreaChart({ data, height = 300 }: { data: MonteCarloDataPoint[]; height?: number }) {
   return (
-    <ResponsiveContainer width="100%" height={300}>
+    <ResponsiveContainer width="100%" height={height}>
       <AreaChart data={data} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
         <defs>
           <linearGradient id="mcGradP90" x1="0" y1="0" x2="0" y2="1">
@@ -229,10 +229,14 @@ export function MonteCarloChart({
         </span>
       </div>
 
-      {/* Chart — blurred for free users */}
+      {/* Chart — blurred for free users.
+          Free users get a TALLER blurred chart (400 vs 300) so the centered
+          dark Premium card sits comfortably ON the blurred content with
+          breathing room above/below. Avant : chart 300 + card ~280 → card
+          débordait visuellement du parent. */}
       <div className="relative">
         <div className={isPremium ? "" : "blur-sm pointer-events-none select-none"}>
-          <MCAreaChart data={result.data} />
+          <MCAreaChart data={result.data} height={isPremium ? 300 : 400} />
         </div>
         {!isPremium && <LockedOverlay input={input} />}
       </div>
