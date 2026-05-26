@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { runSimulation, formatEur } from "@/lib/simulator";
 import type { SimulatorInput } from "@/lib/simulator";
 import { buildUpgradeUrl } from "@/lib/upgrade-link";
+import { PremiumLockedOverlay } from "@/components/ui/PremiumLockedOverlay";
 
 // ─── Mini slider row ──────────────────────────────────────────────────────────
 
@@ -95,30 +95,17 @@ function ScenForm({
 }
 
 // ─── Lock overlay ─────────────────────────────────────────────────────────────
+// Uses the shared dark Premium overlay (PremiumLockedOverlay) so the DA stays
+// in sync with MonteCarloChart and any future paywall.
 
 function LockedOverlay({ input }: { input?: SimulatorInput }) {
   return (
-    <div className="absolute inset-0 flex flex-col items-center justify-center z-10 rounded-2xl bg-white/75 backdrop-blur-sm">
-      <div className="text-center max-w-xs px-4">
-        <div className="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center mx-auto mb-4">
-          <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-slate-700" aria-hidden>
-            <rect x="5" y="11" width="14" height="11" rx="2" stroke="currentColor" strokeWidth="1.8" />
-            <path d="M8 11V7a4 4 0 0 1 8 0v4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-          </svg>
-        </div>
-        <p className="font-bold text-gray-900 mb-1">Comparez deux stratégies</p>
-        <p className="text-sm text-gray-500 mb-4 leading-relaxed">
-          200 €/mois pendant 20 ans vs 300 €/mois pendant 15 ans — lequel
-          produit le plus ? Comparez en temps réel côte à côte.
-        </p>
-        <Link
-          href={buildUpgradeUrl("ab-comparison", input)}
-          className="inline-block bg-slate-900 text-white font-semibold text-sm px-5 py-2.5 rounded-xl hover:bg-slate-800 transition-colors"
-        >
-          Débloquer avec Premium →
-        </Link>
-      </div>
-    </div>
+    <PremiumLockedOverlay
+      title="Comparez deux stratégies"
+      description="200 €/mois pendant 20 ans vs 300 €/mois pendant 15 ans — lequel produit le plus ? Comparez en temps réel côte à côte."
+      ctaLabel="Débloquer avec Premium →"
+      ctaHref={buildUpgradeUrl("ab-comparison", input)}
+    />
   );
 }
 

@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import {
   AreaChart,
   Area,
@@ -14,6 +13,7 @@ import type { MonteCarloResult, MonteCarloDataPoint } from "@/lib/monte-carlo";
 import { formatEur } from "@/lib/simulator";
 import type { SimulatorInput } from "@/lib/simulator";
 import { buildUpgradeUrl } from "@/lib/upgrade-link";
+import { PremiumLockedOverlay } from "@/components/ui/PremiumLockedOverlay";
 
 // ─── Tooltip ──────────────────────────────────────────────────────────────────
 
@@ -85,39 +85,26 @@ function KpiCard({
 }
 
 // ─── Lock overlay for free users ──────────────────────────────────────────────
+// Uses the shared dark Premium overlay (PremiumLockedOverlay) so the DA stays
+// in sync with ScenarioComparison and any future paywall.
 
 function LockedOverlay({ input }: { input?: SimulatorInput }) {
   return (
-    <div className="absolute inset-0 flex flex-col items-center justify-center z-10 rounded-2xl bg-white/80 backdrop-blur-sm">
-      <div className="text-center max-w-sm px-6">
-        <div className="w-12 h-12 rounded-2xl bg-primary-100 flex items-center justify-center mx-auto mb-4">
-          <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-primary-600" aria-hidden="true">
-            <rect x="5" y="11" width="14" height="11" rx="2" stroke="currentColor" strokeWidth="1.8" />
-            <path d="M8 11V7a4 4 0 0 1 8 0v4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-            <circle cx="12" cy="16" r="1.5" fill="currentColor" />
-          </svg>
-        </div>
-        <p className="font-bold text-gray-900 text-base mb-2 leading-snug">
-          Ce graphique montre les 1&nbsp;000 marchés possibles.
-        </p>
-        <p className="text-sm text-gray-500 mb-1 leading-relaxed">
+    <PremiumLockedOverlay
+      title="Ce graphique montre les 1 000 marchés possibles."
+      description={
+        <>
           Dans le{" "}
-          <span className="font-semibold text-orange-500">pire scénario</span>,
+          <span className="font-semibold text-orange-400">pire scénario</span>,
           combien vous reste-t-il ? Dans le{" "}
-          <span className="font-semibold text-emerald-600">meilleur</span> ?
+          <span className="font-semibold text-emerald-400">meilleur</span> ?
           Quelle est la probabilité que vous soyez en plus-value ?
-        </p>
-        <p className="text-xs text-gray-500 mb-5 leading-relaxed">
-          Le résultat moyen ne suffit pas pour piloter une vraie stratégie.
-        </p>
-        <Link
-          href={buildUpgradeUrl("monte-carlo", input)}
-          className="inline-block bg-primary-600 text-white font-semibold text-sm px-5 py-2.5 rounded-xl hover:bg-primary-700 transition-colors"
-        >
-          Débloquer l&apos;analyse de risque →
-        </Link>
-      </div>
-    </div>
+        </>
+      }
+      fineprint="Le résultat moyen ne suffit pas pour piloter une vraie stratégie."
+      ctaLabel="Débloquer l'analyse de risque →"
+      ctaHref={buildUpgradeUrl("monte-carlo", input)}
+    />
   );
 }
 

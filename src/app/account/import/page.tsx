@@ -35,17 +35,47 @@ export default async function ImportPage() {
       </p>
 
       {!isPremium ? (
-        <div className="rounded-2xl border border-primary-100 bg-primary-50/40 p-6 text-center">
-          <p className="text-base font-bold text-gray-900 mb-2">
-            L&apos;import CSV est une fonction Premium
-          </p>
-          <p className="text-sm text-gray-500 mb-4 max-w-md mx-auto">
-            Importez des années d&apos;historique en quelques secondes plutôt
-            que de saisir chaque mois manuellement.
-          </p>
-          <Link href="/tarifs" className="btn-primary text-sm px-5 py-2.5 inline-block btn-lift">
-            Essayer Premium 7 jours →
-          </Link>
+        // Dark Premium paywall — DA partagée avec PremiumFix (ConversionBlocks),
+        // UpgradePrompt card, PremiumLockedOverlay, et les PremiumNudge des
+        // outils gratuits (allocation, fiscal). Slate-950 + dot pattern + glow
+        // bleu + CTA blanc inversé.
+        <div className="relative rounded-2xl border border-slate-800 bg-slate-950 p-6 text-center overflow-hidden">
+          <div
+            className="absolute inset-0 opacity-[0.08] pointer-events-none"
+            style={{
+              backgroundImage: "radial-gradient(#ffffff 1px, transparent 1px)",
+              backgroundSize: "18px 18px",
+            }}
+            aria-hidden
+          />
+          <div
+            className="absolute -top-16 -right-16 w-48 h-48 pointer-events-none"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle, rgba(59, 130, 246, 0.35), transparent 70%)",
+            }}
+            aria-hidden
+          />
+          <div className="relative">
+            <div className="flex justify-center mb-3">
+              <span className="inline-flex items-center bg-primary-500 text-white px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide">
+                Premium
+              </span>
+            </div>
+            <p className="text-base font-bold text-white mb-2">
+              L&apos;import CSV est une fonction Premium
+            </p>
+            <p className="text-sm text-slate-300 mb-5 max-w-md mx-auto leading-relaxed">
+              Importez des années d&apos;historique en quelques secondes plutôt
+              que de saisir chaque mois manuellement.
+            </p>
+            <Link
+              href="/tarifs"
+              className="inline-block bg-white text-slate-950 font-semibold text-sm px-5 py-2.5 rounded-xl hover:bg-slate-100 transition-colors"
+            >
+              Essayer Premium 7 jours →
+            </Link>
+          </div>
         </div>
       ) : (
         <ImportFlow />
