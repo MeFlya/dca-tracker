@@ -10,7 +10,14 @@ import {
   Sparkles,
 } from "lucide-react";
 import { formatEur } from "@/lib/simulator";
-import { BADGES, computeEarnedBadges, nextBadge } from "@/lib/badges";
+import {
+  BADGES,
+  computeEarnedBadges,
+  nextBadge,
+  getInvestorLevel,
+  type InvestorLevel,
+} from "@/lib/badges";
+import { computeStreak, currentMonth } from "@/lib/strategy-math";
 import { rhythmLabel, rhythmDescription } from "@/lib/strategy-insights";
 import { useStrategy } from "../StrategyContext";
 import { MetricCard } from "../components/MetricCard";
@@ -230,25 +237,98 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 
 // ─── Badges section ───────────────────────────────────────────────────────────
 
+// Thèmes de couleur par niveau (classes Tailwind complètes — pas de
+// concaténation dynamique, sinon le purge les supprimerait).
+const LEVEL_STYLES: Record<
+  InvestorLevel["accent"],
+  { ring: string; bg: string; text: string; bar: string }
+> = {
+  slate:  { ring: "border-slate-200",  bg: "bg-slate-50",  text: "text-slate-700",  bar: "bg-slate-400"  },
+  amber:  { ring: "border-amber-200",  bg: "bg-amber-50",  text: "text-amber-800",  bar: "bg-amber-500"  },
+  zinc:   { ring: "border-zinc-200",   bg: "bg-zinc-50",   text: "text-zinc-700",   bar: "bg-zinc-400"   },
+  yellow: { ring: "border-yellow-200", bg: "bg-yellow-50", text: "text-yellow-800", bar: "bg-yellow-500" },
+  sky:    { ring: "border-sky-200",    bg: "bg-sky-50",    text: "text-sky-800",    bar: "bg-sky-500"    },
+  violet: { ring: "border-violet-200", bg: "bg-violet-50", text: "text-violet-800", bar: "bg-violet-500" },
+};
+
 function BadgeSection() {
   const { entries } = useStrategy();
   const earned = computeEarnedBadges(entries);
   const next = nextBadge(entries);
+  const level = getInvestorLevel(entries);
+  const ls = LEVEL_STYLES[level.accent];
+
+  const months = entries.map((e) => e.month);
+  const streak = computeStreak(months);
+  const loggedThisMonth = months.includes(currentMonth());
+  const streakAtRisk = streak > 0 && !loggedThisMonth;
 
   return (
     <section>
       <div className="flex items-center justify-between mb-3">
         <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
           <Sparkles size={12} />
-          Achievements
+          Niveau & achievements
         </p>
         <span className="text-xs text-gray-500 tabular-nums">
           {earned.size}/{BADGES.length} débloqués
         </span>
       </div>
 
+      {/* ── Carte niveau — récompense l'ancienneté (le moat) ─────────────── */}
+      <div className={`rounded-2xl border ${ls.ring} ${ls.bg} p-5 mb-3`}>
+        <div className="flex items-center gap-4">
+          <div className="text-3xl leading-none shrink-0" aria-hidden>
+            {level.icon}
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-baseline justify-between gap-2 mb-1.5">
+              <p className={`text-sm font-bold ${ls.text}`}>
+                Niveau {level.name}
+              </p>
+              <span className="text-xs text-gray-500 tabular-nums shrink-0">
+                {level.monthsLogged} mois suivis
+              </span>
+            </div>
+            {level.nextName ? (
+              <>
+                <div className="h-1.5 rounded-full bg-white/70 overflow-hidden mb-1.5">
+                  <div
+                    className={`h-full ${ls.bar} rounded-full transition-all`}
+                    style={{ width: `${level.progressPct}%` }}
+                  />
+                </div>
+                <p className="text-xs text-gray-500">
+                  Plus que{" "}
+                  <strong className="text-gray-700">
+                    {level.monthsToNext} mois
+                  </strong>{" "}
+                  avant le niveau {level.nextName}
+                </p>
+              </>
+            ) : (
+              <p className="text-xs text-gray-500">
+                Niveau maximum atteint — discipline exemplaire 🎩
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Série en danger — incite à logger ce mois ───────────────────── */}
+      {streakAtRisk && (
+        <div className="rounded-xl border border-orange-200 bg-orange-50 px-4 py-3 mb-3 flex items-center gap-2.5">
+          <Flame size={16} className="text-orange-500 shrink-0" />
+          <p className="text-xs text-orange-800 leading-snug">
+            <strong>Série de {streak} mois en cours</strong> — enregistrez ce
+            mois-ci pour ne pas la perdre.
+          </p>
+        </div>
+      )}
+
+      {/* ── Grille de badges ────────────────────────────────────────────── */}
       <div className="rounded-2xl border border-gray-100 bg-white p-5">
-        <div className="grid grid-cols-5 gap-2 sm:gap-3">
+        <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 sm:gap-3">
           {BADGES.map((badge) => {
             const isEarned = earned.has(badge.id);
             return (
