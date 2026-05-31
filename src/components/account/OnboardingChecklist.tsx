@@ -162,11 +162,38 @@ function OnboardingIllustration({
   completed: number;
   total: number;
 }) {
-  // Position du "you are here" sur la courbe selon progression
-  const progress = completed / total;
-  const dotX = 60 + progress * 480; // de 60 à 540 sur viewBox 600
-  // Approximation visuelle de la y position sur la courbe (y diminue avec progress)
-  const dotY = 110 - progress * 80;
+  // Évalue la courbe (mêmes 2 segments bézier que le path SVG ci-dessous) à
+  // s ∈ [0,1]. Garantit que TOUS les points (milestones + "you are here")
+  // tombent EXACTEMENT sur la ligne. Avant, une approximation linéaire
+  // (dotY = 110 - progress*80) faisait flotter les dots au-dessus de la
+  // courbe → effet "pas sérieux".
+  const curveAt = (s: number): [number, number] => {
+    const bez = (
+      p0: [number, number],
+      p1: [number, number],
+      p2: [number, number],
+      p3: [number, number],
+      t: number,
+    ): [number, number] => {
+      const mt = 1 - t;
+      return [
+        mt * mt * mt * p0[0] + 3 * mt * mt * t * p1[0] + 3 * mt * t * t * p2[0] + t * t * t * p3[0],
+        mt * mt * mt * p0[1] + 3 * mt * mt * t * p1[1] + 3 * mt * t * t * p2[1] + t * t * t * p3[1],
+      ];
+    };
+    // Segment 1 : C 100 118, 180 110, 260 90
+    if (s <= 0.5) return bez([0, 120], [100, 118], [180, 110], [260, 90], s / 0.5);
+    // Segment 2 : S 440 50, 600 20 (control1 = reflet de (180,110) autour de (260,90) = (340,70))
+    return bez([260, 90], [340, 70], [440, 50], [600, 20], (s - 0.5) / 0.5);
+  };
+
+  // 3 milestones répartis sur la courbe (un par étape d'onboarding).
+  const milestones = [0.15, 0.5, 0.85].map((s) => curveAt(s));
+
+  // "You are here" : position sur la courbe selon la progression réelle,
+  // bornée pour ne jamais coller aux extrémités.
+  const progress = total > 0 ? completed / total : 0;
+  const [hereX, hereY] = curveAt(Math.min(Math.max(progress, 0.05), 0.95));
 
   return (
     <div className="relative w-full h-[140px] bg-gradient-to-br from-primary-50/60 via-white to-accent-50/40 border-b border-primary-100 overflow-hidden">
@@ -212,18 +239,14 @@ function OnboardingIllustration({
           className="animate-draw-line"
         />
 
-        {/* 3 milestone dots — un par étape, position fixe */}
-        {[
-          { x: 60,  y: 116, label: "Compte" },
-          { x: 300, y: 78,  label: "Simulation" },
-          { x: 540, y: 30,  label: "Stratégie" },
-        ].map((m, i) => {
+        {/* 3 milestone dots — un par étape, calés exactement sur la courbe */}
+        {milestones.map(([mx, my], i) => {
           const reached = i < completed;
           return (
             <g key={i}>
               <circle
-                cx={m.x}
-                cy={m.y}
+                cx={mx}
+                cy={my}
                 r="4"
                 fill={reached ? "#0d9488" : "#cbd5e1"}
                 className="animate-fade-in"
@@ -231,8 +254,8 @@ function OnboardingIllustration({
               />
               {reached && (
                 <circle
-                  cx={m.x}
-                  cy={m.y}
+                  cx={mx}
+                  cy={my}
                   r="4"
                   fill="none"
                   stroke="#0d9488"
@@ -247,18 +270,18 @@ function OnboardingIllustration({
           );
         })}
 
-        {/* "You are here" dot — position fonction de progress */}
+        {/* "You are here" dot — calé sur la courbe selon la progression */}
         <circle
-          cx={dotX}
-          cy={dotY}
+          cx={hereX}
+          cy={hereY}
           r="6"
           fill="#1d4ed8"
           className="animate-fade-in"
           style={{ animationDelay: "1200ms" }}
         />
         <circle
-          cx={dotX}
-          cy={dotY}
+          cx={hereX}
+          cy={hereY}
           r="6"
           fill="none"
           stroke="#1d4ed8"

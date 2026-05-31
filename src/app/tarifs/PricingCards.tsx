@@ -85,8 +85,33 @@ function CheckoutButton({
   billing: "monthly" | "yearly";
   label: string;
 }) {
-  const { isSignedIn, isLoaded } = useUser();
+  const { isSignedIn, isLoaded, user } = useUser();
+  const isAlreadyPremium =
+    (user?.publicMetadata?.plan as string | undefined) === "premium";
   const [loading, setLoading] = useState(false);
+
+  // Déjà Premium → aucun CTA d'essai (l'user a déjà tout). On propose la
+  // gestion d'abonnement à la place. Évite l'absurdité "Essayer Premium —
+  // 7 jours gratuits" affichée à quelqu'un qui est déjà abonné.
+  if (isLoaded && isAlreadyPremium) {
+    return (
+      <div className="relative mb-6">
+        <Link
+          href="/account"
+          className="w-full text-center text-sm font-semibold py-2.5 px-4 rounded-xl transition-all block bg-white/10 border border-white/15 text-white hover:bg-white/15"
+        >
+          Gérer mon abonnement
+        </Link>
+        <p className="text-[11px] text-emerald-300 text-center mt-2 flex items-center justify-center gap-1.5">
+          <svg className="w-3 h-3" viewBox="0 0 16 16" fill="none" aria-hidden>
+            <circle cx="8" cy="8" r="7" fill="currentColor" opacity="0.25" />
+            <path d="M5 8l2.5 2.5L11 5.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          Vous êtes déjà Premium
+        </p>
+      </div>
+    );
+  }
 
   async function handleClick() {
     if (!isSignedIn) {
