@@ -10,21 +10,19 @@ export function ManageSubscriptionButton() {
     try {
       const res = await fetch("/api/stripe/portal", { method: "POST" });
       const data = await res.json();
+      // Cas normal d'un vrai abonné : le portail Stripe s'ouvre — c'est LA
+      // page où l'on gère et résilie son abonnement.
       if (res.ok && data.url) {
         window.location.href = data.url;
         return;
       }
-      // Avant : un échec (ex: 400 "aucun abonnement Stripe" pour un compte
-      // passé Premium manuellement) ne renvoyait pas d'url → le bouton ne
-      // faisait RIEN, sans feedback. Maintenant on surface le message.
-      alert(
-        data.error ??
-          "Impossible d'ouvrir la gestion de l'abonnement. Si vous venez de vous abonner, réessayez dans une minute.",
-      );
+      // Cas sans abonnement Stripe (ex: accès Premium attribué manuellement,
+      // ou customer non encore propagé) : pas d'erreur affichée — on emmène
+      // l'user vers la page de gestion de compte plutôt qu'un dead-end.
+      window.location.href = "/account/settings";
     } catch {
-      alert("Erreur réseau — réessayez dans quelques secondes.");
-    } finally {
-      setLoading(false);
+      // Échec réseau pur → fallback vers la même page de gestion.
+      window.location.href = "/account/settings";
     }
   }
 

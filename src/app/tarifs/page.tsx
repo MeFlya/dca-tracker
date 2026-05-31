@@ -246,6 +246,11 @@ export default function TarifsPage() {
             free voit à quoi ça ressemble. */}
         <PremiumFeatureShowcase />
 
+        {/* Séparateur galerie ↔ tableau comparatif — ligne dégradée discrète */}
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 mb-16">
+          <div className="h-px bg-gradient-to-r from-transparent via-slate-300/70 to-transparent" />
+        </div>
+
         {/* Feature comparison table */}
         <div className="max-w-4xl mx-auto px-4 sm:px-6 mb-20">
           <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">

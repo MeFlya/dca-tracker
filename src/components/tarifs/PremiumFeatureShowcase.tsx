@@ -8,6 +8,11 @@
 // Choix : mockups construits en SVG/CSS (pas des captures d'écran) → responsive,
 // on-brand, zéro maintenance quand l'UI réelle évolue. On pourra les remplacer
 // par de vraies captures plus tard si on veut.
+//
+// Interactivité (sans JS) : card-hover (lift au survol), mockup qui zoome
+// légèrement au group-hover, lignes des graphiques qui se dessinent au mount
+// (animate-draw-line), points d'arrivée qui pulsent (SMIL). Donne un effet
+// "vivant" sans alourdir (pas de "use client").
 
 import Link from "next/link";
 import { Sparkles } from "lucide-react";
@@ -24,7 +29,7 @@ function TrackingMockup() {
           </p>
           <p className="text-sm font-bold text-gray-900 tabular-nums">2 680 €</p>
         </div>
-        <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full">
+        <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full transition-transform group-hover:scale-105">
           +3,2 % vs projection
         </span>
       </div>
@@ -37,19 +42,26 @@ function TrackingMockup() {
           strokeWidth="1.5"
           strokeDasharray="4 3"
         />
-        {/* Réel (bleu plein, légèrement au-dessus) */}
+        {/* Réel (bleu plein) — se dessine au mount */}
         <polyline
           points="4,53 32,47 60,41 88,33 116,27 144,20 172,12 196,5"
           fill="none"
           stroke="#2563eb"
           strokeWidth="2"
           strokeLinecap="round"
+          className="animate-draw-line"
         />
         {[
-          [4, 53], [32, 47], [60, 41], [88, 33], [116, 27], [144, 20], [172, 12], [196, 5],
+          [4, 53], [32, 47], [60, 41], [88, 33], [116, 27], [144, 20], [172, 12],
         ].map(([x, y], i) => (
           <circle key={i} cx={x} cy={y} r="1.8" fill="#2563eb" />
         ))}
+        {/* Point d'arrivée + ping */}
+        <circle cx="196" cy="5" r="3" fill="#2563eb" />
+        <circle cx="196" cy="5" r="3" fill="none" stroke="#2563eb" strokeWidth="1.5">
+          <animate attributeName="r" from="3" to="9" dur="1.8s" repeatCount="indefinite" />
+          <animate attributeName="opacity" from="0.6" to="0" dur="1.8s" repeatCount="indefinite" />
+        </circle>
       </svg>
       <div className="flex items-center gap-4 mt-2 text-[10px] text-gray-500">
         <span className="flex items-center gap-1">
@@ -85,8 +97,8 @@ function MonteCarloMockup() {
         />
         {/* p90 (meilleur cas) */}
         <path d="M4 34 C 70 28, 130 18, 196 6" fill="none" stroke="#10b981" strokeWidth="1.5" strokeDasharray="4 3" />
-        {/* p50 (médiane) */}
-        <path d="M4 35 C 70 32, 130 26, 196 20" fill="none" stroke="#2563eb" strokeWidth="2" />
+        {/* p50 (médiane) — se dessine au mount */}
+        <path d="M4 35 C 70 32, 130 26, 196 20" fill="none" stroke="#2563eb" strokeWidth="2" className="animate-draw-line" />
         {/* p10 (pire cas) */}
         <path d="M4 36 C 70 36, 130 36, 196 40" fill="none" stroke="#f97316" strokeWidth="1.5" strokeDasharray="4 3" />
       </svg>
@@ -96,7 +108,7 @@ function MonteCarloMockup() {
           <span className="text-blue-600 font-semibold tabular-nums">102k€</span>
           <span className="text-emerald-600 font-semibold tabular-nums">158k€</span>
         </div>
-        <span className="text-[11px] font-bold text-gray-900 bg-gray-100 px-2 py-0.5 rounded-full">
+        <span className="text-[11px] font-bold text-gray-900 bg-gray-100 px-2 py-0.5 rounded-full transition-transform group-hover:scale-105">
           87 % de plus-value
         </span>
       </div>
@@ -113,7 +125,7 @@ function BacktestMockup() {
         <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">
           DCA réel · 2010 → 2025
         </p>
-        <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full tabular-nums">
+        <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full tabular-nums transition-transform group-hover:scale-105">
           +187 %
         </span>
       </div>
@@ -135,9 +147,16 @@ function BacktestMockup() {
           stroke="#2563eb"
           strokeWidth="2"
           strokeLinecap="round"
+          className="animate-draw-line"
         />
         {/* Marqueur du creux COVID */}
         <circle cx="80" cy="50" r="2.5" fill="#f97316" />
+        {/* Point d'arrivée + ping */}
+        <circle cx="196" cy="6" r="3" fill="#2563eb" />
+        <circle cx="196" cy="6" r="3" fill="none" stroke="#2563eb" strokeWidth="1.5">
+          <animate attributeName="r" from="3" to="9" dur="1.8s" repeatCount="indefinite" />
+          <animate attributeName="opacity" from="0.6" to="0" dur="1.8s" repeatCount="indefinite" />
+        </circle>
       </svg>
       <p className="text-[10px] text-gray-500 mt-2">
         TRI <strong className="text-gray-700">13 %/an</strong> · pire creux traversé{" "}
@@ -148,6 +167,7 @@ function BacktestMockup() {
 }
 
 // ─── Mockup 4 : Récap fiscal annuel ──────────────────────────────────────────
+// Compact (espacement serré) pour tenir dans la hauteur fixe sans déborder.
 
 function FiscalMockup() {
   const rows = [
@@ -157,16 +177,21 @@ function FiscalMockup() {
     { label: "Prélèvement (PFU)", value: "30 %" },
   ];
   return (
-    <div className="w-full h-full bg-white rounded-xl border border-slate-200/80 p-4 flex flex-col">
-      <div className="flex items-center justify-between mb-3">
+    <div className="w-full h-full bg-white rounded-xl border border-slate-200/80 px-4 py-3 flex flex-col">
+      <div className="flex items-center justify-between mb-2">
         <p className="text-sm font-bold text-gray-900">Récap fiscal 2026</p>
-        <span className="text-[10px] font-bold text-red-600 bg-red-50 border border-red-100 px-1.5 py-0.5 rounded">
+        <span className="text-[10px] font-bold text-red-600 bg-red-50 border border-red-100 px-1.5 py-0.5 rounded transition-transform group-hover:scale-105">
           PDF
         </span>
       </div>
-      <div className="flex-1 flex flex-col justify-center gap-2">
-        {rows.map((r) => (
-          <div key={r.label} className="flex items-center justify-between text-xs">
+      <div className="flex-1 flex flex-col justify-center gap-1.5">
+        {rows.map((r, i) => (
+          <div
+            key={r.label}
+            className={`flex items-center justify-between text-[11px] ${
+              i === rows.length - 1 ? "pt-1.5 border-t border-slate-100" : ""
+            }`}
+          >
             <span className="text-gray-500">{r.label}</span>
             <span className="font-semibold text-gray-900 tabular-nums">{r.value}</span>
           </div>
@@ -190,10 +215,13 @@ function FeatureCard({
   badge?: string;
 }) {
   return (
-    <div className="rounded-2xl border border-slate-200/70 bg-slate-50/60 p-4 shadow-card">
-      {/* Zone mockup — hauteur fixe pour aligner la grille */}
-      <div className="h-[160px] mb-4 rounded-xl bg-gradient-to-br from-primary-50/50 via-white to-slate-50 p-3">
-        {mockup}
+    <div className="group rounded-2xl border border-slate-200/70 bg-slate-50/60 p-4 shadow-card card-hover">
+      {/* Zone mockup — hauteur fixe pour aligner la grille. Le mockup zoome
+          légèrement au survol de la carte (interactivité douce). */}
+      <div className="h-[172px] mb-4 rounded-xl bg-gradient-to-br from-primary-50/50 via-white to-slate-50 p-3">
+        <div className="w-full h-full transition-transform duration-200 group-hover:scale-[1.015]">
+          {mockup}
+        </div>
       </div>
       <div className="px-1 pb-1">
         <div className="flex items-center gap-2 mb-1">
@@ -214,7 +242,7 @@ function FeatureCard({
 
 export function PremiumFeatureShowcase() {
   return (
-    <section className="max-w-5xl mx-auto px-4 sm:px-6 mb-20">
+    <section className="max-w-5xl mx-auto px-4 sm:px-6 mb-16">
       <div className="text-center mb-10">
         <p className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-primary-700 mb-3">
           <Sparkles size={14} />
