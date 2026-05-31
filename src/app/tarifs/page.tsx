@@ -4,6 +4,7 @@ import Link from "next/link";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { PricingCards } from "./PricingCards";
 import { LifetimePricingCard } from "./LifetimePricingCard";
+import { PremiumFeatureShowcase } from "@/components/tarifs/PremiumFeatureShowcase";
 import { PaymentBadge } from "@/components/ui/PaymentBadge";
 import { Testimonials } from "@/components/home/Testimonials";
 import { LiveSocialProof } from "@/components/home/LiveSocialProof";
@@ -51,6 +52,7 @@ const COMPARISON_SECTIONS = [
       { feature: "Durée jusqu'à 30 ans",                   free: true,        premium: true   },
       { feature: "Intégration TER automatique",            free: true,        premium: true   },
       { feature: "Analyse Monte Carlo (1 000 scénarios)",  free: false,       premium: true   },
+      { feature: "Backtest historique (DCA sur données réelles MSCI World)", free: false, premium: true },
       { feature: "Comparaison de scénarios A vs B",        free: false,       premium: true   },
     ],
   },
@@ -239,6 +241,11 @@ export default function TarifsPage() {
       {/* ── Analytical section — white opaque (fonctionnel/lecture) ──
           Clean cut from dark → white for a premium "layered" feel. */}
       <section className="relative bg-white py-20">
+        {/* Aperçus visuels des features Premium — la preuve concrète AVANT
+            le tableau comparatif (qui reste dry). Levier de conversion : le
+            free voit à quoi ça ressemble. */}
+        <PremiumFeatureShowcase />
+
         {/* Feature comparison table */}
         <div className="max-w-4xl mx-auto px-4 sm:px-6 mb-20">
           <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">
