@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { LogoMark } from "@/components/ui/LogoMark";
 import { UserButton, useUser } from "@clerk/nextjs";
 import { GuidesMenu } from "@/components/layout/GuidesMenu";
+import { NotificationBell } from "@/components/layout/NotificationBell";
 
 // Note : "Guides" est désormais un mega-menu géré par <GuidesMenu /> et n'est
 // plus dans NAV_LINKS. Il est rendu explicitement entre "Comparer les ETF" et
@@ -119,6 +120,7 @@ export function Header() {
                     Passer à Premium
                   </Link>
                 )}
+                <NotificationBell />
                 <UserButton />
               </>
             )}
@@ -126,15 +128,18 @@ export function Header() {
             {!isLoaded && <div className="w-24 h-8" />}
           </div>
 
-          {/* Mobile hamburger — Lucide icons, smooth cross-fade */}
-          <button
-            onClick={() => setMobileOpen((v) => !v)}
-            className="md:hidden p-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
-            aria-label={mobileOpen ? "Fermer le menu" : "Ouvrir le menu"}
-            aria-expanded={mobileOpen}
-          >
-            {mobileOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
+          {/* Mobile : cloche notifications (si connecté) + hamburger */}
+          <div className="md:hidden flex items-center gap-1">
+            {isLoaded && isSignedIn && <NotificationBell />}
+            <button
+              onClick={() => setMobileOpen((v) => !v)}
+              className="p-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
+              aria-label={mobileOpen ? "Fermer le menu" : "Ouvrir le menu"}
+              aria-expanded={mobileOpen}
+            >
+              {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
         </div>
       </div>
 
