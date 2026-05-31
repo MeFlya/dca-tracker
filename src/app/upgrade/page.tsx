@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { runSimulation, formatEur } from "@/lib/simulator";
 import { VisitTracker } from "@/components/analytics/VisitTracker";
-import { PremiumCheckoutButton } from "@/components/checkout/PremiumCheckoutButton";
+import { PremiumTrialLink } from "@/components/checkout/PremiumTrialLink";
 import type { SimulatorInput } from "@/lib/simulator";
 import { runMonteCarlo } from "@/lib/monte-carlo";
 import { theoreticalValueAtMonth } from "@/lib/strategy-math";
@@ -762,12 +762,7 @@ export default async function UpgradePage({ searchParams }: Props) {
           <p className="text-lg text-gray-600 leading-relaxed mb-6">
             {f.hero.pain}
           </p>
-          <Link
-            href="#cta"
-            className="btn-primary text-base px-6 py-3 inline-block"
-          >
-            Essayer Premium — 7 jours gratuits →
-          </Link>
+          <PremiumTrialLink className="btn-primary text-base px-6 py-3 inline-flex items-center justify-center" />
         </section>
 
         {/* ── LOSS AVERSION ─────────────────────────────────────────────────── */}
@@ -910,19 +905,14 @@ export default async function UpgradePage({ searchParams }: Props) {
           </div>
         </section>
 
-        {/* ── CTA ─────────────────────────────────────────────────────────────
-            Le bouton "Essayer Premium" déclenche DIRECTEMENT Stripe Checkout
-            (pas de redirection vers /tarifs) — un step intermédiaire en moins
-            dans le funnel. Le bouton "Continuer en Gratuit" reste un Link
-            classique (pas de payment flow). */}
-        <section id="cta" className="mb-10">
+        {/* ── CTA principal ───────────────────────────────────────────────────
+            Mène à /tarifs (page de DÉCISION : choix mensuel/annuel + comparatif
+            des plans), PAS directement à Stripe ni un scroll. Le bouton
+            "Continuer en Gratuit" reste un Link vers le simulateur. */}
+        <section className="mb-10">
           <div className="flex flex-col sm:flex-row gap-3 items-stretch">
             <div className="flex-1">
-              <PremiumCheckoutButton
-                billing="yearly"
-                className="btn-primary text-base px-8 py-4 text-center inline-flex items-center justify-center w-full"
-                fineprint={null}
-              />
+              <PremiumTrialLink className="btn-primary text-base px-8 py-4 text-center inline-flex items-center justify-center w-full" />
             </div>
             <Link
               href="/simulateur"
@@ -1015,13 +1005,9 @@ export default async function UpgradePage({ searchParams }: Props) {
       </div>
 
       {/* ── Sticky mobile CTA ──────────────────────────────────────────────────
-          Idem : checkout direct, pas de redirection /tarifs. */}
+          Idem : mène à /tarifs (page de décision). */}
       <div className="sm:hidden fixed bottom-0 left-0 right-0 z-40 p-3 bg-white border-t border-gray-100 shadow-lg">
-        <PremiumCheckoutButton
-          billing="yearly"
-          className="btn-primary w-full justify-center text-sm py-3 inline-flex items-center"
-          fineprint={null}
-        />
+        <PremiumTrialLink className="btn-primary w-full justify-center text-sm py-3 inline-flex items-center" />
       </div>
     </div>
   );

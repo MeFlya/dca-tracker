@@ -34,7 +34,7 @@ import {
   type BacktestResult,
 } from "@/lib/backtest";
 import { track } from "@/lib/analytics";
-import { PremiumCheckoutButton } from "@/components/checkout/PremiumCheckoutButton";
+import { PremiumTrialLink } from "@/components/checkout/PremiumTrialLink";
 
 // ─── Quick scenarios ─────────────────────────────────────────────────────────
 // Les périodes sont calculées dynamiquement par rapport au mois courant et
@@ -268,12 +268,12 @@ export function BacktestClient({ isPremium, minMonth, maxMonth }: Props) {
               Lancer le backtest →
             </button>
           ) : (
-            <PremiumCheckoutButton
-              billing="yearly"
+            <PremiumTrialLink
               label="Débloquer le backtest historique"
               className="btn-primary w-full sm:w-auto inline-flex items-center justify-center text-base px-6 py-3"
               fineprint="7 jours d'essai gratuit · Annulation en 1 clic"
               fineprintClassName="text-xs text-gray-500 mt-3"
+              onClick={handleLockedCtaClick}
             />
           )}
         </div>
@@ -601,15 +601,13 @@ function PremiumPreview({ onCtaClick }: { onCtaClick: () => void }) {
           </li>
         </ul>
 
-        <div onClick={onCtaClick}>
-          <PremiumCheckoutButton
-            billing="yearly"
-            label="Débloquer le backtest historique"
-            className="inline-flex items-center justify-center bg-white text-slate-950 hover:bg-slate-100 font-semibold text-sm px-5 py-2.5 rounded-xl transition-colors"
-            fineprint="7 jours d'essai gratuit · Annulation en 1 clic"
-            fineprintClassName="text-xs text-slate-400 mt-3"
-          />
-        </div>
+        <PremiumTrialLink
+          label="Débloquer le backtest historique"
+          className="inline-flex items-center justify-center bg-white text-slate-950 hover:bg-slate-100 font-semibold text-sm px-5 py-2.5 rounded-xl transition-colors"
+          fineprint="7 jours d'essai gratuit · Annulation en 1 clic"
+          fineprintClassName="text-xs text-slate-400 mt-3"
+          onClick={onCtaClick}
+        />
       </div>
     </div>
   );
