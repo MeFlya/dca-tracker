@@ -291,60 +291,68 @@ export function GuidesMenu({ mobile = false, onNavigate }: Props) {
       </button>
 
       {open && (
+        // Conteneur positionné avec un padding-top (pt-2) TRANSPARENT qui sert
+        // de "pont" hoverable entre le trigger et la carte visuelle. Sans ce
+        // pont (ex: avec mt-2), la souris traverse un gap vide de 8px → elle
+        // sort du wrapper → onMouseLeave ferme le menu avant qu'elle n'atteigne
+        // les items. Le pont garde la souris "dans" la zone hoverable.
         <div
           ref={menuRef}
-          id="guides-mega-menu"
-          role="menu"
-          aria-label="Menu Guides"
-          // 4 colonnes large, positionnée en dessous du trigger, centrée horizontalement
-          className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-[min(900px,calc(100vw-2rem))] rounded-2xl border border-gray-100 bg-white shadow-xl ring-1 ring-black/[0.04] overflow-hidden animate-fade-in"
+          className="absolute left-1/2 -translate-x-1/2 top-full pt-2 w-[min(900px,calc(100vw-2rem))]"
         >
-          <div className="grid grid-cols-4 gap-1 p-4">
-            {COLUMNS.map((col) => (
-              <div key={col.title} className="px-2">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2 px-2">
-                  {col.title}
-                </p>
-                <ul className="space-y-0.5">
-                  {col.items.map((item) => (
-                    <li key={item.href}>
-                      <Link
-                        href={item.href}
-                        role="menuitem"
-                        className="block px-2 py-1.5 rounded-lg hover:bg-primary-50/60 transition-colors group"
-                      >
-                        <p className="text-sm font-semibold text-gray-900 leading-tight flex items-center group-hover:text-primary-700 transition-colors">
-                          {item.label}
-                          {item.badge && <Badge badge={item.badge} />}
-                        </p>
-                        {item.desc && (
-                          <p className="text-xs text-gray-500 leading-snug mt-0.5">
-                            {item.desc}
+          <div
+            id="guides-mega-menu"
+            role="menu"
+            aria-label="Menu Guides"
+            className="rounded-2xl border border-gray-100 bg-white shadow-xl ring-1 ring-black/[0.04] overflow-hidden animate-fade-in"
+          >
+            <div className="grid grid-cols-4 gap-1 p-4">
+              {COLUMNS.map((col) => (
+                <div key={col.title} className="px-2">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2 px-2">
+                    {col.title}
+                  </p>
+                  <ul className="space-y-0.5">
+                    {col.items.map((item) => (
+                      <li key={item.href}>
+                        <Link
+                          href={item.href}
+                          role="menuitem"
+                          className="block px-2 py-1.5 rounded-lg hover:bg-primary-50/60 transition-colors group"
+                        >
+                          <p className="text-sm font-semibold text-gray-900 leading-tight flex items-center group-hover:text-primary-700 transition-colors">
+                            {item.label}
+                            {item.badge && <Badge badge={item.badge} />}
                           </p>
-                        )}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
+                          {item.desc && (
+                            <p className="text-xs text-gray-500 leading-snug mt-0.5">
+                              {item.desc}
+                            </p>
+                          )}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
 
-          {/* Footer du mega-menu — liens secondaires */}
-          <div className="border-t border-gray-100 bg-gray-50/60 px-6 py-3 flex flex-wrap items-center gap-x-5 gap-y-1">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
-              Aussi
-            </span>
-            {FOOTER_LINKS.map((f) => (
-              <Link
-                key={f.href}
-                href={f.href}
-                role="menuitem"
-                className="text-xs text-gray-500 hover:text-gray-900 transition-colors underline-offset-2 hover:underline"
-              >
-                {f.label}
-              </Link>
-            ))}
+            {/* Footer du mega-menu — liens secondaires */}
+            <div className="border-t border-gray-100 bg-gray-50/60 px-6 py-3 flex flex-wrap items-center gap-x-5 gap-y-1">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                Aussi
+              </span>
+              {FOOTER_LINKS.map((f) => (
+                <Link
+                  key={f.href}
+                  href={f.href}
+                  role="menuitem"
+                  className="text-xs text-gray-500 hover:text-gray-900 transition-colors underline-offset-2 hover:underline"
+                >
+                  {f.label}
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       )}
