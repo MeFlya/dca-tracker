@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "refresh:backtest": "node scripts/refresh-backtest-data.mjs"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.2.3",

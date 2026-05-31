@@ -1,10 +1,10 @@
 {
   "source": "IWDA.AS — iShares Core MSCI World UCITS ETF (USD Acc), coté EUR sur Euronext Amsterdam",
-  "description": "Cours mensuel de clôture (dernier jour de bourse du mois) en EUR. Utilisé comme proxy de l indice MSCI World pour backtests DCA.",
+  "description": "Cours mensuel de clôture (dernier jour de bourse du mois) en EUR. Utilisé comme proxy de l'indice MSCI World pour backtests DCA.",
   "currency": "EUR",
   "source_url": "https://finance.yahoo.com/quote/IWDA.AS/history",
-  "fetched_at": "2026-05-26",
-  "notes": "Données publiques (quotes de marché). Ne tient pas compte du TER de l ETF (~0,20 %), ni des frais de courtage, ni de la fiscalité. Performances passées non garantes des performances futures.",
+  "fetched_at": "2026-05-31",
+  "notes": "Données publiques (quotes de marché). Ne tient pas compte du TER de l'ETF (~0,20 %), ni des frais de courtage, ni de la fiscalité. Performances passées non garantes des performances futures.",
   "data": [
     {
       "month": "2009-08",
@@ -808,11 +808,11 @@
     },
     {
       "month": "2026-04",
-      "value": 122.83
+      "value": 123.38
     },
     {
       "month": "2026-05",
-      "value": 123.53
+      "value": 123.38
     }
   ]
 }
