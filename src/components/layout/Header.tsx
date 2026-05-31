@@ -7,11 +7,14 @@ import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { LogoMark } from "@/components/ui/LogoMark";
 import { UserButton, useUser } from "@clerk/nextjs";
+import { GuidesMenu } from "@/components/layout/GuidesMenu";
 
+// Note : "Guides" est désormais un mega-menu géré par <GuidesMenu /> et n'est
+// plus dans NAV_LINKS. Il est rendu explicitement entre "Comparer les ETF" et
+// "Marchés" (desktop) et dans le menu hamburger (mobile).
 const NAV_LINKS = [
   { href: "/simulateur",      label: "Simulateur" },
   { href: "/comparer-etf",   label: "Comparer les ETF" },
-  { href: "/investir-en-etf", label: "Guides" },
   { href: "/donnees-marche", label: "Marchés" },
   { href: "/tarifs",          label: "Tarifs" },
 ];
@@ -40,9 +43,30 @@ export function Header() {
             </span>
           </Link>
 
-          {/* Desktop nav */}
+          {/* Desktop nav.
+              Ordre : Simulateur · Comparer ETF · Guides ▾ (mega-menu) · Marchés · Tarifs */}
           <nav className="hidden md:flex items-center gap-1" aria-label="Navigation principale">
-            {NAV_LINKS.map((link) => (
+            {/* Simulateur + Comparer ETF (premiers items du NAV_LINKS) */}
+            {NAV_LINKS.slice(0, 2).map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={cn(
+                  "px-3 py-1.5 rounded-lg text-sm font-medium transition-colors",
+                  pathname === link.href || pathname.startsWith(link.href + "/")
+                    ? "bg-primary-50 text-primary-700"
+                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                )}
+              >
+                {link.label}
+              </Link>
+            ))}
+
+            {/* Mega-menu Guides — injecté entre Comparer ETF et Marchés */}
+            <GuidesMenu />
+
+            {/* Marchés + Tarifs (derniers items du NAV_LINKS) */}
+            {NAV_LINKS.slice(2).map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
@@ -114,10 +138,12 @@ export function Header() {
         </div>
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile menu.
+          Ordre identique au desktop : Simulateur · Comparer ETF · Guides ▸ (accordion) · Marchés · Tarifs */}
       {mobileOpen && (
         <div className="md:hidden border-t border-gray-100 bg-white px-4 py-3 space-y-1 animate-slide-up">
-          {NAV_LINKS.map((link) => (
+          {/* Simulateur + Comparer ETF */}
+          {NAV_LINKS.slice(0, 2).map((link) => (
             <Link
               key={link.href}
               href={link.href}
@@ -132,13 +158,26 @@ export function Header() {
               {link.label}
             </Link>
           ))}
-          <Link
-            href="/pea-ou-cto"
-            onClick={() => setMobileOpen(false)}
-            className="block px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
-          >
-            PEA ou CTO ?
-          </Link>
+
+          {/* Accordion Guides — referme le menu mobile quand l'user navigue */}
+          <GuidesMenu mobile onNavigate={() => setMobileOpen(false)} />
+
+          {/* Marchés + Tarifs */}
+          {NAV_LINKS.slice(2).map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              onClick={() => setMobileOpen(false)}
+              className={cn(
+                "block px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+                pathname === link.href
+                  ? "bg-primary-50 text-primary-700"
+                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+              )}
+            >
+              {link.label}
+            </Link>
+          ))}
           <div className="pt-2 pb-1 space-y-2">
             {isLoaded && !isSignedIn && (
               <>
