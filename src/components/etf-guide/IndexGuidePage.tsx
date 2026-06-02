@@ -24,6 +24,11 @@ export function IndexGuidePage({ guide }: { guide: IndexGuide }) {
   const Icon = ICONS[guide.icon];
   const url = `/${guide.slug}`;
 
+  // CTA → simulateur pré-réglé avec les hypothèses de cet indice (frais réels
+  // + rendement de base raisonnable). L'user ajuste tout ensuite.
+  const s = guide.simulator;
+  const simHref = `/simulateur?monthly=${s.monthly}&years=${s.years}&return=${s.returnPct}&fees=${s.feesPct}`;
+
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <BreadcrumbSchema
@@ -162,17 +167,19 @@ export function IndexGuidePage({ guide }: { guide: IndexGuide }) {
         </ul>
       </section>
 
-      {/* ── CTA simulateur ──────────────────────────────────────────────────── */}
+      {/* ── CTA simulateur (pré-réglé pour l'indice) ────────────────────────── */}
       <section className="mb-12 rounded-2xl bg-primary-600 p-8 text-center">
         <h2 className="text-xl font-bold text-white mb-2">
           Combien rapporte un DCA sur le {guide.indexName} ?
         </h2>
         <p className="text-primary-200 text-sm mb-6 leading-relaxed">
-          Entrez un versement mensuel et une durée — le simulateur calcule votre
-          projection avec les intérêts composés, frais inclus.
+          Le simulateur s&apos;ouvre <strong className="text-white">pré-réglé pour
+          le {guide.indexName}</strong> (frais {s.feesPct.toString().replace(".", ",")} %
+          du tracker PEA, hypothèse de base {s.returnPct} %/an). Ajustez le
+          versement, la durée et le rendement à votre guise.
         </p>
-        <Link href="/simulateur" className="btn-secondary text-sm px-5 py-2.5 inline-flex">
-          Lancer le simulateur →
+        <Link href={simHref} className="btn-secondary text-sm px-5 py-2.5 inline-flex">
+          Simuler mon DCA {guide.indexName} →
         </Link>
       </section>
 
