@@ -271,7 +271,11 @@ function AddEtfDropdown({
 }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="relative">
+    // Quand ouvert, on élève le WRAPPER en z-50 : sans ça, le dropdown (même en
+    // z élevé) restait dans le flux et le toggle "Intégrer l'inflation" rendu
+    // plus bas (élément positionné en z-auto) peignait par-dessus. Élever le
+    // wrapper fait passer tout le sous-arbre au-dessus des frères en dessous.
+    <div className={`relative ${open ? "z-50" : ""}`}>
       <button
         type="button"
         onClick={() => setOpen(!open)}
@@ -281,7 +285,7 @@ function AddEtfDropdown({
         <span className="text-xs text-gray-500">{etfs.length} dispo.</span>
       </button>
       {open && (
-        <div className="absolute z-20 left-0 right-0 mt-1 max-h-72 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-card-lg">
+        <div className="absolute z-50 left-0 right-0 mt-1 max-h-72 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-card-lg">
           {etfs.map((etf) => (
             <button
               key={etf.displaySymbol}

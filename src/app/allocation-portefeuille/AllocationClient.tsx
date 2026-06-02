@@ -385,7 +385,9 @@ function AddEtfDropdown({
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="relative">
+    // Wrapper élevé en z-50 quand ouvert → le dropdown passe au-dessus de tout
+    // frère rendu en dessous (même garde-fou que dans PortfolioPicker).
+    <div className={`relative ${open ? "z-50" : ""}`}>
       <button
         type="button"
         onClick={() => setOpen(!open)}

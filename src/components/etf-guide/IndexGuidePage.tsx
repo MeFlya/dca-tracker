@@ -24,13 +24,13 @@ export function IndexGuidePage({ guide }: { guide: IndexGuide }) {
   const Icon = ICONS[guide.icon];
   const url = `/${guide.slug}`;
 
-  // CTA principal → page allocation avec le tracker de l'indice pré-sélectionné
-  // (l'user construit son portefeuille puis lance la simulation de là).
-  const allocHref = `/allocation-portefeuille?etf=${guide.allocationTicker}`;
-  // CTA secondaire → simulateur directement pré-réglé (frais réels + rendement
-  // de base raisonnable), pour ceux qui veulent juste un chiffre rapide.
   const s = guide.simulator;
-  const simHref = `/simulateur?monthly=${s.monthly}&years=${s.years}&return=${s.returnPct}&fees=${s.feesPct}`;
+  // CTA principal → simulateur en mode "Mes ETF" avec le tracker de l'indice
+  // pré-sélectionné à 100 % (?etfs=CW8:100). L'user ajuste les poids / ajoute
+  // d'autres ETF directement dans le simulateur.
+  const simEtfHref = `/simulateur?etfs=${guide.allocationTicker}:100&monthly=${s.monthly}&years=${s.years}`;
+  // CTA secondaire → mode "Rapide" (valeurs directes : rendement + frais).
+  const simRapidHref = `/simulateur?monthly=${s.monthly}&years=${s.years}&return=${s.returnPct}&fees=${s.feesPct}`;
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -176,20 +176,20 @@ export function IndexGuidePage({ guide }: { guide: IndexGuide }) {
           Construisez votre portefeuille {guide.indexName}
         </h2>
         <p className="text-primary-200 text-sm mb-6 leading-relaxed">
-          Ouvrez l&apos;outil d&apos;allocation avec{" "}
-          <strong className="text-white">le tracker {guide.indexName} déjà
-          sélectionné</strong> : ajustez les poids, ajoutez d&apos;autres ETF, et
-          lancez la simulation DCA en un clic.
+          Le simulateur s&apos;ouvre en mode <strong className="text-white">« Mes
+          ETF »</strong> avec le tracker {guide.indexName} déjà sélectionné :
+          ajustez les poids, ajoutez d&apos;autres ETF, voyez la projection DCA en
+          temps réel.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
-          <Link href={allocHref} className="btn-secondary text-sm px-5 py-2.5 inline-flex">
-            Construire mon allocation {guide.indexName} →
+          <Link href={simEtfHref} className="btn-secondary text-sm px-5 py-2.5 inline-flex">
+            Construire mon portefeuille {guide.indexName} →
           </Link>
           <Link
-            href={simHref}
+            href={simRapidHref}
             className="text-sm font-medium text-primary-100 hover:text-white underline underline-offset-4 transition-colors"
           >
-            ou simuler directement
+            ou en valeurs directes
           </Link>
         </div>
       </section>

@@ -81,9 +81,10 @@ export default async function ETFDetailPage({
 
   // Simulator URL pre-filled with this ETF's typical return + fees
   const suggestedReturn = detail?.suggestedReturn ?? 7;
+  // Mode "Rapide" (valeurs directes) avec frais réels + rendement de référence.
   const simulatorUrl = `/simulateur?monthly=200&years=20&return=${suggestedReturn}&fees=${etf.ter}`;
-  // CTA allocation : ouvre l'outil avec CET ETF déjà sélectionné à 100 %.
-  const allocationUrl = `/allocation-portefeuille?etf=${etf.displaySymbol}`;
+  // Mode "Mes ETF" : ouvre le simulateur avec CET ETF sélectionné à 100 %.
+  const portfolioUrl = `/simulateur?etfs=${etf.displaySymbol}:100&monthly=200&years=20`;
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -187,25 +188,25 @@ export default async function ETFDetailPage({
       <div className="rounded-2xl bg-gradient-to-br from-primary-600 to-primary-800 p-7 mb-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
         <div>
           <p className="text-white font-semibold text-lg mb-1">
-            Investir sur {etf.displaySymbol}
+            Simuler un DCA sur {etf.displaySymbol}
           </p>
           <p className="text-primary-200 text-sm leading-snug">
-            Ajoutez {etf.displaySymbol} à votre allocation (déjà sélectionné), ou
-            simulez directement un DCA avec les frais réels ({etf.ter} %).
+            Le simulateur s&apos;ouvre en mode « Mes ETF » avec {etf.displaySymbol}
+            déjà sélectionné. Frais réels ({etf.ter} %) pris en compte.
           </p>
         </div>
         <div className="shrink-0 flex flex-col sm:items-end gap-2">
           <Link
-            href={allocationUrl}
+            href={portfolioUrl}
             className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white text-primary-700 font-semibold text-sm hover:bg-primary-50 transition-colors"
           >
-            Ajouter à mon allocation →
+            Simuler avec {etf.displaySymbol} →
           </Link>
           <Link
             href={simulatorUrl}
             className="text-xs font-medium text-primary-100 hover:text-white underline underline-offset-4 transition-colors"
           >
-            ou simuler directement
+            ou en valeurs directes
           </Link>
         </div>
       </div>
