@@ -62,10 +62,16 @@ const COLUMNS: MenuColumn[] = [
   {
     title: "Choisir un ETF",
     items: [
-      { href: "/meilleurs-etf-debutants", label: "Meilleurs ETF débutants", desc: "CW8, IWDA, VWCE comparés" },
-      { href: "/guide-5-etf-pea-premium", label: "5 ETF pour PEA", desc: "Sélection commentée" },
+      {
+        href: "/etf-msci-world",
+        label: "ETF MSCI World",
+        desc: "CW8, WPEA, DCAM — lequel choisir",
+        badge: { text: "Top", tone: "new" },
+      },
+      { href: "/etf-sp500", label: "ETF S&P 500", desc: "ESE, PSP5 en PEA" },
+      { href: "/etf-nasdaq", label: "ETF Nasdaq 100", desc: "PUST en PEA" },
+      { href: "/meilleurs-etf-debutants", label: "Meilleurs ETF débutants", desc: "La sélection commentée" },
       { href: "/comparatif-etf", label: "Comparatifs ETF", desc: "CW8 vs WPEA, etc." },
-      { href: "/investir-en-etf", label: "Guide investir en ETF", desc: "Étape par étape" },
     ],
   },
   {
