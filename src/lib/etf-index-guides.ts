@@ -52,6 +52,8 @@ export type IndexGuide = {
    *   modéré pour ne rien promettre (pas les plus hauts historiques).
    */
   simulator: { monthly: number; years: number; returnPct: number; feesPct: number };
+  /** Ticker (displaySymbol de etf-config) pré-sélectionné sur la page allocation. */
+  allocationTicker: string;
   publishedAt: string;
   updatedAt: string;
   readingMinutes: number;
@@ -64,6 +66,7 @@ const MSCI_WORLD: IndexGuide = {
   indexName: "MSCI World",
   icon: "Globe",
   simulator: { monthly: 200, years: 20, returnPct: 7, feesPct: 0.2 },
+  allocationTicker: "CW8",
   metaTitle: "ETF MSCI World : lequel choisir en PEA en 2026 ?",
   metaDescription:
     "ETF MSCI World en PEA : CW8 (0,38 %), WPEA et DCAM (0,20 %) — le même indice, des frais qui changent tout sur 20 ans. Comparatif clair + simulateur DCA pour choisir.",
@@ -193,6 +196,7 @@ const SP500: IndexGuide = {
   indexName: "S&P 500",
   icon: "Landmark",
   simulator: { monthly: 200, years: 20, returnPct: 8, feesPct: 0.15 },
+  allocationTicker: "500",
   metaTitle: "ETF S&P 500 en PEA : lequel choisir en 2026 ?",
   metaDescription:
     "ETF S&P 500 éligible PEA : ESE (0,15 %, le plus liquide), PSP5 (0,12 %, le moins cher), PE500 (ESG). Comparatif clair des frais + simulateur DCA pour bien choisir.",
@@ -322,6 +326,7 @@ const NASDAQ: IndexGuide = {
   indexName: "Nasdaq 100",
   icon: "Cpu",
   simulator: { monthly: 200, years: 20, returnPct: 9, feesPct: 0.3 },
+  allocationTicker: "ANX",
   metaTitle: "ETF Nasdaq 100 en PEA : lequel choisir en 2026 ?",
   metaDescription:
     "ETF Nasdaq 100 éligible PEA : PUST (Amundi, la référence), PNAS (fractionné pour le DCA), PANX (ESG). Frais, éligibilité et choix selon votre profil + simulateur DCA.",

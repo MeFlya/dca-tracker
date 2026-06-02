@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import Link from "next/link";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import type { ETFConfig } from "@/lib/etf-config";
@@ -46,6 +46,20 @@ export function AllocationClient({ etfs }: { etfs: ETFConfig[] }) {
       })
       .filter((x): x is PortfolioItem => x !== null);
   });
+
+  // Pré-sélection via URL : /allocation-portefeuille?etf=CW8 → l'ETF demandé
+  // à 100 %. Lu en useEffect (et pas dans le useState initializer) pour éviter
+  // tout mismatch d'hydratation : le rendu initial = preset par défaut, puis on
+  // remplace si un param est présent. Utilisé par les CTA des pages indice et
+  // des fiches /etf/[ticker].
+  useEffect(() => {
+    const param = new URLSearchParams(window.location.search).get("etf");
+    if (!param) return;
+    const etf = etfs.find(
+      (e) => e.displaySymbol.toLowerCase() === param.toLowerCase(),
+    );
+    if (etf) setItems([{ etf, weight: 100 }]);
+  }, [etfs]);
 
   // Compute blended portfolio
   const blend: BlendedPortfolio = useMemo(
@@ -385,16 +399,21 @@ function AddEtfDropdown({
         </span>
       </button>
       {open && (
-        <div className="absolute z-10 left-0 right-0 mt-1 max-h-80 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-card-lg">
+        // z-50 + bg opaque : évite que les thumbs des sliders natifs
+        // (input type=range, qui peignent au-dessus des z-index bas sur
+        // certains navigateurs) ne traversent la liste déroulante.
+        <div className="absolute z-50 left-0 right-0 mt-1 max-h-80 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-card-lg">
           {etfs.map((etf) => (
             <button
               key={etf.displaySymbol}
               type="button"
+              data-lpignore="true"
+              data-1p-ignore="true"
               onClick={() => {
                 onSelect(etf);
                 setOpen(false);
               }}
-              className="w-full text-left px-4 py-2.5 hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-b-0"
+              className="relative w-full text-left px-4 py-2.5 hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-b-0"
             >
               <div className="flex items-baseline justify-between gap-2 mb-0.5">
                 <span className="font-bold text-sm text-gray-900">

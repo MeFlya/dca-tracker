@@ -24,8 +24,11 @@ export function IndexGuidePage({ guide }: { guide: IndexGuide }) {
   const Icon = ICONS[guide.icon];
   const url = `/${guide.slug}`;
 
-  // CTA → simulateur pré-réglé avec les hypothèses de cet indice (frais réels
-  // + rendement de base raisonnable). L'user ajuste tout ensuite.
+  // CTA principal → page allocation avec le tracker de l'indice pré-sélectionné
+  // (l'user construit son portefeuille puis lance la simulation de là).
+  const allocHref = `/allocation-portefeuille?etf=${guide.allocationTicker}`;
+  // CTA secondaire → simulateur directement pré-réglé (frais réels + rendement
+  // de base raisonnable), pour ceux qui veulent juste un chiffre rapide.
   const s = guide.simulator;
   const simHref = `/simulateur?monthly=${s.monthly}&years=${s.years}&return=${s.returnPct}&fees=${s.feesPct}`;
 
@@ -167,20 +170,28 @@ export function IndexGuidePage({ guide }: { guide: IndexGuide }) {
         </ul>
       </section>
 
-      {/* ── CTA simulateur (pré-réglé pour l'indice) ────────────────────────── */}
+      {/* ── CTA → allocation (ETF pré-sélectionné) + simulateur ─────────────── */}
       <section className="mb-12 rounded-2xl bg-primary-600 p-8 text-center">
         <h2 className="text-xl font-bold text-white mb-2">
-          Combien rapporte un DCA sur le {guide.indexName} ?
+          Construisez votre portefeuille {guide.indexName}
         </h2>
         <p className="text-primary-200 text-sm mb-6 leading-relaxed">
-          Le simulateur s&apos;ouvre <strong className="text-white">pré-réglé pour
-          le {guide.indexName}</strong> (frais {s.feesPct.toString().replace(".", ",")} %
-          du tracker PEA, hypothèse de base {s.returnPct} %/an). Ajustez le
-          versement, la durée et le rendement à votre guise.
+          Ouvrez l&apos;outil d&apos;allocation avec{" "}
+          <strong className="text-white">le tracker {guide.indexName} déjà
+          sélectionné</strong> : ajustez les poids, ajoutez d&apos;autres ETF, et
+          lancez la simulation DCA en un clic.
         </p>
-        <Link href={simHref} className="btn-secondary text-sm px-5 py-2.5 inline-flex">
-          Simuler mon DCA {guide.indexName} →
-        </Link>
+        <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+          <Link href={allocHref} className="btn-secondary text-sm px-5 py-2.5 inline-flex">
+            Construire mon allocation {guide.indexName} →
+          </Link>
+          <Link
+            href={simHref}
+            className="text-sm font-medium text-primary-100 hover:text-white underline underline-offset-4 transition-colors"
+          >
+            ou simuler directement
+          </Link>
+        </div>
       </section>
 
       {/* ── FAQ ─────────────────────────────────────────────────────────────── */}
