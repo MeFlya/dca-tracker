@@ -363,9 +363,11 @@ const VWCE_VS_CW8: ETFComparison = {
 const CW8_VS_WPEA: ETFComparison = {
   slug: "cw8-vs-wpea",
   title: "CW8 vs WPEA : quel ETF MSCI World pour votre PEA ?",
-  metaTitle: "CW8 ou WPEA : comparatif ETF MSCI World PEA 2026",
+  // CTR-optimisé : on donne le verdict + le chiffre clé dans le snippet pour
+  // capter le clic (261 imp/mois sur la requête, CTR à remonter).
+  metaTitle: "CW8 ou WPEA : lequel choisir pour votre PEA en 2026 ?",
   metaDescription:
-    "CW8 (Amundi) ou WPEA (iShares) ? Comparatif détaillé des deux ETF MSCI World éligibles PEA : TER, frais cumulés sur 20 ans, liquidité, encours. Notre verdict.",
+    "WPEA coûte 2× moins cher que CW8 (0,20 % vs 0,38 %) pour le même MSCI World — environ 4 500 € de plus sur 20 ans à 200 €/mois. Mais CW8 garde l'avantage liquidité. Comparatif complet et verdict.",
 
   left: {
     heading: "CW8",
