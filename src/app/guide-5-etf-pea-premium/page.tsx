@@ -168,7 +168,7 @@ export default function GuideCinqETFPEAPremiumPage() {
         <span className="inline-block text-xs font-semibold text-primary-700 bg-primary-50 px-3 py-1 rounded-full mb-4">
           Cheat sheet 2026 — édition gratuite
         </span>
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-gray-900 leading-tight">
+        <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-gray-900 leading-tight">
           5 ETF Premium pour PEA en 2026
         </h1>
         <p className="mt-5 text-lg text-gray-600 leading-relaxed">
@@ -411,7 +411,7 @@ export default function GuideCinqETFPEAPremiumPage() {
         </p>
         <Link
           href="/allocation-portefeuille"
-          className="inline-block bg-white text-primary-700 font-semibold px-6 py-3 rounded-xl hover:bg-gray-50 transition-colors"
+          className="btn-white-primary"
         >
           Construire mon allocation →
         </Link>

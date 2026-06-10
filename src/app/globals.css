@@ -65,6 +65,16 @@
     @apply bg-white rounded-2xl border border-slate-200/70 shadow-card p-6;
   }
 
+  /* Bouton blanc sur fond coloré/sombre (CTA bands primary-600, etc.).
+     Unifie 7 variantes inline qui divergeaient en padding/hover (AUDIT U2).
+     Composable avec btn-lift, w-full, mt-*… selon le contexte. */
+  .btn-white-primary {
+    @apply inline-flex items-center justify-center gap-2 bg-white text-primary-700 font-semibold text-sm px-5 py-2.5 rounded-xl transition-colors;
+  }
+  .btn-white-primary:hover {
+    @apply bg-primary-50;
+  }
+
   /* .card-primary — variante "hero" : plus de présence visuelle pour les
      blocs centraux d'une section. Padding plus généreux, shadow plus marquée,
      border accent qui démarque de la card par défaut. À utiliser pour les
@@ -410,6 +420,17 @@
   cursor: grabbing;
   box-shadow: 0 0 0 8px rgb(29 78 216 / 0.14);
   transform: scale(1.12);
+}
+/* Focus clavier (WCAG 2.4.7 — AUDIT U7) : la navigation Tab n'affichait
+   aucun indicateur sur le thumb, seul le hover/active en avait. */
+.slider:focus-visible {
+  outline: none;
+}
+.slider:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 4px rgb(29 78 216 / 0.35);
+}
+.slider:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 4px rgb(29 78 216 / 0.35);
 }
 
 /* Thumb — Firefox */

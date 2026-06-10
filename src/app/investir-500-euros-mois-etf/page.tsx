@@ -178,7 +178,7 @@ export default function Investir500Page() {
         </p>
         <Link
           href="/simulateur?monthly=500&years=20&return=7&fees=0.3"
-          className="mt-5 inline-block bg-white text-primary-700 font-semibold text-sm px-5 py-2.5 rounded-xl btn-lift"
+          className="btn-white-primary mt-5 btn-lift"
         >
           Simuler ma propre version →
         </Link>
@@ -195,37 +195,39 @@ export default function Investir500Page() {
         sous-utilisé) :
       </p>
       <div className="rounded-2xl border border-gray-100 bg-white overflow-hidden mb-4">
-        <table className="w-full text-sm">
-          <thead className="bg-gray-50 text-xs uppercase tracking-wider text-gray-500">
-            <tr>
-              <th className="text-left px-4 py-2.5 font-semibold">Revenu net mensuel</th>
-              <th className="text-right px-4 py-2.5 font-semibold">500 € représente</th>
-              <th className="text-left px-4 py-2.5 font-semibold">Niveau d&apos;effort</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            <tr>
-              <td className="px-4 py-2.5 text-gray-700">2 000 €</td>
-              <td className="px-4 py-2.5 text-right tabular-nums font-semibold text-orange-600">25 %</td>
-              <td className="px-4 py-2.5 text-orange-600">Très ambitieux — possible mais demande un budget serré</td>
-            </tr>
-            <tr>
-              <td className="px-4 py-2.5 text-gray-700">3 000 €</td>
-              <td className="px-4 py-2.5 text-right tabular-nums font-semibold text-amber-600">17 %</td>
-              <td className="px-4 py-2.5 text-amber-700">Engagé — au-dessus de la moyenne française (~15 %)</td>
-            </tr>
-            <tr className="bg-emerald-50/40">
-              <td className="px-4 py-2.5 text-gray-700">4 000 €</td>
-              <td className="px-4 py-2.5 text-right tabular-nums font-semibold text-emerald-700">12,5 %</td>
-              <td className="px-4 py-2.5 text-emerald-700 font-medium">Confortable — taux d&apos;épargne sain</td>
-            </tr>
-            <tr>
-              <td className="px-4 py-2.5 text-gray-700">5 000 €+</td>
-              <td className="px-4 py-2.5 text-right tabular-nums font-semibold text-emerald-700">≤ 10 %</td>
-              <td className="px-4 py-2.5 text-gray-600">Sous-utilisé — vous pouvez probablement viser plus</td>
-            </tr>
-          </tbody>
-        </table>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-50 text-xs uppercase tracking-wider text-gray-500">
+              <tr>
+                <th className="text-left px-4 py-2.5 font-semibold">Revenu net mensuel</th>
+                <th className="text-right px-4 py-2.5 font-semibold">500 € représente</th>
+                <th className="text-left px-4 py-2.5 font-semibold">Niveau d&apos;effort</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              <tr>
+                <td className="px-4 py-2.5 text-gray-700">2 000 €</td>
+                <td className="px-4 py-2.5 text-right tabular-nums font-semibold text-orange-600">25 %</td>
+                <td className="px-4 py-2.5 text-orange-600">Très ambitieux — possible mais demande un budget serré</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-2.5 text-gray-700">3 000 €</td>
+                <td className="px-4 py-2.5 text-right tabular-nums font-semibold text-amber-600">17 %</td>
+                <td className="px-4 py-2.5 text-amber-700">Engagé — au-dessus de la moyenne française (~15 %)</td>
+              </tr>
+              <tr className="bg-emerald-50/40">
+                <td className="px-4 py-2.5 text-gray-700">4 000 €</td>
+                <td className="px-4 py-2.5 text-right tabular-nums font-semibold text-emerald-700">12,5 %</td>
+                <td className="px-4 py-2.5 text-emerald-700 font-medium">Confortable — taux d&apos;épargne sain</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-2.5 text-gray-700">5 000 €+</td>
+                <td className="px-4 py-2.5 text-right tabular-nums font-semibold text-emerald-700">≤ 10 %</td>
+                <td className="px-4 py-2.5 text-gray-600">Sous-utilisé — vous pouvez probablement viser plus</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
       <p className="text-xs text-gray-500 leading-relaxed mb-10">
         Le taux d&apos;épargne médian en France est d&apos;environ 15 % du
@@ -256,24 +258,26 @@ export default function Investir500Page() {
                 </span>
               )}
             </div>
-            <table className="w-full text-sm">
-              <thead className="text-[11px] uppercase tracking-wider text-gray-500">
-                <tr>
-                  <th className="text-left font-semibold py-1">Durée</th>
-                  <th className="text-right font-semibold py-1">Capital final</th>
-                  <th className="text-right font-semibold py-1">Gain</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {s.rows.map((r) => (
-                  <tr key={r.y}>
-                    <td className="py-1.5 text-gray-600">{r.y} ans</td>
-                    <td className="py-1.5 text-right font-semibold text-gray-900 tabular-nums">{r.final}</td>
-                    <td className={`py-1.5 text-right text-xs tabular-nums font-medium ${s.color}`}>{r.pct}</td>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="text-[11px] uppercase tracking-wider text-gray-500">
+                  <tr>
+                    <th className="text-left font-semibold py-1">Durée</th>
+                    <th className="text-right font-semibold py-1">Capital final</th>
+                    <th className="text-right font-semibold py-1">Gain</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {s.rows.map((r) => (
+                    <tr key={r.y}>
+                      <td className="py-1.5 text-gray-600">{r.y} ans</td>
+                      <td className="py-1.5 text-right font-semibold text-gray-900 tabular-nums">{r.final}</td>
+                      <td className={`py-1.5 text-right text-xs tabular-nums font-medium ${s.color}`}>{r.pct}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         ))}
       </div>
@@ -289,29 +293,31 @@ export default function Investir500Page() {
         60 000 € de plus.
       </p>
       <div className="rounded-2xl border border-gray-100 bg-white overflow-hidden mb-4">
-        <table className="w-full text-sm">
-          <thead className="bg-gray-50 text-xs uppercase tracking-wider text-gray-500">
-            <tr>
-              <th className="text-left px-4 py-2.5 font-semibold">Année</th>
-              <th className="text-right px-4 py-2.5 font-semibold">Total versé</th>
-              <th className="text-right px-4 py-2.5 font-semibold">Capital final</th>
-              <th className="text-right px-4 py-2.5 font-semibold">Intérêts composés</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {YEARLY_PROGRESSION.map((y) => (
-              <tr
-                key={y.year}
-                className={y.year === 20 ? "bg-primary-50/40" : undefined}
-              >
-                <td className="px-4 py-2.5 text-gray-700 font-medium">{y.year} ans</td>
-                <td className="px-4 py-2.5 text-right text-gray-600 tabular-nums">{y.invested}</td>
-                <td className="px-4 py-2.5 text-right font-semibold text-gray-900 tabular-nums">{y.value}</td>
-                <td className="px-4 py-2.5 text-right text-emerald-700 tabular-nums font-medium">{y.gains}</td>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-50 text-xs uppercase tracking-wider text-gray-500">
+              <tr>
+                <th className="text-left px-4 py-2.5 font-semibold">Année</th>
+                <th className="text-right px-4 py-2.5 font-semibold">Total versé</th>
+                <th className="text-right px-4 py-2.5 font-semibold">Capital final</th>
+                <th className="text-right px-4 py-2.5 font-semibold">Intérêts composés</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {YEARLY_PROGRESSION.map((y) => (
+                <tr
+                  key={y.year}
+                  className={y.year === 20 ? "bg-primary-50/40" : undefined}
+                >
+                  <td className="px-4 py-2.5 text-gray-700 font-medium">{y.year} ans</td>
+                  <td className="px-4 py-2.5 text-right text-gray-600 tabular-nums">{y.invested}</td>
+                  <td className="px-4 py-2.5 text-right font-semibold text-gray-900 tabular-nums">{y.value}</td>
+                  <td className="px-4 py-2.5 text-right text-emerald-700 tabular-nums font-medium">{y.gains}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
       <p className="text-xs text-gray-500 leading-relaxed mb-10">
         Calculs avec capitalisation mensuelle. À l&apos;année 30, sur les
@@ -360,21 +366,23 @@ export default function Investir500Page() {
         L&apos;impact des frais (souvent sous-estimé)
       </h2>
       <div className="rounded-xl border border-gray-100 bg-white overflow-hidden mb-10">
-        <table className="w-full text-sm">
-          <thead className="bg-gray-50 text-xs uppercase tracking-wider text-gray-500">
-            <tr>
-              <th className="text-left px-3 py-2 font-semibold">Frais annuels</th>
-              <th className="text-right px-3 py-2 font-semibold">Capital final (20 ans, 7 %)</th>
-              <th className="text-right px-3 py-2 font-semibold">Écart</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            <tr><td className="px-3 py-2">0,1 % (meilleurs ETF)</td><td className="px-3 py-2 text-right font-semibold tabular-nums">265 400 €</td><td className="px-3 py-2 text-right text-emerald-600 tabular-nums">référence</td></tr>
-            <tr><td className="px-3 py-2">0,3 %</td><td className="px-3 py-2 text-right font-semibold tabular-nums">260 500 €</td><td className="px-3 py-2 text-right text-gray-500 tabular-nums">−4 900 €</td></tr>
-            <tr><td className="px-3 py-2">0,5 %</td><td className="px-3 py-2 text-right font-semibold tabular-nums">255 700 €</td><td className="px-3 py-2 text-right text-orange-600 tabular-nums">−9 700 €</td></tr>
-            <tr><td className="px-3 py-2">1 % (fonds actif typique)</td><td className="px-3 py-2 text-right font-semibold tabular-nums">244 000 €</td><td className="px-3 py-2 text-right text-red-600 tabular-nums">−21 400 €</td></tr>
-          </tbody>
-        </table>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-50 text-xs uppercase tracking-wider text-gray-500">
+              <tr>
+                <th className="text-left px-3 py-2 font-semibold">Frais annuels</th>
+                <th className="text-right px-3 py-2 font-semibold">Capital final (20 ans, 7 %)</th>
+                <th className="text-right px-3 py-2 font-semibold">Écart</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              <tr><td className="px-3 py-2">0,1 % (meilleurs ETF)</td><td className="px-3 py-2 text-right font-semibold tabular-nums">265 400 €</td><td className="px-3 py-2 text-right text-emerald-600 tabular-nums">référence</td></tr>
+              <tr><td className="px-3 py-2">0,3 %</td><td className="px-3 py-2 text-right font-semibold tabular-nums">260 500 €</td><td className="px-3 py-2 text-right text-gray-500 tabular-nums">−4 900 €</td></tr>
+              <tr><td className="px-3 py-2">0,5 %</td><td className="px-3 py-2 text-right font-semibold tabular-nums">255 700 €</td><td className="px-3 py-2 text-right text-orange-600 tabular-nums">−9 700 €</td></tr>
+              <tr><td className="px-3 py-2">1 % (fonds actif typique)</td><td className="px-3 py-2 text-right font-semibold tabular-nums">244 000 €</td><td className="px-3 py-2 text-right text-red-600 tabular-nums">−21 400 €</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
       <p className="text-sm text-gray-600 leading-relaxed mb-10">
         Sur 20 ans, chaque 0,1 % de frais supplémentaire coûte environ 4 800 €.
@@ -392,36 +400,38 @@ export default function Investir500Page() {
         différence sur le net qui finit dans votre poche :
       </p>
       <div className="rounded-2xl border border-gray-100 bg-white overflow-hidden mb-4">
-        <table className="w-full text-sm">
-          <thead className="bg-gray-50 text-xs uppercase tracking-wider text-gray-500">
-            <tr>
-              <th className="text-left px-4 py-2.5 font-semibold">Enveloppe</th>
-              <th className="text-right px-4 py-2.5 font-semibold">Plus-values</th>
-              <th className="text-right px-4 py-2.5 font-semibold">Imposition</th>
-              <th className="text-right px-4 py-2.5 font-semibold">Net après impôt</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            <tr className="bg-emerald-50/40">
-              <td className="px-4 py-2.5">
-                <p className="text-gray-700 font-medium">PEA (≥ 5 ans)</p>
-                <p className="text-xs text-gray-500">Prélèvements sociaux uniquement</p>
-              </td>
-              <td className="px-4 py-2.5 text-right tabular-nums text-gray-600">140 500 €</td>
-              <td className="px-4 py-2.5 text-right tabular-nums text-emerald-700 font-medium">−24 166 € (17,2 %)</td>
-              <td className="px-4 py-2.5 text-right tabular-nums font-bold text-gray-900">236 334 €</td>
-            </tr>
-            <tr>
-              <td className="px-4 py-2.5">
-                <p className="text-gray-700 font-medium">CTO</p>
-                <p className="text-xs text-gray-500">Flat tax 30 % systématique</p>
-              </td>
-              <td className="px-4 py-2.5 text-right tabular-nums text-gray-600">140 500 €</td>
-              <td className="px-4 py-2.5 text-right tabular-nums text-red-600 font-medium">−42 150 € (30 %)</td>
-              <td className="px-4 py-2.5 text-right tabular-nums font-bold text-gray-900">218 350 €</td>
-            </tr>
-          </tbody>
-        </table>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-50 text-xs uppercase tracking-wider text-gray-500">
+              <tr>
+                <th className="text-left px-4 py-2.5 font-semibold">Enveloppe</th>
+                <th className="text-right px-4 py-2.5 font-semibold">Plus-values</th>
+                <th className="text-right px-4 py-2.5 font-semibold">Imposition</th>
+                <th className="text-right px-4 py-2.5 font-semibold">Net après impôt</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              <tr className="bg-emerald-50/40">
+                <td className="px-4 py-2.5">
+                  <p className="text-gray-700 font-medium">PEA (≥ 5 ans)</p>
+                  <p className="text-xs text-gray-500">Prélèvements sociaux uniquement</p>
+                </td>
+                <td className="px-4 py-2.5 text-right tabular-nums text-gray-600">140 500 €</td>
+                <td className="px-4 py-2.5 text-right tabular-nums text-emerald-700 font-medium">−24 166 € (17,2 %)</td>
+                <td className="px-4 py-2.5 text-right tabular-nums font-bold text-gray-900">236 334 €</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-2.5">
+                  <p className="text-gray-700 font-medium">CTO</p>
+                  <p className="text-xs text-gray-500">Flat tax 30 % systématique</p>
+                </td>
+                <td className="px-4 py-2.5 text-right tabular-nums text-gray-600">140 500 €</td>
+                <td className="px-4 py-2.5 text-right tabular-nums text-red-600 font-medium">−42 150 € (30 %)</td>
+                <td className="px-4 py-2.5 text-right tabular-nums font-bold text-gray-900">218 350 €</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
       <p className="text-sm text-gray-600 leading-relaxed mb-2">
         <strong className="text-emerald-700">Économie via PEA : 17 984 €</strong> sur 20 ans —

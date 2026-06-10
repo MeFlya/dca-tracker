@@ -256,7 +256,9 @@ export default function TarifsPage() {
           <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">
             Comparaison détaillée des fonctions
           </h2>
-          <div className="overflow-hidden rounded-2xl border border-slate-200/70 bg-white shadow-card">
+          {/* overflow-x-auto (pas hidden) : la table comparative déborde sur
+              mobile — elle doit scroller horizontalement, pas être coupée. */}
+          <div className="overflow-x-auto rounded-2xl border border-slate-200/70 bg-white shadow-card">
             <table className="w-full text-sm border-collapse">
               <thead>
                 <tr>

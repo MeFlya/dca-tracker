@@ -82,7 +82,7 @@ export function SourcesReferences({
                 <span className="text-gray-500"> — {src.publisher}</span>
               )}
               {src.note && (
-                <span className="block text-xs text-gray-400 mt-0.5">
+                <span className="block text-xs text-gray-500 mt-0.5">
                   {src.note}
                 </span>
               )}
@@ -91,7 +91,7 @@ export function SourcesReferences({
         ))}
       </ol>
 
-      <p className="text-xs text-gray-400 mt-5 pt-4 border-t border-gray-200">
+      <p className="text-xs text-gray-500 mt-5 pt-4 border-t border-gray-200">
         Cette page est mise à jour régulièrement. Si une source semble obsolète
         ou erronée, signalez-le à{" "}
         <a

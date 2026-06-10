@@ -118,48 +118,50 @@ export default function ConfidentialitePage() {
 
       <section>
         <h2>4. Finalités et bases légales</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Finalité</th>
-              <th>Base légale (RGPD)</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Création et gestion du compte utilisateur</td>
-              <td>Exécution du contrat (art. 6.1.b)</td>
-            </tr>
-            <tr>
-              <td>Fourniture des fonctionnalités gratuites et payantes du Service</td>
-              <td>Exécution du contrat (art. 6.1.b)</td>
-            </tr>
-            <tr>
-              <td>Traitement des paiements et facturation</td>
-              <td>Exécution du contrat + obligation légale (art. 6.1.b et c)</td>
-            </tr>
-            <tr>
-              <td>Envoi des emails transactionnels (confirmation, suivi mensuel, rappel essai)</td>
-              <td>Exécution du contrat (art. 6.1.b)</td>
-            </tr>
-            <tr>
-              <td>Envoi de la cheat sheet et emails produit (lead magnet)</td>
-              <td>Consentement explicite (art. 6.1.a) — désinscription en 1 clic</td>
-            </tr>
-            <tr>
-              <td>Mesure d&apos;audience anonyme (Plausible)</td>
-              <td>Intérêt légitime (art. 6.1.f) — aucun cookie, aucun identifiant</td>
-            </tr>
-            <tr>
-              <td>Sécurité, prévention de la fraude, journaux d&apos;erreur</td>
-              <td>Intérêt légitime (art. 6.1.f)</td>
-            </tr>
-            <tr>
-              <td>Respect des obligations comptables (factures)</td>
-              <td>Obligation légale (art. 6.1.c)</td>
-            </tr>
-          </tbody>
-        </table>
+        <div className="overflow-x-auto">
+          <table>
+            <thead>
+              <tr>
+                <th>Finalité</th>
+                <th>Base légale (RGPD)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Création et gestion du compte utilisateur</td>
+                <td>Exécution du contrat (art. 6.1.b)</td>
+              </tr>
+              <tr>
+                <td>Fourniture des fonctionnalités gratuites et payantes du Service</td>
+                <td>Exécution du contrat (art. 6.1.b)</td>
+              </tr>
+              <tr>
+                <td>Traitement des paiements et facturation</td>
+                <td>Exécution du contrat + obligation légale (art. 6.1.b et c)</td>
+              </tr>
+              <tr>
+                <td>Envoi des emails transactionnels (confirmation, suivi mensuel, rappel essai)</td>
+                <td>Exécution du contrat (art. 6.1.b)</td>
+              </tr>
+              <tr>
+                <td>Envoi de la cheat sheet et emails produit (lead magnet)</td>
+                <td>Consentement explicite (art. 6.1.a) — désinscription en 1 clic</td>
+              </tr>
+              <tr>
+                <td>Mesure d&apos;audience anonyme (Plausible)</td>
+                <td>Intérêt légitime (art. 6.1.f) — aucun cookie, aucun identifiant</td>
+              </tr>
+              <tr>
+                <td>Sécurité, prévention de la fraude, journaux d&apos;erreur</td>
+                <td>Intérêt légitime (art. 6.1.f)</td>
+              </tr>
+              <tr>
+                <td>Respect des obligations comptables (factures)</td>
+                <td>Obligation légale (art. 6.1.c)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </section>
 
       <section>
@@ -200,57 +202,59 @@ export default function ConfidentialitePage() {
           contractuels conformes au RGPD (clauses contractuelles types lorsque
           le transfert se fait hors UE) :
         </p>
-        <table>
-          <thead>
-            <tr>
-              <th>Prestataire</th>
-              <th>Rôle</th>
-              <th>Localisation</th>
-              <th>Cadre du transfert</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Vercel Inc.</td>
-              <td>Hébergement et infrastructure</td>
-              <td>États-Unis</td>
-              <td>Clauses contractuelles types (CCT) + DPF</td>
-            </tr>
-            <tr>
-              <td>Clerk Inc.</td>
-              <td>Authentification et gestion des comptes</td>
-              <td>États-Unis</td>
-              <td>Clauses contractuelles types (CCT) + DPF</td>
-            </tr>
-            <tr>
-              <td>Stripe Inc.</td>
-              <td>Traitement des paiements</td>
-              <td>Irlande (EU) + États-Unis</td>
-              <td>Clauses contractuelles types (CCT) + DPF</td>
-            </tr>
-            <tr>
-              <td>Resend (Resend Inc.)</td>
-              <td>Envoi des emails transactionnels et newsletter</td>
-              <td>États-Unis</td>
-              <td>Clauses contractuelles types (CCT) + DPF</td>
-            </tr>
-            <tr>
-              <td>Plausible Insights OÜ</td>
-              <td>Mesure d&apos;audience anonyme</td>
-              <td>Estonie (UE)</td>
-              <td>Pas de transfert hors UE</td>
-            </tr>
-            <tr>
-              <td>Twelve Data Inc.</td>
-              <td>Données de marché financier (cours ETF)</td>
-              <td>États-Unis</td>
-              <td>
-                Aucune donnée personnelle transférée — uniquement des
-                requêtes de cours publics
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div className="overflow-x-auto">
+          <table>
+            <thead>
+              <tr>
+                <th>Prestataire</th>
+                <th>Rôle</th>
+                <th>Localisation</th>
+                <th>Cadre du transfert</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Vercel Inc.</td>
+                <td>Hébergement et infrastructure</td>
+                <td>États-Unis</td>
+                <td>Clauses contractuelles types (CCT) + DPF</td>
+              </tr>
+              <tr>
+                <td>Clerk Inc.</td>
+                <td>Authentification et gestion des comptes</td>
+                <td>États-Unis</td>
+                <td>Clauses contractuelles types (CCT) + DPF</td>
+              </tr>
+              <tr>
+                <td>Stripe Inc.</td>
+                <td>Traitement des paiements</td>
+                <td>Irlande (EU) + États-Unis</td>
+                <td>Clauses contractuelles types (CCT) + DPF</td>
+              </tr>
+              <tr>
+                <td>Resend (Resend Inc.)</td>
+                <td>Envoi des emails transactionnels et newsletter</td>
+                <td>États-Unis</td>
+                <td>Clauses contractuelles types (CCT) + DPF</td>
+              </tr>
+              <tr>
+                <td>Plausible Insights OÜ</td>
+                <td>Mesure d&apos;audience anonyme</td>
+                <td>Estonie (UE)</td>
+                <td>Pas de transfert hors UE</td>
+              </tr>
+              <tr>
+                <td>Twelve Data Inc.</td>
+                <td>Données de marché financier (cours ETF)</td>
+                <td>États-Unis</td>
+                <td>
+                  Aucune donnée personnelle transférée — uniquement des
+                  requêtes de cours publics
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
         <p>
           <strong>DPF</strong> = Data Privacy Framework UE-États-Unis (cadre de
           protection des données adopté par décision d&apos;adéquation de la

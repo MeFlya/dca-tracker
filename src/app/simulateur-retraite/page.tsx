@@ -183,7 +183,7 @@ export default function SimulateurRetraitePage() {
         </p>
         <Link
           href="/simulateur?monthly=300&years=40&return=7&fees=0.3"
-          className="inline-block bg-white text-primary-700 font-semibold text-sm px-5 py-2.5 rounded-xl btn-lift"
+          className="btn-white-primary btn-lift"
         >
           Simuler ma propre retraite →
         </Link>

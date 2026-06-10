@@ -322,7 +322,7 @@ function EtfRow({
             type="button"
             onClick={onRemove}
             aria-label={`Retirer ${item.etf.displaySymbol}`}
-            className="shrink-0 w-7 h-7 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors flex items-center justify-center"
+            className="shrink-0 w-7 h-7 rounded-lg text-gray-500 hover:text-red-600 hover:bg-red-50 transition-colors flex items-center justify-center"
           >
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
               <path
@@ -630,7 +630,7 @@ function SimulateCTA({
         {url && !disabled ? (
           <Link
             href={url}
-            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-white text-primary-700 font-semibold text-sm hover:bg-primary-50 transition-colors w-full sm:w-auto"
+            className="btn-white-primary w-full sm:w-auto"
           >
             Lancer la simulation détaillée
             <span aria-hidden>→</span>

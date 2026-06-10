@@ -124,8 +124,11 @@ export function Header() {
                 <UserButton />
               </>
             )}
-            {/* Placeholder pour éviter le layout shift pendant le chargement */}
-            {!isLoaded && <div className="w-24 h-8" />}
+            {/* Placeholder anti-CLS pendant le chargement Clerk. w-48 ≈ largeur
+                de l'état signed-out (Connexion + S'inscrire) — le cas le plus
+                fréquent sur les pages publiques. L'ancien w-24 était trop
+                étroit et créait un shift visible à l'hydratation (AUDIT P4). */}
+            {!isLoaded && <div className="w-48 h-8" />}
           </div>
 
           {/* Mobile : cloche notifications (si connecté) + hamburger */}

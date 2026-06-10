@@ -149,7 +149,7 @@ export function NotificationBell() {
             <div className="px-4 py-10 text-center">
               <Bell size={22} className="text-gray-300 mx-auto mb-2" />
               <p className="text-sm text-gray-500">Rien de neuf pour le moment.</p>
-              <p className="text-xs text-gray-400 mt-1">
+              <p className="text-xs text-gray-500 mt-1">
                 Loggez vos mois pour débloquer badges et niveaux.
               </p>
             </div>

@@ -32,34 +32,39 @@ export function AnnualPushBanner({
   subscriptionInterval,
   subscribedAt,
 }: Props) {
-  const [visible, setVisible] = useState(false);
+  // Éligibilité calculée de façon SYNCHRONE depuis les props (AUDIT P5) :
+  // avant, le banner apparaissait dans un useEffect post-hydratation →
+  // ~120 px de layout shift (CLS) pour tout le contenu en dessous. En
+  // l'initialisant ici, les éligibles le voient dès le premier paint.
+  // Seul le dismiss (localStorage, client-only) reste en effect — son
+  // retrait ne touche que la sous-population "dismissé < 24 h".
+  const [visible, setVisible] = useState(() => {
+    if (subscriptionInterval !== "month") return false;
+    if (!subscribedAt) return false;
+    const subscribedTime = new Date(subscribedAt).getTime();
+    if (Number.isNaN(subscribedTime)) return false;
+    return Date.now() - subscribedTime >= ELIGIBILITY_DELAY_MS;
+  });
 
   useEffect(() => {
-    // Server-only check first : ne montre pas aux annuels ni aux users
-    // sans subscribedAt valide
-    if (subscriptionInterval !== "month") return;
-    if (!subscribedAt) return;
-
-    const subscribedTime = new Date(subscribedAt).getTime();
-    if (Number.isNaN(subscribedTime)) return;
-
-    // Ne pas montrer avant 14 jours de souscription
-    if (Date.now() - subscribedTime < ELIGIBILITY_DELAY_MS) return;
-
-    // Check dismiss cooldown via localStorage
+    if (!visible) return;
+    // Check dismiss cooldown via localStorage (client uniquement)
     try {
       const dismissedAt = localStorage.getItem(DISMISS_KEY);
       if (dismissedAt) {
         const elapsed = Date.now() - parseInt(dismissedAt, 10);
-        if (elapsed < DISMISS_COOLDOWN_MS) return;
+        if (elapsed < DISMISS_COOLDOWN_MS) {
+          setVisible(false);
+          return;
+        }
       }
     } catch {
       // localStorage indisponible (private mode Safari) → afficher quand même
     }
-
-    setVisible(true);
     track({ name: "annual_banner_shown" });
-  }, [subscriptionInterval, subscribedAt]);
+    // Au mount uniquement — l'éligibilité (props serveur) ne change pas en session.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function handleDismiss() {
     try {

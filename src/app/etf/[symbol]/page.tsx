@@ -198,7 +198,7 @@ export default async function ETFDetailPage({
         <div className="shrink-0 flex flex-col sm:items-end gap-2">
           <Link
             href={portfolioUrl}
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white text-primary-700 font-semibold text-sm hover:bg-primary-50 transition-colors"
+            className="btn-white-primary"
           >
             Simuler avec {etf.displaySymbol} →
           </Link>

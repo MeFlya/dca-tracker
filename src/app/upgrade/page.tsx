@@ -756,7 +756,7 @@ export default async function UpgradePage({ searchParams }: Props) {
           <p className="text-sm font-semibold text-red-600 mb-3 leading-snug">
             {f.hero.eyebrow}
           </p>
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-5 leading-[1.15] tracking-tight">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-5 leading-[1.15] tracking-tight">
             {f.hero.title}
           </h1>
           <p className="text-lg text-gray-600 leading-relaxed mb-6">

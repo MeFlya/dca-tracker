@@ -395,7 +395,7 @@ function Stat({
     <div className="rounded-2xl border border-slate-200/70 bg-white shadow-card p-4">
       <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">
         {label}
-        {suffix && <span className="text-gray-400"> {suffix}</span>}
+        {suffix && <span className="text-gray-500"> {suffix}</span>}
       </p>
       <p className={`text-2xl font-bold tabular-nums ${valueColor}`}>{value}</p>
       {sub && <p className="text-xs text-gray-500 mt-1">{sub}</p>}

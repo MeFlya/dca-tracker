@@ -348,7 +348,7 @@ export default function PEAouCTOPage() {
         </div>
         <Link
           href="/simulateur"
-          className="shrink-0 inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white text-primary-700 font-semibold text-sm hover:bg-primary-50 transition-colors"
+          className="btn-white-primary shrink-0"
         >
           Ouvrir le simulateur →
         </Link>
