@@ -59,21 +59,21 @@ const config: Config = {
         },
       },
       fontFamily: {
+        // Les variables --font-inter / --font-newsreader sont injectées sur
+        // <html> par next/font dans app/layout.tsx (self-host, preload,
+        // fallback métrique anti-CLS intégré).
         sans: [
-          "Inter",
+          "var(--font-inter)",
           "ui-sans-serif",
           "system-ui",
           "-apple-system",
           "sans-serif",
         ],
         // Display font — appliquée automatiquement sur h1/h2 via globals.css.
-        // Newsreader (Production Type via Google Fonts) — serif éditorial
-        // moderne. Variable wght 200-800 + opsz axis 6..72 → bold propre,
-        // optical sizing automatique selon font-size. Vibe : intello,
-        // chaleureux, distinctif (cousin moderne d'Instrument Serif avec
-        // un vrai bold).
+        // Newsreader — serif éditorial moderne. Variable wght 200-800 + opsz
+        // 6..72 → bold propre, optical sizing automatique selon font-size.
         display: [
-          "Newsreader",
+          "var(--font-newsreader)",
           "ui-serif",
           "Georgia",
           "serif",

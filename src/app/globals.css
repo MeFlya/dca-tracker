@@ -3,13 +3,12 @@
 @tailwind utilities;
 
 /* Inter pour le body, Newsreader pour les headings (display).
-   Newsreader (Production Type via Google Fonts) : serif éditorial moderne
-   avec personnalité géométrique. Vibe proche d'Instrument Serif (intello
-   chaleureux) MAIS variable font wght 200-800 + opsz axis → vrai bold
-   propre, contrairement à Instrument Serif qui n'a que 400. On charge
-   wght 400 (regular) + 700 (bold) avec opsz 6..72 (auto-tuning du
-   contraste selon font-size). */
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,700&display=swap");
+   Les DEUX polices sont chargées via next/font/google dans app/layout.tsx
+   (self-host + preload + fallback métrique anti-CLS) et exposées en
+   variables CSS : --font-inter et --font-newsreader. Le mapping vers les
+   utilitaires Tailwind (font-sans / font-display) est dans
+   tailwind.config.ts. Ne PAS réintroduire d'@import Google Fonts ici :
+   il remettrait fonts.googleapis.com dans la chaîne critique de rendu. */
 
 @layer base {
   * {

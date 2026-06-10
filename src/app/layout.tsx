@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Inter, Newsreader } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Header } from "@/components/layout/Header";
@@ -12,6 +13,29 @@ import { AnalyticsContextProvider } from "@/components/analytics/AnalyticsContex
 // Hardcoded — never trust NEXT_PUBLIC_SITE_URL for canonical/metadataBase
 // (Vercel preview deployments set it to *.vercel.app which breaks SEO)
 const CANONICAL_ORIGIN = "https://dcatracker.fr";
+
+// Fonts self-hostées via next/font (remplace l'@import Google Fonts de
+// globals.css). Gains CWV : zéro requête tierce (fonts.googleapis +
+// fonts.gstatic supprimées de la chaîne critique), preload automatique du
+// WOFF2, et fallback métrique ajusté (size-adjust) → quasi-zéro CLS au swap.
+//
+// Inter : variable font (toute la plage de graisses en un seul fichier —
+// plus léger que les 5 graisses statiques chargées avant).
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
+// Newsreader : display serif des H1/H2. Variable wght 200-800 + axe optique
+// opsz 6..72 conservé (font-optical-sizing: auto dans globals.css en dépend
+// pour le rendu des gros titres).
+const newsreader = Newsreader({
+  subsets: ["latin"],
+  variable: "--font-newsreader",
+  display: "swap",
+  axes: ["opsz"],
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(CANONICAL_ORIGIN),
@@ -89,14 +113,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="fr">
+    <html lang="fr" className={`${inter.variable} ${newsreader.variable}`}>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
+        {/* Plus de preconnect Google Fonts : les polices sont self-hostées
+            par next/font (servies depuis /_next/static, même origine). */}
         <PlausibleScript />
       </head>
       <body className="min-h-screen flex flex-col">
