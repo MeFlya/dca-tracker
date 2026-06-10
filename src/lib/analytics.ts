@@ -80,6 +80,8 @@ export type AnalyticsEvent =
   | { name: "backtest_started"; props: { monthly_amount: number; start_date: string; end_date: string } }
   | { name: "backtest_completed"; props: { monthly_amount: number; months_invested: number; gain_pct: number; irr_pct: number | null } }
   | { name: "backtest_premium_locked_cta_clicked" }
+  /** Clic sur le teaser /backtest affiché dans les résultats du simulateur. */
+  | { name: "backtest_teaser_click" }
   | { name: "backtest_quick_scenario_used"; props: { scenario_name: string } }
 
   // ── Account

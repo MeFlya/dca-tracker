@@ -148,17 +148,20 @@ function LossBlock({ output, isPremium }: { output: SimulatorOutput; isPremium: 
         </p>
       </div>
 
+      {/* Douleur = "+50 €/mois change le résultat" → la feature qui y répond
+          est la comparaison A/B (deux stratégies côte à côte), pas la
+          sauvegarde (AUDIT F3 : aligner douleur → feature). */}
       <Link
-        href={ctaHref(isPremium, "save-strategy", input)}
+        href={ctaHref(isPremium, "ab-comparison", input)}
         className="btn-primary w-full text-sm px-5 py-2.5 inline-flex items-center justify-center btn-lift"
       >
-        {isPremium ? "Ouvrir mon dashboard" : "Voir mon vrai potentiel"}
+        {isPremium ? "Ouvrir mon dashboard" : "Comparer les deux scénarios"}
         <ArrowRight size={14} className="ml-1" />
       </Link>
 
       <PremiumFix
         bullets={[
-          "Sauvegarder et comparer 10 variantes de votre stratégie",
+          "Comparaison A/B : votre stratégie actuelle vs +50 €/mois, côte à côte",
           "Monte Carlo : vérifier que +50 €/mois tient face à la volatilité réelle",
           "Suivre mois après mois le potentiel effectivement gagné",
         ]}

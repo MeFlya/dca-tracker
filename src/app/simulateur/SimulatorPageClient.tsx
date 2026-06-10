@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { SimulatorForm } from "@/components/simulator/SimulatorForm";
@@ -261,6 +262,29 @@ export function SimulatorPageClient({ initialOutput }: Props) {
 
         {/* A vs B — Premium */}
         <ScenarioComparison isPremium={isPremium} input={output.input} />
+
+        {/* Teaser backtest (AUDIT F2) — la feature la plus différenciante du
+            site était invisible depuis le funnel simulateur. Ton transparence :
+            la projection est théorique, le backtest montre le réel. */}
+        <div className="rounded-2xl border border-primary-100 bg-primary-50/40 p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-bold text-gray-900 mb-1">
+              Cette projection suppose un marché régulier. La réalité, elle, a
+              connu le COVID et 2022.
+            </p>
+            <p className="text-xs text-gray-600 leading-relaxed">
+              Le backtest rejoue votre DCA sur les vraies données MSCI World
+              depuis 2009 — creux compris — avec TRI et pire perte traversée.
+            </p>
+          </div>
+          <Link
+            href="/backtest"
+            onClick={() => track({ name: "backtest_teaser_click" })}
+            className="shrink-0 inline-flex items-center gap-1.5 text-sm font-semibold text-primary-700 hover:text-primary-800 underline-offset-4 hover:underline transition-colors"
+          >
+            Tester sur les vraies données →
+          </Link>
+        </div>
 
         <EmailCapture variant="card" source="simulator" />
         <InvestCTA />
