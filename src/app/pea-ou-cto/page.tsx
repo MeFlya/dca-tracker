@@ -301,7 +301,14 @@ export default function PEAouCTOPage() {
           <ol className="space-y-3 mb-4">
             <li className="flex gap-3 text-sm text-gray-700">
               <span className="shrink-0 w-6 h-6 rounded-full bg-primary-600 text-white text-xs flex items-center justify-center font-bold">1</span>
-              <span>Ouvrez un <strong>PEA</strong> et commencez à investir sur <strong>CW8 ou EWLD</strong> (MSCI World, TER faible, PEA éligible).</span>
+              <span>
+                Ouvrez un <strong>PEA</strong> —{" "}
+                <Link href="/comparatif" className="text-primary-700 font-medium hover:underline">
+                  comparez les courtiers PEA
+                </Link>{" "}
+                (Trade Republic, Boursorama, Fortuneo) — et commencez à investir sur{" "}
+                <strong>CW8 ou EWLD</strong> (MSCI World, TER faible, PEA éligible).
+              </span>
             </li>
             <li className="flex gap-3 text-sm text-gray-700">
               <span className="shrink-0 w-6 h-6 rounded-full bg-primary-600 text-white text-xs flex items-center justify-center font-bold">2</span>

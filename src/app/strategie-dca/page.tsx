@@ -46,18 +46,22 @@ const STEPS = [
     n: "1",
     title: "Ouvrir un PEA",
     body: "Pour la fiscalité la plus avantageuse, ouvrez un PEA chez Boursorama, Trade Republic ou Fortuneo. Gratuit et sans engagement.",
+    href: "/comparatif",
+    linkLabel: "Comparer les courtiers PEA →",
   },
   {
     n: "2",
     title: "Choisir un ETF monde",
     body: "Un seul ETF suffit pour démarrer. Le CW8 (Amundi MSCI World) ou l'EWLD (iShares MSCI World) couvrent 1 500 entreprises mondiales et sont éligibles PEA.",
     href: "/meilleurs-etf-debutants",
+    linkLabel: "Voir les meilleurs ETF →",
   },
   {
     n: "3",
     title: "Fixer un montant mensuel",
     body: "Choisissez un montant que vous pouvez maintenir sans effort — même 50 € par mois. La régularité prime sur le montant.",
     href: "/simulateur",
+    linkLabel: "Simuler ma projection →",
   },
   {
     n: "4",
@@ -354,11 +358,11 @@ export default function StrategieDCAPage() {
                 <p className="font-semibold text-gray-900 mb-1">{step.title}</p>
                 <p className="text-sm text-gray-500 leading-relaxed">
                   {step.body}
-                  {step.href && (
+                  {step.href && step.linkLabel && (
                     <>
                       {" "}
                       <Link href={step.href} className="text-primary-600 hover:text-primary-700 underline transition-colors">
-                        {step.n === "2" ? "Voir les meilleurs ETF →" : "Simuler ma projection →"}
+                        {step.linkLabel}
                       </Link>
                     </>
                   )}

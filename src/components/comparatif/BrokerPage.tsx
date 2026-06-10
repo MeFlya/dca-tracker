@@ -295,6 +295,28 @@ export function BrokerPage({ broker }: { broker: BrokerData }) {
         </div>
       </div>
 
+      {/* Guides — la fiche courtier irrigue les guides éducatifs (avant ce
+          bloc, seule la navigation vers les autres courtiers existait :
+          cul-de-sac vers le reste du site). */}
+      <div className="mt-8 pt-8 border-t border-gray-100">
+        <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-4">
+          Préparer votre DCA chez {broker.name}
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {[
+            { href: "/pea-ou-cto", label: "PEA ou CTO ?", sub: "Quelle enveloppe ouvrir chez ce courtier" },
+            { href: "/etf-msci-world", label: "ETF MSCI World", sub: "CW8, WPEA, DCAM — quoi acheter en premier" },
+            { href: "/strategie-dca", label: "La stratégie DCA", sub: "La méthode des versements mensuels" },
+            { href: "/simulateur", label: "Simulateur DCA", sub: "Projetez vos versements avant d'ouvrir" },
+          ].map((g) => (
+            <Link key={g.href} href={g.href} className="rounded-xl border border-gray-100 bg-white p-4 card-hover">
+              <p className="text-sm font-semibold text-gray-900 mb-1">{g.label}</p>
+              <p className="text-xs text-gray-500 leading-relaxed">{g.sub}</p>
+            </Link>
+          ))}
+        </div>
+      </div>
+
       {/* Legal */}
       <p className="mt-10 text-[11px] text-gray-500 leading-relaxed">
         Cet article est fourni à titre informatif et ne constitue pas un conseil

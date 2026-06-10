@@ -176,6 +176,7 @@ const MSCI_WORLD: IndexGuide = {
     { label: "CW8 vs WPEA : le comparatif détaillé", href: "/comparatif-etf/cw8-vs-wpea" },
     { label: "MSCI World vs S&P 500", href: "/comparatif-etf/msci-world-vs-sp500" },
     { label: "PEA ou CTO : quelle enveloppe ?", href: "/pea-ou-cto" },
+    { label: "Chez quel courtier ouvrir votre PEA ?", href: "/comparatif" },
     { label: "Simuler mon DCA sur le MSCI World", href: "/simulateur" },
   ],
   sources: [
@@ -306,6 +307,7 @@ const SP500: IndexGuide = {
     { label: "MSCI World vs S&P 500 : le comparatif", href: "/comparatif-etf/msci-world-vs-sp500" },
     { label: "CW8 vs ESE", href: "/comparatif-etf/cw8-vs-ese" },
     { label: "PEA ou CTO : quelle enveloppe ?", href: "/pea-ou-cto" },
+    { label: "Chez quel courtier ouvrir votre PEA ?", href: "/comparatif" },
     { label: "Simuler mon DCA sur le S&P 500", href: "/simulateur" },
   ],
   sources: [
@@ -434,6 +436,7 @@ const NASDAQ: IndexGuide = {
     { label: "Comparatifs ETF", href: "/comparatif-etf" },
     { label: "ETF S&P 500 en PEA", href: "/etf-sp500" },
     { label: "PEA ou CTO : quelle enveloppe ?", href: "/pea-ou-cto" },
+    { label: "Chez quel courtier ouvrir votre PEA ?", href: "/comparatif" },
     { label: "Simuler mon DCA sur le Nasdaq", href: "/simulateur" },
   ],
   sources: [

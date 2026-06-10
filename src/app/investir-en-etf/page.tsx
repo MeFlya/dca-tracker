@@ -105,12 +105,20 @@ const STEPS = [
             différence peut représenter plusieurs milliers d&apos;euros.
           </p>
         </div>
-        <Link
-          href="/pea-ou-cto"
-          className="mt-3 inline-flex items-center gap-1.5 text-sm text-primary-600 font-medium hover:underline"
-        >
-          Guide complet PEA vs CTO →
-        </Link>
+        <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1.5">
+          <Link
+            href="/pea-ou-cto"
+            className="inline-flex items-center gap-1.5 text-sm text-primary-600 font-medium hover:underline"
+          >
+            Guide complet PEA vs CTO →
+          </Link>
+          <Link
+            href="/comparatif"
+            className="inline-flex items-center gap-1.5 text-sm text-primary-600 font-medium hover:underline"
+          >
+            Comparer les courtiers →
+          </Link>
+        </div>
       </>
     ),
   },

@@ -179,6 +179,28 @@ export default function ComparatifHubPage() {
         </div>
       </div>
 
+      {/* Backlinks vers les guides — le hub courtiers doit irriguer le reste
+          du site (avant ce bloc, la page était un cul-de-sac : aucun lien
+          sortant vers les guides éducatifs). */}
+      <div className="mb-10 pt-8 border-t border-gray-100">
+        <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-4">
+          Avant de choisir un courtier
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {[
+            { href: "/pea-ou-cto", label: "PEA ou CTO ?", sub: "L'enveloppe fiscale à choisir avant le courtier" },
+            { href: "/strategie-dca", label: "La stratégie DCA", sub: "Investir chaque mois, simplement" },
+            { href: "/meilleurs-etf-debutants", label: "Meilleurs ETF débutants", sub: "Quoi acheter une fois le compte ouvert" },
+            { href: "/etf-msci-world", label: "ETF MSCI World", sub: "CW8, WPEA, DCAM — lequel choisir" },
+          ].map((g) => (
+            <Link key={g.href} href={g.href} className="rounded-xl border border-gray-100 bg-white p-4 card-hover">
+              <p className="text-sm font-semibold text-gray-900 mb-1">{g.label}</p>
+              <p className="text-xs text-gray-500">{g.sub}</p>
+            </Link>
+          ))}
+        </div>
+      </div>
+
       {/* CTA */}
       <div className="rounded-2xl border border-primary-100 bg-primary-50/40 p-6 text-center">
         <p className="text-base font-bold text-gray-900 mb-2">
