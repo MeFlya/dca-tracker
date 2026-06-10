@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { JsonLd } from "@/components/ui/JsonLd";
+import { GLOSSARY_TERM_LIST } from "@/lib/glossary-terms";
 
-const TITLE = "Glossaire DCA — Termes clés de l'investissement ETF";
+const TITLE = "Glossaire DCA — 15 termes clés de l'investissement ETF";
 const DESCRIPTION =
-  "Les définitions essentielles pour comprendre le DCA (Dollar Cost Averaging), les ETF, les intérêts composés et l'investissement progressif à long terme.";
+  "PEA, CTO, TER, PFU, drawdown, TRI, réplication synthétique… Les 15 définitions essentielles pour comprendre le DCA et l'investissement ETF, avec exemples chiffrés et sans jargon inutile.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -18,7 +19,9 @@ export const metadata: Metadata = {
   },
 };
 
-const ENTRIES = [
+// Les 3 fondamentaux gardent leurs pages riches dédiées ; les 12 autres
+// termes viennent de lib/glossary-terms (data-driven, route [slug]).
+const CORE_ENTRIES = [
   {
     slug: "dca",
     term: "DCA — Dollar Cost Averaging",
@@ -38,6 +41,12 @@ const ENTRIES = [
       "Mécanisme par lequel les gains génèrent eux-mêmes des gains. Effet boule de neige sur le long terme.",
   },
 ];
+
+const CATEGORIES = [
+  "Enveloppes & fiscalité",
+  "Frais & mécanique des ETF",
+  "Stratégie & risque",
+] as const;
 
 export default function GlossaryHubPage() {
   const siteUrl = "https://dcatracker.fr";
@@ -69,8 +78,12 @@ export default function GlossaryHubPage() {
         inutile.
       </p>
 
+      {/* Les 3 fondamentaux — pages riches dédiées */}
+      <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-3">
+        Les fondamentaux
+      </p>
       <div className="space-y-3 mb-10">
-        {ENTRIES.map((e) => (
+        {CORE_ENTRIES.map((e) => (
           <Link
             key={e.slug}
             href={`/glossaire/${e.slug}`}
@@ -83,6 +96,29 @@ export default function GlossaryHubPage() {
           </Link>
         ))}
       </div>
+
+      {/* Les 12 termes data-driven, groupés par catégorie */}
+      {CATEGORIES.map((cat) => (
+        <div key={cat} className="mb-10">
+          <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-3">
+            {cat}
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {GLOSSARY_TERM_LIST.filter((t) => t.category === cat).map((t) => (
+              <Link
+                key={t.slug}
+                href={`/glossaire/${t.slug}`}
+                className="group block rounded-2xl border border-gray-100 bg-white p-4 card-hover"
+              >
+                <p className="text-sm font-bold text-gray-900 mb-1 group-hover:text-primary-700 transition-colors leading-snug">
+                  {t.term}
+                </p>
+                <p className="text-xs text-gray-500 leading-relaxed">{t.shortDef}</p>
+              </Link>
+            ))}
+          </div>
+        </div>
+      ))}
 
       <div className="rounded-2xl border border-primary-100 bg-primary-50/40 p-6 text-center">
         <p className="text-sm font-semibold text-gray-900 mb-2">

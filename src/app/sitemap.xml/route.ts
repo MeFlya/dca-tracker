@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { ETF_LIST } from "@/lib/etf-config";
 import { BROKER_LIST } from "@/lib/brokers";
 import { ETF_COMPARISON_LIST } from "@/lib/etf-comparisons";
+import { GLOSSARY_TERM_LIST } from "@/lib/glossary-terms";
 
 export const dynamic = "force-static";
 
@@ -69,6 +70,12 @@ export async function GET(): Promise<NextResponse> {
     { url: `${base}/glossaire/dca`,            changeFreq: "monthly", priority: 0.8,  lastmod: REV.evergreen },
     { url: `${base}/glossaire/etf`,            changeFreq: "monthly", priority: 0.8,  lastmod: REV.evergreen },
     { url: `${base}/glossaire/interets-composes`, changeFreq: "monthly", priority: 0.8, lastmod: REV.evergreen },
+    ...GLOSSARY_TERM_LIST.map((t) => ({
+      url: `${base}/glossaire/${t.slug}`,
+      changeFreq: "monthly",
+      priority: 0.7,
+      lastmod: REV.evergreen,
+    })),
     { url: `${base}/comparatif`,               changeFreq: "monthly", priority: 0.8,  lastmod: REV.evergreen },
     ...BROKER_LIST.map((b) => ({
       url: `${base}/comparatif/${b.slug}`,
