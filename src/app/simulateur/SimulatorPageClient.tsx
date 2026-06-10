@@ -1,14 +1,36 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef, useMemo } from "react";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { SimulatorForm } from "@/components/simulator/SimulatorForm";
 import type { SimulatorMode } from "@/components/simulator/SimulatorForm";
 import { SimulatorHero } from "@/components/simulator/SimulatorHero";
 import { SimulatorResults } from "@/components/simulator/SimulatorResults";
-import { MonteCarloChart } from "@/components/simulator/MonteCarloChart";
 import { ScenarioComparison } from "@/components/simulator/ScenarioComparison";
+
+// Monte Carlo en import dynamique (ssr: false) — il embarque recharts et ne
+// sert qu'après hydratation. Avec PortfolioChart/GainsDonutChart (dans
+// SimulatorResults), ça sort recharts du JS initial de /simulateur (AUDIT P1).
+// Placeholder à hauteur fixe ≈ rendu final (header + légende + chart) → pas
+// de CLS au swap, et le bloc est sous la fold de toute façon.
+const MonteCarloChart = dynamic(
+  () =>
+    import("@/components/simulator/MonteCarloChart").then(
+      (m) => m.MonteCarloChart,
+    ),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="card h-[520px]" aria-busy="true" aria-label="Chargement de l'analyse Monte Carlo">
+        <div className="h-4 w-56 rounded bg-gray-100 mb-2" />
+        <div className="h-3 w-72 rounded bg-gray-50 mb-5" />
+        <div className="h-[400px] rounded-xl bg-gray-50" />
+      </div>
+    ),
+  },
+);
 import { SaveSimulationButton } from "@/components/simulator/SaveSimulationButton";
 import { SaveStrategyButton } from "@/components/simulator/SaveStrategyButton";
 import { ConversionBlocks } from "@/components/simulator/ConversionBlocks";
@@ -84,7 +106,20 @@ export function SimulatorPageClient({ initialOutput }: Props) {
   }, []);
 
   const [saveRefreshKey, setSaveRefreshKey] = useState(0);
-  const monteCarloResult = useMemo(() => runMonteCarlo(output.input), [output.input]);
+
+  // Monte Carlo DÉBOUNCÉ (AUDIT P3) : runMonteCarlo simule 1 000 trajectoires
+  // — le recalculer à chaque tick de slider bloquait le main thread pendant
+  // le drag (INP). La simulation principale (runSimulation, ~480 itérations)
+  // reste instantanée pour le feedback temps réel ; seul le Monte Carlo
+  // attend 250 ms après le dernier mouvement.
+  const [mcInput, setMcInput] = useState<SimulatorInput>(initialOutput.input);
+  const mcTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const monteCarloResult = useMemo(() => runMonteCarlo(mcInput), [mcInput]);
+  useEffect(() => {
+    return () => {
+      if (mcTimer.current) clearTimeout(mcTimer.current);
+    };
+  }, []);
 
   const urlUpdateTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hasScrolled = useRef(false);
@@ -97,6 +132,10 @@ export function SimulatorPageClient({ initialOutput }: Props) {
   const handleChange = useCallback(
     (input: SimulatorInput, inflationEnabled: boolean) => {
       setOutput(runSimulation(input));
+
+      // Monte Carlo : recalcul seulement 250 ms après le dernier tick (INP).
+      if (mcTimer.current) clearTimeout(mcTimer.current);
+      mcTimer.current = setTimeout(() => setMcInput(input), 250);
 
       // Fire start_simulation once per session on first interaction
       if (!hasTrackedStart.current) {
@@ -161,6 +200,9 @@ export function SimulatorPageClient({ initialOutput }: Props) {
     setLoadedInput(input);
     setFormKey((k) => k + 1);
     setOutput(runSimulation(input));
+    // Action ponctuelle (pas un drag) → Monte Carlo immédiat, sans debounce.
+    if (mcTimer.current) clearTimeout(mcTimer.current);
+    setMcInput(input);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 

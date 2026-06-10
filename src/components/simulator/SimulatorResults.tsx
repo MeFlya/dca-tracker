@@ -1,9 +1,43 @@
+"use client";
+
+import dynamic from "next/dynamic";
 import { SimulatorOutput, formatEur, formatPct } from "@/lib/simulator";
 import { StatCard } from "@/components/ui/StatCard";
-import { PortfolioChart } from "./PortfolioChart";
-import { GainsDonutChart } from "./GainsDonutChart";
 import { Disclaimer } from "@/components/ui/Disclaimer";
 import { cn } from "@/lib/utils";
+
+// Charts recharts en import dynamique (ssr: false) — recharts pèse lourd
+// (~100 kB+ dans le bundle) et les charts ne servent qu'après hydratation.
+// Le code-splitting sort recharts du JS initial de /simulateur (AUDIT P1).
+// Les placeholders ont une hauteur FIXE calquée sur le rendu final
+// (card + header + chart 340/200) → pas de CLS au swap.
+const PortfolioChart = dynamic(
+  () => import("./PortfolioChart").then((m) => m.PortfolioChart),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="card h-[452px]" aria-busy="true" aria-label="Chargement du graphique">
+        <div className="h-4 w-48 rounded bg-gray-100 mb-2" />
+        <div className="h-3 w-64 rounded bg-gray-50 mb-6" />
+        <div className="h-[340px] rounded-xl bg-gray-50" />
+      </div>
+    ),
+  },
+);
+
+const GainsDonutChart = dynamic(
+  () => import("./GainsDonutChart").then((m) => m.GainsDonutChart),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="card h-[380px]" aria-busy="true" aria-label="Chargement du graphique">
+        <div className="h-4 w-40 rounded bg-gray-100 mb-2" />
+        <div className="h-3 w-52 rounded bg-gray-50 mb-6" />
+        <div className="mx-auto h-[200px] w-[200px] rounded-full bg-gray-50" />
+      </div>
+    ),
+  },
+);
 
 interface SimulatorResultsProps {
   output: SimulatorOutput;
