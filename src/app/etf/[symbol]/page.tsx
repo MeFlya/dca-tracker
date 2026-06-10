@@ -30,13 +30,18 @@ export async function generateMetadata({
   const etf = getETFBySymbol(symbol);
   if (!etf) return { title: "ETF introuvable" };
 
-  const isinStr = etf.isin ? `, ISIN ${etf.isin}` : "";
-  const title = `ETF ${etf.displaySymbol} — ${etf.name} : analyse et simulation DCA`;
+  // CTR (analyse GSC juin 2026) : la requête ticker nu ("cw8" : 143 imp/mois,
+  // pos 14) ne cliquait pas sur l'ancien title technique ("— Nom complet :
+  // analyse et simulation DCA"). Nouveau pattern : ticker + indice d'abord,
+  // puis l'intention de recherche (frais, avis, alternatives) au lieu des
+  // specs sèches (ISIN/réplication → reléguées au corps de page).
+  const title = `ETF ${etf.displaySymbol} (${etf.indexLabel}) : frais, avis et alternatives 2026`;
   const description =
-    `Simulez le DCA sur ${etf.displaySymbol} (${etf.name}). ` +
-    `${etf.category}, TER ${etf.ter} %, réplication ${etf.replicationMethod.toLowerCase()}, ` +
-    `${etf.distributionPolicy.toLowerCase()}${isinStr}. ` +
-    `Projection long terme avec intérêts composés, hypothèses transparentes.`;
+    `${etf.displaySymbol} — ${etf.name} : TER ${etf.ter.toString().replace(".", ",")} %, ` +
+    `${etf.peaEligible ? "éligible PEA" : "réservé au CTO ou à l'assurance-vie"}, ` +
+    `${etf.distributionPolicy.toLowerCase()}. ` +
+    `Faut-il l'acheter en 2026 ? Points forts, limites, alternatives comparées — ` +
+    `et simulation DCA avec les frais réels.`;
 
   return {
     title,

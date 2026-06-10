@@ -9,7 +9,7 @@ import { SourcesReferences } from "@/components/ui/SourcesReferences";
 
 const TITLE = "Meilleurs ETF pour débutants 2026 : CW8, IWDA, VWCE comparés";
 const DESCRIPTION =
-  "Quel ETF choisir pour commencer en 2026 ? Comparatif CW8 (MSCI World), IWDA, VWCE, S&P 500 : TER, encours, éligibilité PEA et notre recommandation pour un premier DCA serein.";
+  "Le verdict : un seul ETF MSCI World éligible PEA suffit pour démarrer — CW8 pour la liquidité, WPEA ou DCAM pour les frais (0,20 %). Comparatif complet TER/PEA/réplication + les erreurs de débutant à éviter.";
 
 export const metadata: Metadata = {
   title: TITLE,

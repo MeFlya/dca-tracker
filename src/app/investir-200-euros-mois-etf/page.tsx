@@ -6,7 +6,7 @@ import { EmailCapture } from "@/components/ui/EmailCapture";
 import { JsonLd } from "@/components/ui/JsonLd";
 
 const TITLE =
-  "Investir 200€ par mois en ETF : simulation complète sur 10, 20 et 30 ans";
+  "Investir 200 € par mois en ETF = 104 000 € en 20 ans (simulation)";
 const DESCRIPTION =
   "200€/mois investi en ETF pendant 20 ans = 104 000€. Simulation avec 3 scénarios (5%, 7%, 9%), impact des frais, fiscalité PEA vs CTO. Résultat interactif, sans inscription.";
 const CANONICAL = "/investir-200-euros-mois-etf";

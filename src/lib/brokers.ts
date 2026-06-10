@@ -104,8 +104,8 @@ const TRADE_REPUBLIC: BrokerData = {
       a: "Oui, Trade Republic accepte les transferts de PEA depuis d'autres établissements. La démarche prend généralement 2 à 4 semaines. Les frais de transfert sortant sont plafonnés par la loi à 150 € par ligne et ne peuvent pas dépasser 500 € au total. Trade Republic rembourse parfois ces frais sous conditions — vérifiez les offres en cours.",
     },
     {
-      q: "Quels ETF recommandés sur Trade Republic pour un DCA ?",
-      a: "Pour un PEA : CW8 (Amundi MSCI World) ou ESE (Amundi S&P 500 synthétique), tous deux éligibles PEA. Pour un CTO : VWCE (Vanguard FTSE All-World) ou VUSA (Vanguard S&P 500), plus diversifiés mais non éligibles PEA. Le catalogue Trade Republic inclut tous ces ETF.",
+      q: "Quel est le meilleur ETF à acheter chez Trade Republic pour un DCA ?",
+      a: "Pour un PEA : un ETF MSCI World comme WPEA ou DCAM (TER 0,20 %) — ou CW8, la référence historique (0,38 %, plus liquide). Pour le S&P 500 en PEA : ESE (0,15 %). Pour un CTO : VWCE (Vanguard FTSE All-World, émergents inclus) ou VUSA (Vanguard S&P 500). L'épargne programmée Trade Republic à 0 € de frais d'ordre rend le DCA mensuel particulièrement efficace sur ces ETF — vérifiez la disponibilité de chacun dans le catalogue.",
     },
     {
       q: "Y a-t-il un montant minimum d'investissement mensuel ?",

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { JsonLd } from "@/components/ui/JsonLd";
 
 const TITLE =
-  "Investir 500€ par mois en ETF : simulation sur 10, 20 et 30 ans";
+  "Investir 500 € par mois en ETF = 260 500 € en 20 ans (simulation)";
 const DESCRIPTION =
   "500€/mois en ETF sur 20 ans = 260 500€. Simulation complète avec 3 scénarios, projection retraite, impact des frais et fiscalité PEA vs CTO.";
 const CANONICAL = "/investir-500-euros-mois-etf";
