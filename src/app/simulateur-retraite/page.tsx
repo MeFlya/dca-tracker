@@ -408,6 +408,21 @@ export default function SimulateurRetraitePage() {
           </Link>
         </div>
       </div>
+
+      {/* Disclaimer outil (E-E-A-T YMYL) — pattern "outil" : transparence sur
+          la méthode + limites, plutôt qu'une byline d'article. */}
+      <div className="mt-10 rounded-2xl border border-gray-200 bg-gray-50 p-5">
+        <p className="text-xs text-gray-600 leading-relaxed">
+          <strong>Outil pédagogique</strong> — les projections supposent un
+          rendement constant et ne tiennent pas compte de la volatilité réelle
+          des marchés ni de votre situation personnelle. Elles ne constituent
+          pas un conseil en investissement.{" "}
+          <Link href="/methodologie" className="underline hover:text-gray-900 transition-colors">
+            Voir les formules et hypothèses détaillées
+          </Link>
+          .
+        </p>
+      </div>
     </article>
   );
 }

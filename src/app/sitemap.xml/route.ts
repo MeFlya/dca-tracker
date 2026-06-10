@@ -14,12 +14,12 @@ export const dynamic = "force-static";
 // URLs apparaissaient "modifiées" à chaque build, ce qui pousse Google à
 // ignorer le signal lastmod (jugé non fiable).
 const REV = {
-  ymyl: "2026-05-25",       // pages YMYL enrichies (sources externes + maillage interne)
-  newFeature: "2026-05-25", // /backtest, comparatifs ETF récents
+  ymyl: "2026-06-10",       // pages YMYL (maillage courtiers + byline/sources juin)
+  newFeature: "2026-06-02", // /backtest, pages indice, comparatifs ETF récents
   tools: "2026-05-25",      // simulateur, tarifs, a-propos (évoluent régulièrement)
-  longtail: "2026-05-10",   // pages "investir X €/mois", guides stables
+  longtail: "2026-06-10",   // pages "investir X €/mois" (byline + sources ajoutées)
   legal: "2026-05-18",      // mentions légales, CGV, confidentialité (SIRET finalisé)
-  evergreen: "2026-05-10",  // glossaire, communauté, pages stables
+  evergreen: "2026-06-10",  // fiches courtiers (byline juin), glossaire, pages stables
   market: "2026-05-25",     // pages avec données de marché (template, pas la donnée live)
 } as const;
 

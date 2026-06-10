@@ -1,5 +1,6 @@
 // ETF vs ETF comparison data for /comparatif-etf/*.
-// Static educational content. Last reviewed: 2026-03.
+// Static educational content. Last reviewed: 2026-06 (TER CW8/WPEA/DCAM
+// re-vérifiés via fiches émetteurs lors de la création des pages indice).
 // Performance figures are approximate — always verify on live data sources
 // before investment decisions.
 

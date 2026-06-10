@@ -3,6 +3,7 @@ import { Check, X, ExternalLink, Smartphone, Shield, Euro } from "lucide-react";
 import type { BrokerData } from "@/lib/brokers";
 import { BROKER_LIST } from "@/lib/brokers";
 import { JsonLd } from "@/components/ui/JsonLd";
+import { ArticleByline } from "@/components/ui/ArticleByline";
 import { BrokerLogoMark } from "@/components/ui/BrokerLogoMark";
 
 function MobileRating({ rating }: { rating: number }) {
@@ -38,17 +39,9 @@ export function BrokerPage({ broker }: { broker: BrokerData }) {
 
   return (
     <article className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
-      <JsonLd
-        data={{
-          "@context": "https://schema.org",
-          "@type": "Article",
-          headline: broker.metaTitle,
-          description: broker.metaDescription,
-          url: `${siteUrl}${canonical}`,
-          author: { "@type": "Organization", name: "DCA Tracker" },
-          publisher: { "@type": "Organization", name: "DCA Tracker", url: siteUrl },
-        }}
-      />
+      {/* Le schema Article est émis par ArticleByline (author Person Maël +
+          datePublished/dateModified — E-E-A-T) au lieu de l'ancien JsonLd
+          Article anonyme (author Organization, sans dates). */}
       <JsonLd
         data={{
           "@context": "https://schema.org",
@@ -87,6 +80,15 @@ export function BrokerPage({ broker }: { broker: BrokerData }) {
           </p>
         </div>
       </div>
+
+      <ArticleByline
+        publishedAt="2026-04-19"
+        updatedAt="2026-06-10"
+        readingMinutes={6}
+        url={canonical}
+        headline={broker.metaTitle}
+        description={broker.metaDescription}
+      />
 
       <p className="text-base text-gray-700 leading-relaxed mb-10">
         {broker.heroIntro}

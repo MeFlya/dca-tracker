@@ -50,7 +50,7 @@ const FAQ = [
   },
   {
     q: "Le rendement attendu pondéré : sur quoi est-il basé ?",
-    a: "Sur les retours historiques long-terme par région (sources : MSCI, Vanguard LTCMA, JP Morgan Q3 2025) : MSCI World 7,5 %/an, S&P 500 9 %/an, Émergents 8 %/an, Europe 6 %/an, Japon 5 %/an, Small Caps 8,5 %/an, Obligations 3 %/an. Ces chiffres sont conservateurs — la performance réelle dépend du timing, de l'inflation et des cycles de marché. Aucune garantie sur le futur.",
+    a: "Sur les retours historiques long-terme par région (sources : MSCI, et les Long-Term Capital Market Assumptions de Vanguard et JP Morgan) : MSCI World 7,5 %/an, S&P 500 9 %/an, Émergents 8 %/an, Europe 6 %/an, Japon 5 %/an, Small Caps 8,5 %/an, Obligations 3 %/an. Ces chiffres sont conservateurs — la performance réelle dépend du timing, de l'inflation et des cycles de marché. Aucune garantie sur le futur.",
   },
 ];
 

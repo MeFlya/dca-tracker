@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { ArticleByline } from "@/components/ui/ArticleByline";
+import { SourcesReferences } from "@/components/ui/SourcesReferences";
 import Link from "next/link";
 import { EmailCapture } from "@/components/ui/EmailCapture";
 import { JsonLd } from "@/components/ui/JsonLd";
@@ -149,6 +151,15 @@ export default function Investir100EurosMoisPage() {
         — dont 28 000€ générés par les marchés, pas par votre effort.
         Voici la simulation complète.
       </p>
+
+      <ArticleByline
+        publishedAt="2026-04-19"
+        updatedAt="2026-06-10"
+        readingMinutes={8}
+        url="/investir-100-euros-mois-etf"
+        headline={TITLE}
+        description={DESCRIPTION}
+      />
 
       {/* ── Section 1 : Hypothèses ─────────────────────────────────────────── */}
       <section className="mb-14">
@@ -604,6 +615,35 @@ export default function Investir100EurosMoisPage() {
           ))}
         </div>
       </section>
+
+
+      <SourcesReferences
+        sources={[
+          {
+            label: "MSCI World Index — performance historique",
+            url: "https://www.msci.com/indexes/index/990100",
+            publisher: "MSCI Inc.",
+            note: "Base des hypothèses de rendement utilisées dans les simulations (~7 %/an net réel).",
+          },
+          {
+            label: "Espace épargnants — comprendre les ETF",
+            url: "https://www.amf-france.org/fr/espace-epargnants/comprendre-les-produits-financiers/produits-collectifs/fonds-indiciels-cotes-etf",
+            publisher: "Autorité des marchés financiers (AMF)",
+          },
+          {
+            label: "Plan d'Épargne en Actions — fiscalité",
+            url: "https://www.service-public.fr/particuliers/vosdroits/F2385",
+            publisher: "service-public.fr",
+            note: "Exonération d'IR après 5 ans — l'enveloppe de référence pour un DCA long terme.",
+          },
+          {
+            label: "Indice des prix à la consommation",
+            url: "https://www.insee.fr/fr/statistiques/2122401",
+            publisher: "INSEE",
+            note: "Référence pour l'impact de l'inflation sur la valeur réelle des projections.",
+          },
+        ]}
+      />
 
       <EmailCapture source="simulation_100" />
     </div>
