@@ -99,6 +99,48 @@ export default async function BacktestPage() {
           maxMonth={range.max}
         />
 
+        {/* Scénarios célèbres — pages SEO publiques avec résultats réels
+            pré-calculés. Maillage + porte d'entrée narrative vers l'outil. */}
+        <section className="mt-12">
+          <h2 className="text-xl font-bold text-gray-900 mb-2">
+            Trois scénarios célèbres, résultats réels
+          </h2>
+          <p className="text-sm text-gray-500 mb-5">
+            Ce que le DCA a réellement donné à travers les grands épisodes de
+            marché — calculé sur les mêmes données que l&apos;outil.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {[
+              {
+                href: "/backtest-covid-2020",
+                label: "Commencer avant le krach COVID",
+                sub: "Janvier 2020 — le pire timing théorique",
+              },
+              {
+                href: "/backtest-2022-inflation",
+                label: "Commencer dans l'année rouge",
+                sub: "Janvier 2022 — inflation et taux",
+              },
+              {
+                href: "/backtest-depuis-2010",
+                label: "200 €/mois depuis 2010",
+                sub: "16 ans de crises traversées",
+              },
+            ].map((s) => (
+              <Link
+                key={s.href}
+                href={s.href}
+                className="rounded-xl border border-gray-100 bg-white p-4 card-hover"
+              >
+                <p className="text-sm font-semibold text-gray-900 mb-1 leading-snug">
+                  {s.label}
+                </p>
+                <p className="text-xs text-gray-500">{s.sub}</p>
+              </Link>
+            ))}
+          </div>
+        </section>
+
         {/* Disclaimer / méthodo */}
         <section className="mt-12 rounded-2xl border border-gray-200 bg-gray-50 p-6">
           <h2 className="text-sm font-bold text-gray-900 mb-3">
