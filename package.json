@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
-    "refresh:backtest": "node scripts/refresh-backtest-data.mjs"
+    "refresh:backtest": "node scripts/refresh-backtest-data.mjs",
+    "assets:encrypt": "node scripts/encrypt-product-assets.mjs"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.2.3",

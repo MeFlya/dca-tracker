@@ -17,11 +17,14 @@ const nextConfig: NextConfig = {
   // page data" (ENOENT pages-manifest.json).
   outputFileTracingRoot: __dirname,
 
-  // Inclut les fichiers produits (PDF/XLSX, hors /public) dans le bundle
+  // Inclut les fichiers produits CHIFFRÉS (hors /public) dans le bundle
   // serverless de la route de téléchargement — sans ça, Vercel ne trace pas
   // les fs.readFile à chemin dynamique et la route 404 en prod.
+  // ⚠️ Glob volontairement restreint aux .enc : un glob large embarquerait
+  // private-assets/raw/ (originaux en CLAIR, gitignorés) dans l'artefact
+  // d'un build local déployé (vercel build --prebuilt).
   outputFileTracingIncludes: {
-    "/api/products/download": ["./private-assets/**/*"],
+    "/api/products/download": ["./private-assets/*.enc"],
   },
 
   images: {

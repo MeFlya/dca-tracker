@@ -2,9 +2,9 @@
 //
 // Source de vérité data-driven : pitchs, bullets, FAQ et prix affichés
 // vivent ici. Les PRIX AFFICHÉS doivent correspondre aux prix Stripe
-// (créés dans le Dashboard, IDs en env vars). Le contenu marketing est
-// volontairement structuré pour être remplacé par les pitchs définitifs
-// préparés par Maël — chercher les commentaires [À CONFIRMER].
+// (créés dans le Dashboard, IDs en env vars).
+// Cockpit DCA : argumentaire DÉFINITIF (Cowork, 2026-06-11). Guide : pitch
+// placeholder à remplacer — chercher les commentaires [À CONFIRMER].
 //
 // Positionnement (décision produit, ne pas dévier) : ces produits captent
 // les "non" au SaaS (les gens qui veulent du Excel/PDF, pas un abonnement).
@@ -24,6 +24,19 @@ export type Product = {
   priceEur: number;
   /** Prix barré (bundle) — somme des produits séparés. */
   compareAtEur?: number;
+  /**
+   * Note affichée sous le prix. Conformité directive Omnibus : uniquement
+   * des affirmations VRAIES (ex. vraie hausse de prix planifiée) — jamais
+   * de prix barré fictif ni de fausse urgence.
+   */
+  priceNote?: string;
+  /** Tableau comparatif « eux vs nous » — section différenciation. */
+  comparison?: {
+    intro: string;
+    themLabel: string;
+    usLabel: string;
+    rows: { them: string; us: string }[];
+  };
   /** Env var contenant le price ID Stripe (mode payment). */
   priceIdEnv: string;
   metaTitle: string;
@@ -42,69 +55,122 @@ export type Product = {
   deliverables: { label: string; fileKey?: string; sheetsCopy?: boolean }[];
 };
 
-// [À CONFIRMER] Prix template : fourchette annoncée 19-29 € → placé à 24 €
-// en attendant le prix définitif. Ajuster ici + dans Stripe.
+// Prix (stratégie validée) : 19 € au lancement, puis VRAIE hausse à 24 €
+// à date annoncée — pas de prix barré fictif (directive Omnibus). Au moment
+// de la hausse : priceEur → 24, retirer priceNote, recalculer le bundle,
+// mettre à jour le « 19 € » de la metaDescription, et créer le nouveau
+// prix dans Stripe.
 const TEMPLATE: Product = {
   id: "template-suivi-dca",
   slug: "template-suivi-dca",
-  name: "Template de suivi DCA & PEA (Excel + Google Sheets)",
-  shortName: "Template de suivi DCA",
-  tagline: "Le tableur de suivi que votre courtier ne vous donnera jamais.",
-  priceEur: 24,
+  name: "Cockpit DCA — Tableau de bord PEA (Excel + Google Sheets)",
+  shortName: "Cockpit DCA",
+  tagline: "Le tableau de bord que votre courtier aurait dû vous donner.",
+  priceEur: 19,
+  priceNote: "Prix de lancement — passera ensuite à 24 €",
   priceIdEnv: "STRIPE_PRODUCT_TEMPLATE_PRICE_ID",
-  metaTitle: "Template Excel / Google Sheets de suivi DCA & PEA (2026)",
+  metaTitle: "Cockpit DCA — Tableau de bord PEA (Excel + Google Sheets)",
   metaDescription:
-    "Un tableur prêt à l'emploi pour suivre votre DCA en ETF : versements, valeur de portefeuille, TRI, écart vs projection, vue fiscale PEA. Excel + Google Sheets. Paiement unique, mises à jour incluses.",
-  // [À CONFIRMER] — pitch placeholder structuré, à remplacer par le pitch final.
+    "Suivez votre PEA en 2 min/mois : PRU, TRI annualisé, plus-value — et chaque mois, où verser pour rester aligné. 100 % PEA français. Paiement unique, 19 €.",
   abstract: [
-    "Vous investissez chaque mois, mais votre suivi se résume à l'interface de votre courtier ? Ce template centralise tout : versements, valeur réelle du portefeuille, performance annualisée (TRI) et écart par rapport à votre plan — dans un tableur que vous contrôlez à 100 %.",
-    "Conçu pour les investisseurs DCA français : colonnes pensées pour le PEA (plafond, fiscalité), formules déjà câblées, graphiques automatiques. Vous saisissez deux chiffres par mois, le reste se calcule.",
+    "Le Cockpit DCA, c'est le tableau de bord que votre courtier aurait dû vous donner. Suivez votre PEA en 2 minutes par mois : PRU, plus-value, TRI annualisé, répartition réelle vs cible.",
+    "Et surtout, chaque mois, il vous dit où verser : combien de parts de chaque ETF acheter pour rester aligné sur VOTRE allocation. Pas un constat de plus — une décision claire à chaque versement.",
+    "Conçu 100 % pour le PEA français — plafond, cap des 5 ans, prélèvements sociaux — en double format : Google Sheets (cours automatiques) + Excel.",
   ],
   features: [
-    "Fichier Excel (.xlsx) + version Google Sheets (lien de copie en 1 clic)",
-    "Suivi mensuel : versements, valeur de portefeuille, gains cumulés",
-    "TRI annualisé calculé automatiquement (formule XIRR pré-câblée)",
-    "Écart réel vs projection — savoir si vous êtes en avance ou en retard",
-    "Vue PEA : plafond des 150 000 €, suivi des versements éligibles",
-    "Graphiques automatiques : courbe de croissance, répartition",
-    "Mises à jour du template incluses (lien de re-téléchargement)",
+    "Dashboard complet : valeur du portefeuille, total versé, plus-value €/%, TRI annualisé (XIRR), frais cumulés, répartition réelle vs cible — tout se met à jour seul",
+    "« Versement du mois » : saisissez votre montant, il le répartit en parts entières par ETF pour revenir vers votre allocation cible",
+    "Onglet PEA : jauge du plafond de 150 000 €, compte à rebours des 5 ans, estimation des prélèvements sociaux (17,2 %) si retrait",
+    "Journal de transactions : 1 000 lignes pré-câblées (date, ETF, parts, prix, frais), PRU frais inclus — rien ne casse quand vous ajoutez des lignes",
+    "Vue Par ETF : PRU, valeur actuelle, performance, poids réel vs cible — jusqu'à 10 ETF",
+    "Projection : simulateur d'intérêts composés paramétrable (versement, rendement, horizon 1 à 40 ans) avec graphique capital vs versements",
+    "Frais : ce que le courtage et le TER vous coûtent réellement sur 10, 20 et 30 ans, en euros",
+    "Double format Google Sheets (cours automatiques) + Excel, exemple pré-rempli avec 3 ETF PEA réels, mode d'emploi 5 minutes, mises à jour incluses",
   ],
   contents: [
-    { title: "Onglet Suivi mensuel", detail: "La saisie en 2 chiffres/mois (versement + valeur) — tout le reste est calculé : gains, TRI, progression." },
-    { title: "Onglet Projection", detail: "Votre plan théorique (montant, durée, rendement) et la comparaison automatique avec le réel." },
-    { title: "Onglet PEA & fiscalité", detail: "Suivi du plafond de versements, estimation des prélèvements à la sortie (17,2 % vs 30 %)." },
-    { title: "Onglet Allocation", detail: "Répartition par ETF avec pondérations cibles et écarts de rééquilibrage." },
+    { title: "Dashboard", detail: "Les 6 indicateurs clés (valeur, versé, plus-value, TRI, frais, répartition) + graphiques — votre PEA en un coup d'œil." },
+    { title: "Versement du mois", detail: "Le calculateur de rééquilibrage par les flux : votre montant est réparti en parts entières par ETF pour revenir vers la cible." },
+    { title: "Transactions", detail: "Le journal de vos achats : 1 000 lignes pré-câblées, PRU frais inclus calculé automatiquement." },
+    { title: "Par ETF", detail: "PRU, valeur actuelle, performance et poids réel vs cible pour chacun de vos ETF (jusqu'à 10)." },
+    { title: "PEA", detail: "Jauge du plafond de 150 000 €, compte à rebours des 5 ans, estimation des prélèvements sociaux (17,2 %) en cas de retrait." },
+    { title: "Projection", detail: "Intérêts composés paramétrables (versement, rendement, 1 à 40 ans) avec graphique capital vs versements." },
+    { title: "Frais", detail: "L'impact réel du courtage et du TER sur votre patrimoine à 10, 20 et 30 ans — en euros, pas en pourcentages abstraits." },
+    { title: "Mode d'emploi", detail: "La prise en main en 5 minutes : cases jaunes = à remplir, tout le reste est automatique. Exemple pré-rempli à remplacer par vos données." },
   ],
   forWho: [
-    "Vous faites (ou démarrez) un DCA en ETF et voulez un suivi propre sans abonnement",
-    "Vous préférez maîtriser vos données dans VOTRE fichier",
-    "Vous voulez votre TRI réel, pas juste le « +X % » trompeur du courtier",
+    "Vous versez régulièrement sur un PEA et voulez une décision claire chaque mois — pas juste un constat",
+    "Vous voulez votre vrai rendement (TRI annualisé), pas un « +X % » incomplet qui ignore vos dates de versement",
+    "Vous refusez les connexions bancaires : vos données restent dans VOTRE fichier",
   ],
   notForWho: [
     "Vous voulez un suivi automatique sans saisie mensuelle → notre app Premium fait ça",
-    "Vous tradez activement (ce template est pensé buy & hold long terme)",
+    "Vous tradez activement (le Cockpit est pensé DCA buy & hold long terme)",
   ],
+  comparison: {
+    intro:
+      "Votre courtier et les agrégateurs vous montrent où vous en êtes. Aucun ne vous dit quoi faire de vos 300 € ce mois-ci. Les outils gratuits constatent — le Cockpit décide.",
+    themLabel: "Les autres",
+    usLabel: "Cockpit DCA",
+    rows: [
+      {
+        them: "Templates gratuits (YouTube, Reddit) : génériques, pensés pour l'investisseur américain, en anglais ou en dollars",
+        us: "100 % PEA français : plafond, cap des 5 ans, 17,2 %, PRU frais inclus, vocabulaire FR",
+      },
+      {
+        them: "Plus-value simple, qui ment en DCA (elle ignore le calendrier de vos versements)",
+        us: "TRI annualisé (XIRR) : la vraie mesure de performance d'un DCA",
+      },
+      {
+        them: "Aucun pilotage du versement mensuel",
+        us: "Calculateur de rééquilibrage par les flux, en parts entières",
+      },
+      {
+        them: "Fichiers figés, qui cassent à la première ligne ajoutée, jamais maintenus",
+        us: "1 000 lignes pré-câblées, cours auto + manuel en secours, mises à jour incluses",
+      },
+      {
+        them: "Agrégateurs type Finary : centrés sur la connexion bancaire, version complète sur abonnement annuel",
+        us: "Aucune connexion bancaire, vos données restent chez vous, paiement unique",
+      },
+      {
+        them: "Courtier : PRU brut, généralement ni projection ni analyse de frais",
+        us: "Projection composée + impact des frais sur 30 ans, en euros",
+      },
+    ],
+  },
   faq: [
     {
-      q: "Excel ou Google Sheets — les deux versions sont incluses ?",
-      a: "Oui. Vous recevez le fichier .xlsx (Excel, LibreOffice, Numbers) ET un lien Google Sheets « créer une copie » pour travailler dans le cloud. Les deux versions ont les mêmes formules.",
+      q: "Excel ou Google Sheets ?",
+      a: "Les deux sont inclus. Google Sheets récupère les cours automatiquement ; Excel fonctionne partout, la mise à jour manuelle des cours tient dans vos 2 minutes mensuelles. Mêmes formules, même structure.",
     },
     {
-      q: "Faut-il savoir utiliser Excel ?",
-      a: "Non. Vous remplissez deux cellules par mois (versement du mois, valeur du portefeuille) — tout le reste est calculé et les graphiques se mettent à jour seuls. Les formules sont verrouillées contre les modifications accidentelles.",
+      q: "Je débute, c'est pour moi ?",
+      a: "Oui : mode d'emploi 5 minutes intégré, exemple pré-rempli à remplacer par vos données, cases jaunes = à remplir — tout le reste est automatique.",
+    },
+    {
+      q: "Et si un cours automatique tombe en panne ?",
+      a: "Le fichier est conçu pour : le cours manuel prend toujours le relais, rien ne casse. Et les mises à jour du fichier sont incluses.",
+    },
+    {
+      q: "Pourquoi payer pour un tableur ?",
+      a: "Vous n'achetez pas un tableur : vous achetez 2 minutes par mois et une décision claire à chaque versement. L'équivalent d'un seul ordre de bourse en frais — une fois, à vie.",
     },
     {
       q: "Comment le fichier est-il livré ?",
-      a: "Immédiatement après le paiement : lien de téléchargement sur la page de confirmation + email avec les liens (re-téléchargeables). Facture automatique envoyée par email.",
+      a: "Immédiatement après le paiement : lien de téléchargement sur la page de confirmation + email avec les liens (valables 7 jours, régénérés sur simple demande). Facture automatique envoyée par email.",
     },
     {
-      q: "Y a-t-il un remboursement possible ?",
-      a: "Produit numérique livré immédiatement : conformément à l'article L221-28 du Code de la consommation, le droit de rétractation ne s'applique pas après téléchargement. En cas de problème réel avec le fichier, écrivez-nous — on trouve toujours une solution.",
+      q: "Et si ça ne me convient pas ?",
+      a: "Satisfait ou remboursé pendant 14 jours : un email à hello@dcatracker.fr suffit, remboursement intégral sans justification à fournir.",
+    },
+    {
+      q: "Est-ce un conseil en investissement ?",
+      a: "Non — c'est un outil éducatif de suivi et de simulation, basé sur l'allocation que VOUS définissez (disclaimer intégré au fichier). Aucune recommandation personnalisée.",
     },
   ],
   deliverables: [
-    { label: "Template Excel (.xlsx)", fileKey: "template-xlsx" },
-    { label: "Version Google Sheets (copie en 1 clic)", sheetsCopy: true },
+    { label: "Cockpit DCA — fichier Excel (.xlsx)", fileKey: "template-xlsx" },
+    { label: "Cockpit DCA — version Google Sheets (copie en 1 clic)", sheetsCopy: true },
   ],
 };
 
@@ -162,38 +228,41 @@ const GUIDE: Product = {
       a: "Oui : frais des courtiers, TER des ETF et règles fiscales évoluent. Votre lien de téléchargement donne accès à la dernière version.",
     },
     {
-      q: "Puis-je me faire rembourser ?",
-      a: "Produit numérique livré immédiatement : le droit de rétractation ne s'applique pas après téléchargement (art. L221-28). Mais si le guide ne tient pas sa promesse, écrivez-nous.",
+      q: "Et si ça ne me convient pas ?",
+      a: "Satisfait ou remboursé pendant 14 jours : un email à hello@dcatracker.fr suffit, remboursement intégral sans justification à fournir.",
     },
   ],
   deliverables: [{ label: "Guide PDF", fileKey: "guide-pdf" }],
 };
 
+// [À CONFIRMER] Prix bundle : recalculé après passage du Cockpit à 19 €
+// (lancement) → 19 + 19 = 38 € séparés, bundle à 33 € (~-13 %). Quand le
+// Cockpit repassera à 24 € : séparés 43 €, revoir le prix du pack.
 const BUNDLE: Product = {
   id: "bundle-dca",
   slug: "pack-demarrage-dca",
-  name: "Pack Démarrage DCA — Guide + Template",
+  name: "Pack Démarrage DCA — Guide + Cockpit",
   shortName: "Pack Démarrage DCA",
-  tagline: "Comprendre, démarrer, suivre : le pack complet.",
-  priceEur: 39,
-  compareAtEur: 43, // 24 + 19 — recalculer si les prix unitaires changent
+  tagline: "Comprendre, démarrer, piloter : le pack complet.",
+  priceEur: 33,
+  compareAtEur: 38, // 19 + 19 — recalculer si les prix unitaires changent
   priceIdEnv: "STRIPE_PRODUCT_BUNDLE_PRICE_ID",
-  metaTitle: "Pack Démarrage DCA : guide PDF + template de suivi (-10 %)",
+  metaTitle: "Pack Démarrage DCA : guide PDF + Cockpit DCA (suivi PEA)",
   metaDescription:
-    "Le guide pour lancer votre DCA en France + le template Excel/Google Sheets pour le suivre. Tout pour démarrer proprement, en paiement unique. Économisez par rapport aux achats séparés.",
+    "Le guide pour lancer votre DCA en France + le Cockpit DCA (tableau de bord Excel/Google Sheets) pour le piloter. Tout pour démarrer proprement, en paiement unique. Moins cher qu'en séparé.",
   abstract: [
-    "Le parcours complet du débutant sérieux : le guide vous amène jusqu'à votre premier versement programmé, le template prend le relais pour suivre votre stratégie mois après mois — TRI, écart vs plan, vue PEA.",
+    "Le parcours complet du débutant sérieux : le guide vous amène jusqu'à votre premier versement programmé, le Cockpit DCA prend le relais pour piloter votre PEA mois après mois — TRI, versement du mois, plafond PEA.",
     "Les deux produits, achetés ensemble, moins chers qu'en séparé.",
   ],
   features: [
     "Tout le Guide « Démarrer le DCA en France » (PDF)",
-    "Tout le Template de suivi DCA & PEA (Excel + Google Sheets)",
+    "Tout le Cockpit DCA — tableau de bord PEA (Excel + Google Sheets)",
     "Économie par rapport aux achats séparés",
     "Mises à jour des deux produits incluses",
   ],
   contents: [
     { title: "Le Guide (PDF)", detail: "Comprendre, choisir (PEA/courtier/ETF), mettre en place, tenir — le parcours complet." },
-    { title: "Le Template (Excel + Sheets)", detail: "Suivi mensuel, TRI automatique, écart vs projection, vue PEA et allocation." },
+    { title: "Le Cockpit DCA (Excel + Sheets)", detail: "Dashboard, versement du mois en parts entières, TRI annualisé, onglets PEA, projection et frais." },
   ],
   forWho: [
     "Vous partez de zéro et voulez l'équipement complet en un achat",
@@ -201,22 +270,30 @@ const BUNDLE: Product = {
   ],
   notForWho: [
     "Vous avez déjà un système de suivi qui vous convient → prenez le guide seul",
-    "Vous savez déjà tout mettre en place → prenez le template seul",
+    "Vous savez déjà tout mettre en place → prenez le Cockpit seul",
   ],
   faq: [
     {
       q: "Que contient exactement le pack ?",
-      a: "Les deux produits complets : le Guide PDF « Démarrer le DCA en France » et le Template de suivi (fichier Excel + lien Google Sheets), avec leurs mises à jour respectives. Livraison immédiate des trois liens après paiement.",
+      a: "Les deux produits complets : le Guide PDF « Démarrer le DCA en France » et le Cockpit DCA (fichier Excel + lien Google Sheets), avec leurs mises à jour respectives. Livraison immédiate des trois liens après paiement.",
     },
     {
       q: "Puis-je acheter les produits séparément ?",
-      a: "Oui — le guide et le template sont disponibles individuellement. Le pack existe pour ceux qui veulent les deux : il revient moins cher que les achats séparés.",
+      a: "Oui — le guide et le Cockpit DCA sont disponibles individuellement. Le pack existe pour ceux qui veulent les deux : il revient moins cher que les achats séparés.",
+    },
+    {
+      q: "Et si ça ne me convient pas ?",
+      a: "Satisfait ou remboursé pendant 14 jours : un email à hello@dcatracker.fr suffit, remboursement intégral sans justification à fournir.",
+    },
+    {
+      q: "Est-ce un conseil en investissement ?",
+      a: "Non — le guide est pédagogique et le Cockpit est un outil de suivi basé sur l'allocation que VOUS définissez. Aucune recommandation personnalisée — pour cela, consultez un conseiller agréé AMF.",
     },
   ],
   deliverables: [
     { label: "Guide PDF", fileKey: "guide-pdf" },
-    { label: "Template Excel (.xlsx)", fileKey: "template-xlsx" },
-    { label: "Version Google Sheets (copie en 1 clic)", sheetsCopy: true },
+    { label: "Cockpit DCA — fichier Excel (.xlsx)", fileKey: "template-xlsx" },
+    { label: "Cockpit DCA — version Google Sheets (copie en 1 clic)", sheetsCopy: true },
   ],
 };
 

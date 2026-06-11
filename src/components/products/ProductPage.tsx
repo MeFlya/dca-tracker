@@ -73,7 +73,7 @@ export function ProductPage({ product }: { product: Product }) {
         </h1>
         <p className="text-lg text-gray-600 leading-relaxed mb-6">{product.tagline}</p>
 
-        <div className="flex items-baseline gap-3 mb-6">
+        <div className={`flex items-baseline gap-3 ${product.priceNote ? "mb-2" : "mb-6"}`}>
           <span className="text-4xl font-bold text-gray-900 tabular-nums">
             {product.priceEur} €
           </span>
@@ -82,14 +82,26 @@ export function ProductPage({ product }: { product: Product }) {
               {product.compareAtEur} €
             </span>
           )}
-          <span className="text-sm text-gray-500">TTC · une seule fois</span>
+          <span className="text-sm text-gray-500">
+            TTC · une seule fois
+            {product.compareAtEur ? " · vs achetés séparément" : ""}
+          </span>
         </div>
+        {product.priceNote && (
+          <p className="text-sm font-medium text-amber-700 mb-6">
+            {product.priceNote}
+          </p>
+        )}
 
         <ProductBuyButton
           productId={product.id}
           priceEur={product.priceEur}
           available={available}
         />
+        <p className="mt-3 text-xs text-gray-500">
+          Satisfait ou remboursé 14 jours · livraison immédiate par email ·
+          facture automatique
+        </p>
       </header>
 
       {/* ── Visuel (placeholder hauteur fixe — capture produit à venir) ────── */}
@@ -168,6 +180,50 @@ export function ProductPage({ product }: { product: Product }) {
         </div>
       </section>
 
+      {/* ── Comparatif « eux vs nous » (différenciation vs gratuit) ─────────── */}
+      {product.comparison && (
+        <section className="mb-10">
+          <h2 className="text-2xl font-bold text-gray-900 mb-3">
+            Pourquoi pas un outil gratuit ?
+          </h2>
+          <p className="text-gray-600 leading-relaxed mb-5">
+            {product.comparison.intro}
+          </p>
+          <div className="overflow-hidden rounded-2xl border border-gray-200">
+            <table className="w-full text-sm border-collapse">
+              <thead>
+                <tr className="bg-gray-50">
+                  <th scope="col" className="w-1/2 px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-500 border-b border-gray-200">
+                    {product.comparison.themLabel}
+                  </th>
+                  <th scope="col" className="w-1/2 px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-primary-700 border-b border-gray-200 bg-primary-50/50">
+                    {product.comparison.usLabel}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {product.comparison.rows.map((row) => (
+                  <tr key={row.us} className="border-b border-gray-100 last:border-b-0">
+                    <td className="px-4 py-3.5 align-top text-gray-500 leading-relaxed">
+                      <span className="flex items-start gap-2">
+                        <X size={14} className="text-gray-400 mt-0.5 shrink-0" strokeWidth={2.5} aria-hidden />
+                        {row.them}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3.5 align-top text-gray-800 leading-relaxed bg-primary-50/30">
+                      <span className="flex items-start gap-2">
+                        <Check size={14} className="text-emerald-600 mt-0.5 shrink-0" strokeWidth={2.5} aria-hidden />
+                        {row.us}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
+
       {/* ── 2e CTA ──────────────────────────────────────────────────────────── */}
       <section className="mb-12 rounded-2xl bg-primary-600 p-8 text-center">
         <h2 className="text-xl font-bold text-white mb-2">{product.shortName}</h2>
@@ -182,6 +238,9 @@ export function ProductPage({ product }: { product: Product }) {
             className="btn-white-primary text-base px-8 py-3.5"
           />
         </div>
+        <p className="mt-3 text-xs text-primary-200">
+          Satisfait ou remboursé 14 jours
+        </p>
       </section>
 
       {/* ── FAQ ─────────────────────────────────────────────────────────────── */}

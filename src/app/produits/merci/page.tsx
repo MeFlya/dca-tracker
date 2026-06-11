@@ -115,7 +115,7 @@ export default async function MerciPage({ searchParams }: Props) {
         <div className="flex items-start gap-3">
           <Mail size={16} className="text-gray-400 mt-0.5 shrink-0" aria-hidden />
           <p className="text-xs text-gray-600 leading-relaxed">
-            Les liens de téléchargement sont valables 7 jours (re-générables en
+            Les liens de téléchargement sont valables 7 jours (régénérables en
             répondant à l&apos;email de livraison). Votre <strong>facture</strong>{" "}
             vous est envoyée séparément par Stripe. Un souci ?{" "}
             <a href="mailto:hello@dcatracker.fr" className="underline hover:text-gray-900">
@@ -131,7 +131,7 @@ export default async function MerciPage({ searchParams }: Props) {
           Envie d&apos;un suivi qui se remplit tout seul ?
         </p>
         <p className="text-sm text-gray-600 mb-4 leading-relaxed">
-          L&apos;app DCA Tracker automatise ce que votre template fait à la
+          L&apos;app DCA Tracker automatise ce que votre fichier fait à la
           main — suivi mensuel guidé, Monte Carlo, backtest sur données
           réelles, récap fiscal.
         </p>

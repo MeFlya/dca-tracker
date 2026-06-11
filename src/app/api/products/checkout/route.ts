@@ -66,6 +66,16 @@ export async function POST(req: Request) {
     },
     allow_promotion_codes: true,
     locale: "fr",
+    // Information précontractuelle (art. L221-5 / L221-28 13° C. conso.) :
+    // contenu numérique livré immédiatement → le paiement vaut demande
+    // d'exécution immédiate et renonciation au droit de rétractation légal.
+    // La garantie commerciale 14 jours (CGV) reste plus protectrice.
+    custom_text: {
+      submit: {
+        message:
+          "Produit numérique livré immédiatement par email : en payant, vous demandez l'exécution immédiate et renoncez à votre droit légal de rétractation (art. L221-28 du Code de la consommation). Vous restez couvert par notre garantie « satisfait ou remboursé » de 14 jours.",
+      },
+    },
   });
 
   log.event("products/checkout", "session_created", {

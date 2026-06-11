@@ -348,8 +348,8 @@ export default function TarifsPage() {
               Pas prêt pour un abonnement ?
             </p>
             <p className="text-sm text-gray-600 mb-4 leading-relaxed max-w-md mx-auto">
-              Template de suivi DCA (Excel/Google Sheets) et guide pour
-              démarrer — en paiement unique, sans compte.
+              Le Cockpit DCA (tableau de bord PEA, Excel/Google Sheets) et le
+              guide pour démarrer — en paiement unique, sans compte.
             </p>
             <Link
               href="/produits"

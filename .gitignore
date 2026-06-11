@@ -21,6 +21,10 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# Fichiers produits ORIGINAUX (payants — le repo est public, seuls les
+# .enc chiffrés sont commités, cf. scripts/encrypt-product-assets.mjs)
+private-assets/raw/
+
 # Misc
 .DS_Store
 *.pem

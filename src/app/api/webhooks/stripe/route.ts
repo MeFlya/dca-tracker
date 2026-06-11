@@ -85,6 +85,14 @@ export async function POST(req: Request) {
             if (d.sheetsCopy && sheetsUrl) {
               return [{ label: d.label, url: sheetsUrl }];
             }
+            if (d.sheetsCopy && !sheetsUrl) {
+              // Promis sur la page de vente mais env var absente : on alerte
+              // dans les logs au lieu d'omettre silencieusement le livrable.
+              log.event("webhook/stripe", "sheets_link_missing", {
+                productId: product.id,
+                env: "GOOGLE_SHEETS_TEMPLATE_COPY_URL",
+              });
+            }
             return [];
           });
 

@@ -1,9 +1,10 @@
 // Téléchargement sécurisé des fichiers produits.
 //
 // GET /api/products/download?token=<hmac> → vérifie le token (signature +
-// expiration) puis stream le fichier depuis private-assets/ (HORS de
-// /public : jamais servi statiquement). Les fichiers sont inclus dans le
-// bundle serverless via outputFileTracingIncludes (next.config.ts).
+// expiration) puis lit le fichier CHIFFRÉ depuis private-assets/ (*.enc —
+// le repo est public, les fichiers payants sont commités chiffrés, cf.
+// src/lib/product-file-crypto.ts) et le déchiffre à la volée. Les .enc
+// sont inclus dans le bundle serverless via outputFileTracingIncludes.
 //
 // Lien expiré → page d'erreur lisible avec contact (le support régénère).
 
@@ -13,24 +14,25 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { NextResponse } from "next/server";
 import { verifyDownloadToken } from "@/lib/download-token";
+import { decryptProductFile } from "@/lib/product-file-crypto";
 import { log } from "@/lib/logger";
 
-// Registre des fichiers livrables. Les fichiers eux-mêmes sont déposés dans
-// private-assets/ (cf. README du dossier) — fournis par Maël.
+// Registre des fichiers livrables. Les .enc sont produits par
+// `npm run assets:encrypt` depuis private-assets/raw/ (cf. README du dossier).
 const PRODUCT_FILES: Record<
   string,
   { filename: string; contentType: string; downloadName: string }
 > = {
   "guide-pdf": {
-    filename: "guide-demarrer-dca.pdf",
+    filename: "guide-demarrer-dca.enc",
     contentType: "application/pdf",
     downloadName: "Guide-Demarrer-le-DCA-en-France.pdf",
   },
   "template-xlsx": {
-    filename: "template-suivi-dca.xlsx",
+    filename: "template-suivi-dca.enc",
     contentType:
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    downloadName: "Template-Suivi-DCA-PEA.xlsx",
+    downloadName: "Cockpit-DCA-PEA_dcatracker.xlsx",
   },
 };
 
@@ -48,7 +50,18 @@ export async function GET(req: Request) {
   const token = new URL(req.url).searchParams.get("token");
   if (!token) return htmlError("Lien invalide", "Ce lien de téléchargement est incomplet.", 400);
 
-  const check = verifyDownloadToken(token);
+  // verifyDownloadToken throw si DOWNLOAD_TOKEN_SECRET est absent de l'env
+  // (déploiement mal configuré) — page lisible plutôt qu'une 500 brute.
+  let check: ReturnType<typeof verifyDownloadToken>;
+  try {
+    check = verifyDownloadToken(token);
+  } catch {
+    return htmlError(
+      "Service momentanément indisponible",
+      "Le téléchargement est indisponible pour une raison technique de notre côté. Écrivez à hello@dcatracker.fr avec votre email d'achat — nous vous livrons le fichier sans délai.",
+      503,
+    );
+  }
   if (!check.ok) {
     if (check.reason === "expired") {
       return htmlError(
@@ -64,9 +77,10 @@ export async function GET(req: Request) {
   if (!file) return htmlError("Fichier inconnu", "Ce fichier n'existe pas.", 404);
 
   try {
-    const data = await readFile(
+    const encrypted = await readFile(
       path.join(process.cwd(), "private-assets", file.filename),
     );
+    const data = decryptProductFile(encrypted);
     log.event("products/download", "file_served", {
       fileKey: check.fileKey,
       email: check.email,
@@ -79,7 +93,8 @@ export async function GET(req: Request) {
       },
     });
   } catch {
-    // Fichier pas encore déposé dans private-assets/ (pré-lancement).
+    // .enc pas encore généré (pré-lancement) OU clé de déchiffrement
+    // absente/différente de celle utilisée par assets:encrypt.
     return htmlError(
       "Fichier en préparation",
       "Ce fichier n'est pas encore disponible — si vous venez d'acheter, écrivez à hello@dcatracker.fr et nous vous le livrons manuellement sans délai.",

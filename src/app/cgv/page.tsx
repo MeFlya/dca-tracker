@@ -4,7 +4,7 @@ import { LegalArticle } from "@/components/ui/LegalArticle";
 
 const TITLE = "Conditions Générales de Vente — DCA Tracker";
 const DESCRIPTION =
-  "CGV de DCA Tracker : abonnement Premium, essai gratuit 7 jours, droit de rétractation, résiliation, prix, TVA.";
+  "CGV de DCA Tracker : abonnement Premium, essai gratuit 7 jours, produits numériques en paiement unique, droit de rétractation, résiliation, prix, TVA.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -25,7 +25,7 @@ export default function CGVPage() {
       <h1 className="text-3xl font-bold text-gray-900 mb-2">
         Conditions Générales de Vente (CGV)
       </h1>
-      <p className="text-sm text-gray-500 mb-8">Dernière mise à jour : 29 avril 2026</p>
+      <p className="text-sm text-gray-500 mb-8">Dernière mise à jour : 11 juin 2026</p>
 
       <LegalArticle>
 
@@ -34,8 +34,10 @@ export default function CGVPage() {
         <p>
           Les présentes Conditions Générales de Vente (« CGV ») régissent les
           modalités de souscription et d&apos;utilisation des abonnements
-          payants au service <strong>DCA Tracker</strong>, accessible sur le
-          site dcatracker.fr (ci-après « le Service »), édité par{" "}
+          payants au service <strong>DCA Tracker</strong>, ainsi que
+          l&apos;achat des <strong>produits numériques en paiement unique</strong>{" "}
+          (article 6), accessibles sur le site dcatracker.fr (ci-après « le
+          Service »), édité par{" "}
           <strong>Maël Faleyras</strong>, entrepreneur individuel sous le
           régime de la micro-entreprise (SIREN 105&nbsp;002&nbsp;703) — voir
           les <Link href="/mentions-legales">mentions légales</Link>.
@@ -153,7 +155,46 @@ export default function CGVPage() {
       </section>
 
       <section>
-        <h2>6. Résiliation</h2>
+        <h2>6. Produits numériques en paiement unique</h2>
+        <p>
+          En complément des abonnements, DCA Tracker propose des{" "}
+          <strong>produits numériques vendus en paiement unique</strong>{" "}
+          (fichiers de suivi, guides — voir la page{" "}
+          <Link href="/produits">/produits</Link>) : prix TTC affiché sur
+          chaque fiche produit (TVA non applicable, article 293 B du CGI),
+          paiement par carte via Stripe, sans création de compte obligatoire.
+          La livraison est immédiate, par email, sous forme de liens de
+          téléchargement valables 7 jours (régénérés sur simple demande à{" "}
+          <a href="mailto:hello@dcatracker.fr">hello@dcatracker.fr</a>). La
+          facture est envoyée automatiquement par email. Les mises à jour des
+          fichiers sont incluses.
+        </p>
+        <p>
+          <strong>Droit de rétractation :</strong> conformément à
+          l&apos;article L.221-28 13° du Code de la consommation, en procédant
+          au paiement vous demandez expressément l&apos;exécution immédiate du
+          contrat (fourniture du contenu numérique) et reconnaissez perdre
+          votre droit légal de rétractation une fois la livraison effectuée.
+          Cette information est rappelée sur la page de paiement.
+        </p>
+        <p>
+          <strong>Garantie commerciale « satisfait ou remboursé » :</strong>{" "}
+          indépendamment de ce qui précède, chaque produit en paiement unique
+          bénéficie d&apos;une garantie de <strong>14 jours</strong> à compter
+          de l&apos;achat : un email à{" "}
+          <a href="mailto:hello@dcatracker.fr">hello@dcatracker.fr</a> suffit
+          pour obtenir un remboursement intégral, sans justification à
+          fournir. Cette garantie commerciale s&apos;ajoute aux droits légaux
+          et leur est plus favorable.
+        </p>
+        <p>
+          Les produits sont destinés à un usage personnel. Leur revente,
+          partage public ou redistribution est interdit.
+        </p>
+      </section>
+
+      <section>
+        <h2>7. Résiliation</h2>
         <p>
           Vous pouvez résilier votre abonnement à tout moment :
         </p>
@@ -193,7 +234,7 @@ export default function CGVPage() {
       </section>
 
       <section>
-        <h2>7. Suspension et résiliation par DCA Tracker</h2>
+        <h2>8. Suspension et résiliation par DCA Tracker</h2>
         <p>
           DCA Tracker se réserve le droit de suspendre ou résilier un compte
           en cas de :
@@ -213,7 +254,7 @@ export default function CGVPage() {
       </section>
 
       <section>
-        <h2>8. Disponibilité du Service</h2>
+        <h2>9. Disponibilité du Service</h2>
         <p>
           DCA Tracker met tout en œuvre pour assurer un accès continu au
           Service. Toutefois, l&apos;éditeur ne peut garantir une disponibilité
@@ -229,7 +270,7 @@ export default function CGVPage() {
       </section>
 
       <section>
-        <h2>9. Limitation de responsabilité</h2>
+        <h2>10. Limitation de responsabilité</h2>
         <p>
           DCA Tracker est un <strong>outil pédagogique</strong> qui projette
           des scénarios hypothétiques. Il ne constitue pas un conseil en
@@ -264,7 +305,7 @@ export default function CGVPage() {
       </section>
 
       <section>
-        <h2>10. Données personnelles</h2>
+        <h2>11. Données personnelles</h2>
         <p>
           Les modalités de traitement de vos données personnelles sont
           détaillées dans la{" "}
@@ -273,7 +314,7 @@ export default function CGVPage() {
       </section>
 
       <section>
-        <h2>11. Modification des CGV</h2>
+        <h2>12. Modification des CGV</h2>
         <p>
           DCA Tracker se réserve le droit de modifier les présentes CGV à tout
           moment. Toute modification substantielle sera notifiée par email aux
@@ -284,7 +325,7 @@ export default function CGVPage() {
       </section>
 
       <section>
-        <h2>12. Loi applicable et règlement des litiges</h2>
+        <h2>13. Loi applicable et règlement des litiges</h2>
         <p>
           Les présentes CGV sont soumises au <strong>droit français</strong>.
         </p>
@@ -317,7 +358,7 @@ export default function CGVPage() {
       </section>
 
       <section>
-        <h2>13. Contact</h2>
+        <h2>14. Contact</h2>
         <p>
           Pour toute question relative aux présentes CGV :{" "}
           <a href="mailto:hello@dcatracker.fr">hello@dcatracker.fr</a>.

@@ -9,9 +9,9 @@ import type { LucideIcon } from "lucide-react";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { PRODUCT_LIST } from "@/lib/products";
 
-const TITLE = "Produits — Template de suivi DCA & guide pour démarrer";
+const TITLE = "Produits — Cockpit DCA (suivi PEA) & guide pour démarrer";
 const DESCRIPTION =
-  "Nos ressources en paiement unique, sans abonnement : template Excel/Google Sheets de suivi DCA & PEA, guide PDF pour démarrer le DCA en France, et le pack complet. Livraison immédiate, facture automatique.";
+  "Nos ressources en paiement unique, sans abonnement : le Cockpit DCA (tableau de bord Excel/Google Sheets pour piloter votre PEA), le guide PDF pour démarrer le DCA en France, et le pack complet. Livraison immédiate, facture automatique.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -91,9 +91,12 @@ export default function ProduitsHubPage() {
                     </p>
                     <p className="shrink-0 text-lg font-bold text-gray-900 tabular-nums">
                       {p.priceEur} €
+                      {/* Omnibus : le barré doit être qualifié (somme des
+                          prix séparés, PAS un ancien prix). */}
                       {p.compareAtEur && (
-                        <span className="ml-2 text-sm text-gray-400 line-through">
-                          {p.compareAtEur} €
+                        <span className="ml-2 text-sm font-normal text-gray-400">
+                          <span className="line-through">{p.compareAtEur} €</span>{" "}
+                          séparément
                         </span>
                       )}
                     </p>
