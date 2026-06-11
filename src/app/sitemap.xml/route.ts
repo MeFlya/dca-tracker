@@ -3,6 +3,7 @@ import { ETF_LIST } from "@/lib/etf-config";
 import { BROKER_LIST } from "@/lib/brokers";
 import { ETF_COMPARISON_LIST } from "@/lib/etf-comparisons";
 import { GLOSSARY_TERM_LIST } from "@/lib/glossary-terms";
+import { PRODUCT_LIST } from "@/lib/products";
 
 export const dynamic = "force-static";
 
@@ -59,6 +60,13 @@ export async function GET(): Promise<NextResponse> {
     { url: `${base}/comparer-etf`,             changeFreq: "weekly",  priority: 0.8,  lastmod: REV.market },
     { url: `${base}/donnees-marche`,           changeFreq: "daily",   priority: 0.6,  lastmod: REV.market },
     { url: `${base}/tarifs`,                   changeFreq: "monthly", priority: 0.8,  lastmod: REV.tools },
+    { url: `${base}/produits`,                 changeFreq: "monthly", priority: 0.8,  lastmod: REV.ymyl },
+    ...PRODUCT_LIST.map((p) => ({
+      url: `${base}/produits/${p.slug}`,
+      changeFreq: "monthly",
+      priority: 0.8,
+      lastmod: REV.ymyl,
+    })),
     { url: `${base}/a-propos`,                 changeFreq: "monthly", priority: 0.6,  lastmod: REV.tools },
     { url: `${base}/methodologie`,             changeFreq: "monthly", priority: 0.5,  lastmod: REV.ymyl },
     { url: `${base}/mentions-legales`,         changeFreq: "yearly",  priority: 0.3,  lastmod: REV.legal },

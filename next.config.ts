@@ -3,6 +3,27 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
 
+  // Le projet vit sur ~/Desktop, synchronisé par iCloud Drive : le daemon
+  // de sync (bird) tient des handles sur les fichiers de .next pendant les
+  // écritures massives du build → ENOENT aléatoires en "Collecting page
+  // data" (pages-manifest.json). Le suffixe ".nosync" exclut le dossier de
+  // la synchronisation iCloud — fix standard, sans incidence sur Vercel.
+  distDir: ".next.nosync",
+
+  // Épingle le root du projet pour le file tracing. Sans ça, Next détecte
+  // un package-lock.json parasite dans le home (~/package-lock.json) et
+  // infère /Users/<user> comme workspace root → manifests écrits/lus au
+  // mauvais endroit → builds qui échouent aléatoirement en "Collecting
+  // page data" (ENOENT pages-manifest.json).
+  outputFileTracingRoot: __dirname,
+
+  // Inclut les fichiers produits (PDF/XLSX, hors /public) dans le bundle
+  // serverless de la route de téléchargement — sans ça, Vercel ne trace pas
+  // les fs.readFile à chemin dynamique et la route 404 en prod.
+  outputFileTracingIncludes: {
+    "/api/products/download": ["./private-assets/**/*"],
+  },
+
   images: {
     remotePatterns: [
       {

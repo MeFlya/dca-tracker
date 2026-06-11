@@ -337,6 +337,28 @@ export default function TarifsPage() {
             ))}
           </div>
         </div>
+
+        {/* Teaser produits one-shot — POSITIONNEMENT DÉLIBÉRÉ en toute fin de
+            page : capte les "non" à l'abonnement au moment où ils repartent,
+            sans distraire les hésitants du funnel Premium au-dessus.
+            Ne JAMAIS remonter ce bloc au niveau des cartes de prix. */}
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 mt-16">
+          <div className="rounded-2xl border border-gray-200 bg-gray-50 p-6 text-center">
+            <p className="text-sm font-bold text-gray-900 mb-1.5">
+              Pas prêt pour un abonnement ?
+            </p>
+            <p className="text-sm text-gray-600 mb-4 leading-relaxed max-w-md mx-auto">
+              Template de suivi DCA (Excel/Google Sheets) et guide pour
+              démarrer — en paiement unique, sans compte.
+            </p>
+            <Link
+              href="/produits"
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary-700 hover:text-primary-800 underline-offset-4 hover:underline transition-colors"
+            >
+              Voir les ressources en paiement unique →
+            </Link>
+          </div>
+        </div>
       </section>
     </>
   );

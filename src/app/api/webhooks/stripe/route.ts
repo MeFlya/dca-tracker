@@ -7,8 +7,11 @@ import {
   sendSubscriptionCancelled,
   sendOnboardingDay1,
   sendTrialEndingSoon,
+  sendProductDelivery,
   type TrialEndingFeatures,
 } from "@/lib/emails/send";
+import { getProduct } from "@/lib/products";
+import { createDownloadToken } from "@/lib/download-token";
 import { getStrategyData } from "@/lib/user-strategy";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
@@ -43,10 +46,55 @@ export async function POST(req: Request) {
 
   try {
     switch (event.type) {
-      // ── Checkout complété → activation abonnement ───────────────────────
+      // ── Checkout complété → activation abonnement OU livraison produit ──
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
         const clerkUserId = session.metadata?.clerkUserId;
+
+        // PRODUITS DIGITAUX (paiement unique) : branche isolée — livre par
+        // email puis sort. Ne touche JAMAIS aux metadata Clerk (un achat de
+        // PDF à 19 € ne doit pas activer Premium). Le flow abonnement
+        // ci-dessous reste inchangé (il exige session.subscription).
+        if (session.mode === "payment" && session.metadata?.productId) {
+          const product = getProduct(session.metadata.productId);
+          const buyerEmail =
+            session.customer_details?.email ?? session.customer_email;
+
+          if (!product || !buyerEmail) {
+            log.event("webhook/stripe", "product_delivery_skipped", {
+              productId: session.metadata.productId,
+              hasEmail: !!buyerEmail,
+            });
+            break;
+          }
+
+          const siteUrl =
+            process.env.NEXT_PUBLIC_SITE_URL ?? "https://dcatracker.fr";
+          const sheetsUrl = process.env.GOOGLE_SHEETS_TEMPLATE_COPY_URL;
+
+          const links = product.deliverables.flatMap((d) => {
+            if (d.fileKey) {
+              const token = createDownloadToken(d.fileKey, buyerEmail);
+              return [
+                {
+                  label: d.label,
+                  url: `${siteUrl}/api/products/download?token=${token}`,
+                },
+              ];
+            }
+            if (d.sheetsCopy && sheetsUrl) {
+              return [{ label: d.label, url: sheetsUrl }];
+            }
+            return [];
+          });
+
+          await sendProductDelivery(buyerEmail, product.name, links);
+          log.event("webhook/stripe", "product_delivered", {
+            productId: product.id,
+            links: links.length,
+          });
+          break;
+        }
 
         if (!clerkUserId || !session.customer || !session.subscription) break;
 

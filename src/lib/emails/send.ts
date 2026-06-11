@@ -1033,3 +1033,42 @@ export async function sendTrialEndingSoon({
     html,
   });
 }
+
+// ─── Livraison des produits digitaux (paiement unique) ────────────────────────
+// Déclenché par le webhook checkout.session.completed (mode "payment").
+// Les liens de téléchargement sont signés HMAC et expirent (7 j) — l'email
+// invite à répondre pour régénérer un lien expiré.
+
+export async function sendProductDelivery(
+  email: string,
+  productName: string,
+  links: { label: string; url: string }[],
+) {
+  const linksHtml = links
+    .map(
+      (l) => `
+        <a href="${l.url}" style="display:block;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:14px 18px;margin-bottom:10px;text-decoration:none">
+          <span style="font-size:14px;font-weight:600;color:#1d4ed8">⬇️&nbsp; ${l.label}</span>
+        </a>`,
+    )
+    .join("");
+
+  await resend.emails.send({
+    from: FROM,
+    to: email,
+    subject: `Votre achat : ${productName} — liens de téléchargement`,
+    html: emailShell(`
+      <h1 style="margin:0 0 12px;font-size:21px;font-weight:700;color:#0f172a">Merci pour votre achat 🎉</h1>
+      <p style="margin:0 0 20px;font-size:14px;color:#475569;line-height:1.7">
+        Voici vos liens pour <strong>${productName}</strong> :
+      </p>
+      ${linksHtml}
+      <p style="margin:20px 0 0;font-size:12px;color:#94a3b8;line-height:1.7">
+        Les liens de téléchargement sont valables 7 jours. Lien expiré ou
+        problème de fichier&nbsp;? Répondez simplement à cet email — nous vous
+        renvoyons un lien immédiatement. Votre facture vous est envoyée
+        séparément par Stripe.
+      </p>
+    `),
+  });
+}

@@ -82,6 +82,10 @@ export type AnalyticsEvent =
   | { name: "backtest_premium_locked_cta_clicked" }
   /** Clic sur le teaser /backtest affiché dans les résultats du simulateur. */
   | { name: "backtest_teaser_click" }
+
+  // ── Produits digitaux (paiement unique)
+  | { name: "product_checkout_click"; props: { product_id: string } }
+  | { name: "product_purchase"; props: { product_id: string } }
   | { name: "backtest_quick_scenario_used"; props: { scenario_name: string } }
 
   // ── Account
