@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description: broker.metaDescription,
       url: canonical,
       type: "article",
-      images: [{ url: "https://dcatracker.fr/opengraph-image", width: 1200, height: 630 }],
+      images: [{ url: "https://dcatracker.fr/og-image.jpg", width: 1200, height: 630 }],
     },
     twitter: {
       card: "summary_large_image",

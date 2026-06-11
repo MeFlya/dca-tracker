@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
     url: "/investir-en-etf",
     type: "article",
-    images: [{ url: "https://dcatracker.fr/opengraph-image", width: 1200, height: 630 }],
+    images: [{ url: "https://dcatracker.fr/og-image.jpg", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
