@@ -7,8 +7,10 @@ const nextConfig: NextConfig = {
   // de sync (bird) tient des handles sur les fichiers de .next pendant les
   // écritures massives du build → ENOENT aléatoires en "Collecting page
   // data" (pages-manifest.json). Le suffixe ".nosync" exclut le dossier de
-  // la synchronisation iCloud — fix standard, sans incidence sur Vercel.
-  distDir: ".next.nosync",
+  // la synchronisation iCloud. UNIQUEMENT en local : sur Vercel, l'étape de
+  // packaging cherche le manifest dans .next/ et un distDir custom fait
+  // échouer le déploiement ("routes-manifest.json couldn't be found").
+  ...(process.env.VERCEL ? {} : { distDir: ".next.nosync" }),
 
   // Épingle le root du projet pour le file tracing. Sans ça, Next détecte
   // un package-lock.json parasite dans le home (~/package-lock.json) et
