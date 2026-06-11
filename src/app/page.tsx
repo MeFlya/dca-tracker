@@ -13,8 +13,10 @@ import { JsonLd } from "@/components/ui/JsonLd";
 import { FAQ_ITEMS } from "@/lib/faq-data";
 
 const TITLE = "DCA Tracker — Simulez et pilotez votre DCA ETF long-terme";
+// ≤ 150 caractères (Google tronque à ~150-160, les previews sociales à ~125 —
+// l'essentiel du message doit tenir dans les ~125 premiers).
 const DESCRIPTION =
-  "Simulez votre stratégie DCA en ETF, sauvegardez-la et suivez votre progression mois après mois. 3 scénarios, intérêts composés, hypothèses transparentes. Gratuit.";
+  "Simulez votre stratégie DCA en ETF et suivez-la mois après mois. 3 scénarios, intérêts composés, hypothèses transparentes. Gratuit.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -25,7 +27,10 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
     url: "/",
     type: "website",
-    // OG image générée par convention via app/opengraph-image.tsx
+    // siteName répété ici car ce bloc openGraph ÉCRASE celui du layout
+    // (fusion shallow Next.js) — sans lui, Discord affiche une carte anonyme.
+    siteName: "DCA Tracker",
+    // OG image injectée par convention via app/opengraph-image.jpg
   },
   twitter: {
     card: "summary_large_image",
