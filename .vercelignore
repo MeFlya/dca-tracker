@@ -1,0 +1,12 @@
+# Fichiers à ne JAMAIS uploader lors d'un `vercel deploy` depuis le poste.
+# (.vercelignore remplace .gitignore pour le CLI Vercel — liste exhaustive.)
+.git
+node_modules
+.next
+.next.nosync
+.env
+.env.*
+private-assets/raw
+.claude
+*.log
+.DS_Store
