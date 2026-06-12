@@ -62,7 +62,13 @@ export async function POST(req: Request) {
     metadata: { productId: product.id },
     invoice_creation: {
       enabled: true,
-      invoice_data: { metadata: { productId: product.id } },
+      invoice_data: {
+        metadata: { productId: product.id },
+        // Mentions obligatoires micro-entreprise — directement sur la
+        // facture, indépendamment du template configuré dans le Dashboard.
+        footer:
+          "TVA non applicable, art. 293 B du CGI — Maël Faleyras, entrepreneur individuel, SIREN 105 002 703",
+      },
     },
     allow_promotion_codes: true,
     locale: "fr",
