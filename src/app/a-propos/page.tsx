@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { StrategyPostIt } from "@/components/about/StrategyPostIt";
 import { VisitTracker } from "@/components/analytics/VisitTracker";
@@ -44,6 +45,7 @@ export default function AboutPage() {
     jobTitle: "Fondateur",
     description:
       "Investisseur particulier français, créateur de DCA Tracker. Investit en DCA sur ETF depuis janvier 2025.",
+    image: `${siteUrl}/team/mael-faleyras.jpg`,
     url: `${siteUrl}/a-propos`,
     email: "hello@dcatracker.fr",
     worksFor: {
@@ -127,6 +129,33 @@ export default function AboutPage() {
             </span>
             <div className="flex-1 h-px bg-gray-100" />
           </div>
+
+          {/* Visage du fondateur — signal de confiance E-E-A-T (vrai humain
+              derrière l'outil). */}
+          <div className="flex items-center gap-4 mb-5">
+            <Image
+              src="/team/mael-faleyras.jpg"
+              alt="Maël Faleyras, fondateur de DCA Tracker"
+              width={96}
+              height={96}
+              className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover shadow-card shrink-0"
+            />
+            <div className="min-w-0">
+              <p className="font-semibold text-gray-900 leading-tight">Maël Faleyras</p>
+              <p className="text-sm text-gray-500 leading-snug">
+                Fondateur · Lille · investit en DCA depuis 2025
+              </p>
+              <a
+                href="https://x.com/mael_invest"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block mt-1 text-sm font-medium text-primary-700 hover:text-primary-800 transition-colors"
+              >
+                @mael_invest sur X →
+              </a>
+            </div>
+          </div>
+
           <p className="text-sm text-gray-600 leading-relaxed mb-4">
             Salut, moi c&apos;est Maël. Je vis à Lille et j&apos;ai commencé à
             investir en DCA en <strong>janvier 2025</strong>. Avant ça, comme
