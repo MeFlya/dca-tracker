@@ -102,7 +102,8 @@ export default async function DonneesArchePage() {
         </h2>
         <ul className="text-xs text-gray-500 space-y-1.5 leading-relaxed">
           <li>
-            • <strong>Fournisseur actuel :</strong> {provider.name}
+            • <strong>Fournisseur :</strong>{" "}
+            {provider.name === "YahooFinance" ? "Yahoo Finance" : provider.name}
             {demo && " (mode démo — données illustratives, pas des cours réels)"}
           </li>
           <li>
@@ -110,17 +111,8 @@ export default async function DonneesArchePage() {
             gratuit. Aucune donnée temps réel n&apos;est proposée.
           </li>
           <li>
-            • <strong>Cache :</strong> Les données sont mises en cache{" "}
-            {process.env.MARKET_DATA_CACHE_TTL ?? "300"} secondes côté
-            serveur pour limiter la consommation de l&apos;API.
-          </li>
-          <li>
-            • <strong>Changer de fournisseur :</strong> Modifiez la variable{" "}
-            <code className="font-mono bg-gray-100 px-1 rounded">
-              MARKET_DATA_PROVIDER
-            </code>{" "}
-            dans votre fichier{" "}
-            <code className="font-mono bg-gray-100 px-1 rounded">.env.local</code>.
+            • <strong>Rafraîchissement :</strong> les cours sont actualisés
+            automatiquement, plusieurs fois par jour.
           </li>
         </ul>
       </div>

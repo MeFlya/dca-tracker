@@ -188,17 +188,13 @@ Optimiste   : rendement_brut + 2 %`}
             sont affichées. Elles ne correspondent pas à des cours réels.
           </li>
           <li>
-            <strong>Alpha Vantage (plan gratuit) :</strong> données de fin de
+            <strong>Yahoo Finance (plan gratuit) :</strong> données de fin de
             journée (end-of-day), différées. Non adaptées au trading actif.
           </li>
           <li>
-            <strong>Fournisseurs premium :</strong> d&apos;autres providers
-            peuvent être branchés (Financial Modeling Prep, Twelve Data, etc.)
-            en changeant la variable d&apos;environnement{" "}
-            <code className="font-mono text-xs bg-gray-100 px-1 rounded">
-              MARKET_DATA_PROVIDER
-            </code>
-            .
+            <strong>Source affichée :</strong> le fournisseur et l&apos;horodatage
+            de chaque cours sont toujours indiqués sur le site. Nous pouvons
+            faire évoluer la source si besoin, sans jamais fabriquer de prix.
           </li>
         </ul>
         <p>

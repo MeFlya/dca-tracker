@@ -4,9 +4,9 @@ import { getMarketDataProvider, isDemo } from "@/lib/market-data";
 import { DemoBadge } from "@/components/ui/Disclaimer";
 import { ETFGrid } from "./ETFGrid";
 
+const ETF_COUNT = ETF_LIST.length;
 const TITLE = "Comparer les ETF — CW8, VWCE, IWDA, ANX, AEEM et plus";
-const DESCRIPTION =
-  "Comparez 15 ETF populaires pour investisseurs en France : monde, S&P 500, Nasdaq, émergents, Europe, small cap, obligations. Filtres PEA, région, TER. Cours indicatifs, frais réels et simulation DCA intégrée.";
+const DESCRIPTION = `Comparez ${ETF_COUNT} ETF populaires pour investisseurs en France : monde, S&P 500, Nasdaq, émergents, Europe, small cap, obligations. Filtres PEA, région, TER. Cours indicatifs, frais réels et simulation DCA intégrée.`;
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -22,8 +22,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: TITLE,
-    description:
-      "16 ETF côte à côte : TER, réplication, PEA, cours. Filtres région et PEA. Simulez le DCA en un clic.",
+    description: `${ETF_COUNT} ETF côte à côte : TER, réplication, PEA, cours. Filtres région et PEA. Simulez le DCA en un clic.`,
   },
 };
 
@@ -32,6 +31,7 @@ export const revalidate = 3600;
 
 // Provider name → human-readable label for the source line under each price
 const PROVIDER_LABELS: Record<string, string> = {
+  YahooFinance: "Yahoo Finance",
   TwelveData: "Twelve Data",
   AlphaVantage: "Alpha Vantage",
   Mock: "Mode démo",

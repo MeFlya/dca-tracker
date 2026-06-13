@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Newsreader } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
@@ -36,6 +36,10 @@ const newsreader = Newsreader({
   display: "swap",
   axes: ["opsz"],
 });
+
+export const viewport: Viewport = {
+  themeColor: "#1d4ed8",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(CANONICAL_ORIGIN),
