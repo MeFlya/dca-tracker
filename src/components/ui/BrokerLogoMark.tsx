@@ -1,62 +1,39 @@
-// Badge d'identification broker — wordmark + couleur de marque officielle.
+// Marque d'identification d'un courtier.
 //
-// ⚠️ NOT le logo officiel — recréer la typographie custom et le design des
-// logos serait reproduire leur propriété intellectuelle (marques déposées).
-// On affiche uniquement : (1) le nom de marque en police neutre,
-// (2) la couleur de marque comme background. Couleurs et noms étant des
-// "faits" identifiants, c'est légal et c'est exactement ce que font les
-// comparateurs avant accord de partenariat.
+// Affiche le LOGO officiel du courtier (icône de marque) dans une tuile
+// blanche arrondie — usage nominatif pour identifier/comparer, pratique
+// standard d'un comparateur. Les logos sont la propriété de leurs détenteurs ;
+// récupérés depuis les domaines officiels et hébergés localement (/public/logos).
+// Si un partenariat est formalisé, remplacer par le SVG du press-kit fourni.
 //
-// Quand DCA Tracker formalisera ses affiliations brokers, chaque broker
-// fournira un brand kit officiel (SVG logo + autorisation d'usage). À ce
-// moment-là, swap ce composant pour rendre les vrais logos via next/image.
+// Fallback : pour un slug sans fichier logo, on retombe sur un badge wordmark
+// neutre (nom + couleur de marque), qui ne reproduit aucune typographie custom.
 
 import { cn } from "@/lib/utils";
 
 interface BrokerLogoMarkProps {
   slug: string;
-  /** Hauteur du badge en pixels. La largeur s'ajuste selon la longueur
-   *  du wordmark — pas de carré rigide. */
+  /** Côté de la tuile carrée du logo, en pixels (la hauteur du wordmark en fallback). */
   height?: number;
   className?: string;
 }
 
+/** Logos officiels hébergés localement (icônes de marque, fond clair). */
+const LOGOS: Record<string, { src: string; alt: string }> = {
+  "trade-republic": { src: "/logos/trade-republic.png", alt: "Logo Trade Republic" },
+  "boursorama-bourse": { src: "/logos/boursorama-bourse.png", alt: "Logo Boursorama / BoursoBank" },
+  fortuneo: { src: "/logos/fortuneo.png", alt: "Logo Fortuneo" },
+};
+
 interface BadgeStyle {
-  /** Texte affiché — généralement le nom de marque ou une variante courte. */
   wordmark: string;
-  /** Couleur de fond — couleur de marque officielle (fait public). */
   bg: string;
-  /** Couleur du texte. */
   text: string;
-  /** Tracking optionnel pour ajuster le wordmark. */
   letterSpacing?: string;
-  /** Font weight optionnel. */
   fontWeight?: number;
 }
 
 const BADGES: Record<string, BadgeStyle> = {
-  "trade-republic": {
-    wordmark: "Trade Republic",
-    bg: "#0a0a0a",
-    text: "#ffffff",
-    letterSpacing: "-0.01em",
-    fontWeight: 600,
-  },
-  "boursorama-bourse": {
-    wordmark: "Boursorama",
-    bg: "#ec4899",
-    text: "#ffffff",
-    letterSpacing: "-0.01em",
-    fontWeight: 700,
-  },
-  fortuneo: {
-    wordmark: "Fortuneo",
-    bg: "#dc2626",
-    text: "#ffffff",
-    letterSpacing: "-0.01em",
-    fontWeight: 700,
-  },
-  // Fallback générique
   default: {
     wordmark: "—",
     bg: "#64748b",
@@ -70,8 +47,33 @@ export function BrokerLogoMark({
   height = 36,
   className,
 }: BrokerLogoMarkProps) {
+  const logo = LOGOS[slug];
+
+  // ── Logo officiel ──────────────────────────────────────────────────────────
+  if (logo) {
+    return (
+      <span
+        className={cn(
+          "inline-flex items-center justify-center rounded-lg shrink-0 overflow-hidden bg-white border border-slate-200/80 shadow-sm",
+          className,
+        )}
+        style={{ height, width: height }}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={logo.src}
+          alt={logo.alt}
+          width={height}
+          height={height}
+          loading="lazy"
+          className="w-full h-full object-contain p-1"
+        />
+      </span>
+    );
+  }
+
+  // ── Fallback wordmark (slug sans logo) ───────────────────────────────────────
   const badge = BADGES[slug] ?? BADGES.default;
-  // Font-size ajusté pour la hauteur du badge — viser ~38 % de la hauteur.
   const fontSize = Math.round(height * 0.38);
   const paddingX = Math.round(height * 0.32);
 
@@ -79,7 +81,7 @@ export function BrokerLogoMark({
     <div
       className={cn(
         "inline-flex items-center justify-center rounded-lg shrink-0 select-none whitespace-nowrap",
-        className
+        className,
       )}
       style={{
         height,
@@ -90,8 +92,6 @@ export function BrokerLogoMark({
         letterSpacing: badge.letterSpacing,
         paddingLeft: paddingX,
         paddingRight: paddingX,
-        // Police système neutre — ne tente PAS de reproduire la typographie
-        // custom des marques. C'est un identifiant générique, pas un logo.
         fontFamily:
           '-apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif',
       }}

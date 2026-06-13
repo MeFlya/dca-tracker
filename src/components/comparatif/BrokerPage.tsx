@@ -63,9 +63,8 @@ export function BrokerPage({ broker }: { broker: BrokerData }) {
         <span className="text-gray-600" aria-current="page">{broker.shortName ?? broker.name}</span>
       </nav>
 
-      {/* Hero — badge identifiant du broker à gauche du titre. Wordmark +
-          couleur de marque, pas le logo officiel (cf BrokerLogoMark.tsx
-          pour la justification IP). */}
+      {/* Hero — logo officiel du courtier à gauche du titre (usage nominatif,
+          cf BrokerLogoMark.tsx). */}
       <div className="flex items-start gap-4 mb-8">
         <BrokerLogoMark slug={broker.slug} height={44} className="mt-2" />
         <div className="min-w-0">
