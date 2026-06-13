@@ -7,6 +7,7 @@ export interface SimulatorInput {
   annualReturnPct: number;  // gross annual return (%)
   annualFeesPct: number;    // TER / annual fees (%)
   annualInflationPct?: number; // optional inflation for real-value output
+  startingCapital?: number; // EUR already invested at start (lump sum) — 0 for the public simulator, set via the strategy onboarding
 }
 
 export interface MonthlyDataPoint {
@@ -55,9 +56,11 @@ function runScenario(
   const r = monthlyRate(Math.max(netAnnualReturn, 0));
   const n = durationYears * 12;
 
+  // Capital already invested at the start (lump sum) compounds from month 1.
+  const startingCapital = Math.max(input.startingCapital ?? 0, 0);
   const monthlyData: MonthlyDataPoint[] = [];
-  let portfolioValue = 0;
-  let totalInvested = 0;
+  let portfolioValue = startingCapital;
+  let totalInvested = startingCapital;
 
   for (let m = 1; m <= n; m++) {
     // Contribute at beginning of month, then compound

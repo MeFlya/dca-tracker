@@ -2,6 +2,7 @@ import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { getStrategyData, saveStrategy } from "@/lib/user-strategy";
 import { getUserSubscription } from "@/lib/subscription";
+import type { PortfolioAllocation } from "@/lib/simulation-params";
 
 export async function GET() {
   const { userId } = await auth();
@@ -20,9 +21,23 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "upgrade_required" }, { status: 403 });
   }
 
-  const body = await req.json() as { input?: unknown };
+  const body = (await req.json()) as {
+    input?: unknown;
+    startMonth?: unknown;
+    allocation?: unknown;
+  };
   if (!body.input) return NextResponse.json({ error: "Missing input" }, { status: 400 });
 
-  await saveStrategy(userId, body.input as Parameters<typeof saveStrategy>[1]);
+  const startMonth =
+    typeof body.startMonth === "string" ? body.startMonth : undefined;
+  const allocation = Array.isArray(body.allocation)
+    ? (body.allocation as PortfolioAllocation[])
+    : undefined;
+
+  await saveStrategy(
+    userId,
+    body.input as Parameters<typeof saveStrategy>[1],
+    { startMonth, allocation },
+  );
   return NextResponse.json({ success: true });
 }

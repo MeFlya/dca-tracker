@@ -4,8 +4,8 @@ type Tone = "default" | "positive" | "negative" | "muted" | "primary";
 
 const toneClasses: Record<Tone, string> = {
   default: "text-gray-900",
-  positive: "text-emerald-700",
-  negative: "text-orange-600",
+  positive: "text-gain-dark",
+  negative: "text-loss-dark",
   muted: "text-gray-500",
   primary: "text-primary-700",
 };
@@ -29,7 +29,7 @@ export function MetricCard({
   const valueSize = size === "compact" ? "text-sm" : size === "large" ? "text-2xl" : "text-lg";
 
   return (
-    <div className={`rounded-xl bg-white border border-gray-100 card-hover ${padding}`}>
+    <div className={`rounded-xl bg-white border border-slate-200/70 shadow-sm card-hover ${padding}`}>
       <div className="flex items-center gap-1.5 mb-1">
         {icon && <span className="text-gray-500 shrink-0">{icon}</span>}
         <p className="text-[10px] text-gray-500 uppercase tracking-wide leading-tight">

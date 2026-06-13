@@ -4,14 +4,16 @@
 
 import { clerkClient } from "@clerk/nextjs/server";
 import type { SimulatorInput } from "./simulator";
+import type { PortfolioAllocation } from "./simulation-params";
 
 // Re-export pure math helpers so callers don't need to import from strategy-math directly.
 export { theoreticalValueAtMonth, monthsElapsed, currentMonth } from "./strategy-math";
 
 export type Strategy = {
-  input: SimulatorInput;
-  startMonth: string; // "YYYY-MM"
-  savedAt: string;    // ISO
+  input: SimulatorInput;          // includes startingCapital (capital already invested)
+  startMonth: string;             // "YYYY-MM" — when the user actually started investing
+  savedAt: string;                // ISO
+  allocation?: PortfolioAllocation[]; // chosen ETFs + weights (optional)
 };
 
 export type Contribution = {
@@ -94,9 +96,21 @@ export async function getStrategyData(userId: string): Promise<StrategyData> {
   };
 }
 
-export async function saveStrategy(userId: string, input: SimulatorInput): Promise<void> {
+export async function saveStrategy(
+  userId: string,
+  input: SimulatorInput,
+  options?: { startMonth?: string; allocation?: PortfolioAllocation[] },
+): Promise<void> {
   const now = new Date();
-  const startMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+  const defaultStartMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+  // Accept a chosen start month ("YYYY-MM") so users who already invest can
+  // declare since when; fall back to "now". Never accept a future month.
+  const requested = options?.startMonth;
+  const startMonth =
+    requested && /^\d{4}-\d{2}$/.test(requested) && requested <= defaultStartMonth
+      ? requested
+      : defaultStartMonth;
+
   const clerk = await clerkClient();
   const user = await clerk.users.getUser(userId);
   const existing = user.privateMetadata as Record<string, unknown>;
@@ -108,6 +122,7 @@ export async function saveStrategy(userId: string, input: SimulatorInput): Promi
         input,
         startMonth,
         savedAt: now.toISOString(),
+        ...(options?.allocation?.length ? { allocation: options.allocation } : {}),
       } satisfies Strategy,
     },
   });

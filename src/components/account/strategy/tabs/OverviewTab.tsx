@@ -80,13 +80,13 @@ export function OverviewTab() {
                 : `−${formatEur(Math.abs(insight.totalGain))}`
             }
             tone={insight.totalGain >= 0 ? "positive" : "negative"}
-            subvalue={`${insight.gainSharePct.toFixed(1)} % de la valeur`}
+            subvalue={`sur ${formatEur(insight.totalInvested)} investis`}
           />
           <MetricCard
             label="Performance"
             value={`${insight.performancePct >= 0 ? "+" : ""}${insight.performancePct.toFixed(1)} %`}
             tone={insight.performancePct >= 0 ? "positive" : "negative"}
-            subvalue={`${insight.monthsAhead} mois en avance · ${insight.monthsBehind} en retard`}
+            subvalue={`sur ${insight.monthsLogged} mois suivi${insight.monthsLogged > 1 ? "s" : ""}`}
           />
         </div>
       </section>
@@ -94,7 +94,7 @@ export function OverviewTab() {
       {/* ── Streak + current vs theoretical ──────────────────────────────── */}
       <section>
         <SectionLabel>Progression actuelle</SectionLabel>
-        <div className="rounded-2xl border border-gray-100 bg-white p-5 space-y-4">
+        <div className="card space-y-4">
           {/* Streak pill */}
           {insight.currentStreak > 0 && (
             <div className="flex flex-wrap items-center gap-3">
@@ -137,35 +137,37 @@ export function OverviewTab() {
             </div>
           </div>
 
-          {/* Delta chip */}
-          {latest && (() => {
-            const delta = latest.portfolioValue - theoretical;
-            const ahead = delta >= 0;
-            const Icon = ahead ? ArrowUp : ArrowDown;
-            return (
-              <div
-                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold ${
-                  ahead
-                    ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                    : "bg-orange-50 text-orange-700 border border-orange-200"
-                }`}
-              >
-                <Icon size={14} />
-                {ahead
-                  ? `En avance de +${formatEur(delta)}`
-                  : `En retard de ${formatEur(Math.abs(delta))}`}
-              </div>
-            );
-          })()}
+          {/* Delta chip + Log CTA — wrapped so the chip (inline-flex) and the
+              w-full button never collapse onto the same line (espacement bug). */}
+          <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
+            {latest ? (() => {
+              const delta = latest.portfolioValue - theoretical;
+              const ahead = delta >= 0;
+              const Icon = ahead ? ArrowUp : ArrowDown;
+              return (
+                <span
+                  className={`inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold ${
+                    ahead
+                      ? "bg-gain-light text-gain-dark border border-emerald-200"
+                      : "bg-loss-light text-loss-dark border border-red-200"
+                  }`}
+                >
+                  <Icon size={14} />
+                  {ahead
+                    ? `En avance de +${formatEur(delta)}`
+                    : `En retard de ${formatEur(Math.abs(delta))}`}
+                </span>
+              );
+            })() : <span />}
 
-          {/* Log CTA */}
-          <button
-            onClick={() => openLogModal()}
-            className="btn-primary w-full sm:w-auto text-sm px-4 py-2.5 inline-flex items-center justify-center gap-1.5 btn-lift"
-          >
-            <Plus size={14} />
-            Enregistrer un mois
-          </button>
+            <button
+              onClick={() => openLogModal()}
+              className="btn-primary w-full sm:w-auto text-sm px-4 py-2.5 btn-lift"
+            >
+              <Plus size={14} />
+              Enregistrer un mois
+            </button>
+          </div>
         </div>
       </section>
 
@@ -281,7 +283,7 @@ function LongTermProjection() {
   return (
     <section>
       <SectionLabel>Projection actuelle</SectionLabel>
-      <div className="rounded-2xl border border-gray-100 bg-white p-5">
+      <div className="card">
         <p className="text-sm text-gray-500 mb-1">
           Si vous continuez ainsi, à la fin de votre plan :
         </p>
@@ -438,7 +440,7 @@ function ProgressionChart() {
   return (
     <section>
       <SectionLabel>Progression dans le temps</SectionLabel>
-      <div className="rounded-2xl border border-gray-100 bg-white p-5">
+      <div className="card">
         <ResponsiveContainer width="100%" height={220}>
           <LineChart data={data} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
             <defs>

@@ -6,12 +6,15 @@ function monthlyRate(annualPct: number): number {
   return Math.pow(1 + annualPct / 100, 1 / 12) - 1;
 }
 
-/** Theoretical portfolio value after exactly N months of DCA. */
+/** Theoretical portfolio value after exactly N months of DCA.
+ *  Starts from the capital already invested (input.startingCapital, 0 by default),
+ *  which compounds alongside the monthly contributions. */
 export function theoreticalValueAtMonth(input: SimulatorInput, months: number): number {
-  if (months <= 0) return 0;
+  const startingCapital = Math.max(input.startingCapital ?? 0, 0);
+  if (months <= 0) return Math.round(startingCapital);
   const netAnnual = input.annualReturnPct - input.annualFeesPct;
   const r = monthlyRate(Math.max(netAnnual, 0));
-  let value = 0;
+  let value = startingCapital;
   for (let m = 0; m < months; m++) {
     value = (value + input.monthlyAmount) * (1 + r);
   }

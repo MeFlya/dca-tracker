@@ -49,6 +49,8 @@ export type AnalyticsEvent =
   | { name: "log_month"; props: { contributions: number; portfolio_value: number } }
   | { name: "edit_month" }
   | { name: "delete_month" }
+  | { name: "create_strategy"; props: { monthly: number; years: number; etfs: number } }
+  | { name: "edit_strategy"; props: { monthly: number; years: number; etfs: number } }
 
   // ── Upgrade + payment
   | { name: "open_upgrade"; props: { feature: string } }

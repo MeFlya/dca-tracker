@@ -13,7 +13,7 @@ function newId(): string {
 }
 
 export function LogMonthModal() {
-  const { strategy, logModalState, closeLogModal, upsertEntry } = useStrategy();
+  const { strategy, entries, logModalState, closeLogModal, upsertEntry } = useStrategy();
   const { open, initialEntry } = logModalState;
 
   const isEdit = !!initialEntry;
@@ -42,6 +42,28 @@ export function LogMonthModal() {
     () => contributions.reduce((s, c) => s + (Number.isFinite(c.amount) ? c.amount : 0), 0),
     [contributions],
   );
+
+  // Cohérence : total réellement investi (capital de départ + tous les
+  // versements, ce mois inclus) pour détecter une saisie aberrante ("1 €").
+  const startingCapital = Math.max(strategy.input.startingCapital ?? 0, 0);
+  const investedBaseline = useMemo(() => {
+    const priorContrib = entries
+      .filter((e) => e.month !== month)
+      .reduce((s, e) => s + e.invested, 0);
+    return startingCapital + priorContrib + totalContribAmount;
+  }, [entries, month, startingCapital, totalContribAmount]);
+
+  const pvNum = parseFloat(portfolioValue);
+  const pvWarning = useMemo(() => {
+    if (!portfolioValue || isNaN(pvNum) || pvNum <= 0 || investedBaseline <= 0) return null;
+    if (pvNum < investedBaseline * 0.4) {
+      return `${formatEur(pvNum)} semble très bas face à vos ${formatEur(investedBaseline)} investis. Saisissez la valeur TOTALE en euros de votre portefeuille (toutes lignes confondues), pas un nombre de parts.`;
+    }
+    if (pvNum > investedBaseline * 5) {
+      return `${formatEur(pvNum)} semble très élevé face à vos ${formatEur(investedBaseline)} investis. Vérifiez le montant saisi.`;
+    }
+    return null;
+  }, [portfolioValue, pvNum, investedBaseline]);
 
   if (!open) return null;
 
@@ -167,7 +189,7 @@ export function LogMonthModal() {
               htmlFor="log-portfolio"
               className="block text-sm font-medium text-gray-700 mb-1.5"
             >
-              Valeur du portefeuille en fin de mois (€)
+              Valeur totale de votre portefeuille (€)
             </label>
             <input
               id="log-portfolio"
@@ -181,8 +203,14 @@ export function LogMonthModal() {
               className="input-field w-full"
             />
             <p className="text-[11px] text-gray-500 mt-1">
-              Valeur affichée dans votre application courtier.
+              Le montant total en euros affiché sur votre compte courtier,
+              toutes lignes confondues — pas un nombre de parts.
             </p>
+            {pvWarning && (
+              <p className="text-[11px] text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-2.5 py-1.5 mt-1.5 leading-snug" role="status">
+                {pvWarning}
+              </p>
+            )}
           </div>
 
           {/* Monthly note */}

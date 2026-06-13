@@ -154,8 +154,10 @@ export function computeInsights(
     };
   });
 
-  // Totals
-  const totalInvested = entries.reduce((s, e) => s + e.invested, 0);
+  // Totals — the capital already invested at start counts in the cost basis,
+  // otherwise a user who already had a portfolio looks falsely "−99 %".
+  const startingCapital = Math.max(input.startingCapital ?? 0, 0);
+  const totalInvested = startingCapital + entries.reduce((s, e) => s + e.invested, 0);
   const totalContributionCount = entries.reduce((s, e) => s + e.contributions.length, 0);
   const latest = entries[entries.length - 1];
   const currentPortfolioValue = latest.portfolioValue;

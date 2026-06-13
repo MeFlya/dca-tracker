@@ -8,6 +8,7 @@ import { ManageSubscriptionButton } from "./ManageSubscriptionButton";
 import { StrategyTracker } from "@/components/account/StrategyTracker";
 import { ReLockedStrategy } from "@/components/account/ReLockedStrategy";
 import { OnboardingChecklist } from "@/components/account/OnboardingChecklist";
+import { StrategySetupWizard } from "@/components/account/StrategySetupWizard";
 import { AnnualPushBanner } from "@/components/account/AnnualPushBanner";
 import { OnboardingEmailTrigger } from "@/components/account/OnboardingEmailTrigger";
 import { DashboardEntryTracker } from "@/components/analytics/DashboardEntryTracker";
@@ -52,10 +53,13 @@ export default async function AccountPage() {
       {/* Page header */}
       <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
+          <p className="text-xs font-semibold uppercase tracking-widest text-primary-600 mb-1.5">
+            Tableau de bord
+          </p>
+          <h1 className="font-display text-3xl font-bold text-gray-900 leading-tight">
             Bonjour{user.firstName ? `, ${user.firstName}` : ""} 👋
           </h1>
-          <p className="text-sm text-gray-500 mt-0.5">Votre tableau de bord DCA</p>
+          <p className="text-sm text-gray-500 mt-1">Suivez votre DCA mois après mois</p>
         </div>
         <div className="flex items-center gap-3 flex-wrap">
           <span className={`px-3 py-1 rounded-full text-sm font-bold ${planMeta.bg} ${planMeta.color}`}>
@@ -95,6 +99,12 @@ export default async function AccountPage() {
       {isPremium && strategy ? (
         <div className="mb-6">
           <StrategyTracker initialStrategy={strategy} initialEntries={entries} />
+        </div>
+      ) : isPremium && !strategy ? (
+        <div className="mb-6">
+          {/* Premium sans stratégie → onboarding guidé (capital de départ,
+              date de début, choix des ETF) plutôt qu'une simple checklist. */}
+          <StrategySetupWizard />
         </div>
       ) : hasLockedData && strategy ? (
         <div className="mb-6">
