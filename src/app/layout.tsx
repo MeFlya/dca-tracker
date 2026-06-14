@@ -6,6 +6,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { AmbientBackground } from "@/components/ui/AmbientBackground";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { clerkAppearance } from "@/lib/clerk-appearance";
 import { PlausibleScript } from "@/components/analytics/PlausibleScript";
 import { AnalyticsContextProvider } from "@/components/analytics/AnalyticsContext";
@@ -125,6 +126,11 @@ export default function RootLayout({
         <PlausibleScript />
       </head>
       <body className="min-h-screen flex flex-col">
+        {/* Sans JS, on n'applique pas l'état caché du scroll-reveal. */}
+        <noscript>
+          {/* eslint-disable-next-line react/no-unknown-property */}
+          <style>{`[data-reveal]{opacity:1!important;transform:none!important}`}</style>
+        </noscript>
         {/* Animated ambient background — sits below all content.
             Provides the "premium feel" on every page for free. */}
         <AmbientBackground />
@@ -164,6 +170,7 @@ export default function RootLayout({
           }}
         />
         <AnalyticsContextProvider />
+        <ScrollReveal />
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />

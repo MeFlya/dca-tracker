@@ -57,22 +57,24 @@ export default function HomePage() {
   return (
     <>
       <VisitTracker event={{ name: "visit_home" }} />
+      {/* Hero + social proof : au-dessus de la ligne de flottaison → visibles
+          d'emblée. Les sections suivantes se révèlent au scroll (data-reveal). */}
       <Hero />
       <LiveSocialProof />
-      <HowItWorks />
-      <Features />
-      <TrackingPitch />
-      <TrustSection />
+      <div data-reveal><HowItWorks /></div>
+      <div data-reveal><Features /></div>
+      <div data-reveal><TrackingPitch /></div>
+      <div data-reveal><TrustSection /></div>
 
-      <FAQ />
+      <div data-reveal><FAQ /></div>
 
       {/* Testimonials — auto-hidden until founder fills in real quotes */}
-      <Testimonials />
+      <div data-reveal><Testimonials /></div>
 
-      <EmailCapture source="homepage" />
+      <div data-reveal><EmailCapture source="homepage" /></div>
 
       {/* CTA band — gradient + subtle grid + aurora sweep for visual depth. */}
-      <section className="relative overflow-hidden py-20 bg-gradient-to-br from-primary-700 via-primary-600 to-primary-700">
+      <section data-reveal className="relative overflow-hidden py-20 bg-gradient-to-br from-primary-700 via-primary-600 to-primary-700">
         {/* Ambient grid (matches Hero for visual rhyme) */}
         <div
           className="absolute inset-0 opacity-[0.05] pointer-events-none"

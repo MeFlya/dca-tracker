@@ -69,7 +69,7 @@
      Unifie 7 variantes inline qui divergeaient en padding/hover (AUDIT U2).
      Composable avec btn-lift, w-full, mt-*… selon le contexte. */
   .btn-white-primary {
-    @apply inline-flex items-center justify-center gap-2 bg-white text-primary-700 font-semibold text-sm px-5 py-2.5 rounded-xl transition-colors;
+    @apply inline-flex items-center justify-center gap-2 bg-white text-primary-700 font-semibold text-sm px-5 py-2.5 rounded-xl transition-[background-color,transform] duration-150 ease-out active:scale-[0.98];
   }
   .btn-white-primary:hover {
     @apply bg-primary-50;
@@ -91,12 +91,12 @@
     @apply bg-white rounded-xl border border-slate-200/60 shadow-sm p-4;
   }
 
-  /* Primary CTA button */
+  /* Primary CTA button — scale-on-press = "l'interface t'écoute" (Emil) */
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl
            bg-primary-600 hover:bg-primary-700 active:bg-primary-800
            text-white font-medium text-sm
-           transition-colors duration-150
+           transition-[background-color,transform] duration-150 ease-out active:scale-[0.98]
            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2
            disabled:opacity-50 disabled:cursor-not-allowed;
   }
@@ -107,7 +107,7 @@
            bg-white hover:bg-gray-50 active:bg-gray-100
            border border-gray-200 hover:border-gray-300
            text-gray-700 font-medium text-sm
-           transition-colors duration-150
+           transition-[background-color,border-color,transform] duration-150 ease-out active:scale-[0.98]
            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 focus-visible:ring-offset-2;
   }
 
@@ -316,6 +316,22 @@
   transform: translateX(3px);
 }
 
+/* ── Scroll reveal ──────────────────────────────────────────────────────
+ * Les sections montent + apparaissent à l'entrée dans le viewport.
+ * GPU only (opacity + transform), révélé une seule fois par <ScrollReveal>
+ * (un seul IntersectionObserver pour toute la page). Sans JS, le <noscript>
+ * du layout neutralise l'état caché → contenu toujours visible. */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 600ms var(--ease-out-quart),
+              transform 600ms var(--ease-out-quart);
+}
+[data-reveal].is-visible {
+  opacity: 1;
+  transform: none;
+}
+
 /* Respect reduced-motion */
 @media (prefers-reduced-motion: reduce) {
   .animate-fade-in,
@@ -334,6 +350,7 @@
   .btn-lift,
   .btn-primary,
   .btn-secondary,
+  .btn-white-primary,
   .card-hover,
   .arrow-nudge {
     animation: none !important;
@@ -342,9 +359,16 @@
   .btn-lift:hover,
   .btn-primary:active,
   .btn-secondary:active,
+  .btn-white-primary:active,
   .card-hover:hover {
     transform: none !important;
     box-shadow: none !important;
+  }
+  /* Pas de mouvement au scroll : contenu visible d'emblée */
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
   }
 }
 
