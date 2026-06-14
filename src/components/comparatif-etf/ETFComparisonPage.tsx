@@ -3,6 +3,7 @@ import { ArrowLeftRight } from "lucide-react";
 import type { ETFComparison, ETFSide, UseCase } from "@/lib/etf-comparisons";
 import { ETF_COMPARISON_LIST } from "@/lib/etf-comparisons";
 import { JsonLd } from "@/components/ui/JsonLd";
+import { IssuerLogoMark } from "@/components/ui/IssuerLogoMark";
 
 function PEAPill({ value }: { value: string }) {
   const normalized = value.toLowerCase();
@@ -26,27 +27,28 @@ function SideCard({ side, accent }: { side: ETFSide; accent: "left" | "right" })
 
   return (
     <div className={`rounded-2xl border-2 p-5 ${border}`}>
-      <p className={`text-[10px] font-bold uppercase tracking-wider mb-1 ${labelColor}`}>
-        {side.type}
-      </p>
-      <h3 className="text-lg font-bold text-gray-900 mb-0.5 leading-tight">
-        {side.heading}
-      </h3>
-      {side.subheading && (
-        <p className="text-xs text-gray-500 mb-3">{side.subheading}</p>
-      )}
+      <div className="flex items-start gap-3 mb-3">
+        {side.issuer && (
+          <IssuerLogoMark name={side.issuer} height={38} className="mt-0.5" />
+        )}
+        <div className="min-w-0">
+          <p className={`text-[10px] font-bold uppercase tracking-wider mb-1 ${labelColor}`}>
+            {side.type}
+          </p>
+          <h3 className="text-lg font-bold text-gray-900 mb-0.5 leading-tight">
+            {side.heading}
+          </h3>
+          {side.subheading && (
+            <p className="text-xs text-gray-500">{side.subheading}</p>
+          )}
+        </div>
+      </div>
 
       <dl className="space-y-1.5 text-sm mb-3">
         <div className="flex justify-between gap-2">
           <dt className="text-gray-500 shrink-0">Couverture</dt>
           <dd className="text-gray-900 text-right">{side.coverage}</dd>
         </div>
-        {side.issuer && (
-          <div className="flex justify-between gap-2">
-            <dt className="text-gray-500">Émetteur</dt>
-            <dd className="text-gray-900 text-right">{side.issuer}</dd>
-          </div>
-        )}
         <div className="flex justify-between gap-2">
           <dt className="text-gray-500">TER</dt>
           <dd className="text-gray-900 font-semibold tabular-nums text-right">{side.ter}</dd>

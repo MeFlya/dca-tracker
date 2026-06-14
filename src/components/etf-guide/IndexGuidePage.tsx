@@ -10,6 +10,7 @@ import { ArticleByline } from "@/components/ui/ArticleByline";
 import { BreadcrumbSchema } from "@/components/ui/BreadcrumbSchema";
 import { SourcesReferences } from "@/components/ui/SourcesReferences";
 import { JsonLd } from "@/components/ui/JsonLd";
+import { IssuerLogoMark } from "@/components/ui/IssuerLogoMark";
 import type { IndexGuide } from "@/lib/etf-index-guides";
 
 const ICONS: Record<IndexGuide["icon"], LucideIcon> = {
@@ -102,16 +103,19 @@ export function IndexGuidePage({ guide }: { guide: IndexGuide }) {
               }`}
             >
               <div className="flex items-start justify-between gap-3 flex-wrap mb-2">
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap mb-0.5">
-                    <span className="text-base font-bold text-gray-900">{t.ticker}</span>
-                    {t.recommended && (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide text-primary-700 bg-primary-100 border border-primary-200 px-1.5 py-0.5 rounded">
-                        <Check size={10} strokeWidth={3} /> Recommandé
-                      </span>
-                    )}
+                <div className="flex items-start gap-2.5 min-w-0">
+                  <IssuerLogoMark name={t.issuer} height={34} className="mt-0.5" />
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                      <span className="text-base font-bold text-gray-900">{t.ticker}</span>
+                      {t.recommended && (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide text-primary-700 bg-primary-100 border border-primary-200 px-1.5 py-0.5 rounded">
+                          <Check size={10} strokeWidth={3} /> Recommandé
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-sm text-gray-500">{t.name}</p>
                   </div>
-                  <p className="text-sm text-gray-500">{t.name}</p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   <span
