@@ -9,6 +9,8 @@ import { getMarketDataProvider, isDemo } from "@/lib/market-data";
 import { formatCurrency, formatPercent, formatDate } from "@/lib/utils";
 import { DemoBadge, DelayedBadge } from "@/components/ui/Disclaimer";
 import { InvestCTA } from "@/components/ui/InvestCTA";
+import { IssuerLogoMark } from "@/components/ui/IssuerLogoMark";
+import { RegionMark } from "@/components/ui/RegionMark";
 import { cn } from "@/lib/utils";
 
 // ─── Static generation ───────────────────────────────────────────────────────
@@ -108,16 +110,19 @@ export default async function ETFDetailPage({
         <div className="flex flex-wrap items-start justify-between gap-4 mb-5">
           {/* Left: identity */}
           <div className="flex items-start gap-4">
-            <div className="w-12 h-12 rounded-xl bg-primary-50 border border-primary-100 flex items-center justify-center shrink-0">
-              <span className="text-xs font-bold text-primary-700 tracking-tight">
-                {etf.displaySymbol}
-              </span>
-            </div>
+            <IssuerLogoMark name={etf.name} height={48} className="shrink-0" />
             <div>
               <h1 className="text-xl md:text-2xl font-bold text-gray-900 leading-tight">
                 {etf.name}
               </h1>
               <div className="flex flex-wrap items-center gap-2 mt-1.5">
+                <span className="px-2.5 py-0.5 rounded-full bg-primary-50 text-xs font-bold text-primary-700 tracking-tight">
+                  {etf.displaySymbol}
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-gray-100 text-xs font-medium text-gray-600">
+                  <RegionMark region={etf.region} size={14} />
+                  {etf.indexLabel}
+                </span>
                 <span className="px-2.5 py-0.5 rounded-full bg-gray-100 text-xs font-medium text-gray-600">
                   {etf.category}
                 </span>

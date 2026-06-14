@@ -3,6 +3,8 @@ import { ETFConfig } from "@/lib/etf-config";
 import { AssetQuote } from "@/lib/market-data/types";
 import { formatCurrency, formatPercent } from "@/lib/utils";
 import { DelayedBadge } from "@/components/ui/Disclaimer";
+import { IssuerLogoMark } from "@/components/ui/IssuerLogoMark";
+import { RegionMark } from "@/components/ui/RegionMark";
 import { cn } from "@/lib/utils";
 
 interface ETFCardProps {
@@ -38,17 +40,24 @@ export function ETFCard({ etf, quote, error, providerLabel }: ETFCardProps) {
       <div className="flex items-start justify-between gap-2">
         <Link
           href={`/etf/${etf.displaySymbol}`}
-          className="group flex flex-col gap-0.5 min-w-0"
+          className="group flex items-start gap-2.5 min-w-0"
         >
-          <div className="flex items-center gap-2">
-            <span className="text-lg font-bold text-gray-900 group-hover:text-primary-600 transition-colors">
-              {etf.displaySymbol}
+          <IssuerLogoMark name={etf.name} height={38} className="mt-0.5" />
+          <span className="flex flex-col gap-0.5 min-w-0">
+            <span className="flex items-center gap-2">
+              <span className="text-lg font-bold text-gray-900 group-hover:text-primary-600 transition-colors">
+                {etf.displaySymbol}
+              </span>
+              {quote?.isDelayed && <DelayedBadge />}
             </span>
-            {quote?.isDelayed && <DelayedBadge />}
-          </div>
-          <p className="text-sm text-gray-500 leading-snug group-hover:text-gray-700 transition-colors">
-            {etf.name}
-          </p>
+            <span className="block text-sm text-gray-500 leading-snug group-hover:text-gray-700 transition-colors">
+              {etf.name}
+            </span>
+            <span className="flex items-center gap-1.5 mt-0.5 text-[11px] font-medium text-gray-500">
+              <RegionMark region={etf.region} size={14} />
+              {etf.indexLabel}
+            </span>
+          </span>
         </Link>
         <div className="flex flex-col items-end gap-1 shrink-0">
           <span className="px-2 py-1 rounded-lg bg-gray-50 text-xs font-medium text-gray-500">

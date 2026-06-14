@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import { ETFConfig, ETFRegion } from "@/lib/etf-config";
 import { AssetQuote } from "@/lib/market-data/types";
 import { ETFCard } from "@/components/etf/ETFCard";
+import { RegionMark } from "@/components/ui/RegionMark";
 
 interface ETFGridProps {
   etfs: ETFConfig[];
@@ -88,12 +89,15 @@ export function ETFGrid({ etfs, quotes, providerLabel }: ETFGridProps) {
             <button
               key={r.value}
               onClick={() => setRegion(r.value)}
-              className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                 region === r.value
                   ? "bg-primary-600 text-white"
                   : "bg-gray-100 text-gray-600 hover:bg-gray-200"
               }`}
             >
+              {r.value !== "tous" && (
+                <RegionMark region={r.value} size={14} />
+              )}
               {r.label}
             </button>
           ))}
