@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { SimulatorOutput } from "@/lib/simulator";
 import { formatEur } from "@/lib/simulator";
+import { CountUp } from "@/components/ui/CountUp";
 
 interface Props {
   output: SimulatorOutput;
@@ -59,7 +60,7 @@ export function SimulatorHero({ output }: Props) {
         {/* Big number — text-white over the radial halo. */}
         <div className="mb-1">
           <p className="text-5xl font-bold tabular-nums tracking-tight text-white">
-            {formatEur(base.finalValue)}
+            <CountUp value={base.finalValue} format={formatEur} />
           </p>
         </div>
         <p className="text-slate-400 text-sm mb-6">

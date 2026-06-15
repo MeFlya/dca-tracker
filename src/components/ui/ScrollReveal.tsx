@@ -38,9 +38,10 @@ export function ScrollReveal() {
           io.unobserve(el);
         }
       },
-      // Se déclenche un peu avant le bas pour que l'anim soit déjà en cours
-      // quand la section arrive vraiment à l'écran.
-      { threshold: 0.12, rootMargin: "0px 0px -8% 0px" },
+      // Se déclenche quand le HAUT de la section atteint ~78 % de la hauteur
+      // d'écran (moitié basse, là où l'œil regarde) — pas tout en bas, sinon
+      // l'anim est finie avant qu'on ne la voie.
+      { threshold: 0, rootMargin: "0px 0px -22% 0px" },
     );
 
     els.forEach((el) => io.observe(el));

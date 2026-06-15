@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import {
   AreaChart,
   Area,
@@ -77,6 +78,22 @@ export function PortfolioChart({
 }: PortfolioChartProps) {
   const data = buildChartData(base, conservative, optimistic);
 
+  // La courbe se dessine UNE fois (effet "waouh" au premier affichage), puis
+  // les mises à jour temps réel (sliders) sont instantanées — sinon recharts
+  // ré-anime à chaque drag = saccades. Coupé si prefers-reduced-motion.
+  const [drawIn, setDrawIn] = useState(true);
+  useEffect(() => {
+    const reduce =
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) {
+      setDrawIn(false);
+      return;
+    }
+    const t = setTimeout(() => setDrawIn(false), 1500);
+    return () => clearTimeout(t);
+  }, []);
+
   return (
     <div className="card">
       <h3 className="font-semibold text-gray-900 mb-1">
@@ -132,6 +149,10 @@ export function PortfolioChart({
             strokeWidth={1.5}
             strokeDasharray="4 4"
             fill="none"
+            isAnimationActive={drawIn}
+            animationBegin={0}
+            animationDuration={1000}
+            animationEasing="ease-out"
           />
           <Area
             type="monotone"
@@ -140,6 +161,10 @@ export function PortfolioChart({
             stroke="#6b7280"
             strokeWidth={1.5}
             fill="url(#gradCons)"
+            isAnimationActive={drawIn}
+            animationBegin={120}
+            animationDuration={1000}
+            animationEasing="ease-out"
           />
           <Area
             type="monotone"
@@ -148,6 +173,10 @@ export function PortfolioChart({
             stroke="#1d4ed8"
             strokeWidth={2}
             fill="url(#gradBase)"
+            isAnimationActive={drawIn}
+            animationBegin={240}
+            animationDuration={1000}
+            animationEasing="ease-out"
           />
           <Area
             type="monotone"
@@ -156,6 +185,10 @@ export function PortfolioChart({
             stroke="#059669"
             strokeWidth={1.5}
             fill="url(#gradOpt)"
+            isAnimationActive={drawIn}
+            animationBegin={360}
+            animationDuration={1000}
+            animationEasing="ease-out"
           />
         </AreaChart>
       </ResponsiveContainer>
