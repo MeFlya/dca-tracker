@@ -7,6 +7,7 @@
 
 import { useEffect, useState } from "react";
 import { Users, Target, Activity } from "lucide-react";
+import { CountUp } from "@/components/ui/CountUp";
 
 type PublicStats = {
   users: number;
@@ -48,9 +49,9 @@ export function LiveSocialProof() {
   if (!stats || (stats.users < 1 && stats.strategies < 1)) return null;
 
   const cards = [
-    { Icon: Users,    value: formatCount(stats.users),        label: "investisseurs inscrits" },
-    { Icon: Target,   value: formatCount(stats.strategies),   label: "stratégies DCA suivies" },
-    { Icon: Activity, value: formatCount(stats.monthsLogged), label: "mois de suivi enregistrés" },
+    { Icon: Users,    value: stats.users,        label: "investisseurs inscrits" },
+    { Icon: Target,   value: stats.strategies,   label: "stratégies DCA suivies" },
+    { Icon: Activity, value: stats.monthsLogged, label: "mois de suivi enregistrés" },
   ];
 
   return (
@@ -83,7 +84,7 @@ export function LiveSocialProof() {
                   côté browser, autorisé via globals.css). tabular-nums pour
                   l'alignement parfait des chiffres. */}
               <p className="font-display text-5xl sm:text-6xl font-bold text-gray-900 tabular-nums leading-none tracking-tight">
-                {value}
+                <CountUp value={value} durationMs={1100} format={formatCount} />
               </p>
             </div>
           ))}

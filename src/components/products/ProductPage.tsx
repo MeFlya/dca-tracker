@@ -13,6 +13,7 @@ import { Check, X, FileText, Table2, Package } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { BreadcrumbSchema } from "@/components/ui/BreadcrumbSchema";
 import { JsonLd } from "@/components/ui/JsonLd";
+import { AuroraSweep } from "@/components/ui/AuroraSweep";
 import { ProductBuyButton } from "./ProductBuyButton";
 import { getProductPriceId, PRODUCT_LIST, type Product } from "@/lib/products";
 
@@ -225,22 +226,25 @@ export function ProductPage({ product }: { product: Product }) {
       )}
 
       {/* ── 2e CTA ──────────────────────────────────────────────────────────── */}
-      <section className="mb-12 rounded-2xl bg-primary-600 p-8 text-center">
-        <h2 className="text-xl font-bold text-white mb-2">{product.shortName}</h2>
-        <p className="text-primary-200 text-sm mb-6">
-          {product.priceEur} € · paiement unique · livraison immédiate par email
-        </p>
-        <div className="flex justify-center">
-          <ProductBuyButton
-            productId={product.id}
-            priceEur={product.priceEur}
-            available={available}
-            className="btn-white-primary text-base px-8 py-3.5"
-          />
+      <section className="relative overflow-hidden mb-12 rounded-2xl bg-primary-600 p-8 text-center">
+        <AuroraSweep />
+        <div className="relative">
+          <h2 className="text-xl font-bold text-white mb-2">{product.shortName}</h2>
+          <p className="text-primary-200 text-sm mb-6">
+            {product.priceEur} € · paiement unique · livraison immédiate par email
+          </p>
+          <div className="flex justify-center">
+            <ProductBuyButton
+              productId={product.id}
+              priceEur={product.priceEur}
+              available={available}
+              className="btn-white-primary text-base px-8 py-3.5"
+            />
+          </div>
+          <p className="mt-3 text-xs text-primary-200">
+            Satisfait ou remboursé 14 jours
+          </p>
         </div>
-        <p className="mt-3 text-xs text-primary-200">
-          Satisfait ou remboursé 14 jours
-        </p>
       </section>
 
       {/* ── FAQ ─────────────────────────────────────────────────────────────── */}
