@@ -246,7 +246,7 @@ export default async function ETFDetailPage({
       )}
 
       {/* ── Autres ETF ─────────────────────────────────────────────────── */}
-      <section aria-labelledby="autres-etf-heading" className="mb-10">
+      <section data-reveal aria-labelledby="autres-etf-heading" className="mb-10">
         <h2
           id="autres-etf-heading"
           className="text-base font-semibold text-gray-700 mb-4"

@@ -11,6 +11,7 @@ import { BreadcrumbSchema } from "@/components/ui/BreadcrumbSchema";
 import { SourcesReferences } from "@/components/ui/SourcesReferences";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { AuroraSweep } from "@/components/ui/AuroraSweep";
+import { CountUp } from "@/components/ui/CountUp";
 import {
   formatEurBacktest,
   formatMonthFr,
@@ -153,7 +154,7 @@ export function BacktestStoryPage({ story }: { story: ComputedStory }) {
         <div className="rounded-xl border border-gray-100 bg-white px-4 py-3">
           <p className="text-xs text-gray-500 mb-1">Valeur aujourd&apos;hui</p>
           <p className="text-lg font-bold tabular-nums text-primary-700">
-            {formatEurBacktest(result.finalValue)}
+            <CountUp value={result.finalValue} as="eur" />
           </p>
           <p className="text-xs text-gray-500 mt-0.5">{formatMonthFr(endMonth)}</p>
         </div>

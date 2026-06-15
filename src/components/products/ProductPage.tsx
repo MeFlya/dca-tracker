@@ -111,7 +111,7 @@ export function ProductPage({ product }: { product: Product }) {
       </div>
 
       {/* ── Abstract ────────────────────────────────────────────────────────── */}
-      <section className="mb-10">
+      <section data-reveal className="mb-10">
         <div className="space-y-4 text-gray-600 leading-relaxed">
           {product.abstract.map((p, i) => (
             <p key={i}>{p}</p>
@@ -120,7 +120,7 @@ export function ProductPage({ product }: { product: Product }) {
       </section>
 
       {/* ── Features ────────────────────────────────────────────────────────── */}
-      <section className="mb-10">
+      <section data-reveal className="mb-10">
         <h2 className="text-2xl font-bold text-gray-900 mb-5">
           Ce que vous obtenez
         </h2>
@@ -135,7 +135,7 @@ export function ProductPage({ product }: { product: Product }) {
       </section>
 
       {/* ── Contenu détaillé ────────────────────────────────────────────────── */}
-      <section className="mb-10">
+      <section data-reveal className="mb-10">
         <h2 className="text-2xl font-bold text-gray-900 mb-5">
           Ce qu&apos;il y a dedans
         </h2>
@@ -150,7 +150,7 @@ export function ProductPage({ product }: { product: Product }) {
       </section>
 
       {/* ── Pour qui / pas pour qui ─────────────────────────────────────────── */}
-      <section className="mb-10">
+      <section data-reveal className="mb-10">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="rounded-2xl border border-emerald-100 bg-emerald-50/40 p-5">
             <p className="text-xs font-bold text-emerald-700 uppercase tracking-wider mb-3">
@@ -183,7 +183,7 @@ export function ProductPage({ product }: { product: Product }) {
 
       {/* ── Comparatif « eux vs nous » (différenciation vs gratuit) ─────────── */}
       {product.comparison && (
-        <section className="mb-10">
+        <section data-reveal className="mb-10">
           <h2 className="text-2xl font-bold text-gray-900 mb-3">
             Pourquoi pas un outil gratuit ?
           </h2>
@@ -248,7 +248,7 @@ export function ProductPage({ product }: { product: Product }) {
       </section>
 
       {/* ── FAQ ─────────────────────────────────────────────────────────────── */}
-      <section className="mb-12">
+      <section data-reveal className="mb-12">
         <h2 className="text-2xl font-bold text-gray-900 mb-6">Questions fréquentes</h2>
         <div className="space-y-4">
           {product.faq.map(({ q, a }) => (
@@ -266,7 +266,7 @@ export function ProductPage({ product }: { product: Product }) {
       </section>
 
       {/* ── Cross-sell ──────────────────────────────────────────────────────── */}
-      <section className="mb-10">
+      <section data-reveal className="mb-10">
         <h2 className="text-xl font-bold text-gray-900 mb-5">Voir aussi</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {others.map((p) => (

@@ -4,6 +4,17 @@ import { useEffect, useRef, useState } from "react";
 
 const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
 
+// Formats intégrés (sérialisables) — pour les composants SERVEUR, qui ne
+// peuvent pas passer de fonction `format` à un composant client.
+const eurFmt = new Intl.NumberFormat("fr-FR", {
+  style: "currency",
+  currency: "EUR",
+  maximumFractionDigits: 0,
+});
+const BUILTIN_FORMATS: Record<string, (n: number) => string> = {
+  eur: (n) => eurFmt.format(Math.round(n)),
+};
+
 // Anime un nombre de 0 → valeur, UNE seule fois.
 // - `startOnView` (défaut) : compte quand l'élément entre dans le viewport
 //   (parfait pour des chiffres sous la ligne de flottaison).
@@ -15,15 +26,22 @@ export function CountUp({
   value,
   durationMs = 900,
   startOnView = true,
-  format = (n: number) => Math.round(n).toLocaleString("fr-FR"),
+  as,
+  format,
   className,
 }: {
   value: number;
   durationMs?: number;
   startOnView?: boolean;
+  /** Format intégré sérialisable — à utiliser depuis un composant SERVEUR
+   *  (où on ne peut pas passer de fonction `format`). */
+  as?: "eur";
   format?: (n: number) => string;
   className?: string;
 }) {
+  const fmt =
+    format ??
+    (as ? BUILTIN_FORMATS[as] : (n: number) => Math.round(n).toLocaleString("fr-FR"));
   const [display, setDisplay] = useState(value);
   const ref = useRef<HTMLSpanElement>(null);
   const doneRef = useRef(false);
@@ -86,7 +104,7 @@ export function CountUp({
 
   return (
     <span ref={ref} className={className}>
-      {format(display)}
+      {fmt(display)}
     </span>
   );
 }

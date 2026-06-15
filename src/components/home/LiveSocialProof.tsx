@@ -16,10 +16,13 @@ type PublicStats = {
 };
 
 function formatCount(n: number): string {
-  if (n >= 1000) {
-    return `${(n / 1000).toFixed(n >= 10000 ? 0 : 1).replace(".", ",")} k`;
+  // Arrondi d'abord : pendant le count-up, n est un flottant (ex. 123,4567)
+  // → sans ça toLocaleString affiche des décimales.
+  const v = Math.round(n);
+  if (v >= 1000) {
+    return `${(v / 1000).toFixed(v >= 10000 ? 0 : 1).replace(".", ",")} k`;
   }
-  return n.toLocaleString("fr-FR");
+  return v.toLocaleString("fr-FR");
 }
 
 export function LiveSocialProof() {

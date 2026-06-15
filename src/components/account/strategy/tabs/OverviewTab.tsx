@@ -22,6 +22,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { runSimulation, formatEur } from "@/lib/simulator";
+import { CountUp } from "@/components/ui/CountUp";
 import {
   computeInterestSnapshot,
   computeYearOverYear,
@@ -288,7 +289,7 @@ function LongTermProjection() {
           Si vous continuez ainsi, à la fin de votre plan :
         </p>
         <p className="text-3xl font-bold text-gray-900 tabular-nums leading-tight mb-1">
-          {formatEur(finalValue)}{" "}
+          <CountUp value={finalValue} format={(n) => formatEur(Math.round(n))} />{" "}
           <span className="text-base font-semibold text-gray-500">en {endYear}</span>
         </p>
         <p className="text-xs text-gray-500 leading-relaxed">
