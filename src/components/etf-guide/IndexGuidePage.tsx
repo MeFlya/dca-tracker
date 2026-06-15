@@ -11,6 +11,7 @@ import { BreadcrumbSchema } from "@/components/ui/BreadcrumbSchema";
 import { SourcesReferences } from "@/components/ui/SourcesReferences";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { IssuerLogoMark } from "@/components/ui/IssuerLogoMark";
+import { AuroraSweep } from "@/components/ui/AuroraSweep";
 import type { IndexGuide } from "@/lib/etf-index-guides";
 
 const ICONS: Record<IndexGuide["icon"], LucideIcon> = {
@@ -175,26 +176,29 @@ export function IndexGuidePage({ guide }: { guide: IndexGuide }) {
       </section>
 
       {/* ── CTA → allocation (ETF pré-sélectionné) + simulateur ─────────────── */}
-      <section className="mb-12 rounded-2xl bg-primary-600 p-8 text-center">
-        <h2 className="text-xl font-bold text-white mb-2">
-          Construisez votre portefeuille {guide.indexName}
-        </h2>
-        <p className="text-primary-200 text-sm mb-6 leading-relaxed">
-          Le simulateur s&apos;ouvre en mode <strong className="text-white">« Mes
-          ETF »</strong> avec le tracker {guide.indexName} déjà sélectionné :
-          ajustez les poids, ajoutez d&apos;autres ETF, voyez la projection DCA en
-          temps réel.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
-          <Link href={simEtfHref} className="btn-secondary text-sm px-5 py-2.5 inline-flex">
-            Construire mon portefeuille {guide.indexName} →
-          </Link>
-          <Link
-            href={simRapidHref}
-            className="text-sm font-medium text-primary-100 hover:text-white underline underline-offset-4 transition-colors"
-          >
-            ou en valeurs directes
-          </Link>
+      <section className="relative overflow-hidden mb-12 rounded-2xl bg-primary-600 p-8 text-center">
+        <AuroraSweep />
+        <div className="relative">
+          <h2 className="text-xl font-bold text-white mb-2">
+            Construisez votre portefeuille {guide.indexName}
+          </h2>
+          <p className="text-primary-200 text-sm mb-6 leading-relaxed">
+            Le simulateur s&apos;ouvre en mode <strong className="text-white">« Mes
+            ETF »</strong> avec le tracker {guide.indexName} déjà sélectionné :
+            ajustez les poids, ajoutez d&apos;autres ETF, voyez la projection DCA en
+            temps réel.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+            <Link href={simEtfHref} className="btn-secondary text-sm px-5 py-2.5 inline-flex">
+              Construire mon portefeuille {guide.indexName} →
+            </Link>
+            <Link
+              href={simRapidHref}
+              className="text-sm font-medium text-primary-100 hover:text-white underline underline-offset-4 transition-colors"
+            >
+              ou en valeurs directes
+            </Link>
+          </div>
         </div>
       </section>
 

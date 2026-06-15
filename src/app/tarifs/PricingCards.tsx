@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
 import { track } from "@/lib/analytics";
+import { AuroraSweep } from "@/components/ui/AuroraSweep";
 
 type Feature = { label: string; included: boolean };
 
@@ -261,6 +262,9 @@ export function PricingCards() {
                     aria-hidden
                   />
                 )}
+                {/* Reflet "neuf" très subtil — la carte est déjà animée, on
+                    reste léger pour ne pas surcharger. */}
+                {isHighlight && <AuroraSweep className="via-white/12" />}
 
                 {/* Header */}
                 <div className="relative mb-6">

@@ -10,6 +10,7 @@ import { ArticleByline } from "@/components/ui/ArticleByline";
 import { BreadcrumbSchema } from "@/components/ui/BreadcrumbSchema";
 import { SourcesReferences } from "@/components/ui/SourcesReferences";
 import { JsonLd } from "@/components/ui/JsonLd";
+import { AuroraSweep } from "@/components/ui/AuroraSweep";
 import {
   formatEurBacktest,
   formatMonthFr,
@@ -202,25 +203,28 @@ export function BacktestStoryPage({ story }: { story: ComputedStory }) {
       </div>
 
       {/* ── CTA backtest personnalisé ───────────────────────────────────────── */}
-      <section className="mb-12 rounded-2xl bg-primary-600 p-8 text-center">
-        <h2 className="text-xl font-bold text-white mb-2">
-          Et avec VOS chiffres ?
-        </h2>
-        <p className="text-primary-200 text-sm mb-6 leading-relaxed max-w-md mx-auto">
-          Le backtest interactif rejoue votre montant et votre période sur les
-          mêmes données réelles — TRI, pire creux et courbe mois par mois.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
-          <Link href="/backtest" className="btn-white-primary">
-            Tester mon propre scénario
-            <ArrowRight size={14} aria-hidden />
-          </Link>
-          <Link
-            href="/simulateur"
-            className="text-sm font-medium text-primary-100 hover:text-white underline underline-offset-4 transition-colors"
-          >
-            ou projeter l&apos;avenir avec le simulateur
-          </Link>
+      <section className="relative overflow-hidden mb-12 rounded-2xl bg-primary-600 p-8 text-center">
+        <AuroraSweep />
+        <div className="relative">
+          <h2 className="text-xl font-bold text-white mb-2">
+            Et avec VOS chiffres ?
+          </h2>
+          <p className="text-primary-200 text-sm mb-6 leading-relaxed max-w-md mx-auto">
+            Le backtest interactif rejoue votre montant et votre période sur les
+            mêmes données réelles — TRI, pire creux et courbe mois par mois.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+            <Link href="/backtest" className="btn-white-primary">
+              Tester mon propre scénario
+              <ArrowRight size={14} aria-hidden />
+            </Link>
+            <Link
+              href="/simulateur"
+              className="text-sm font-medium text-primary-100 hover:text-white underline underline-offset-4 transition-colors"
+            >
+              ou projeter l&apos;avenir avec le simulateur
+            </Link>
+          </div>
         </div>
       </section>
 

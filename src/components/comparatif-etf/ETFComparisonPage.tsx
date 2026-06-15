@@ -4,6 +4,7 @@ import type { ETFComparison, ETFSide, UseCase } from "@/lib/etf-comparisons";
 import { ETF_COMPARISON_LIST } from "@/lib/etf-comparisons";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { IssuerLogoMark } from "@/components/ui/IssuerLogoMark";
+import { AuroraSweep } from "@/components/ui/AuroraSweep";
 
 function PEAPill({ value }: { value: string }) {
   const normalized = value.toLowerCase();
@@ -167,11 +168,14 @@ export function ETFComparisonPage({ comparison }: { comparison: ETFComparison })
       </p>
 
       {/* Verdict callout */}
-      <div className="rounded-2xl bg-gradient-to-br from-primary-600 to-blue-700 p-6 mb-10 text-white">
-        <p className="text-xs font-bold uppercase tracking-wider mb-2 text-primary-200">
-          Verdict en 2 phrases
-        </p>
-        <p className="text-base leading-relaxed">{comparison.verdict}</p>
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary-600 to-blue-700 p-6 mb-10 text-white">
+        <AuroraSweep className="via-white/30" />
+        <div className="relative">
+          <p className="text-xs font-bold uppercase tracking-wider mb-2 text-primary-200">
+            Verdict en 2 phrases
+          </p>
+          <p className="text-base leading-relaxed">{comparison.verdict}</p>
+        </div>
       </div>
 
       {/* Side-by-side cards */}

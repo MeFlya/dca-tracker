@@ -4,6 +4,7 @@ import Link from "next/link";
 import type { SimulatorOutput } from "@/lib/simulator";
 import { formatEur } from "@/lib/simulator";
 import { CountUp } from "@/components/ui/CountUp";
+import { AuroraSweep } from "@/components/ui/AuroraSweep";
 
 interface Props {
   output: SimulatorOutput;
@@ -43,6 +44,8 @@ export function SimulatorHero({ output }: Props) {
         }}
         aria-hidden
       />
+      {/* Reflet "neuf" qui balaie le résultat */}
+      <AuroraSweep className="via-white/25" />
 
       <div className="relative p-6">
         {/* Context line */}
