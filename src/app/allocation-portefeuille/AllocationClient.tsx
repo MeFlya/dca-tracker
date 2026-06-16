@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import type { ETFConfig } from "@/lib/etf-config";
@@ -383,14 +384,54 @@ function AddEtfDropdown({
   onSelect: (etf: ETFConfig) => void;
 }) {
   const [open, setOpen] = useState(false);
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [pos, setPos] = useState<{ top: number; left: number; width: number } | null>(null);
+
+  // Menu rendu dans un PORTAL (document.body, position: fixed) — seule façon
+  // fiable de passer AU-DESSUS de tout, y compris les thumbs des sliders natifs
+  // (input type=range) qui peignent par-dessus les z-index sur certains
+  // navigateurs. Le z-index local ne suffisait pas.
+  useEffect(() => {
+    if (!open) return;
+    const update = () => {
+      const r = btnRef.current?.getBoundingClientRect();
+      if (r) setPos({ top: r.bottom + 4, left: r.left, width: r.width });
+    };
+    update();
+    window.addEventListener("scroll", update, true);
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("scroll", update, true);
+      window.removeEventListener("resize", update);
+    };
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: PointerEvent) => {
+      const t = e.target as Node;
+      if (btnRef.current?.contains(t) || menuRef.current?.contains(t)) return;
+      setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("pointerdown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
 
   return (
-    // Wrapper élevé en z-50 quand ouvert → le dropdown passe au-dessus de tout
-    // frère rendu en dessous (même garde-fou que dans PortfolioPicker).
-    <div className={`relative ${open ? "z-50" : ""}`}>
+    <div className="relative">
       <button
+        ref={btnRef}
         type="button"
-        onClick={() => setOpen(!open)}
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
         className="w-full text-left rounded-xl border border-dashed border-slate-300 bg-slate-50/50 px-4 py-3 hover:border-primary-300 hover:bg-primary-50/30 transition-colors flex items-center justify-between"
       >
         <span className="text-sm font-medium text-gray-700">
@@ -400,38 +441,42 @@ function AddEtfDropdown({
           {etfs.length} disponibles
         </span>
       </button>
-      {open && (
-        // z-50 + bg opaque : évite que les thumbs des sliders natifs
-        // (input type=range, qui peignent au-dessus des z-index bas sur
-        // certains navigateurs) ne traversent la liste déroulante.
-        <div className="absolute z-50 left-0 right-0 mt-1 max-h-80 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-card-lg">
-          {etfs.map((etf) => (
-            <button
-              key={etf.displaySymbol}
-              type="button"
-              data-lpignore="true"
-              data-1p-ignore="true"
-              onClick={() => {
-                onSelect(etf);
-                setOpen(false);
-              }}
-              className="relative w-full text-left px-4 py-2.5 hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-b-0"
-            >
-              <div className="flex items-baseline justify-between gap-2 mb-0.5">
-                <span className="font-bold text-sm text-gray-900">
-                  {etf.indexLabel}
-                </span>
-                <span className="text-xs text-gray-500">
-                  TER {etf.ter.toString().replace(".", ",")} %
-                </span>
-              </div>
-              <p className="text-xs text-gray-500 leading-snug">
-                {etf.displaySymbol} · {etf.name}
-              </p>
-            </button>
-          ))}
-        </div>
-      )}
+      {open &&
+        pos &&
+        createPortal(
+          <div
+            ref={menuRef}
+            style={{ position: "fixed", top: pos.top, left: pos.left, width: pos.width, zIndex: 1000 }}
+            className="max-h-80 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-card-lg animate-fade-in"
+          >
+            {etfs.map((etf) => (
+              <button
+                key={etf.displaySymbol}
+                type="button"
+                data-lpignore="true"
+                data-1p-ignore="true"
+                onClick={() => {
+                  onSelect(etf);
+                  setOpen(false);
+                }}
+                className="relative w-full text-left px-4 py-2.5 hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-b-0"
+              >
+                <div className="flex items-baseline justify-between gap-2 mb-0.5">
+                  <span className="font-bold text-sm text-gray-900">
+                    {etf.indexLabel}
+                  </span>
+                  <span className="text-xs text-gray-500">
+                    TER {etf.ter.toString().replace(".", ",")} %
+                  </span>
+                </div>
+                <p className="text-xs text-gray-500 leading-snug">
+                  {etf.displaySymbol} · {etf.name}
+                </p>
+              </button>
+            ))}
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }

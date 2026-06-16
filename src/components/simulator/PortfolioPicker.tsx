@@ -10,7 +10,8 @@
  * its DCA engine.
  */
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { AlertTriangle } from "lucide-react";
 import type { ETFConfig } from "@/lib/etf-config";
 import {
@@ -270,47 +271,94 @@ function AddEtfDropdown({
   onSelect: (etf: ETFConfig) => void;
 }) {
   const [open, setOpen] = useState(false);
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [pos, setPos] = useState<{ top: number; left: number; width: number } | null>(null);
+
+  // Le menu est rendu dans un PORTAL sur document.body en position: fixed —
+  // il sort ainsi de tout contexte d'empilement local du formulaire, donc rien
+  // ne peut peindre par-dessus (fini le toggle inflation / le point "temps
+  // réel" qui bavaient à travers, quel que soit le z-index des voisins).
+  useEffect(() => {
+    if (!open) return;
+    const update = () => {
+      const r = btnRef.current?.getBoundingClientRect();
+      if (r) setPos({ top: r.bottom + 4, left: r.left, width: r.width });
+    };
+    update();
+    window.addEventListener("scroll", update, true);
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("scroll", update, true);
+      window.removeEventListener("resize", update);
+    };
+  }, [open]);
+
+  // Fermeture au clic en dehors (bouton + menu exclus) + touche Échap.
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: PointerEvent) => {
+      const t = e.target as Node;
+      if (btnRef.current?.contains(t) || menuRef.current?.contains(t)) return;
+      setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("pointerdown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
   return (
-    // Quand ouvert, on élève le WRAPPER en z-50 : sans ça, le dropdown (même en
-    // z élevé) restait dans le flux et le toggle "Intégrer l'inflation" rendu
-    // plus bas (élément positionné en z-auto) peignait par-dessus. Élever le
-    // wrapper fait passer tout le sous-arbre au-dessus des frères en dessous.
-    <div className={`relative ${open ? "z-50" : ""}`}>
+    <div className="relative">
       <button
+        ref={btnRef}
         type="button"
-        onClick={() => setOpen(!open)}
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
         className="w-full text-left rounded-xl border border-dashed border-slate-300 bg-slate-50/60 px-3 py-2 hover:border-primary-300 hover:bg-primary-50/30 transition-colors flex items-center justify-between text-sm"
       >
         <span className="font-medium text-gray-700">+ Ajouter un ETF</span>
         <span className="text-xs text-gray-500">{etfs.length} dispo.</span>
       </button>
-      {open && (
-        <div className="absolute z-50 left-0 right-0 mt-1 max-h-72 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-card-lg">
-          {etfs.map((etf) => (
-            <button
-              key={etf.displaySymbol}
-              type="button"
-              onClick={() => {
-                onSelect(etf);
-                setOpen(false);
-              }}
-              className="w-full text-left px-3 py-2 hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-b-0"
-            >
-              <div className="flex items-baseline justify-between gap-2 mb-0.5">
-                <span className="font-bold text-xs text-gray-900">
-                  {etf.indexLabel}
-                </span>
-                <span className="text-[10px] text-gray-500">
-                  TER {etf.ter.toString().replace(".", ",")} %
-                </span>
-              </div>
-              <p className="text-[11px] text-gray-500 leading-snug truncate">
-                {etf.displaySymbol} · {etf.peaEligible ? "PEA" : "CTO"}
-              </p>
-            </button>
-          ))}
-        </div>
-      )}
+      {open &&
+        pos &&
+        createPortal(
+          <div
+            ref={menuRef}
+            style={{ position: "fixed", top: pos.top, left: pos.left, width: pos.width, zIndex: 1000 }}
+            className="max-h-72 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-card-lg animate-fade-in"
+          >
+            {etfs.map((etf) => (
+              <button
+                key={etf.displaySymbol}
+                type="button"
+                onClick={() => {
+                  onSelect(etf);
+                  setOpen(false);
+                }}
+                className="w-full text-left px-3 py-2 hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-b-0"
+              >
+                <div className="flex items-baseline justify-between gap-2 mb-0.5">
+                  <span className="font-bold text-xs text-gray-900">
+                    {etf.indexLabel}
+                  </span>
+                  <span className="text-[10px] text-gray-500">
+                    TER {etf.ter.toString().replace(".", ",")} %
+                  </span>
+                </div>
+                <p className="text-[11px] text-gray-500 leading-snug truncate">
+                  {etf.displaySymbol} · {etf.peaEligible ? "PEA" : "CTO"}
+                </p>
+              </button>
+            ))}
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }
