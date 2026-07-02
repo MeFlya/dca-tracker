@@ -3,7 +3,7 @@
   "description": "Cours mensuel de clôture (dernier jour de bourse du mois) en EUR. Utilisé comme proxy de l'indice MSCI World pour backtests DCA.",
   "currency": "EUR",
   "source_url": "https://finance.yahoo.com/quote/IWDA.AS/history",
-  "fetched_at": "2026-06-02",
+  "fetched_at": "2026-07-02",
   "notes": "Données publiques (quotes de marché). Ne tient pas compte du TER de l'ETF (~0,20 %), ni des frais de courtage, ni de la fiscalité. Performances passées non garantes des performances futures.",
   "data": [
     {
@@ -811,8 +811,12 @@
       "value": 123.38
     },
     {
-      "month": "2026-06",
-      "value": 123.85
+      "month": "2026-05",
+      "value": 125.13
+    },
+    {
+      "month": "2026-07",
+      "value": 125.29
     }
   ]
 }
