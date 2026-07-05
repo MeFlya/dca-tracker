@@ -8,8 +8,10 @@ export function Footer() {
     <footer className="border-t border-gray-100 bg-gray-50 mt-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12">
 
-        {/* Legal disclaimer */}
-        <div className="mb-10 p-4 rounded-xl bg-amber-50 border border-amber-200">
+        {/* Legal disclaimer — data-nosnippet : interdit à Google d'utiliser ce
+            texte comme extrait/sitelink (il remplaçait les meta descriptions
+            des pages dans les résultats de recherche). */}
+        <div data-nosnippet className="mb-10 p-4 rounded-xl bg-amber-50 border border-amber-200">
           <p className="text-xs text-amber-800 leading-relaxed">
             <strong>Avertissement légal :</strong> DCA Tracker est un outil
             pédagogique et informatif. Il ne constitue pas un conseil en

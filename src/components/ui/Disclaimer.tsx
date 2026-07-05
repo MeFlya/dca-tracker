@@ -8,6 +8,9 @@ interface DisclaimerProps {
 export function Disclaimer({ className, variant = "warning" }: DisclaimerProps) {
   return (
     <div
+      // data-nosnippet : ce texte légal ne doit jamais servir d'extrait Google
+      // à la place des meta descriptions.
+      data-nosnippet
       className={cn(
         "flex gap-3 items-start p-4 rounded-xl text-sm",
         variant === "warning"
