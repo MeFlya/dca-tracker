@@ -61,8 +61,8 @@ const STEPS = [
           <div className="grid grid-cols-1 gap-2">
             {[
               { symbol: "CW8", name: "Amundi MSCI World", ter: "0,38 %", pea: true },
-              { symbol: "IWDA", name: "iShares Core MSCI World", ter: "0,20 %", pea: true },
-              { symbol: "VWCE", name: "Vanguard FTSE All-World", ter: "0,22 %", pea: true },
+              { symbol: "IWDA", name: "iShares Core MSCI World", ter: "0,20 %", pea: false },
+              { symbol: "VWCE", name: "Vanguard FTSE All-World", ter: "0,22 %", pea: false },
             ].map((etf) => (
               <Link
                 key={etf.symbol}
@@ -358,25 +358,7 @@ export default function InvestirEnETFPage() {
 
       <EmailCapture variant="card" source="guide_etf_debutant" />
 
-      {/* ── JSON-LD ────────────────────────────────────────────────────── */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Article",
-            headline: TITLE,
-            description: DESCRIPTION,
-            url: `${siteUrl}/investir-en-etf`,
-            inLanguage: "fr-FR",
-            publisher: {
-              "@type": "Organization",
-              name: "DCA Tracker",
-              url: siteUrl,
-            },
-          }),
-        }}
-      />
+      {/* JSON-LD Article : émis par ArticleByline (dédoublonné, audit 07/2026). */}
     </div>
   );
 }

@@ -94,16 +94,6 @@ export default function InteretsComposesPage() {
 
       <JsonLd data={{
         "@context": "https://schema.org",
-        "@type": "Article",
-        "headline": TITLE,
-        "description": DESCRIPTION,
-        "url": `${siteUrl}/interets-composes`,
-        "author": { "@type": "Organization", "name": "DCA Tracker" },
-        "publisher": { "@type": "Organization", "name": "DCA Tracker", "url": siteUrl },
-        "inLanguage": "fr",
-      }} />
-      <JsonLd data={{
-        "@context": "https://schema.org",
         "@type": "FAQPage",
         "mainEntity": FAQ.map(({ q, a }) => ({
           "@type": "Question",

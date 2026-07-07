@@ -54,13 +54,13 @@ export const ETF_LIST: ETFConfig[] = [
     indexLabel: "MSCI World",
     name: "iShares Core MSCI World UCITS ETF",
     description:
-      "Alternative à réplication physique au CW8, également exposée au MSCI World. Convient aux investisseurs qui préfèrent éviter le risque de contrepartie des swaps, tout en conservant l'éligibilité PEA.",
+      "Alternative à réplication physique au CW8, également exposée au MSCI World. Convient aux investisseurs qui préfèrent éviter le risque de contrepartie des swaps. Non éligible PEA (fonds physique majoritairement investi hors UE) — à loger en CTO ou assurance-vie.",
     category: "Actions monde développé",
     ter: 0.2,
     replicationMethod: "Physique optimisé",
     distributionPolicy: "Capitalisant",
     isin: "IE00B4L5Y983",
-    peaEligible: true,
+    peaEligible: false,
     region: "monde",
   },
 

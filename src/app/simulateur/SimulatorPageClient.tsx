@@ -288,6 +288,23 @@ export function SimulatorPageClient({ initialOutput }: Props) {
 
         <EmailCapture variant="card" source="simulator" />
         <InvestCTA />
+
+        {/* Maillage vers les pages money (audit 07/2026) — le simulateur est
+            la page la plus forte du site, ses liens comptent double. */}
+        <div className="mt-6 rounded-xl bg-slate-50 border border-slate-200/70 px-4 py-3 text-sm text-gray-600 leading-relaxed">
+          Quel ETF mettre derrière ces chiffres ?{" "}
+          <Link href="/comparatif-etf/cw8-vs-wpea" className="text-primary-700 font-medium hover:underline">
+            CW8 vs WPEA : le verdict pour votre PEA
+          </Link>{" "}
+          ·{" "}
+          <Link href="/etf-msci-world" className="text-primary-700 font-medium hover:underline">
+            Le guide du MSCI World
+          </Link>{" "}
+          ·{" "}
+          <Link href="/meilleurs-etf-debutants" className="text-primary-700 font-medium hover:underline">
+            Meilleur ETF pour débuter
+          </Link>
+        </div>
       </div>
     </div>
   );

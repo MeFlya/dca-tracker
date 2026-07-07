@@ -4,9 +4,9 @@ import { ArrowLeftRight } from "lucide-react";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { ETF_COMPARISON_LIST } from "@/lib/etf-comparisons";
 
-const TITLE = "Comparatifs ETF 2026 : CW8, IWDA, VWCE, WPEA face à face";
+const TITLE = "Comparatifs ETF 2026 : CW8, WPEA, DCAM, VWCE — verdicts clairs";
 const DESCRIPTION =
-  "Comparatifs ETF actualisés 2026 : CW8 vs ESE, CW8 vs WPEA, VWCE vs CW8, IWDA vs CW8. TER, encours, éligibilité PEA et notre recommandation pour chaque face-à-face.";
+  "Un verdict tranché pour chaque duel d'ETF : CW8 vs WPEA, WPEA vs DCAM, VWCE vs CW8, IWDA vs CW8… TER, éligibilité PEA, frais réels sur 20 ans et notre reco selon votre profil.";
 
 export const metadata: Metadata = {
   title: TITLE,

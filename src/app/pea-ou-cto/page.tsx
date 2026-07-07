@@ -407,29 +407,19 @@ export default function PEAouCTOPage() {
       <EmailCapture variant="card" source="guide_pea_cto" />
 
       {/* ── JSON-LD ────────────────────────────────────────────────────── */}
+      {/* FAQPage seul — l'Article est émis par ArticleByline (dédoublonné,
+          audit 07/2026). */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             "@context": "https://schema.org",
-            "@type": "Article",
-            headline: TITLE,
-            description: DESCRIPTION,
-            url: `${siteUrl}/pea-ou-cto`,
-            inLanguage: "fr-FR",
-            publisher: {
-              "@type": "Organization",
-              name: "DCA Tracker",
-              url: siteUrl,
-            },
-            mainEntity: {
-              "@type": "FAQPage",
-              mainEntity: FAQ.map((item) => ({
-                "@type": "Question",
-                name: item.q,
-                acceptedAnswer: { "@type": "Answer", text: item.a },
-              })),
-            },
+            "@type": "FAQPage",
+            mainEntity: FAQ.map((item) => ({
+              "@type": "Question",
+              name: item.q,
+              acceptedAnswer: { "@type": "Answer", text: item.a },
+            })),
           }),
         }}
       />

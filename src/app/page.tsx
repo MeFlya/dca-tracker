@@ -12,11 +12,11 @@ import { EmailCapture } from "@/components/ui/EmailCapture";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { FAQ_ITEMS } from "@/lib/faq-data";
 
-const TITLE = "DCA Tracker — Simulez et pilotez votre DCA ETF long-terme";
+const TITLE = "DCA Tracker — Simulateur DCA ETF gratuit + suivi mensuel";
 // ≤ 150 caractères (Google tronque à ~150-160, les previews sociales à ~125 —
 // l'essentiel du message doit tenir dans les ~125 premiers).
 const DESCRIPTION =
-  "Simulez votre stratégie DCA en ETF et suivez-la mois après mois. 3 scénarios, intérêts composés, hypothèses transparentes. Gratuit.";
+  "Simulez votre DCA en ETF (3 scénarios, intérêts composés), backtestez le MSCI World depuis 2009 et suivez votre plan mois après mois. Gratuit, sans inscription.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -130,6 +130,14 @@ export default function HomePage() {
             <span aria-hidden className="opacity-40">·</span>
             <a href="/comparer-etf" className="hover:text-white transition-colors">
               Comparer les ETF
+            </a>
+            <span aria-hidden className="opacity-40">·</span>
+            <a href="/comparatif-etf/cw8-vs-wpea" className="hover:text-white transition-colors">
+              CW8 vs WPEA
+            </a>
+            <span aria-hidden className="opacity-40">·</span>
+            <a href="/etf-msci-world" className="hover:text-white transition-colors">
+              Guide MSCI World
             </a>
           </div>
         </div>

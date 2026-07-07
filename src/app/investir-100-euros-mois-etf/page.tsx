@@ -101,22 +101,6 @@ export default function Investir100EurosMoisPage() {
       <JsonLd
         data={{
           "@context": "https://schema.org",
-          "@type": "Article",
-          headline: TITLE,
-          description: DESCRIPTION,
-          url: `https://dcatracker.fr${CANONICAL}`,
-          author: { "@type": "Organization", name: "DCA Tracker" },
-          publisher: {
-            "@type": "Organization",
-            name: "DCA Tracker",
-            url: "https://dcatracker.fr",
-          },
-          inLanguage: "fr",
-        }}
-      />
-      <JsonLd
-        data={{
-          "@context": "https://schema.org",
           "@type": "FAQPage",
           mainEntity: FAQ.map(({ q, a }) => ({
             "@type": "Question",

@@ -4,9 +4,11 @@ import { JsonLd } from "@/components/ui/JsonLd";
 import { runSimulation, formatEur } from "@/lib/simulator";
 import { paramsFromSearch } from "@/lib/simulation-params";
 
-const TITLE = "Simulateur DCA ETF — Projetez votre investissement à long terme";
+// CTR (audit 07/2026) : « gratuit » en tête — tous les concurrents de la SERP
+// l'affichent — et un title court qui ne se fait pas tronquer (~55 car. utiles).
+const TITLE = "Simulateur DCA ETF gratuit : 3 scénarios, sans inscription";
 const DESCRIPTION =
-  "Entrez un versement mensuel, une durée et un rendement. DCA Tracker calcule votre projection avec les intérêts composés : 3 scénarios comparés, graphique interactif, export PDF. Gratuit, sans inscription.";
+  "Versement mensuel, durée, rendement : projection immédiate avec intérêts composés. 3 scénarios comparés, graphique interactif, export PDF. 100 % gratuit, sans inscription.";
 
 export const metadata: Metadata = {
   title: TITLE,

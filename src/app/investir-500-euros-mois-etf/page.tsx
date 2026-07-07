@@ -7,7 +7,7 @@ import { JsonLd } from "@/components/ui/JsonLd";
 const TITLE =
   "Investir 500 € par mois en ETF = 260 500 € en 20 ans (simulation)";
 const DESCRIPTION =
-  "500€/mois en ETF sur 20 ans = 260 500€. Simulation complète avec 3 scénarios, projection retraite, impact des frais et fiscalité PEA vs CTO.";
+  "500 €/mois en ETF = 260 500 € en 20 ans, dont 140 500 € de gains. 3 scénarios, impact des frais, fiscalité PEA vs CTO. Gratuit, sans inscription.";
 const CANONICAL = "/investir-500-euros-mois-etf";
 
 export const metadata: Metadata = {
@@ -101,7 +101,7 @@ const FAQ = [
   },
   {
     q: "Quels ETF concrets pour investir 500€/mois en PEA ?",
-    a: "Pour un cœur de portefeuille en PEA, les choix les plus utilisés sont CW8 (Amundi MSCI World, TER 0,38 %, swap synthétique) et IWDA (iShares Core MSCI World, TER 0,20 %, réplication physique). Pour surpondérer les États-Unis, l'Amundi 500 (S&P 500 PEA, TER 0,15 %) est imbattable côté frais. Pour diversifier vers les émergents, AEEM (Amundi MSCI Emerging Markets, TER 0,20 %) est l'un des rares ETF émergents éligibles PEA. Une allocation simple et défendable : 80 % CW8/IWDA + 20 % AEEM, qui vous donne une couverture mondiale quasi-complète à frais bas.",
+    a: "Pour un cœur de portefeuille en PEA, les choix les plus utilisés sont les ETF MSCI World synthétiques : WPEA ou DCAM (TER 0,20 %) pour de nouveaux achats, ou CW8 (TER 0,38 %), la référence historique. Attention : IWDA, physique, n'est PAS éligible PEA — il se loge en CTO. Pour surpondérer les États-Unis, l'Amundi 500 (S&P 500 PEA, TER 0,15 %) est imbattable côté frais. Pour diversifier vers les émergents, AEEM (TER 0,20 %) est l'un des rares ETF émergents éligibles PEA. Une allocation simple et défendable : 80 % World (WPEA/CW8) + 20 % AEEM, qui vous donne une couverture mondiale quasi-complète à frais bas.",
   },
   {
     q: "Faut-il privilégier un seul gros versement mensuel ou fractionner ?",
@@ -114,17 +114,6 @@ export default function Investir500Page() {
 
   return (
     <article className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
-      <JsonLd
-        data={{
-          "@context": "https://schema.org",
-          "@type": "Article",
-          headline: TITLE,
-          description: DESCRIPTION,
-          url: `${siteUrl}${CANONICAL}`,
-          author: { "@type": "Organization", name: "DCA Tracker" },
-          publisher: { "@type": "Organization", name: "DCA Tracker", url: siteUrl },
-        }}
-      />
       <JsonLd
         data={{
           "@context": "https://schema.org",

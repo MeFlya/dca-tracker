@@ -281,35 +281,6 @@ Optimiste   : rendement_brut + 2 %`}
         ]}
       />
 
-      <JsonLd
-        data={{
-          "@context": "https://schema.org",
-          "@type": "Article",
-          headline: TITLE,
-          description: DESCRIPTION,
-          url: `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://dcatracker.fr"}/methodologie`,
-          inLanguage: "fr-FR",
-          author: {
-            "@type": "Person",
-            "@id": "https://dcatracker.fr/a-propos#person",
-            name: "Maël Faleyras",
-            url: "https://dcatracker.fr/a-propos",
-          },
-          publisher: {
-            "@type": "Organization",
-            "@id": "https://dcatracker.fr#organization",
-            name: "DCA Tracker",
-            url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://dcatracker.fr",
-          },
-          datePublished: "2026-04-01",
-          dateModified: "2026-05-25",
-          about: {
-            "@type": "Thing",
-            name: "Dollar Cost Averaging",
-            description: "Stratégie d'investissement progressif par versements réguliers",
-          },
-        }}
-      />
     </div>
   );
 }

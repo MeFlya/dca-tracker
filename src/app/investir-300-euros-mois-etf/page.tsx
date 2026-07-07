@@ -8,7 +8,7 @@ import { JsonLd } from "@/components/ui/JsonLd";
 const TITLE =
   "Investir 300 € par mois en ETF = 156 000 € en 20 ans (simulation)";
 const DESCRIPTION =
-  "300€/mois en ETF sur 20 ans = 156 000€. Simulation complète avec 3 scénarios, projection retraite, règle des 4%, et analyse Monte Carlo. Sans inscription.";
+  "300 €/mois en ETF = 156 000 € en 20 ans, dont 84 000 € d'intérêts composés. 3 scénarios, PEA vs CTO, règle des 4 %, Monte Carlo. Gratuit, sans inscription.";
 const CANONICAL = "/investir-300-euros-mois-etf";
 
 export const metadata: Metadata = {
@@ -123,22 +123,6 @@ export default function Investir300EurosMoisPage() {
     // Page longue de lecture → fond calme et lisible.
     <div className="bg-white">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <JsonLd
-        data={{
-          "@context": "https://schema.org",
-          "@type": "Article",
-          headline: TITLE,
-          description: DESCRIPTION,
-          url: `https://dcatracker.fr${CANONICAL}`,
-          author: { "@type": "Organization", name: "DCA Tracker" },
-          publisher: {
-            "@type": "Organization",
-            name: "DCA Tracker",
-            url: "https://dcatracker.fr",
-          },
-          inLanguage: "fr",
-        }}
-      />
       <JsonLd
         data={{
           "@context": "https://schema.org",

@@ -7,9 +7,12 @@ import { ArticleByline } from "@/components/ui/ArticleByline";
 import { BreadcrumbSchema } from "@/components/ui/BreadcrumbSchema";
 import { SourcesReferences } from "@/components/ui/SourcesReferences";
 
-const TITLE = "Meilleurs ETF pour débutants 2026 : CW8, IWDA, VWCE comparés";
+// CTR (audit 07/2026) : le title mettait en avant IWDA/VWCE (non éligibles
+// PEA — hors intent du débutant FR) et contredisait la meta. Title aligné
+// sur le verdict de la page.
+const TITLE = "Meilleur ETF pour débuter en 2026 : un seul suffit (verdict)";
 const DESCRIPTION =
-  "Le verdict : un seul ETF MSCI World éligible PEA suffit pour démarrer — CW8 pour la liquidité, WPEA ou DCAM pour les frais (0,20 %). Comparatif complet TER/PEA/réplication + les erreurs de débutant à éviter.";
+  "Verdict : un seul ETF MSCI World éligible PEA suffit pour démarrer — WPEA ou DCAM (0,20 % de frais), ou CW8 pour la liquidité. Tableau comparatif complet + les erreurs de débutant à éviter.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -55,20 +58,19 @@ const TOP_PICKS = [
     symbol: "IWDA",
     name: "iShares Core MSCI World UCITS ETF",
     ter: 0.20,
-    pea: true,
+    pea: false,
     replication: "Physique optimisé",
     index: "MSCI World (~1 500 entreprises, 23 pays développés)",
-    verdict: "La meilleure alternative physique au CW8",
+    verdict: "La meilleure alternative physique — en CTO",
     verdictClass: "bg-blue-50 border-blue-100 text-blue-800",
     tagClass: "bg-blue-600 text-white",
-    tag: "Alternative physique",
+    tag: "Alternative physique (CTO)",
     why: [
       "TER inférieur au CW8 (0,20 % vs 0,38 %) — moins cher sur le long terme",
       "Réplication physique — le fonds détient réellement les actions, sans risque de contrepartie",
-      "Également éligible PEA malgré la réplication physique (structure UCITS irlandaise)",
       "BlackRock (iShares) : le plus grand gestionnaire d'actifs au monde",
     ],
-    watchOut: "Liquidité légèrement inférieure au CW8 sur Euronext Paris. Le spread peut être plus large sur de petits volumes.",
+    watchOut: "Non éligible PEA (réplication physique majoritairement hors UE) : il se loge en CTO ou assurance-vie. Pour un PEA, préférez un ETF World synthétique (WPEA, DCAM ou CW8).",
   },
   {
     symbol: "VWCE",
@@ -144,8 +146,8 @@ const FAQ = [
     a: "Le CW8 (Amundi MSCI World) est le point de départ recommandé pour la grande majorité des débutants en France. Il est éligible PEA, disponible chez tous les courtiers français, capitalisant, et offre une diversification immédiate sur 1 500 entreprises mondiales. Disponible à partir d'environ 400 € la part sur Euronext Paris — ou en fraction chez Trade Republic.",
   },
   {
-    q: "Faut-il choisir CW8 ou EWLD ?",
-    a: "Les deux couvrent l'indice MSCI World et sont éligibles PEA. EWLD a un TER légèrement inférieur (0,20 % vs 0,38 %) et une réplication physique. CW8 est plus liquide et plus répandu. Sur le long terme, la différence de performance devrait être marginale. Si votre courtier propose les deux à frais de transaction identiques, EWLD a un léger avantage théorique côté frais.",
+    q: "Faut-il choisir CW8, WPEA ou DCAM ?",
+    a: "Les trois couvrent le MSCI World et sont éligibles PEA (réplication synthétique). WPEA et DCAM coûtent moitié moins cher (TER 0,20 % vs 0,38 % pour CW8) : pour de nouveaux achats, ils ont l'avantage. CW8 reste le plus liquide et le plus répandu chez les courtiers. DCAM a un prix de part (~5 €) idéal pour les petits versements mensuels. Sur le long terme, la différence de performance entre eux devrait rester marginale.",
   },
   {
     q: "Un seul ETF suffit-il pour un portefeuille débutant ?",
@@ -174,16 +176,6 @@ export default function MeilleursETFDebutantsPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
 
-      <JsonLd data={{
-        "@context": "https://schema.org",
-        "@type": "Article",
-        "headline": TITLE,
-        "description": DESCRIPTION,
-        "url": `${siteUrl}/meilleurs-etf-debutants`,
-        "author": { "@type": "Organization", "name": "DCA Tracker" },
-        "publisher": { "@type": "Organization", "name": "DCA Tracker", "url": siteUrl },
-        "inLanguage": "fr",
-      }} />
       <JsonLd data={{
         "@context": "https://schema.org",
         "@type": "FAQPage",
@@ -367,6 +359,21 @@ export default function MeilleursETFDebutantsPage() {
             </div>
           ))}
         </div>
+
+        {/* Maillage vers les duels détaillés (audit 07/2026) — ancres
+            descriptives vers les pages money en position page 2. */}
+        <p className="text-sm text-gray-600 leading-relaxed mt-6 rounded-xl bg-slate-50 border border-slate-200/70 px-4 py-3">
+          Vous hésitez entre deux World éligibles PEA ? Nos duels détaillés
+          tranchent :{" "}
+          <Link href="/comparatif-etf/cw8-vs-wpea" className="text-primary-700 font-medium hover:underline">
+            CW8 vs WPEA (le verdict frais)
+          </Link>{" "}
+          et{" "}
+          <Link href="/comparatif-etf/wpea-vs-dcam" className="text-primary-700 font-medium hover:underline">
+            WPEA vs DCAM (le match des 0,20 %)
+          </Link>
+          .
+        </p>
       </section>
 
       {/* ── Section 4: Tableau récapitulatif ──────────────────────────────── */}
@@ -397,7 +404,7 @@ export default function MeilleursETFDebutantsPage() {
             <tbody>
               {[
                 { symbol: "CW8",  ter: "0,38 %", pea: true,  cover: "1 500 titres / 23 pays développés", ideal: "Premier ETF en PEA" },
-                { symbol: "IWDA", ter: "0,20 %", pea: true,  cover: "1 500 titres / 23 pays développés", ideal: "Alternative physique PEA" },
+                { symbol: "IWDA", ter: "0,20 %", pea: false, cover: "1 500 titres / 23 pays développés", ideal: "Alternative physique (CTO)" },
                 { symbol: "VWCE", ter: "0,22 %", pea: false, cover: "3 700 titres / 49 pays", ideal: "Diversification maximale CTO" },
                 { symbol: "500",  ter: "0,15 %", pea: true,  cover: "500 grandes caps américaines", ideal: "S&P 500 en PEA" },
               ].map((row, i) => (

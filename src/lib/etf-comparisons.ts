@@ -364,11 +364,12 @@ const VWCE_VS_CW8: ETFComparison = {
 const CW8_VS_WPEA: ETFComparison = {
   slug: "cw8-vs-wpea",
   title: "CW8 vs WPEA : quel ETF MSCI World pour votre PEA ?",
-  // CTR-optimisé : on donne le verdict + le chiffre clé dans le snippet pour
-  // capter le clic (261 imp/mois sur la requête, CTR à remonter).
-  metaTitle: "CW8 ou WPEA : lequel choisir pour votre PEA en 2026 ?",
+  // CTR-optimisé (audit 07/2026) : la SERP est passée au 3-way « CW8 vs WPEA
+  // vs DCAM » — le snippet doit couvrir l'intent DCAM sinon la page paraît
+  // datée face aux comparatifs concurrents à 3 (0,5 % de CTR mesuré).
+  metaTitle: "CW8 vs WPEA (vs DCAM) : le verdict 2026 pour votre PEA",
   metaDescription:
-    "WPEA coûte 2× moins cher que CW8 (0,20 % vs 0,38 %) pour le même MSCI World — environ 4 500 € de plus sur 20 ans à 200 €/mois. Mais CW8 garde l'avantage liquidité. Comparatif complet et verdict.",
+    "Verdict : WPEA à 0,20 % bat CW8 à 0,38 % — ~4 500 € d'écart sur 20 ans à 200 €/mois. Ne vendez pas votre CW8 pour autant. Et face à DCAM ? Tableau complet, frais réels, reco selon votre profil.",
 
   left: {
     heading: "CW8",
@@ -469,9 +470,13 @@ const CW8_VS_WPEA: ETFComparison = {
       q: "Vaut-il le coup de vendre mon CW8 pour racheter du WPEA ?",
       a: "Cela dépend de votre encours et de votre horizon. Sous 10 000 € d'encours CW8 + horizon 15+ ans : oui, l'économie de TER cumulée justifie la bascule (en PEA, la vente n'a aucun coût fiscal). Au-dessus de 10 000 € ou horizon < 10 ans : pas urgent, vous pouvez simplement orienter vos versements futurs vers WPEA et laisser CW8 capitaliser de son côté.",
     },
+    {
+      q: "Et DCAM dans tout ça ? Faut-il le préférer à WPEA ?",
+      a: "DCAM (Amundi PEA MSCI World ESG) joue dans la même catégorie que WPEA : TER 0,20 %, réplication synthétique, éligible PEA. Deux différences pratiques : DCAM suit une variante ESG de l'indice (filtrage extra-financier, performance historiquement très proche) et son prix de part (~5 €) est bien plus adapté aux petits DCA mensuels que celui de WPEA. Notre comparatif détaillé WPEA vs DCAM tranche selon votre montant mensuel et votre courtier. Face à CW8, les deux gagnent sur les frais.",
+    },
   ],
 
-  tags: ["PEA", "CW8", "WPEA", "MSCI World", "iShares", "Amundi"],
+  tags: ["PEA", "CW8", "WPEA", "DCAM", "MSCI World", "iShares", "Amundi"],
 };
 
 // ─── Registry ─────────────────────────────────────────────────────────────────
@@ -481,9 +486,9 @@ const CW8_VS_WPEA: ETFComparison = {
 const WPEA_VS_DCAM: ETFComparison = {
   slug: "wpea-vs-dcam",
   title: "WPEA vs DCAM : quel MSCI World à 0,20 % pour votre PEA ?",
-  metaTitle: "WPEA ou DCAM : lequel choisir pour votre PEA en 2026 ?",
+  metaTitle: "WPEA ou DCAM : notre verdict 2026 pour votre PEA",
   metaDescription:
-    "WPEA (iShares) et DCAM (Amundi) : même indice MSCI World, même TER de 0,20 %, même éligibilité PEA. La différence se joue sur le prix de part (~5 € pour DCAM, idéal petits DCA) et votre courtier. Comparatif et verdict.",
+    "Même MSCI World, même TER 0,20 % : le match se joue ailleurs. Verdict : DCAM (part ~5 €) pour un DCA mensuel, WPEA pour les montants élevés. Et le cas où il ne faut PAS arbitrer. Comparatif complet.",
 
   left: {
     heading: "WPEA",

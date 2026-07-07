@@ -48,20 +48,20 @@ Les dividendes versés par les entreprises de l'indice ne sont pas distribués a
 
 La réplication physique signifie que le fonds possède réellement des parts d'entreprises comme Apple, Microsoft, LVMH ou Toyota. Cela élimine le risque de contrepartie propre aux swaps, au prix d'une légère imperfection de tracking (l'ETF ne détient pas les ~1 500 titres de l'indice, mais une sélection optimisée d'environ 90 % d'entre eux).
 
-L'IWDA est également capitalisant et éligible PEA — un cas rare pour un ETF physique exposé au marché américain, rendu possible par sa structure de fonds irlandais (ISIN IE00B4L5Y983). Son TER (0,20 %) est inférieur à celui du CW8 (0,38 %), bien que d'autres frais implicites (coûts de transaction, écart de suivi) puissent nuancer cet avantage en pratique.`,
+L'IWDA est également capitalisant, mais il n'est PAS éligible au PEA : c'est un fonds à réplication physique investi majoritairement hors Union européenne (ISIN irlandais IE00B4L5Y983), ce qui ne satisfait pas le quota de 75 % d'actions UE exigé par le PEA. Il se loge donc en CTO ou en assurance-vie. Son TER (0,20 %) est inférieur à celui du CW8 (0,38 %), bien que d'autres frais implicites (coûts de transaction, écart de suivi) puissent nuancer cet avantage en pratique.`,
     whyChooseIt: [
       "Réplication physique — le fonds détient réellement des actions, éliminant le risque de contrepartie des swaps",
       "TER parmi les plus bas du marché pour un ETF MSCI World (0,20 %), inférieur au CW8",
-      "Éligible PEA — même avantage fiscal que le CW8, sans recours à un swap",
+      "Encours parmi les plus importants d'Europe — liquidité et pérennité du fonds",
       "iShares (BlackRock) : l'émetteur le plus important au monde, infrastructure solide et grande transparence sur les holdings",
     ],
     watchOut: [
-      "Liquidité légèrement inférieure au CW8 sur les marchés français — le spread peut être plus large sur de petits volumes",
+      "Non éligible PEA — à loger en CTO (PFU 30 % sur les gains) ou assurance-vie ; pour un PEA, préférez un World synthétique (WPEA, DCAM, CW8)",
       "L'écart de suivi réel peut dépasser le TER affiché selon les conditions de marché (réplication par échantillonnage)",
-      "Disponibilité variable selon les courtiers français — à vérifier avant d'ouvrir une position (Trade Republic et Bourse Direct le proposent en PEA, certaines banques traditionnelles non)",
+      "Coté sur Euronext Amsterdam (et non Paris) — vérifiez les frais de place de votre courtier",
     ],
     suitableFor:
-      "Convient aux investisseurs qui préfèrent la réplication physique pour des raisons de transparence ou d'aversion au risque de contrepartie, tout en restant sur l'exposition MSCI World avec éligibilité PEA. Excellent choix pour qui veut maximiser la pureté de la réplication sans sacrifier la fiscalité PEA.",
+      "Convient aux investisseurs qui préfèrent la réplication physique pour des raisons de transparence ou d'aversion au risque de contrepartie, dans le cadre d'un CTO ou d'une assurance-vie — typiquement une fois le PEA plafonné. Pour un cœur de portefeuille en PEA, un ETF World synthétique (WPEA, DCAM, CW8) reste le choix adapté.",
     suggestedReturn: 7,
   },
 
