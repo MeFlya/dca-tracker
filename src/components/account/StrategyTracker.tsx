@@ -27,10 +27,22 @@ export function StrategyTracker({ initialStrategy, initialEntries }: Props) {
         <TabContent />
       </div>
 
-      <LogMonthModal />
+      <KeyedLogMonthModal />
       <MonthDetailModal />
     </StrategyProvider>
   );
+}
+
+/** LogMonthModal n'est jamais démonté (son `return null` arrive après les
+ *  hooks), donc ses états — dont le mois cible — restaient figés à la valeur
+ *  calculée au tout premier montage : éditer un mois passé pouvait écraser le
+ *  mauvais mois. La clé force un remontage propre à chaque ouverture. */
+function KeyedLogMonthModal() {
+  const { logModalState } = useStrategy();
+  const key = logModalState.open
+    ? `log-${logModalState.initialEntry?.month ?? "nouveau"}`
+    : "log-ferme";
+  return <LogMonthModal key={key} />;
 }
 
 function TabContent() {

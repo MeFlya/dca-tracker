@@ -3,6 +3,7 @@
 // in Clerk privateMetadata.
 
 import { NextResponse } from "next/server";
+import { denyUnlessCron } from "@/lib/cron-auth";
 import { clerkClient } from "@clerk/nextjs/server";
 import { sendAnnualPush, type AnnualPushMilestone } from "@/lib/emails/send";
 
@@ -15,13 +16,8 @@ const MILESTONES: { id: AnnualPushMilestone; days: number }[] = [
 ];
 
 export async function GET(req: Request) {
-  const secret = process.env.CRON_SECRET;
-  if (secret) {
-    const auth = req.headers.get("authorization");
-    if (auth !== `Bearer ${secret}`) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-  }
+  const denied = denyUnlessCron(req);
+  if (denied) return denied;
 
   const clerk = await clerkClient();
   let sent = 0;

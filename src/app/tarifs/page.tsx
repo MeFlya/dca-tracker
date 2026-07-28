@@ -8,6 +8,7 @@ import { PremiumFeatureShowcase } from "@/components/tarifs/PremiumFeatureShowca
 import { PaymentBadge } from "@/components/ui/PaymentBadge";
 import { Testimonials } from "@/components/home/Testimonials";
 import { LiveSocialProof } from "@/components/home/LiveSocialProof";
+import { getSiteContentMetrics } from "@/lib/site-metrics";
 
 const TITLE = "Tarifs — DCA Tracker";
 const DESCRIPTION =
@@ -318,8 +319,9 @@ export default function TarifsPage() {
         {/* Testimonials — auto-hidden until populated */}
         <Testimonials />
 
-        {/* Social proof — auto-hidden quand stats <5 users (LiveSocialProof) */}
-        <LiveSocialProof />
+        {/* Social proof — bascule automatiquement sur les métriques de contenu
+            tant que l'usage réel n'a pas atteint le seuil (LiveSocialProof) */}
+        <LiveSocialProof content={getSiteContentMetrics()} />
 
         {/* FAQ — mt-16 pour aérer après LiveSocialProof (qui a sa propre
             border-y et pas de margin-bottom interne, sinon "trop collé"). */}

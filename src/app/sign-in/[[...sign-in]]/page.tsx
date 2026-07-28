@@ -32,9 +32,11 @@ export default function SignInPage() {
           fallbackRedirectUrl="/account"
         />
 
-        {/* Footer trust line */}
+        {/* Footer trust line — « Hébergement en Europe » retiré : Vercel, Clerk
+            et Resend sont américains (sous clauses contractuelles types), ce que
+            la politique de confidentialité du site indique déjà. */}
         <p className="text-center text-xs text-gray-500 mt-6">
-          Vos données ne sont jamais vendues · Hébergement en Europe
+          Vos données ne sont jamais vendues · Aucun traceur publicitaire
         </p>
       </div>
     </div>

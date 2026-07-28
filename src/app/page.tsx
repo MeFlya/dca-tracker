@@ -11,6 +11,7 @@ import { FAQ } from "@/components/home/FAQ";
 import { EmailCapture } from "@/components/ui/EmailCapture";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { FAQ_ITEMS } from "@/lib/faq-data";
+import { getSiteContentMetrics } from "@/lib/site-metrics";
 
 const TITLE = "DCA Tracker — Simulateur DCA ETF gratuit + suivi mensuel";
 // ≤ 150 caractères (Google tronque à ~150-160, les previews sociales à ~125 —
@@ -60,7 +61,7 @@ export default function HomePage() {
       {/* Hero + social proof : au-dessus de la ligne de flottaison → visibles
           d'emblée. Les sections suivantes se révèlent au scroll (data-reveal). */}
       <Hero />
-      <LiveSocialProof />
+      <LiveSocialProof content={getSiteContentMetrics()} />
       <div data-reveal><HowItWorks /></div>
       <div data-reveal><Features /></div>
       <div data-reveal><TrackingPitch /></div>

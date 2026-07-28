@@ -43,17 +43,17 @@ const FALLBACK: PublicStats = {
 // Privacy: never expose bins with fewer than this many users
 const MIN_BIN = 3;
 
-// Credibility floors — shown when real count is below these values.
-// Early-stage trick: a banner that says "3 investisseurs" kills conversion,
-// but "247 investisseurs" is plausible and encouraging. As the real count
-// grows past these floors, the real values take over automatically via
-// Math.max(). These numbers stay as reasonable "we're a young product but
-// not empty" signals, not claims of massive traction.
-const FLOORS = {
-  users: 247,
-  strategies: 180,
-  monthsLogged: 620,
-} as const;
+// ⚠️ NE JAMAIS RÉINTRODUIRE DE PLANCHER ICI.
+//
+// Cette route servait des constantes (247 / 180 / 620) via Math.max() quand le
+// compte réel était plus bas, sous un label « Données réelles ». Trois raisons
+// de ne pas y revenir : le repo est public (le trucage était lisible par
+// n'importe qui), le positionnement du site est « formules vérifiables, pas de
+// boîte noire », et le sujet est financier. Un chiffre honnête et modeste vaut
+// mieux qu'un chiffre flatteur et faux.
+//
+// Le bloc d'affichage (LiveSocialProof) se masque tout seul tant que les
+// compteurs réels n'ont pas dépassé son seuil — c'est le bon comportement.
 
 function binMonthlyAmount(amount: number): string {
   if (amount < 100) return "< 100 €";
@@ -152,9 +152,9 @@ export async function GET() {
     }
 
     const stats: PublicStats = {
-      users: Math.max(users, FLOORS.users),
-      strategies: Math.max(strategies, FLOORS.strategies),
-      monthsLogged: Math.max(monthsLogged, FLOORS.monthsLogged),
+      users,
+      strategies,
+      monthsLogged,
       monthlyAmountDistribution: orderedCount(monthlyMap, [
         "< 100 €",
         "100-200 €",

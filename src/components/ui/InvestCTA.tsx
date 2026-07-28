@@ -6,6 +6,7 @@ import {
   type BrokerPartner,
 } from "@/lib/broker-config";
 import { AffiliateDisclaimer } from "@/components/ui/AffiliateDisclaimer";
+import { PartnerLink } from "@/components/ui/PartnerLink";
 import { cn } from "@/lib/utils";
 
 interface InvestCTAProps {
@@ -73,10 +74,10 @@ export function InvestCTA({ accountType, className }: InvestCTAProps) {
 
 function PartnerButton({ partner }: { partner: BrokerPartner }) {
   return (
-    <a
+    <PartnerLink
       href={partner.url}
-      target="_blank"
-      rel="noopener noreferrer sponsored"
+      brokerId={partner.id}
+      accountType={partner.accountTypes.join("+")}
       className="group inline-flex items-center gap-2.5 px-4 py-2.5 rounded-xl border border-gray-200 bg-white hover:border-primary-300 hover:bg-primary-50 text-sm font-medium text-gray-700 hover:text-primary-700 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
     >
       <span>{partner.name}</span>
@@ -96,7 +97,7 @@ function PartnerButton({ partner }: { partner: BrokerPartner }) {
       )}
 
       <ExternalLinkIcon />
-    </a>
+    </PartnerLink>
   );
 }
 

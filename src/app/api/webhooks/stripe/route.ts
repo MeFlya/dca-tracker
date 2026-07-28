@@ -150,7 +150,19 @@ export async function POST(req: Request) {
 
         const priceId = sub.items.data[0]?.price.id;
         const plan = getPlanFromPriceId(priceId);
-        const activePlan = sub.status === "active" ? plan : "free";
+        // "trialing" DOIT donner l'accès : l'essai de 7 jours est configuré
+        // côté serveur (trial_period_days), donc pendant toute sa durée le
+        // statut Stripe vaut "trialing" et jamais "active". Sans lui, le
+        // moindre customer.subscription.updated émis pendant l'essai (mise à
+        // jour de carte, passage par le portail) repassait l'abonné en gratuit.
+        // "past_due" et "unpaid" conservent l'accès le temps des relances
+        // Stripe — c'est "canceled"/"incomplete_expired" qui le retirent.
+        const ACCESS_GRANTING: Stripe.Subscription.Status[] = [
+          "active",
+          "trialing",
+          "past_due",
+        ];
+        const activePlan = ACCESS_GRANTING.includes(sub.status) ? plan : "free";
         const interval = sub.items.data[0]?.price.recurring?.interval ?? "month";
 
         await clerk.users.updateUserMetadata(clerkUserId, {

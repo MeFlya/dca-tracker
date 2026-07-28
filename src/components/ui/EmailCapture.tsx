@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import { cn } from "@/lib/utils";
+import { track } from "@/lib/analytics";
 
 type SubmitState = "idle" | "loading" | "success" | "error";
 
@@ -53,6 +54,9 @@ export function EmailCapture({
       }
 
       setState("success");
+      // Mesure de conversion : sans cet événement, impossible de savoir quelle
+      // page capture des emails (la prop `source` porte déjà l'origine).
+      track({ name: "email_signup", props: { source } });
     } catch {
       setErrorMsg("Impossible de se connecter. Réessayez dans un instant.");
       setState("error");

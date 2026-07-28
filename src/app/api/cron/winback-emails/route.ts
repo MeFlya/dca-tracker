@@ -18,6 +18,7 @@
 // même boucle pagination, même gestion d'erreurs).
 
 import { NextResponse } from "next/server";
+import { denyUnlessCron } from "@/lib/cron-auth";
 import { clerkClient } from "@clerk/nextjs/server";
 import { sendWinBackJ7, sendWinBackJ30 } from "@/lib/emails/send";
 
@@ -28,13 +29,8 @@ const J30_MS = 30 * 24 * 60 * 60 * 1000;
 
 export async function GET(req: Request) {
   // Auth via CRON_SECRET (Vercel cron sends this in Authorization header)
-  const secret = process.env.CRON_SECRET;
-  if (secret) {
-    const auth = req.headers.get("authorization");
-    if (auth !== `Bearer ${secret}`) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-  }
+  const denied = denyUnlessCron(req);
+  if (denied) return denied;
 
   const clerk = await clerkClient();
   const now = Date.now();

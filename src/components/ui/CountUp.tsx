@@ -63,11 +63,18 @@ export function CountUp({
       return;
     }
 
-    setDisplay(0); // prêt à compter (invisible si hors écran)
-
+    // NE PAS remettre l'affichage à 0 ici. Tant que l'IntersectionObserver
+    // n'a pas déclenché, on doit montrer la VRAIE valeur : si l'observer ne
+    // se déclenche jamais (élément sous la ligne de flottaison chez un
+    // visiteur qui ne scrolle pas, crawler, navigateur sans IO fiable), un 0
+    // resterait affiché indéfiniment. C'est le bug qui affichait
+    // « 0 investisseurs inscrits » sur la home. Le retour à 0 se fait
+    // maintenant au tout début de l'animation, une fois qu'on est certain
+    // qu'elle va effectivement jouer.
     const animate = () => {
       if (doneRef.current) return;
       doneRef.current = true;
+      setDisplay(0);
       const start = performance.now();
       const tick = (now: number) => {
         const t = Math.min(1, (now - start) / durationMs);
