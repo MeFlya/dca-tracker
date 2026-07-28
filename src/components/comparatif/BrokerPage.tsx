@@ -5,6 +5,8 @@ import { BROKER_LIST } from "@/lib/brokers";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { ArticleByline } from "@/components/ui/ArticleByline";
 import { BrokerLogoMark } from "@/components/ui/BrokerLogoMark";
+import { InvestCTA } from "@/components/ui/InvestCTA";
+import { AffiliationNotice } from "@/components/ui/AffiliationNotice";
 
 function MobileRating({ rating }: { rating: number }) {
   return (
@@ -274,6 +276,14 @@ export function BrokerPage({ broker }: { broker: BrokerData }) {
         </p>
       </div>
 
+      {/* Le lien « Site officiel » ci-dessus reste volontairement NON affilié,
+          même quand ce courtier est un partenaire : le lecteur garde toujours
+          un chemin direct. C'est le meilleur signal de confiance possible, et
+          ça ne coûte que les rares clics de ceux qui n'auraient de toute façon
+          pas voulu passer par un lien rémunéré.
+          Le bloc ci-dessous ne s'affiche que si un partenariat existe. */}
+      <InvestCTA className="mb-10" />
+
       {/* Other brokers */}
       <div className="pt-8 border-t border-gray-100">
         <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-4">
@@ -318,13 +328,16 @@ export function BrokerPage({ broker }: { broker: BrokerData }) {
         </div>
       </div>
 
-      {/* Legal */}
+      {/* Legal — la mention d'affiliation est dérivée de BROKER_CONFIG, jamais
+          écrite en dur : voir <AffiliationNotice />. */}
       <p className="mt-10 text-[11px] text-gray-500 leading-relaxed">
         Cet article est fourni à titre informatif et ne constitue pas un conseil
-        en investissement personnalisé. DCA Tracker n&apos;est pas affilié à{" "}
-        {broker.name}. Les informations présentées ont été vérifiées à la date de
-        publication mais peuvent évoluer — consultez le site officiel du courtier
-        pour les conditions tarifaires à jour.
+        en investissement personnalisé.{" "}
+        <AffiliationNotice broker={{ slug: broker.slug, name: broker.name }} />{" "}
+        Investir comporte un risque de perte en capital. Les informations
+        présentées ont été vérifiées à la date de publication mais peuvent
+        évoluer — consultez le site officiel du courtier pour les conditions
+        tarifaires à jour.
       </p>
     </article>
   );

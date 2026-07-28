@@ -81,8 +81,12 @@ export default function AboutPage() {
     url: siteUrl,
     founder: { "@id": `${siteUrl}/a-propos#person` },
     foundingDate: "2025",
+    // ⚠️ Ne pas réintroduire « sans affiliation » ici : c'est une affirmation
+    // en données structurées, donc reprise telle quelle par les moteurs, et
+    // elle cesse d'être vraie dès l'activation d'un partenariat courtier.
+    // Le modèle économique est décrit en détail sur /transparence.
     description:
-      "Simulateur et tracker DCA ETF pour investisseurs particuliers français. Outil indépendant, bootstrappé, sans affiliation.",
+      "Simulateur et tracker DCA ETF pour investisseurs particuliers français. Outil indépendant, bootstrappé, au financement public.",
     email: "hello@dcatracker.fr",
   };
 
@@ -345,11 +349,29 @@ export default function AboutPage() {
                 ✗
               </span>
               <span>
-                <strong>Je ne prendrai pas de commission de broker.</strong>{" "}
-                Aucun lien d&apos;affiliation sur le site. Si je recommande
-                Trade Republic dans le comparatif, c&apos;est parce que leur
-                épargne programmée est objectivement le meilleur deal FR, pas
-                parce qu&apos;ils me versent quoi que ce soit.
+                <strong>Je ne vendrai pas le classement du comparatif.</strong>{" "}
+                Cette page promettait auparavant « aucun lien d&apos;affiliation
+                sur le site ». Je reviens sur cet engagement, et je préfère
+                l&apos;écrire que le laisser découvrir : des liens affiliés vers
+                des courtiers vont être mis en place, parce qu&apos;un site sans
+                revenu finit par fermer. Ce qui ne change pas : l&apos;ordre des
+                courtiers dépend de leur pertinence pour un DCA, ceux qui ne me
+                versent rien restent présentés à égalité, et un lien direct non
+                affilié reste disponible sur chaque fiche. Le détail est sur la{" "}
+                <Link
+                  href="/transparence"
+                  className="text-primary-600 hover:underline font-medium"
+                >
+                  page transparence
+                </Link>
+                , et la date du changement dans le{" "}
+                <Link
+                  href="/changelog"
+                  className="text-primary-600 hover:underline font-medium"
+                >
+                  journal
+                </Link>
+                .
               </span>
             </li>
             <li className="flex gap-3 text-sm text-gray-700 leading-relaxed">
@@ -449,7 +471,15 @@ export default function AboutPage() {
             roadmap est dictée par les besoins des utilisateurs, pas par un
             pitch deck. Le modèle économique est simple : un abonnement Premium
             à partir de 4,08 €/mois (facturé 49 €/an) qui finance les serveurs,
-            les données de marché et mon temps.
+            les données de marché et mon temps. Le détail de chaque source de
+            revenu — y compris les commissions courtier — est public sur la{" "}
+            <Link
+              href="/transparence"
+              className="text-primary-600 hover:underline font-medium"
+            >
+              page transparence
+            </Link>
+            .
           </p>
           <p className="text-sm text-gray-600 leading-relaxed">
             Une question, un bug, une suggestion ? Écris-moi à{" "}

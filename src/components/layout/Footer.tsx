@@ -198,6 +198,16 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/transparence" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+                  Transparence
+                </Link>
+              </li>
+              <li>
+                <Link href="/changelog" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+                  Journal des changements
+                </Link>
+              </li>
+              <li>
                 <a href="mailto:hello@dcatracker.fr" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
                   Contact
                 </a>
@@ -217,6 +227,11 @@ export function Footer() {
             </Link>
             <Link href="/confidentialite" className="text-xs text-gray-500 hover:text-gray-900 transition-colors">
               Politique de confidentialité
+            </Link>
+            {/* Information du consommateur sur les liens affiliés —
+                art. L.111-7 Code de la consommation. */}
+            <Link href="/transparence" className="text-xs text-gray-500 hover:text-gray-900 transition-colors">
+              Transparence
             </Link>
           </nav>
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3">

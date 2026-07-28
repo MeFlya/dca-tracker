@@ -3,6 +3,8 @@ import Link from "next/link";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { BROKER_LIST } from "@/lib/brokers";
 import { BrokerLogoMark } from "@/components/ui/BrokerLogoMark";
+import { InvestCTA } from "@/components/ui/InvestCTA";
+import { AffiliationNotice } from "@/components/ui/AffiliationNotice";
 
 const TITLE =
   "Comparatif des meilleurs courtiers pour un DCA ETF en 2026";
@@ -218,12 +220,15 @@ export default function ComparatifHubPage() {
         </Link>
       </div>
 
-      {/* Legal */}
+      {/* Ne s'affiche que si au moins un partenariat est actif. */}
+      <InvestCTA className="mt-10" />
+
+      {/* Legal — mention d'affiliation dérivée de BROKER_CONFIG. */}
       <p className="mt-10 text-[11px] text-gray-500 leading-relaxed text-center">
         Ce comparatif est fourni à titre informatif et ne constitue pas un
-        conseil en investissement. DCA Tracker n&apos;est affilié à aucun des
-        courtiers présentés. Tarifs et conditions à vérifier sur les sites
-        officiels avant ouverture de compte.
+        conseil en investissement personnalisé. <AffiliationNotice />{" "}
+        Investir comporte un risque de perte en capital. Tarifs et conditions à
+        vérifier sur les sites officiels avant ouverture de compte.
       </p>
     </div>
   );

@@ -23,6 +23,7 @@ const REV = {
   legal: "2026-05-18",      // mentions légales, CGV, confidentialité (SIRET finalisé)
   evergreen: "2026-06-10",  // fiches courtiers (byline juin), glossaire, pages stables
   market: "2026-05-25",     // pages avec données de marché (template, pas la donnée live)
+  affiliation: "2026-07-28",// /transparence, /changelog, /a-propos (engagement affiliation révisé)
 } as const;
 
 type PageEntry = {
@@ -67,8 +68,10 @@ export async function GET(): Promise<NextResponse> {
       priority: 0.8,
       lastmod: REV.ymyl,
     })),
-    { url: `${base}/a-propos`,                 changeFreq: "monthly", priority: 0.6,  lastmod: REV.tools },
+    { url: `${base}/a-propos`,                 changeFreq: "monthly", priority: 0.6,  lastmod: REV.affiliation },
     { url: `${base}/methodologie`,             changeFreq: "monthly", priority: 0.5,  lastmod: REV.ymyl },
+    { url: `${base}/transparence`,             changeFreq: "monthly", priority: 0.5,  lastmod: REV.affiliation },
+    { url: `${base}/changelog`,                changeFreq: "monthly", priority: 0.4,  lastmod: REV.affiliation },
     { url: `${base}/mentions-legales`,         changeFreq: "yearly",  priority: 0.3,  lastmod: REV.legal },
     { url: `${base}/cgv`,                      changeFreq: "yearly",  priority: 0.3,  lastmod: REV.legal },
     { url: `${base}/confidentialite`,          changeFreq: "yearly",  priority: 0.3,  lastmod: REV.legal },
