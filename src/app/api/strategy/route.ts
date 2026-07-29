@@ -1,7 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { getStrategyData, saveStrategy } from "@/lib/user-strategy";
-import { getUserSubscription } from "@/lib/subscription";
 import type { PortfolioAllocation } from "@/lib/simulation-params";
 
 export async function GET() {
@@ -16,10 +15,22 @@ export async function POST(req: Request) {
   const { userId } = await auth();
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const sub = await getUserSubscription();
-  if (sub.plan === "free") {
-    return NextResponse.json({ error: "upgrade_required" }, { status: 403 });
-  }
+  // ─── Pourquoi il n'y a plus de verrou ici ─────────────────────────────────
+  //
+  // Sauvegarder une stratégie était réservé au Premium. Conséquence mécanique :
+  // aucun compte gratuit ne créait jamais de donnée, donc aucun n'avait de
+  // raison de revenir, donc aucun n'atteignait le moment où Premium devient
+  // évident. L'email mensuel — la fonctionnalité la plus aboutie du site —
+  // était lui aussi en aval de ce verrou : il n'avait rien à envoyer.
+  //
+  // La règle est désormais : on facture la PROFONDEUR, pas l'EXISTENCE.
+  // Restent payants le Monte Carlo, la comparaison A/B, l'export PDF et
+  // l'email mensuel automatique.
+  //
+  // ⚠️ Le modèle ne stocke qu'UNE stratégie (`dcaStrategy` est un objet, pas un
+  // tableau, et saveStrategy l'écrase). La limite « une seule » est donc portée
+  // par la structure de données elle-même, pas par un test — et il ne faut PAS
+  // vendre « la deuxième stratégie » en Premium : elle n'existe pas.
 
   const body = (await req.json()) as {
     input?: unknown;

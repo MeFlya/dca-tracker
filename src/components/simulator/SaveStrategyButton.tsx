@@ -4,7 +4,6 @@ import { useUser } from "@clerk/nextjs";
 import { useState } from "react";
 import Link from "next/link";
 import type { SimulatorInput } from "@/lib/simulator";
-import { buildUpgradeUrl } from "@/lib/upgrade-link";
 import { track } from "@/lib/analytics";
 
 interface Props {
@@ -31,21 +30,11 @@ export function SaveStrategyButton({ input, plan }: Props) {
     );
   }
 
-  if (plan === "free") {
-    return (
-      <Link
-        href={buildUpgradeUrl("save-strategy", input)}
-        onClick={() => track({ name: "click_save_strategy", props: { has_account: true, plan: "free" } })}
-        className="inline-flex items-center gap-2 text-sm font-semibold text-primary-600 hover:text-primary-700 transition-colors"
-      >
-        <LockIcon />
-        Sauvegarder ma stratégie
-        <span className="bg-primary-100 text-primary-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wide">
-          Premium
-        </span>
-      </Link>
-    );
-  }
+  // ⚠️ Ce bloc renvoyait un compte gratuit vers /upgrade au lieu de sauvegarder.
+  // C'était le mur : quelqu'un qui venait de s'inscrire cliquait sur la
+  // troisième étape de son accueil et atterrissait sur une page de paiement,
+  // quatre-vingt-dix secondes après son arrivée. Sauvegarder est désormais
+  // gratuit — le bouton fait ce qu'il annonce, pour tout le monde.
 
   if (state === "saved") {
     return (

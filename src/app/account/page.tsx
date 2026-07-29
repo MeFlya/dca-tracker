@@ -34,7 +34,11 @@ export default async function AccountPage() {
   // Fetch strategy data server-side so we can detect the "canceled with
   // preserved data" state for the re-lock UI.
   const { strategy, entries } = await getStrategyData(user.id);
-  const hasLockedData = !isPremium && strategy !== null;
+  // Plus personne ne perd l'accès à sa stratégie en repassant gratuit : la
+  // sauvegarde et le suivi mensuel sont ouverts à tous. La branche « données
+  // reverrouillées » ne peut donc plus se produire — conservée le temps de
+  // vérifier qu'aucun compte n'est dans cet état hérité.
+  const hasLockedData = false && !isPremium && strategy !== null;
 
   const periodEndDate = sub.periodEnd
     ? new Date(sub.periodEnd * 1000).toLocaleDateString("fr-FR", {
@@ -71,13 +75,13 @@ export default async function AccountPage() {
           >
             Paramètres
           </Link>
-          {sub.plan === "free" ? (
-            <Link href="/tarifs" className="btn-primary text-xs px-4 py-2">
-              Passer Premium →
-            </Link>
-          ) : (
-            <ManageSubscriptionButton />
-          )}
+          {/* Le premier écran d'un compte neuf portait QUATRE incitations à
+              payer au-dessus de la ligne de flottaison : ce lien, celui de
+              l'en-tête du site, le cadenas de l'étape 3 et l'encart d'essai.
+              Sur un tableau de bord vide, ça produit exactement l'impression
+              de « tout est payant » qu'on veut éviter avant d'envoyer du
+              trafic. Il en reste deux. */}
+          {sub.plan !== "free" && <ManageSubscriptionButton />}
         </div>
       </div>
 
@@ -96,14 +100,17 @@ export default async function AccountPage() {
         />
       )}
 
-      {isPremium && strategy ? (
+      {/* C'est la STRATÉGIE qui décide de ce qu'on affiche, plus le plan.
+          Avant, un compte gratuit ne pouvait structurellement rien avoir ici :
+          la barre « 3 étapes pour démarrer » plafonnait à 2/3 pour toujours, et
+          le tableau de bord promettait « suivez votre DCA mois après mois » à
+          quelqu'un qui n'avait rien à suivre. */}
+      {strategy ? (
         <div className="mb-6">
           <StrategyTracker initialStrategy={strategy} initialEntries={entries} />
         </div>
-      ) : isPremium && !strategy ? (
+      ) : !strategy ? (
         <div className="mb-6">
-          {/* Premium sans stratégie → onboarding guidé (capital de départ,
-              date de début, choix des ETF) plutôt qu'une simple checklist. */}
           <StrategySetupWizard />
         </div>
       ) : hasLockedData && strategy ? (

@@ -28,10 +28,15 @@ const COMPARISON_SECTIONS = [
   {
     category: "Suivi mensuel",
     rows: [
-      { feature: "Suivi de stratégie mois après mois",      free: false,       premium: true   },
-      { feature: "Insights automatiques (réel vs projection)", free: false,    premium: true   },
+      // ⚠️ Ces trois lignes sont passées en GRATUIT le 29/07/2026, en même
+      // temps que le code — jamais dans un commit suivant. Déplacer la
+      // frontière sans mettre à jour cette page recréerait exactement le
+      // défaut que le Lot 2 a réparé : des promesses que le code contredit.
+      { feature: "Sauvegarder sa stratégie",                free: "1",         premium: "1"    },
+      { feature: "Suivi de stratégie mois après mois",      free: true,        premium: true   },
+      { feature: "Insights automatiques (réel vs projection)", free: true,     premium: true   },
+      { feature: "Streak de mois consécutifs",              free: true,        premium: true   },
       { feature: "Email mensuel personnalisé",              free: false,       premium: true   },
-      { feature: "Streak de mois consécutifs",              free: false,       premium: true   },
       { feature: "Simulations sauvegardées",                free: false,       premium: "10"   },
     ],
   },

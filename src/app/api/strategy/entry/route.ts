@@ -7,7 +7,6 @@ import {
   type Contribution,
   type StoredMonthlyEntry,
 } from "@/lib/user-strategy";
-import { getUserSubscription } from "@/lib/subscription";
 import { log } from "@/lib/logger";
 
 type IncomingContribution = {
@@ -36,10 +35,9 @@ export async function POST(req: Request) {
   const { userId } = await auth();
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const sub = await getUserSubscription();
-  if (sub.plan === "free") {
-    return NextResponse.json({ error: "upgrade_required" }, { status: 403 });
-  }
+  // Saisir son versement du mois est le geste qui crée l'habitude — et donc la
+  // seule chose qui puisse amener quelqu'un à revenir. Le verrouiller garantit
+  // un compte vide à vie. Cf. le commentaire de ../route.ts.
 
   const body = (await req.json()) as PostBody;
   const month = body.month;
@@ -107,10 +105,9 @@ export async function DELETE(req: Request) {
   const { userId } = await auth();
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const sub = await getUserSubscription();
-  if (sub.plan === "free") {
-    return NextResponse.json({ error: "upgrade_required" }, { status: 403 });
-  }
+  // Saisir son versement du mois est le geste qui crée l'habitude — et donc la
+  // seule chose qui puisse amener quelqu'un à revenir. Le verrouiller garantit
+  // un compte vide à vie. Cf. le commentaire de ../route.ts.
 
   const url = new URL(req.url);
   const month = url.searchParams.get("month");

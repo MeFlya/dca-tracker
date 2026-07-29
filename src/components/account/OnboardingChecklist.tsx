@@ -183,20 +183,18 @@ function buildSteps({
         cta: { label: "Ouvrir le simulateur", href: "/simulateur" },
       };
 
-  // Step 3: depends on plan + state
-  if (!isPremium) {
-    // Free plan: step 3 is always locked (save strategy requires Premium)
-    const step3: Step = {
-      number: 3,
-      title: "Sauvegardez votre stratégie",
-      description:
-        "Suivi mensuel, comparaison réel vs projection, Monte Carlo. Disponible avec Premium.",
-      status: "locked",
-    };
-    return [step1, step2, step3];
-  }
+  // ⚠️ L'étape 3 n'est PLUS conditionnée au plan.
+  //
+  // Avant : « Free plan: step 3 is always locked ». La barre affichait donc
+  // « 3 étapes pour démarrer » puis plafonnait à 2/3 pour toujours — on
+  // montrait à un nouvel inscrit une liste de démarrage qu'il lui était
+  // impossible de terminer, et la troisième case menait au paiement. Ce
+  // n'était pas un accueil, c'était un péage déguisé en accueil.
+  // Sauvegarder une stratégie est désormais gratuit ; la profondeur reste
+  // payante.
 
-  // Premium without strategy: step 3 becomes current once simulation is done
+  // Sans stratégie : l'étape 3 devient franchissable dès qu'une simulation
+  // a été faite.
   if (!hasStrategy) {
     const step3: Step = {
       number: 3,
