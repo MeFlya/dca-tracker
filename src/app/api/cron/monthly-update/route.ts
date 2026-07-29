@@ -80,6 +80,20 @@ export async function GET(req: Request) {
   const denied = denyUnlessCron(req);
   if (denied) return denied;
 
+  // ─── Envoi ciblé, pour vérifier le rendu avant l'envoi de masse ───────────
+  //
+  // Ce gabarit part le 1er du mois, à tous les abonnés, en une seule fois et
+  // sans reprise possible. Le livrer sans jamais l'avoir vu rendu dans une
+  // vraie boîte mail, c'est parier — les clients mail rendent le HTML
+  // différemment, et Gmail découpe les messages trop longs.
+  //
+  //   curl -H "Authorization: Bearer $CRON_SECRET" \
+  //     "https://dcatracker.fr/api/cron/monthly-update?only=vous@exemple.fr"
+  //
+  // Reste derrière CRON_SECRET : ce n'est pas une porte ouverte, c'est un
+  // interrupteur pour l'opérateur du cron.
+  const only = new URL(req.url).searchParams.get("only")?.toLowerCase() ?? null;
+
   const clerk = await clerkClient();
   let sent = 0;
   let errors = 0;
@@ -105,6 +119,7 @@ export async function GET(req: Request) {
 
       const email = user.emailAddresses[0]?.emailAddress;
       if (!email) continue;
+      if (only && email.toLowerCase() !== only) continue;
 
       try {
         const { strategy, entries } = await getStrategyData(user.id);
