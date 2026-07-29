@@ -1,50 +1,60 @@
 #!/usr/bin/env node
-// Garde-fou SEO : échoue si un <title> ou une <meta description> dépasse la
-// limite d'affichage de Google.
+// Garde-fou SEO : échoue si un <title> dépasse la limite d'affichage de Google,
+// ou si la dette de descriptions trop longues AUGMENTE.
 //
-// Pourquoi lire le HTML PRODUIT et pas les sources : les titres passent par le
-// template du layout, par des données (`etf-comparisons.ts`, `etf-index-guides.ts`)
-// et par des `generateMetadata` dynamiques. Une regex sur les fichiers `.tsx`
-// raterait tout ça, et c'est précisément ce genre de titre — assemblé ailleurs —
-// qui dérive sans qu'on le voie. Ici on mesure ce que Google mesure.
+// ─── Pourquoi lire le HTML produit, et pas les sources ──────────────────────
 //
-// Limite connue : seules les pages prérendues en statique sont contrôlées. Les
-// routes rendues à la demande n'ont pas de HTML sur disque au moment du build.
-// Elles sont listées en fin de rapport pour qu'on sache ce qui échappe au test.
+// Les titres passent par des données (`etf-comparisons.ts`, `etf-index-guides.ts`,
+// `backtest-stories.ts`) et par des `generateMetadata` dynamiques. Une regex sur
+// les `.tsx` raterait tout ça — et c'est précisément ce genre de titre, assemblé
+// ailleurs, qui dérive sans qu'on le voie. `/backtest-depuis-2010` grossit
+// littéralement avec la valeur du portefeuille.
 //
-// ─── Pourquoi les titres bloquent et pas (encore) les descriptions ──────────
+// ─── Les routes non prérendues ──────────────────────────────────────────────
 //
-// Au moment où ce garde-fou est posé, 0 titre dépasse mais 55 descriptions
-// oui — héritage d'avant. Faire échouer le build sur les 55 reviendrait à
-// bloquer tout déploiement dès aujourd'hui, donc à désactiver le test dans la
-// semaine ; un test désactivé ne sert à rien.
+// Les routes rendues à la demande n'ont pas de HTML sur disque au moment du
+// build. C'est le cas de `/simulateur`, qui est la page à plus fort trafic du
+// site : la laisser hors du test aurait vidé celui-ci de l'essentiel de son
+// intérêt. Elles sont donc rattrapées par une seconde passe qui lit les
+// littéraux `const TITLE = "…"` / `title: "…"` de leur `page.tsx`.
+// Cette passe est volontairement naïve : elle ne comprend que les chaînes
+// écrites en clair. Les routes qu'elle ne sait pas lire sont listées en fin de
+// rapport — ce qui échappe au test doit rester visible.
 //
-// Les titres bloquent parce qu'ils viennent d'être remis à niveau et que
-// c'est la régression qu'on veut empêcher. Les descriptions sont signalées
-// avec leur compte, et basculeront en bloquant quand le stock sera résorbé :
-// passer STRICT_DESCRIPTIONS à true.
+// ─── Le cliquet sur les descriptions ────────────────────────────────────────
+//
+// Au moment de poser ce garde-fou, 0 titre dépassait mais 54 descriptions oui,
+// en héritage. Faire échouer le build sur les 54 revenait à bloquer tout
+// déploiement, donc à désactiver le test dans la semaine.
+// Plutôt qu'un interrupteur binaire qu'il faudrait penser à basculer un jour :
+// le compte est mémorisé dans `scripts/seo-debt.json` et le build échoue dès
+// qu'il AUGMENTE. La dette ne peut que décroître, personne n'a à choisir la
+// date de bascule, et le seuil se ferme tout seul en atteignant zéro.
 //
 // Usage :
-//   node scripts/check-seo-lengths.mjs            → échoue sur les titres trop longs
+//   node scripts/check-seo-lengths.mjs            → contrôle (utilisé en postbuild)
 //   node scripts/check-seo-lengths.mjs --report   → liste tout sans jamais échouer
+//   node scripts/check-seo-lengths.mjs --accept   → enregistre la dette actuelle
 
-const STRICT_DESCRIPTIONS = false;
-
-import { readdir, readFile } from "node:fs/promises";
+import { readdir, readFile, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
-import { join, relative } from "node:path";
+import { join, relative, dirname } from "node:path";
 
-// Google tronque autour de 580 px, ce qui correspond en pratique à ~60
-// caractères pour du texte français. 155 pour la description est la limite
-// usuelle avant coupure sur mobile.
+// Google tronque autour de 580 px, soit ~60 caractères pour du texte français.
+// 155 est la limite usuelle de la description avant coupure sur mobile.
 const MAX_TITLE = 60;
 const MAX_DESCRIPTION = 155;
 
 const REPORT_ONLY = process.argv.includes("--report");
+const ACCEPT = process.argv.includes("--accept");
+
+const DEBT_FILE = "scripts/seo-debt.json";
 
 // distDir vaut ".next.nosync" en local (contournement iCloud) et ".next" sur
 // Vercel — cf. next.config.
-const DIST = [".next.nosync", ".next"].find((d) => existsSync(join(d, "server", "app")));
+const DIST = [".next.nosync", ".next"].find((d) =>
+  existsSync(join(d, "server", "app"))
+);
 
 if (!DIST) {
   console.error(
@@ -54,13 +64,14 @@ if (!DIST) {
 }
 
 const ROOT = join(DIST, "server", "app");
+const SRC = join("src", "app");
 
-async function htmlFiles(dir) {
+async function walk(dir, filter) {
   const out = [];
   for (const entry of await readdir(dir, { withFileTypes: true })) {
     const full = join(dir, entry.name);
-    if (entry.isDirectory()) out.push(...(await htmlFiles(full)));
-    else if (entry.name.endsWith(".html")) out.push(full);
+    if (entry.isDirectory()) out.push(...(await walk(full, filter)));
+    else if (filter(entry.name)) out.push(full);
   }
   return out;
 }
@@ -77,7 +88,7 @@ function decode(s) {
     .replace(/&nbsp;|&#160;/g, " ");
 }
 
-function extract(html) {
+function fromHtml(html) {
   const title = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
   const desc =
     html.match(/<meta[^>]+name="description"[^>]+content="([^"]*)"/i) ??
@@ -88,87 +99,167 @@ function extract(html) {
   };
 }
 
+/**
+ * Extrait un title/description écrits en clair dans un `page.tsx`.
+ * Couvre les deux formes du dépôt : `const TITLE = "…"` puis `title: TITLE`,
+ * et `title: "…"` directement dans l'objet `metadata`.
+ */
+function fromSource(src) {
+  const str = (re) => {
+    const m = src.match(re);
+    if (!m) return null;
+    // Recolle les littéraux coupés sur plusieurs lignes par le formateur.
+    return m[1].replace(/\\"/g, '"').replace(/\s*\n\s*/g, " ").trim();
+  };
+  return {
+    title:
+      str(/const\s+TITLE\s*(?::\s*string\s*)?=\s*\n?\s*"((?:[^"\\]|\\.)*)"/) ??
+      str(/\btitle:\s*"((?:[^"\\]|\\.)*)"/),
+    description:
+      str(
+        /const\s+DESCRIPTION\s*(?::\s*string\s*)?=\s*\n?\s*"((?:[^"\\]|\\.)*)"/
+      ) ?? str(/\bdescription:\s*"((?:[^"\\]|\\.)*)"/),
+  };
+}
+
 /** "/index.html" → "/", "/a/b.html" → "/a/b" */
-function toRoute(file) {
+function routeFromHtml(file) {
   const rel = "/" + relative(ROOT, file).replace(/\\/g, "/");
   return rel.replace(/\/index\.html$/, "/").replace(/\.html$/, "") || "/";
 }
 
-const files = await htmlFiles(ROOT);
+/** "src/app/simulateur/page.tsx" → "/simulateur" */
+function routeFromSource(file) {
+  const rel = relative(SRC, dirname(file)).replace(/\\/g, "/");
+  return "/" + rel;
+}
+
+// ─── Collecte ─────────────────────────────────────────────────────────────────
+
+const pages = new Map(); // route → { title, description, origine }
+
+for (const file of await walk(ROOT, (n) => n.endsWith(".html"))) {
+  const { title, description } = fromHtml(await readFile(file, "utf8"));
+  pages.set(routeFromHtml(file), { title, description, origine: "html" });
+}
+const staticCount = pages.size;
+
+// Seconde passe : les routes présentes dans les sources mais absentes du build
+// statique (rendu à la demande). C'est ici que `/simulateur` est rattrapé.
+const dynamicUnreadable = [];
+for (const file of await walk(SRC, (n) => n === "page.tsx")) {
+  const route = routeFromSource(file);
+  // Les segments dynamiques ([slug]) et les groupes de routes ne correspondent
+  // pas à une URL unique : leurs pages générées sont déjà couvertes par le HTML.
+  if (route.includes("[") || route.includes("(")) continue;
+  if (pages.has(route)) continue;
+
+  const { title, description } = fromSource(await readFile(file, "utf8"));
+  if (!title && !description) {
+    dynamicUnreadable.push(route);
+    continue;
+  }
+  pages.set(route, { title, description, origine: "source" });
+}
+const sourceCount = pages.size - staticCount;
+
+// ─── Contrôle ─────────────────────────────────────────────────────────────────
+
 const problems = [];
 const missing = [];
 
-for (const file of files) {
-  const route = toRoute(file);
-  const { title, description } = extract(await readFile(file, "utf8"));
-
+for (const [route, { title, description, origine }] of pages) {
   if (!title) missing.push(`${route} — pas de <title>`);
   else if (title.length > MAX_TITLE)
-    problems.push({ route, champ: "title", len: title.length, max: MAX_TITLE, texte: title });
+    problems.push({ route, champ: "title", len: title.length, max: MAX_TITLE, texte: title, origine });
 
   if (!description) missing.push(`${route} — pas de meta description`);
   else if (description.length > MAX_DESCRIPTION)
-    problems.push({
-      route,
-      champ: "description",
-      len: description.length,
-      max: MAX_DESCRIPTION,
-      texte: description,
-    });
+    problems.push({ route, champ: "description", len: description.length, max: MAX_DESCRIPTION, texte: description, origine });
 }
 
-console.log(`Pages statiques contrôlées : ${files.length}`);
-
-if (missing.length) {
-  console.log(`\n⚠️  ${missing.length} balise(s) absente(s) :`);
-  for (const m of missing.slice(0, 20)) console.log(`   ${m}`);
-  if (missing.length > 20) console.log(`   … et ${missing.length - 20} autres`);
+console.log(
+  `Pages contrôlées : ${pages.size} (${staticCount} prérendues, ${sourceCount} lues dans les sources)`
+);
+if (dynamicUnreadable.length) {
+  console.log(
+    `⚠️  ${dynamicUnreadable.length} route(s) hors contrôle (métadonnées non littérales) : ${dynamicUnreadable.join(", ")}`
+  );
 }
 
-if (!problems.length) {
-  console.log("✓ Aucun title > 60 ni description > 155.");
-  process.exit(0);
-}
+const titleProblems = problems.filter((p) => p.champ === "title");
+const descProblems = problems.filter((p) => p.champ === "description");
 
 problems.sort((a, b) => b.len - a.len);
 
-const blocking = problems.filter(
-  (p) => p.champ === "title" || (STRICT_DESCRIPTIONS && p.champ === "description")
-);
-const warnings = problems.filter((p) => !blocking.includes(p));
-
 function show(list) {
   for (const p of list) {
-    console.log(`  ${p.route}`);
+    console.log(`  ${p.route}${p.origine === "source" ? "  (source)" : ""}`);
     console.log(`    ${p.champ} : ${p.len} caractères (max ${p.max}, +${p.len - p.max})`);
     console.log(`    « ${p.texte} »\n`);
   }
 }
 
-if (warnings.length) {
-  console.log(`\n⚠️  ${warnings.length} description(s) trop longue(s) — signalées, non bloquantes :\n`);
-  if (REPORT_ONLY) show(warnings);
-  else {
-    for (const p of warnings.slice(0, 5))
-      console.log(`   ${p.route} — ${p.len} caractères`);
-    if (warnings.length > 5) console.log(`   … et ${warnings.length - 5} autres`);
-    console.log(
-      "\n   Liste complète : node scripts/check-seo-lengths.mjs --report"
-    );
-  }
-}
+// ─── Cliquet sur les descriptions ─────────────────────────────────────────────
 
-if (!blocking.length) {
-  console.log("\n✓ Aucun title trop long. Build autorisé.");
+let debt = { descriptions: Number.POSITIVE_INFINITY };
+if (existsSync(DEBT_FILE)) debt = JSON.parse(await readFile(DEBT_FILE, "utf8"));
+
+if (ACCEPT) {
+  await writeFile(
+    DEBT_FILE,
+    JSON.stringify({ descriptions: descProblems.length }, null, 2) + "\n"
+  );
+  console.log(
+    `\n✓ Dette enregistrée : ${descProblems.length} description(s) trop longue(s).\n` +
+      "  Le build échouera si ce nombre augmente."
+  );
   process.exit(0);
 }
 
-console.log(`\n✗ ${blocking.length} title(s) au-delà de ${MAX_TITLE} caractères :\n`);
-show(blocking);
+if (missing.length) {
+  console.log(`\n⚠️  ${missing.length} balise(s) absente(s) :`);
+  for (const m of missing.slice(0, 10)) console.log(`   ${m}`);
+  if (missing.length > 10) console.log(`   … et ${missing.length - 10} autres`);
+}
+
+const debtGrew = descProblems.length > debt.descriptions;
+
+if (descProblems.length) {
+  const delta = descProblems.length - debt.descriptions;
+  console.log(
+    `\n${debtGrew ? "✗" : "⚠️ "} ${descProblems.length} description(s) > ${MAX_DESCRIPTION} ` +
+      `(dette enregistrée : ${debt.descriptions}${delta === 0 ? ", inchangée" : delta > 0 ? `, +${delta}` : `, ${delta}`})`
+  );
+  if (REPORT_ONLY) show(descProblems);
+  else if (debtGrew) {
+    console.log("\n   Nouvelles ou rallongées — la dette ne doit que décroître :\n");
+    show(descProblems.slice(0, 8));
+  } else {
+    console.log("   Liste complète : npm run seo:check");
+    if (delta < 0)
+      console.log(
+        `   ↓ ${-delta} de moins qu'avant. Enregistrez le nouveau seuil :\n` +
+          "     node scripts/check-seo-lengths.mjs --accept"
+      );
+  }
+}
+
+if (titleProblems.length) {
+  console.log(`\n✗ ${titleProblems.length} title(s) au-delà de ${MAX_TITLE} caractères :\n`);
+  show(titleProblems);
+}
 
 if (REPORT_ONLY) process.exit(0);
 
-console.log(
-  "Google tronque ces titres dans ses résultats. Raccourcissez-les avant de déployer."
-);
+if (!titleProblems.length && !debtGrew) {
+  console.log("\n✓ Aucun title trop long, dette de descriptions stable ou en baisse.");
+  process.exit(0);
+}
+
+if (titleProblems.length)
+  console.log("Google tronque ces titres dans ses résultats. Raccourcissez-les avant de déployer.");
+if (debtGrew)
+  console.log("La dette de descriptions a augmenté. Raccourcissez, ou justifiez avec --accept.");
+
 process.exit(1);

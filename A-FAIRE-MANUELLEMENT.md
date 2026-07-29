@@ -62,6 +62,26 @@ et le traitement de la fraction 2018→5ᵉ anniversaire d'un plan pré-2018.
 Le moteur aura besoin de la **date d'ouverture du PEA** en paramètre d'entrée,
 et d'un barème **versionné par année avec tests**, pas de constantes.
 
+**Cartographie faite le 28/07, à garder pour ce lot.** Le moteur EST centralisé
+(`SOCIAL_CHARGES_RATE = 0.172` et `PFU_RATE = 0.30` dans
+`src/lib/fiscal/pea-cto.ts`, dont `recap.ts` dérive correctement ses libellés).
+**Mais 79 lignes réparties dans 15 fichiers répètent les taux à la main** dans
+la copie éditoriale :
+
+| Fichier | Occurrences |
+|---|---:|
+| `src/lib/etf-comparisons.ts` | 13 |
+| `src/lib/glossary-terms.ts` | 12 |
+| `src/app/calculateur-fiscal-pea-cto/page.tsx` | 8 |
+| `src/app/pea-ou-cto/page.tsx` | 7 |
+| `src/lib/fiscal/recap.ts` | 6 |
+| `src/lib/fiscal/pea-cto.ts` | 5 |
+| … 9 autres fichiers | 28 |
+
+Conséquence : **modifier les deux constantes corrigerait le calculateur en
+laissant tout le contenu faux.** Le lot fiscal doit donc traiter les deux, et
+idéalement faire dériver la copie des constantes partout où c'est possible.
+
 ### 4. S'inscrire aux programmes d'affiliation (Lot 1)
 
 ✅ **Le SIRET existe déjà** (`10500270300012`, publié dans les mentions

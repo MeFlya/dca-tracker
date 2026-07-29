@@ -19,7 +19,7 @@ import { getUserSubscription, isPremium } from "@/lib/subscription";
 import { getAvailableRange, getDatasetMeta } from "@/lib/backtest";
 import { BacktestClient } from "./BacktestClient";
 
-const TITLE = "Backtest DCA historique MSCI World — ce qu'aurait donné votre stratégie";
+const TITLE = "Backtest DCA MSCI World : ce qu'aurait donné votre stratégie";
 const DESCRIPTION =
   "Reconstituez ce qu'un DCA mensuel sur le MSCI World aurait donné depuis 2009. Données historiques réelles en EUR : COVID 2020, inflation 2022, etc. TRI calculé, drawdown affiché. 3 scénarios célèbres en accès libre.";
 

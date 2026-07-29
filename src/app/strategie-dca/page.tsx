@@ -14,11 +14,23 @@ import { SourcesReferences } from "@/components/ui/SourcesReferences";
 // américaine et en dollars. La page a déjà la section #dca-vs-lump-sum pour y
 // répondre.
 const TITLE = "DCA ou tout investir d'un coup ? Ce que disent les chiffres";
-// ⚠️ Ne pas promettre ici un backtest MSCI World en euros : la section
-// s'appuie aujourd'hui sur l'étude Vanguard. Si le backtest maison y est
-// ajouté un jour, cette meta pourra le revendiquer.
+// ⚠️ Cette meta a été fausse deux fois de suite. Elle a promis un backtest
+// MSCI World en euros (inexistant), puis « ce que dit l'étude Vanguard » —
+// alors que Vanguard n'apparaît QUE dans le bloc de sources en bas de page :
+// la section ne reprend aucun de ses chiffres. Elle décrit désormais ce que la
+// page contient réellement : un comparatif point par point et un verdict.
+//
+// 🔴 Le vrai problème est dans la section, pas dans la balise. L'illustration
+// chiffrée (DCA +38,9 % contre lump sum +10 %) repose sur un scénario à six
+// mois choisi avec une correction au milieu, pendant que la FAQ de la même page
+// écrit que le lump sum gagne « environ 2/3 du temps ». Sur un site dont
+// l'argument est « hypothèses transparentes », c'est la section la plus faible.
+// Le backtest IWDA en euros depuis 2009 existe déjà dans /backtest : comparer
+// lump sum au départ contre DCA sur cette série est une variante du code
+// existant, pas une nouvelle étude. À traiter — la meta pourra alors
+// revendiquer des chiffres réels.
 const DESCRIPTION =
-  "DCA contre investissement en une fois : ce que dit l'étude Vanguard, et pourquoi le DCA reste le plus réaliste quand on épargne chaque mois.";
+  "DCA contre investissement en une fois : le comparatif point par point, et pourquoi le DCA reste la seule option réaliste quand on épargne chaque mois.";
 
 export const metadata: Metadata = {
   title: TITLE,
