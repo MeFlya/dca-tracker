@@ -4,6 +4,7 @@
 
 import { clerkClient } from "@clerk/nextjs/server";
 import type { SimulatorInput } from "./simulator";
+import { currentMonth } from "./strategy-math";
 import type { PortfolioAllocation } from "./simulation-params";
 
 // Re-export pure math helpers so callers don't need to import from strategy-math directly.
@@ -102,7 +103,10 @@ export async function saveStrategy(
   options?: { startMonth?: string; allocation?: PortfolioAllocation[] },
 ): Promise<void> {
   const now = new Date();
-  const defaultStartMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+  // Même règle que currentMonth() : le fuseau de l'audience, pas celui du
+  // runtime — sinon le mois de départ proposé diffère selon que le calcul a
+  // lieu sur Vercel (UTC) ou dans le navigateur.
+  const defaultStartMonth = currentMonth();
   // Accept a chosen start month ("YYYY-MM") so users who already invest can
   // declare since when; fall back to "now". Never accept a future month.
   const requested = options?.startMonth;

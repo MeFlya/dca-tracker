@@ -21,17 +21,59 @@ export function theoreticalValueAtMonth(input: SimulatorInput, months: number): 
   return Math.round(value);
 }
 
+// ─── Le mois courant se calcule dans le fuseau de l'AUDIENCE ────────────────
+//
+// `new Date().getMonth()` répond dans le fuseau du RUNTIME. Sur Vercel c'est
+// UTC ; dans le navigateur d'un lecteur français c'est Europe/Paris. Les deux
+// divergeaient donc pendant une à deux heures au passage de chaque mois :
+// le 1er août à 1 h 30 à Paris, le serveur répondait « 2026-07 » quand
+// l'utilisateur vivait « 2026-08 ».
+//
+// Ce n'est pas cosmétique — `currentMonth()` décide du mois sous lequel une
+// saisie est ENREGISTRÉE (LogMonthModal), du mois de départ proposé par
+// l'assistant, et de la détection d'un mois manqué par le cron. Une saisie
+// faite dans cette fenêtre partait sur le mois précédent, et le cron pouvait
+// réclamer un mois déjà saisi.
+//
+// Le site s'adresse à des résidents fiscaux français : Europe/Paris est la
+// référence, et elle donne le même résultat côté serveur et côté navigateur.
+const FUSEAU_AUDIENCE = "Europe/Paris";
+
+function moisDansFuseau(d: Date): { y: number; m: number } {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: FUSEAU_AUDIENCE,
+    year: "numeric",
+    month: "2-digit",
+  }).formatToParts(d);
+  return {
+    y: Number(parts.find((p) => p.type === "year")!.value),
+    m: Number(parts.find((p) => p.type === "month")!.value),
+  };
+}
+
 /** Months elapsed from "YYYY-MM" to today. */
 export function monthsElapsed(startMonth: string): number {
   const [y, m] = startMonth.split("-").map(Number);
-  const now = new Date();
-  return (now.getFullYear() - y) * 12 + (now.getMonth() + 1 - m);
+  const now = moisDansFuseau(new Date());
+  return (now.y - y) * 12 + (now.m - m);
 }
 
-/** Current month as "YYYY-MM". */
+/** Current month as "YYYY-MM", dans le fuseau de l'audience. */
 export function currentMonth(): string {
-  const now = new Date();
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+  const { y, m } = moisDansFuseau(new Date());
+  return `${y}-${String(m).padStart(2, "0")}`;
+}
+
+/**
+ * Année courante dans le fuseau de l'audience.
+ *
+ * Même piège que le mois, en plus rare et plus coûteux : le 1er janvier avant
+ * 1 h à Paris, un runtime en UTC répond encore l'année précédente. Sur le récap
+ * fiscal — une fonctionnalité payante dont l'objet même est l'année civile —
+ * ce serait le pire moment pour se tromper.
+ */
+export function currentYear(): number {
+  return moisDansFuseau(new Date()).y;
 }
 
 /** Previous month as "YYYY-MM". */

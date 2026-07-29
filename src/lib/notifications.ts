@@ -13,6 +13,19 @@
 // Pure / client-safe : aucun import serveur.
 
 import { currentMonth, computeStreak } from "./strategy-math";
+
+/** Année et mois dans le fuseau de l'audience (cf. strategy-math). */
+function anneeEtMois(): { y: number; m: number } {
+  const p = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Paris",
+    year: "numeric",
+    month: "2-digit",
+  }).formatToParts(new Date());
+  return {
+    y: Number(p.find((x) => x.type === "year")!.value),
+    m: Number(p.find((x) => x.type === "month")!.value),
+  };
+}
 import {
   computeEarnedBadges,
   BADGE_BY_ID,
@@ -100,10 +113,13 @@ export function computeNotifications(ctx: NotificationContext): AppNotification[
   }
 
   // ── Saison fiscale (avril-mai), pour les Premium ──────────────────────────
-  const month0 = now.getMonth(); // 0 = janvier
+  // Fuseau de l'audience : ces notifications sont calées sur le calendrier
+  // fiscal français, et `tax:${année}` sert d'IDENTIFIANT — une année fausse
+  // crée un doublon ou fait sauter la notification.
+  const month0 = anneeEtMois().m - 1; // 0 = janvier
   if (isPremium && (month0 === 3 || month0 === 4)) {
     out.push({
-      id: `tax:${now.getFullYear()}`,
+      id: `tax:${anneeEtMois().y}`,
       category: "action",
       icon: "🧾",
       title: "Saison des impôts",

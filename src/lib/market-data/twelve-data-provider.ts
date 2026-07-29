@@ -138,6 +138,15 @@ export class TwelveDataProvider implements IMarketDataProvider {
     const url = new URL(`${BASE_URL}/quote`);
     url.searchParams.set("symbol", `${mapping.tdSymbol}:${mapping.tdExchange}`);
     url.searchParams.set("apikey", this.apiKey);
+    // ⚠️ Sans ce paramètre, l'API renvoie `datetime` dans le fuseau de la PLACE
+    // de cotation, et le code plus bas l'interprétait comme de l'UTC en lui
+    // ajoutant un « Z » — l'horodatage était donc faux de l'offset de la place
+    // (2 h pour Amsterdam en été). Ce n'est pas cosmétique : `lastUpdated`
+    // s'affiche au visiteur (« Mis à jour : … ») ET sert à calculer l'âge de la
+    // donnée dans /api/health/market-data, donc à décider si elle est périmée.
+    // On demande explicitement de l'UTC : l'hypothèse devient vraie au lieu
+    // d'être rattrapée.
+    url.searchParams.set("timezone", "UTC");
 
     try {
       const res = await fetch(url.toString(), { cache: "no-store" });
@@ -177,14 +186,19 @@ export class TwelveDataProvider implements IMarketDataProvider {
       const change = json.change ? parseFloat(json.change) : 0;
       const changePercent = json.percent_change ? parseFloat(json.percent_change) : 0;
 
-      // Build ISO timestamp from datetime field; fall back to timestamp seconds
+      // `timestamp` est un epoch : il ne dépend d'aucun fuseau, on le préfère
+      // toujours. `datetime` n'est utilisable QUE parce que la requête impose
+      // timezone=UTC (voir plus haut) — sans ça, lui ajouter un « Z » serait
+      // une invention.
       let lastUpdated: string;
       if (json.timestamp) {
         lastUpdated = new Date(json.timestamp * 1000).toISOString();
       } else if (json.datetime) {
-        // Twelve Data returns "2026-04-22 17:30:00" — assume UTC
         lastUpdated = new Date(json.datetime.replace(" ", "T") + "Z").toISOString();
       } else {
+        // Dernier recours : l'heure de la requête, pas celle de la cotation.
+        // Fait paraître la donnée plus fraîche qu'elle n'est — acceptable
+        // seulement parce que les deux champs précédents manquent rarement.
         lastUpdated = new Date().toISOString();
       }
 

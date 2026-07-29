@@ -1,4 +1,5 @@
 import { currentUser } from "@clerk/nextjs/server";
+import { currentYear as anneeCourante } from "@/lib/strategy-math";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
@@ -65,7 +66,9 @@ export default async function RecapFiscalPage({
 
   const params = await searchParams;
   const requestedYear = params?.year ? parseInt(params.year, 10) : undefined;
-  const currentYear = new Date().getFullYear();
+  // Fuseau de l'audience : au 1er janvier avant 1 h, un runtime UTC
+  // proposerait encore l'année précédente sur le récap fiscal.
+  const currentYear = anneeCourante();
   const selectedYear = requestedYear && !isNaN(requestedYear)
     ? requestedYear
     : currentYear;

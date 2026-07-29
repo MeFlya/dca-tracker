@@ -1,6 +1,7 @@
 "use client";
 
 import { Trash2, Plus } from "lucide-react";
+import { currentMonth } from "@/lib/strategy-math";
 import type { Contribution } from "@/lib/user-strategy";
 import { formatFullDate, formatDayMonth } from "./utils";
 import { formatEur } from "@/lib/simulator";
@@ -83,7 +84,10 @@ export function ContributionsEditableList({
     const defaultDate = `${month}-${String(new Date().getDate()).padStart(2, "0")}`;
     // If month is the current month, use today's date; else use the 15th
     const todayDate = new Date();
-    const currentMonthStr = `${todayDate.getFullYear()}-${String(todayDate.getMonth() + 1).padStart(2, "0")}`;
+    // Passe par le helper partagé plutôt que de refaire le calcul : dupliqué
+    // ici, il répondait dans le fuseau du navigateur et divergeait de la
+    // référence serveur pour tout lecteur hors de France.
+    const currentMonthStr = currentMonth();
     const date = month === currentMonthStr ? defaultDate : `${month}-15`;
 
     onChange([
