@@ -139,13 +139,12 @@ export function ScenarioComparison({ isPremium, input }: { isPremium: boolean; i
         </div>
       </div>
 
-      <div className="relative mt-4">
-        {/* Content — always rendered, blurred if not Pro */}
-        <div className={isPremium ? "" : "blur-sm pointer-events-none select-none"}>
+      {isPremium ? (
+        <div className="mt-4">
           {/* Scenarios side by side */}
           <div className="flex flex-col sm:flex-row gap-4 mb-6">
-            <ScenForm label="Scénario A" color="border-blue-200" values={isPremium ? a : DEFAULT_A} onChange={setA} />
-            <ScenForm label="Scénario B" color="border-slate-300" values={isPremium ? b : DEFAULT_B} onChange={setB} />
+            <ScenForm label="Scénario A" color="border-blue-200" values={a} onChange={setA} />
+            <ScenForm label="Scénario B" color="border-slate-300" values={b} onChange={setB} />
           </div>
 
           {/* Results */}
@@ -177,8 +176,88 @@ export function ScenarioComparison({ isPremium, input }: { isPremium: boolean; i
             </div>
           </div>
         </div>
+      ) : (
+        <BestLeverTeaser input={input} />
+      )}
+    </div>
+  );
+}
 
-        {!isPremium && <LockedOverlay input={input} />}
+
+/**
+ * Vue non payante — remplace le formulaire flouté d'avant.
+ *
+ * Le flou était doublement mauvais : contournable en retirant une classe CSS,
+ * et surtout muet. Il montrait un exemple générique (200 vs 400 €/mois) qui ne
+ * concernait pas le visiteur.
+ *
+ * À la place : le serveur n'est pas nécessaire ici — `runSimulation` est déjà
+ * public et un visiteur peut lancer deux simulations à la main. Ce qui se vend,
+ * c'est l'arbitrage, pas la donnée. On calcule donc les quatre leviers sur SA
+ * stratégie et on ne révèle QUE celui qui rapporte le plus, chiffré.
+ */
+function BestLeverTeaser({ input }: { input?: SimulatorInput }) {
+  const base: ScenInput = input
+    ? {
+        monthlyAmount: input.monthlyAmount,
+        durationYears: input.durationYears,
+        annualReturnPct: input.annualReturnPct,
+        annualFeesPct: input.annualFeesPct,
+      }
+    : DEFAULT_A;
+
+  const refValue = runSimulation({ ...base, annualInflationPct: undefined }).base.finalValue;
+
+  const levers = [
+    {
+      label: `Allonger de 3 ans`,
+      cost: `${formatEur(base.monthlyAmount * 36)} versés en plus`,
+      sim: { ...base, durationYears: base.durationYears + 3 },
+    },
+    {
+      label: `Verser 50 € de plus par mois`,
+      cost: `${formatEur(50 * base.durationYears * 12)} versés en plus`,
+      sim: { ...base, monthlyAmount: base.monthlyAmount + 50 },
+    },
+    {
+      label: `Diviser les frais par deux`,
+      cost: "sans verser un euro de plus",
+      sim: { ...base, annualFeesPct: base.annualFeesPct / 2 },
+    },
+  ]
+    .map((l) => ({
+      ...l,
+      gain:
+        runSimulation({ ...l.sim, annualInflationPct: undefined }).base.finalValue -
+        refValue,
+    }))
+    .sort((x, y) => y.gain - x.gain);
+
+  const best = levers[0];
+
+  return (
+    <div className="mt-4 rounded-2xl border border-gray-200 bg-gradient-to-br from-slate-50 to-white p-6">
+      <p className="text-[11px] font-semibold uppercase tracking-widest text-gray-400 mb-2">
+        Sur votre stratégie, le levier qui rapporte le plus
+      </p>
+      <p className="text-base font-semibold text-gray-900 mb-1">{best.label}</p>
+      <p className="font-display text-4xl sm:text-5xl font-bold text-gain-dark tabular-nums leading-none tracking-tight">
+        +{formatEur(best.gain)}
+      </p>
+      <p className="mt-2 text-sm text-gray-500">{best.cost}</p>
+
+      <div className="mt-5 pt-5 border-t border-gray-200">
+        <p className="text-sm text-gray-500 mb-3">
+          Premium vous laisse comparer deux stratégies complètes côte à côte, avec
+          vos propres paramètres des deux côtés — et voir les {levers.length - 1}{" "}
+          autres leviers chiffrés.
+        </p>
+        <a
+          href={buildUpgradeUrl("comparison", input)}
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gray-900 text-white text-sm font-semibold hover:bg-gray-800 transition-colors"
+        >
+          Comparer mes deux scénarios →
+        </a>
       </div>
     </div>
   );

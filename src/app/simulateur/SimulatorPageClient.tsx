@@ -39,7 +39,7 @@ import { SavedSimulationsList } from "@/components/simulator/SavedSimulationsLis
 import { ShareButton } from "@/components/simulator/ShareButton";
 import { ExportPDFButton } from "@/components/simulator/ExportPDFButton";
 import { runSimulation, SimulatorInput, SimulatorOutput } from "@/lib/simulator";
-import { runMonteCarlo } from "@/lib/monte-carlo";
+import type { MonteCarloResponse } from "@/components/simulator/MonteCarloChart";
 import { EmailCapture } from "@/components/ui/EmailCapture";
 import { InvestCTA } from "@/components/ui/InvestCTA";
 import {
@@ -57,14 +57,20 @@ interface Props {
    * first paint contains real numbers (SSR SEO + instant TTI).
    */
   initialOutput: SimulatorOutput;
+  /**
+   * Décidé par le serveur (cf. page.tsx). Ne JAMAIS revenir à une lecture de
+   * useUser().publicMetadata pour ça : c'est falsifiable depuis la console.
+   */
+  isPremium: boolean;
 }
 
-export function SimulatorPageClient({ initialOutput }: Props) {
+export function SimulatorPageClient({ initialOutput, isPremium }: Props) {
   const router = useRouter();
   const { user } = useUser();
 
-  const plan = (user?.publicMetadata?.plan as string) ?? "free";
-  const isPremium = plan === "premium";
+  // `plan` ne sert plus qu'à l'affichage (libellés, boutons). L'autorisation,
+  // elle, vient de la prop `isPremium` calculée côté serveur.
+  const plan = isPremium ? "premium" : ((user?.publicMetadata?.plan as string) ?? "free");
 
   // Derive inflation-enabled from the server output itself (presence of
   // inflationAdjustedValue on any scenario = inflation was in the input).
@@ -115,7 +121,30 @@ export function SimulatorPageClient({ initialOutput }: Props) {
   // attend 250 ms après le dernier mouvement.
   const [mcInput, setMcInput] = useState<SimulatorInput>(initialOutput.input);
   const mcTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const monteCarloResult = useMemo(() => runMonteCarlo(mcInput), [mcInput]);
+
+  // Le Monte Carlo ne tourne plus dans le navigateur : lib/monte-carlo.ts est
+  // désormais `server-only`, et le calcul passe par /api/simulator/monte-carlo,
+  // qui lit le plan côté serveur. Un visiteur non payant ne reçoit qu'une seule
+  // valeur — voir le commentaire de la route.
+  const [mc, setMc] = useState<MonteCarloResponse | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/simulator/monte-carlo", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(mcInput),
+    })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d: MonteCarloResponse | null) => {
+        if (!cancelled) setMc(d);
+      })
+      .catch(() => {
+        if (!cancelled) setMc(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [mcInput]);
   useEffect(() => {
     return () => {
       if (mcTimer.current) clearTimeout(mcTimer.current);
@@ -258,7 +287,7 @@ export function SimulatorPageClient({ initialOutput }: Props) {
         <SimulatorResults output={output} />
 
         {/* Monte Carlo full chart */}
-        <MonteCarloChart result={monteCarloResult} isPremium={isPremium} input={output.input} />
+        <MonteCarloChart data={mc} isPremium={isPremium} input={output.input} />
 
         {/* A vs B — Premium */}
         <ScenarioComparison isPremium={isPremium} input={output.input} />

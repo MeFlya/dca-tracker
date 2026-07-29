@@ -187,12 +187,25 @@ function MCAreaChart({ data, height = 300 }: { data: MonteCarloDataPoint[]; heig
 
 // ─── Public component ─────────────────────────────────────────────────────────
 
+/**
+ * Réponse de /api/simulator/monte-carlo.
+ *
+ * Le plan est décidé par le serveur. Un visiteur non payant reçoit la variante
+ * `premium: false`, qui ne contient QU'UNE valeur — ni le jeu de données du
+ * graphique, ni la médiane, ni le 90e percentile, ni la probabilité.
+ * Ce n'est pas de l'affichage conditionnel : ces champs n'existent pas dans la
+ * réponse réseau.
+ */
+export type MonteCarloResponse =
+  | { premium: true; result: MonteCarloResult }
+  | { premium: false; teaser: { finalP10: number; totalInvested: number } };
+
 export function MonteCarloChart({
-  result,
+  data,
   isPremium,
   input,
 }: {
-  result: MonteCarloResult;
+  data: MonteCarloResponse | null;
   isPremium: boolean;
   input?: SimulatorInput;
 }) {
@@ -213,7 +226,21 @@ export function MonteCarloChart({
         </div>
       </div>
 
-      {/* Legend */}
+      {!data ? (
+        <div className="mt-5 h-[220px] rounded-xl bg-gray-50 animate-pulse" aria-hidden />
+      ) : data.premium ? (
+        <PremiumView result={data.result} />
+      ) : (
+        <TeaserView teaser={data.teaser} input={input} />
+      )}
+    </div>
+  );
+}
+
+/** Vue payante : le graphique complet et les quatre indicateurs. */
+function PremiumView({ result }: { result: MonteCarloResult }) {
+  return (
+    <>
       <div className="flex flex-wrap items-center gap-4 mt-3 mb-5 text-xs text-gray-500">
         <span className="flex items-center gap-1.5">
           <span className="w-8 border-t-2 border-emerald-500 border-dashed inline-block" />
@@ -229,48 +256,85 @@ export function MonteCarloChart({
         </span>
       </div>
 
-      {/* Chart — blurred for free users.
-          Free users get a TALLER blurred chart (400 vs 300) so the centered
-          dark Premium card sits comfortably ON the blurred content with
-          breathing room above/below. Avant : chart 300 + card ~280 → card
-          débordait visuellement du parent. */}
-      <div className="relative">
-        <div className={isPremium ? "" : "blur-sm pointer-events-none select-none"}>
-          <MCAreaChart data={result.data} height={isPremium ? 300 : 400} />
-        </div>
-        {!isPremium && <LockedOverlay input={input} />}
-      </div>
+      <MCAreaChart data={result.data} height={300} />
 
-      {/* KPI row — only for Premium */}
-      {isPremium && (
-        <>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5">
-            <KpiCard
-              label="Pire cas (10e percentile)"
-              value={formatEur(result.finalP10)}
-              color="text-orange-500"
-            />
-            <KpiCard
-              label="Médiane (50e)"
-              value={formatEur(result.finalP50)}
-              color="text-blue-600"
-            />
-            <KpiCard
-              label="Meilleur cas (90e)"
-              value={formatEur(result.finalP90)}
-              color="text-emerald-600"
-            />
-            <KpiCard
-              label="Probabilité de plus-value"
-              value={`${result.probabilityPositive} %`}
-              color={result.probabilityPositive >= 80 ? "text-emerald-600" : "text-orange-500"}
-            />
-          </div>
-          <p className="text-xs text-gray-500 mt-3 leading-relaxed">
-            Simulation stochastique (GBM) — ne constitue pas un conseil en investissement. Les rendements passés ne préjugent pas des rendements futurs.
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5">
+        <KpiCard label="Pire cas (10e percentile)" value={formatEur(result.finalP10)} color="text-orange-500" />
+        <KpiCard label="Médiane (50e)" value={formatEur(result.finalP50)} color="text-blue-600" />
+        <KpiCard label="Meilleur cas (90e)" value={formatEur(result.finalP90)} color="text-emerald-600" />
+        <KpiCard
+          label="Probabilité de plus-value"
+          value={`${result.probabilityPositive} %`}
+          color={result.probabilityPositive >= 80 ? "text-emerald-600" : "text-orange-500"}
+        />
+      </div>
+      <p className="text-xs text-gray-500 mt-3 leading-relaxed">
+        Simulation stochastique (GBM) — ne constitue pas un conseil en investissement.
+        Les rendements passés ne préjugent pas des rendements futurs.
+      </p>
+    </>
+  );
+}
+
+/**
+ * Vue non payante.
+ *
+ * Remplace le graphique flouté d'avant. Un flou dit « il y a quelque chose » ;
+ * un chiffre vrai, calculé pour la stratégie affichée à l'écran, dit ce que
+ * l'outil apporte — et c'est bien plus vendeur. On en montre UN seul, le pire
+ * cas réaliste, parce que c'est celui qui répond à la question que les gens se
+ * posent vraiment avant d'engager de l'argent sur vingt ans.
+ */
+function TeaserView({
+  teaser,
+  input,
+}: {
+  teaser: { finalP10: number; totalInvested: number };
+  input?: SimulatorInput;
+}) {
+  const couvre = teaser.finalP10 >= teaser.totalInvested;
+
+  return (
+    <div className="mt-5">
+      <div className="rounded-2xl border border-gray-200 bg-gradient-to-br from-slate-50 to-white p-6 text-center">
+        <p className="text-[11px] font-semibold uppercase tracking-widest text-gray-400 mb-2">
+          Votre pire cas réaliste sur 1 000 marchés simulés
+        </p>
+        <p className="font-display text-5xl sm:text-6xl font-bold text-gray-900 tabular-nums leading-none tracking-tight">
+          {formatEur(teaser.finalP10)}
+        </p>
+        <p className="mt-3 text-sm text-gray-600 leading-relaxed max-w-sm mx-auto">
+          {couvre ? (
+            <>
+              Même dans les 10&nbsp;% de marchés les plus défavorables, votre
+              stratégie couvre les {formatEur(teaser.totalInvested)} que vous
+              aurez versés.
+            </>
+          ) : (
+            <>
+              Dans les 10&nbsp;% de marchés les plus défavorables, vous seriez
+              sous les {formatEur(teaser.totalInvested)} versés. C&apos;est
+              précisément le chiffre à connaître avant de s&apos;engager.
+            </>
+          )}
+        </p>
+
+        <div className="mt-5 pt-5 border-t border-gray-200">
+          <p className="text-sm text-gray-500 mb-3">
+            Premium ajoute la médiane, le meilleur cas, la probabilité
+            d&apos;être en plus-value et la courbe année par année.
           </p>
-        </>
-      )}
+          <a
+            href={buildUpgradeUrl("monte-carlo", input)}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gray-900 text-white text-sm font-semibold hover:bg-gray-800 transition-colors"
+          >
+            Voir les trois autres chiffres →
+          </a>
+        </div>
+      </div>
+      <p className="text-xs text-gray-500 mt-3 leading-relaxed">
+        Simulation stochastique (GBM) — ne constitue pas un conseil en investissement.
+      </p>
     </div>
   );
 }

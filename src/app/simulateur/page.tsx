@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { SimulatorPageClient } from "./SimulatorPageClient";
+import { getUserSubscription, isPremium } from "@/lib/subscription";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { runSimulation, formatEur } from "@/lib/simulator";
 import { paramsFromSearch } from "@/lib/simulation-params";
@@ -37,6 +38,19 @@ type Props = {
 };
 
 export default async function SimulateurPage({ searchParams }: Props) {
+  // Le plan est décidé ICI, côté serveur, et descendu en prop.
+  // Avant, SimulatorPageClient le lisait via useUser().publicMetadata côté
+  // navigateur : falsifiable en une ligne de console. Seul le booléen traverse,
+  // aucune donnée personnelle.
+  //
+  // Repli en « gratuit » si la lecture échoue : /simulateur est la page à plus
+  // fort trafic du site et elle doit rester servie même si l'authentification
+  // est indisponible. Le sens du repli est le bon — un incident n'ouvre jamais
+  // une fonctionnalité payante.
+  const premium = await getUserSubscription()
+    .then((sub) => isPremium(sub.plan))
+    .catch(() => false);
+
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://dcatracker.fr";
 
   // ── Server-side computation of the simulation ─────────────────────────────
@@ -119,7 +133,7 @@ export default async function SimulateurPage({ searchParams }: Props) {
       </noscript>
 
       {/* Interactive simulator — hydrates with serverComputedOutput as initial state */}
-      <SimulatorPageClient initialOutput={initialOutput} />
+      <SimulatorPageClient initialOutput={initialOutput} isPremium={premium} />
 
       <JsonLd
         data={{

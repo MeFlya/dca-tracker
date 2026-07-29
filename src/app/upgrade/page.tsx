@@ -63,7 +63,7 @@ type FeatureCopy = {
   projection: {
     title: string;
     intro: string;
-    rows: { label: string; value: string; locked?: boolean; baseline?: boolean }[];
+    rows: { label: string; value: string; locked?: boolean; baseline?: boolean; reveal?: boolean }[];
     conclusion: string;
   };
 
@@ -126,7 +126,7 @@ const MONTE_CARLO: FeatureCopy = {
     intro: "Voici ce que Monte Carlo révèle que le simulateur de base cache :",
     rows: [
       { label: "Scénario moyen", value: "102 000 €", baseline: true },
-      { label: "Pire cas réaliste (10e percentile)", value: "68 400 €", locked: true },
+      { label: "Pire cas réaliste (10e percentile)", value: "68 400 €", locked: true, reveal: true },
       { label: "Meilleur cas réaliste (90e percentile)", value: "158 200 €", locked: true },
       { label: "Probabilité d'être en plus-value", value: "87 %", locked: true },
     ],
@@ -225,7 +225,7 @@ const SAVE_STRATEGY: FeatureCopy = {
     intro: "Exemple type d'un utilisateur qui a loggé régulièrement :",
     rows: [
       { label: "Total investi sur 12 mois", value: "2 400 €", baseline: true },
-      { label: "Valeur théorique attendue", value: "2 547 €", locked: true },
+      { label: "Valeur théorique attendue", value: "2 547 €", locked: true, reveal: true },
       { label: "Votre portefeuille réel", value: "2 680 €", locked: true },
       { label: "Intérêts composés générés", value: "+ 280 €", locked: true },
     ],
@@ -619,7 +619,7 @@ function buildDynamicProjection(
         intro: "Voici ce que Monte Carlo révèle que le simulateur de base cache :",
         rows: [
           { label: "Scénario moyen", value: formatEur(sim.base.finalValue), baseline: true },
-          { label: "Pire cas réaliste (10e percentile)", value: formatEur(mc.finalP10), locked: true },
+          { label: "Pire cas réaliste (10e percentile)", value: formatEur(mc.finalP10), locked: true, reveal: true },
           { label: "Meilleur cas réaliste (90e percentile)", value: formatEur(mc.finalP90), locked: true },
           { label: "Probabilité d'être en plus-value", value: `${mc.probabilityPositive} %`, locked: true },
         ],
@@ -841,7 +841,21 @@ export default async function UpgradePage({ searchParams }: Props) {
                       : "text-gray-900"
                   }`}
                 >
-                  {row.value}
+                  {/* ⚠️ Une ligne « locked » affichait sa valeur EN CLAIR, avec
+                      un simple cadenas à côté du libellé. Sur une page publique
+                      qui calcule le vrai Monte Carlo de la stratégie passée en
+                      paramètre, ça revenait à vendre la fonctionnalité en la
+                      donnant : P10, P90 et probabilité étaient lisibles par
+                      n'importe qui. Seule la PREMIÈRE ligne verrouillée reste
+                      révélée — c'est l'accroche, elle est vraie et elle
+                      concerne le visiteur ; les suivantes sont remplacées. */}
+                  {row.locked && !row.reveal ? (
+                    <span className="text-gray-300 tracking-widest select-none" aria-label="Réservé au plan Premium">
+                      ••••••
+                    </span>
+                  ) : (
+                    row.value
+                  )}
                 </span>
               </div>
             ))}
