@@ -33,6 +33,7 @@ import {
   formatMonthFr,
   type BacktestResult,
 } from "@/lib/backtest";
+import { DataAnomalyNotice } from "@/components/backtest/DataAnomalyNotice";
 import { track } from "@/lib/analytics";
 import { PremiumTrialLink } from "@/components/checkout/PremiumTrialLink";
 
@@ -291,7 +292,10 @@ export function BacktestClient({ isPremium, minMonth, maxMonth }: Props) {
       {/* ── Results (Premium) or Paywall (Free) ─────────────────────────── */}
       {isPremium ? (
         result ? (
-          <BacktestResults result={result} />
+          <>
+            <DataAnomalyNotice variant="tool" />
+            <BacktestResults result={result} />
+          </>
         ) : (
           <PreviewHint />
         )

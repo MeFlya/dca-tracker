@@ -31,6 +31,15 @@ export interface ChangelogEntry {
 /** Du plus récent au plus ancien. Garder cet ordre à la main. */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    date: "2026-07-29",
+    kind: "correction",
+    title: "Décalage d'un mois dans la série de données historiques",
+    body:
+      "La série de prix mensuels qui alimente tous les backtests était décalée d'un cran : la valeur étiquetée « mars 2020 » portait en réalité la clôture d'avril 2020. Le défaut existait depuis la construction initiale de la série. Il a été trouvé en vérifiant une tout autre chose — que la série était bien libellée en euros et non en dollars — quand une valeur impossible est apparue : le mois étiqueté mars 2020, celui du krach Covid, affichait une hausse de 9,5 %. Comparée aux performances annuelles de référence du MSCI World en euros, la série s'écarte de 6,7 points en moyenne telle quelle, et de 0,5 point une fois décalée d'un mois ; neuf années civiles concordent sans exception. Conséquence : les montants affichés SOUS-ESTIMENT le résultat réel d'environ 1 à 2 %. Sur les trois pages publiées, 25 199 € devient 25 641 €, 15 352 € devient 15 686 €, et 123 790 € devient 125 187 €. La série n'a pas été corrigée en décalant simplement les étiquettes — cela aurait remplacé une erreur silencieuse par une autre : elle est reconstruite depuis la source et validée contre une seconde série indépendante, un ETF d'un autre émetteur avec une autre méthode de réplication. En attendant, un bandeau signale l'anomalie sur l'outil et sur les pages concernées.",
+    why:
+      "Cette erreur était invisible de l'intérieur : la série était continue, cohérente, et toutes ses valeurs étaient plausibles. Rien dans la donnée elle-même ne pouvait la trahir — il a fallu la confronter à ce qui s'est réellement passé à une date connue. C'est devenu la règle pour toute donnée qui alimente une fonctionnalité payante : elle se contrôle contre une source dont elle ne peut pas être dérivée. Deux contrôles automatiques ont été ajoutés — l'un refuse de valider une série si des mois de référence connus n'ont pas le signe attendu, l'autre vérifie que la corrélation entre les deux séries est bien maximale à décalage zéro.",
+  },
+  {
     date: "2026-07-28",
     kind: "engagement",
     title: "Je reviens sur l'engagement « aucun lien d'affiliation »",

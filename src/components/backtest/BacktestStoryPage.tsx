@@ -17,6 +17,7 @@ import {
   formatMonthFr,
   type BacktestSeriesPoint,
 } from "@/lib/backtest";
+import { DataAnomalyNotice } from "@/components/backtest/DataAnomalyNotice";
 import type { ComputedStory } from "@/lib/backtest-stories";
 
 const CANONICAL_ORIGIN = "https://dcatracker.fr";
@@ -137,6 +138,13 @@ export function BacktestStoryPage({ story }: { story: ComputedStory }) {
         headline={def.h1}
         description={def.metaDescription(result)}
       />
+
+      {/* Le bandeau passe AVANT le chapô, pas seulement avant les cartes de
+          chiffres : le chapô contient déjà les montants (« 15 600 € investis
+          sont devenus 25 199 € »). Le placer après aurait laissé le lecteur
+          rencontrer les chiffres faux d'abord — un avertissement doit précéder
+          ce qu'il qualifie, y compris quand ce qu'il qualifie est une phrase. */}
+      <DataAnomalyNotice />
 
       <p className="text-lg text-gray-600 leading-relaxed mb-8">
         {def.intro(result)}
