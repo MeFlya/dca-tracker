@@ -63,7 +63,27 @@ type FeatureCopy = {
   projection: {
     title: string;
     intro: string;
-    rows: { label: string; value: string; locked?: boolean; baseline?: boolean; reveal?: boolean }[];
+    rows: {
+      label: string;
+      value: string;
+      /** Surlignage « apporté par Premium ». Purement visuel. */
+      locked?: boolean;
+      baseline?: boolean;
+      /**
+       * Masque réellement la valeur.
+       *
+       * ⚠️ À ne mettre QUE sur une valeur qu'un visiteur ne peut pas obtenir
+       * autrement. Masquer un chiffre calculable avec le simulateur gratuit
+       * n'est pas un verrou, c'est un décor — la même faute que le flou CSS.
+       * Aujourd'hui seuls les percentiles Monte Carlo le méritent : lib/
+       * monte-carlo.ts est server-only.
+       *
+       * ⚠️ Et vérifier qu'aucune valeur ni phrase VISIBLE ne permet de le
+       * reconstituer par calcul. Un « écart de X € » à côté d'un pire cas
+       * affiché redonne le meilleur cas par addition.
+       */
+      secret?: boolean;
+    }[];
     conclusion: string;
   };
 
@@ -126,11 +146,11 @@ const MONTE_CARLO: FeatureCopy = {
     intro: "Voici ce que Monte Carlo révèle que le simulateur de base cache :",
     rows: [
       { label: "Scénario moyen", value: "102 000 €", baseline: true },
-      { label: "Pire cas réaliste (10e percentile)", value: "68 400 €", locked: true, reveal: true },
-      { label: "Meilleur cas réaliste (90e percentile)", value: "158 200 €", locked: true },
-      { label: "Probabilité d'être en plus-value", value: "87 %", locked: true },
+      { label: "Pire cas réaliste (10e percentile)", value: "68 400 €", locked: true },
+      { label: "Meilleur cas réaliste (90e percentile)", value: "158 200 €", locked: true, secret: true },
+      { label: "Probabilité d'être en plus-value", value: "87 %", locked: true, secret: true },
     ],
-    conclusion: "Un écart de 90 000 € entre le pire et le meilleur cas. C'est exactement ce que vous devez comprendre avant d'engager 48 000 € sur 20 ans.",
+    conclusion: "Le meilleur cas est plus de deux fois supérieur au pire. C'est exactement l'écart que vous devez comprendre avant d'engager 48 000 € sur 20 ans.",
   },
 
   beforeAfter: {
@@ -225,7 +245,7 @@ const SAVE_STRATEGY: FeatureCopy = {
     intro: "Exemple type d'un utilisateur qui a loggé régulièrement :",
     rows: [
       { label: "Total investi sur 12 mois", value: "2 400 €", baseline: true },
-      { label: "Valeur théorique attendue", value: "2 547 €", locked: true, reveal: true },
+      { label: "Valeur théorique attendue", value: "2 547 €", locked: true },
       { label: "Votre portefeuille réel", value: "2 680 €", locked: true },
       { label: "Intérêts composés générés", value: "+ 280 €", locked: true },
     ],
@@ -611,7 +631,6 @@ function buildDynamicProjection(
     case "monte-carlo": {
       const sim = runSimulation(input);
       const mc = runMonteCarlo(input);
-      const spread = mc.finalP90 - mc.finalP10;
       const totalInvested = input.monthlyAmount * input.durationYears * 12;
 
       return {
@@ -619,11 +638,11 @@ function buildDynamicProjection(
         intro: "Voici ce que Monte Carlo révèle que le simulateur de base cache :",
         rows: [
           { label: "Scénario moyen", value: formatEur(sim.base.finalValue), baseline: true },
-          { label: "Pire cas réaliste (10e percentile)", value: formatEur(mc.finalP10), locked: true, reveal: true },
-          { label: "Meilleur cas réaliste (90e percentile)", value: formatEur(mc.finalP90), locked: true },
-          { label: "Probabilité d'être en plus-value", value: `${mc.probabilityPositive} %`, locked: true },
+          { label: "Pire cas réaliste (10e percentile)", value: formatEur(mc.finalP10), locked: true },
+          { label: "Meilleur cas réaliste (90e percentile)", value: formatEur(mc.finalP90), locked: true, secret: true },
+          { label: "Probabilité d'être en plus-value", value: `${mc.probabilityPositive} %`, locked: true, secret: true },
         ],
-        conclusion: `Un écart de ${formatEur(spread)} entre le pire et le meilleur cas. C'est exactement ce que vous devez comprendre avant d'engager ${formatEur(totalInvested)} sur ${input.durationYears} ans.`,
+        conclusion: `Le meilleur cas est plus de ${Math.max(2, Math.floor(mc.finalP90 / Math.max(1, mc.finalP10)))} fois supérieur au pire. C'est exactement l'écart que vous devez comprendre avant d'engager ${formatEur(totalInvested)} sur ${input.durationYears} ans.`,
       };
     }
 
@@ -849,7 +868,7 @@ export default async function UpgradePage({ searchParams }: Props) {
                       n'importe qui. Seule la PREMIÈRE ligne verrouillée reste
                       révélée — c'est l'accroche, elle est vraie et elle
                       concerne le visiteur ; les suivantes sont remplacées. */}
-                  {row.locked && !row.reveal ? (
+                  {row.secret ? (
                     <span className="text-gray-300 tracking-widest select-none" aria-label="Réservé au plan Premium">
                       ••••••
                     </span>

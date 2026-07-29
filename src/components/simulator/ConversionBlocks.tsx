@@ -327,6 +327,29 @@ function ErrorBlock({ output, isPremium }: { output: SimulatorOutput; isPremium:
   const errors = detectErrors(output.input);
   if (!errors.length) return null;
 
+  // ─── ⚠️ LIGNE À NE PAS FRANCHIR — conseil en investissement ────────────────
+  //
+  // Ce bloc part des paramètres SAISIS PAR L'UTILISATEUR, produit un diagnostic
+  // personnalisé et propose une action. C'est exactement la forme d'un conseil
+  // en investissement au sens de l'art. L.321-1 du code monétaire et financier
+  // — sauf sur un point, et un seul : il ne nomme aucun instrument.
+  //
+  // Ce qui est autorisé ici :
+  //   · un constat factuel sur les paramètres saisis (« vos frais sont à 0,30 % ») ;
+  //   · un fait de marché vérifiable et non nominatif (« des ETF à 0,10 % existent ») ;
+  //   · une action commerciale (s'abonner, ouvrir son tableau de bord).
+  //
+  // Ce qui bascule en conseil réglementé, et exige le statut CIF :
+  //   · nommer un instrument présenté comme adapté à CET utilisateur
+  //     (« passez sur WPEA », « remplacez votre CW8 par… ») ;
+  //   · un ctaHref qui mène à une fiche ETF ou à un courtier depuis ce bloc.
+  //
+  // Concrètement : on peut dire « les ETF à 0,1 % existent », jamais
+  // « achetez WPEA ». Le comparatif public peut classer des instruments ; ce
+  // bloc-ci, qui part de la situation d'une personne, ne le peut pas.
+  //
+  // Le lien pointe aujourd'hui vers /upgrade ou /account. Le garder ainsi.
+
   // Pick the error with the largest optimization impact.
   const scored = errors.map((err) => {
     if (err.ctaHref) return { err, impact: 0 }; // fixed-target errors (no sim impact)
