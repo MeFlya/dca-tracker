@@ -11,6 +11,17 @@
 //
 // Ne pas inscrire ici les changements purement techniques (refactors, correctifs
 // invisibles, dépendances) : ce n'est pas une liste de commits.
+//
+// ⚠️ RÈGLE SUR LE TEMPS DES VERBES, apprise en la enfreignant le 29/07/2026.
+// Une entrée annonçait « la série est reconstruite et validée » alors que la
+// reconstruction n'avait pas commencé — pendant qu'un bandeau, à deux clics de
+// là, annonçait « reconstruction en cours ». Deux surfaces du même site, le même
+// jour, dont l'une donnait pour fait ce que l'autre donnait pour en cours.
+//
+// Dans un journal des changements, LE TEMPS DE CHAQUE VERBE EST UNE AFFIRMATION
+// FACTUELLE, au même titre qu'un chiffre. Ce qui n'est pas encore vrai s'écrit
+// au futur, et l'entrée se met à jour quand ça le devient. Un titre « ce qu'on a
+// fait » n'autorise pas à écrire au passé ce qui reste à faire.
 
 export type ChangelogKind =
   | "engagement" // une promesse faite aux utilisateurs change
@@ -35,9 +46,9 @@ export const CHANGELOG: ChangelogEntry[] = [
     kind: "correction",
     title: "Décalage d'un mois dans la série de données historiques",
     body:
-      "La série de prix mensuels qui alimente tous les backtests était décalée d'un cran : la valeur étiquetée « mars 2020 » portait en réalité la clôture d'avril 2020. Le défaut existait depuis la construction initiale de la série. Il a été trouvé en vérifiant une tout autre chose — que la série était bien libellée en euros et non en dollars — quand une valeur impossible est apparue : le mois étiqueté mars 2020, celui du krach Covid, affichait une hausse de 9,5 %. Comparée aux performances annuelles de référence du MSCI World en euros, la série s'écarte de 6,7 points en moyenne telle quelle, et de 0,5 point une fois décalée d'un mois ; neuf années civiles concordent sans exception. Conséquence : les montants affichés SOUS-ESTIMENT le résultat réel d'environ 1 à 2 %. Sur les trois pages publiées, 25 199 € devient 25 641 €, 15 352 € devient 15 686 €, et 123 790 € devient 125 187 €. La série n'a pas été corrigée en décalant simplement les étiquettes — cela aurait remplacé une erreur silencieuse par une autre : elle est reconstruite depuis la source et validée contre une seconde série indépendante, un ETF d'un autre émetteur avec une autre méthode de réplication. En attendant, un bandeau signale l'anomalie sur l'outil et sur les pages concernées.",
+      "La série de prix mensuels qui alimente tous les backtests était décalée d'un cran : la valeur étiquetée « mars 2020 » portait en réalité la clôture d'avril 2020. Le défaut existait depuis la construction initiale de la série. Il a été trouvé en vérifiant une tout autre chose — que la série était bien libellée en euros et non en dollars — quand une valeur impossible est apparue : le mois étiqueté mars 2020, celui du krach Covid, affichait une hausse de 9,5 %. Comparée aux performances annuelles de référence du MSCI World en euros, la série s'écarte de 6,7 points en moyenne telle quelle, et de 0,5 point une fois décalée d'un mois ; neuf années civiles concordent sans exception. Conséquence : les montants affichés SOUS-ESTIMENT le résultat réel d'environ 1 à 2 %. Sur les trois pages publiées, 25 199 € devient 25 641 €, 15 352 € devient 15 686 €, et 123 790 € devient 125 187 €. La série n'a pas été corrigée en décalant simplement les étiquettes — cela aurait remplacé une erreur silencieuse par une autre. Elle est en cours de reconstruction depuis la source, et sera validée contre une seconde série indépendante : un ETF d'un autre émetteur, avec une autre méthode de réplication. En attendant, un bandeau signale l'anomalie sur l'outil de backtest et sur les pages concernées. Cette entrée sera mise à jour lorsque les chiffres corrigés seront en ligne.",
     why:
-      "Cette erreur était invisible de l'intérieur : la série était continue, cohérente, et toutes ses valeurs étaient plausibles. Rien dans la donnée elle-même ne pouvait la trahir — il a fallu la confronter à ce qui s'est réellement passé à une date connue. C'est devenu la règle pour toute donnée qui alimente une fonctionnalité payante : elle se contrôle contre une source dont elle ne peut pas être dérivée. Deux contrôles automatiques ont été ajoutés — l'un refuse de valider une série si des mois de référence connus n'ont pas le signe attendu, l'autre vérifie que la corrélation entre les deux séries est bien maximale à décalage zéro.",
+      "Cette erreur était invisible de l'intérieur : la série était continue, cohérente, et toutes ses valeurs étaient plausibles. Rien dans la donnée elle-même ne pouvait la trahir — il a fallu la confronter à ce qui s'est réellement passé à une date connue. C'est devenu la règle pour toute donnée qui alimente une fonctionnalité payante : elle se contrôle contre une source dont elle ne peut pas être dérivée. Un premier contrôle automatique est en place : il refuse de valider une série si des mois de référence connus — mars 2020, avril 2020, octobre 2008 — n'ont pas le signe attendu. Un second est écrit mais ne pourra s'activer qu'avec la seconde série : il vérifiera que la corrélation entre les deux est bien maximale à décalage zéro.",
   },
   {
     date: "2026-07-28",
