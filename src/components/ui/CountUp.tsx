@@ -77,7 +77,14 @@ export function CountUp({
       setDisplay(0);
       const start = performance.now();
       const tick = (now: number) => {
-        const t = Math.min(1, (now - start) / durationMs);
+        // Borné EN BAS autant qu'en haut. Le timestamp que requestAnimationFrame
+        // passe au callback est celui du DÉBUT DE FRAME, qui peut précéder le
+        // performance.now() capturé juste au-dessus. `now - start` était donc
+        // parfois négatif de quelques millisecondes, et easeOutCubic renvoie
+        // alors une valeur négative : la première frame affichait « -0 / -3 / -0 »
+        // au lieu de « 0 / 0 / 0 ». Repéré en production, reproduit au calcul
+        // (−5,4 ms d'écart donnent exactement ces trois valeurs).
+        const t = Math.min(1, Math.max(0, (now - start) / durationMs));
         setDisplay(value * easeOutCubic(t));
         if (t < 1) rafRef.current = requestAnimationFrame(tick);
         else setDisplay(value);
