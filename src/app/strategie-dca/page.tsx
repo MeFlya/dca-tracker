@@ -265,19 +265,35 @@ export default function StrategieDCAPage() {
             <p className="text-xl font-bold text-gain-default">+38,9 %</p>
           </div>
         </div>
+        {/* ⚠️ Ce bloc reste une DÉMONSTRATION DE MÉCANIQUE, jamais un verdict.
+            Le scénario est construit pour que le DCA gagne : le prix baisse puis
+            remonte exactement dans la fenêtre de versement. Présenté seul, il
+            contredisait la section statistique plus bas — la page se
+            contredisait sur son propre sujet. L'avertissement est donc passé
+            AVANT le chiffre, pas après, et le chiffre du versement unique est
+            annoncé dans la même phrase. */}
         <div className="rounded-2xl border border-amber-100 bg-amber-50 p-5">
-          <p className="text-sm font-semibold text-amber-800 mb-2">Comparaison : et si vous aviez tout investi au mois 1 ?</p>
+          <p className="text-sm font-semibold text-amber-800 mb-2">
+            Attention : ce scénario est construit pour montrer le mécanisme
+          </p>
           <p className="text-sm text-amber-700 leading-relaxed">
-            1 800 € investis en une fois à 100 € l&apos;unité = 18 parts.
-            Valeur finale : 18 × 110 € = <strong>1 980 €</strong> (+10 %).
+            Le prix baisse puis remonte exactement pendant la période de
+            versement — c&apos;est le cas de figure le plus favorable au
+            versement programmé, et il est choisi pour rendre la mécanique
+            visible. Sur ce scénario précis, le versement programmé fait{" "}
+            <strong>+38,9 %</strong> contre <strong>+10 %</strong> pour un
+            placement unique au mois 1 (1 800 € à 100 € l&apos;unité = 18 parts,
+            revendues 110 € = 1 980 €).
             <br />
-            Le DCA fait +38,9 % sur le même scénario, grâce aux achats
-            supplémentaires pendant la correction.
+            <br />
+            <strong>Ne tirez aucune conclusion de ce chiffre.</strong> Sur
+            l&apos;historique réel, c&apos;est l&apos;inverse qui domine : tout
+            investir d&apos;un coup l&apos;emporte environ deux fois sur trois.
+            Les chiffres, leur cadre et la seule situation où l&apos;étalement
+            gagne vraiment sont plus bas.
           </p>
         </div>
         <p className="text-sm text-gray-500 mt-3">
-          Note : ce scénario favorise le DCA (marché qui baisse puis remonte).
-          Sur un marché en hausse continue, le lump sum peut surperformer.{" "}
           <Link href="#dca-vs-lump-sum" className="underline hover:text-gray-600 transition-colors">
             Voir la comparaison complète →
           </Link>
@@ -285,53 +301,199 @@ export default function StrategieDCAPage() {
       </section>
 
       {/* ── Section 3: DCA vs Lump Sum ────────────────────────────────────── */}
+      {/* ─── DCA vs lump sum ────────────────────────────────────────────────
+          Section entièrement réécrite. L'ancienne version citait Vanguard dans
+          le bloc de sources SANS en reprendre un seul chiffre, puis illustrait
+          avec un scénario à six mois construit pour que le DCA gagne (+38,9 %
+          contre +10 %) — alors que la FAQ de la même page écrivait que le lump
+          sum gagne « environ 2/3 du temps ». La page se contredisait sur son
+          propre sujet.
+          Tous les chiffres ci-dessous ont été relevés page par page dans le PDF
+          de l'étude ; le relevé est consigné dans VERIF-VANGUARD.md à la racine
+          du dépôt. Ne modifier aucun de ces nombres sans y retourner. */}
       <section className="mb-14" id="dca-vs-lump-sum">
         <h2 className="text-2xl font-bold text-gray-900 mb-4">
-          DCA vs Lump Sum : lequel est le meilleur ?
+          Ce que disent les chiffres — et dans quel cadre exactement
         </h2>
+
         <p className="text-gray-600 leading-relaxed mb-6">
-          C&apos;est l&apos;une des questions les plus débattues en finance
-          personnelle. La réponse honnête : les deux ont leurs mérites, selon
-          votre situation.
+          <strong className="text-gray-900">
+            Pour la plupart des gens, la question ne se pose pas.
+          </strong>{" "}
+          Si vous investissez une part de votre salaire chaque mois, vous
+          n&apos;avez pas de somme à placer d&apos;un coup : le versement
+          programmé n&apos;est pas une stratégie que vous choisissez face à une
+          autre, c&apos;est la seule dont vous disposez. Le débat qui suit ne
+          concerne qu&apos;une situation précise — vous venez de recevoir une
+          somme exceptionnelle : un héritage, une prime, le produit d&apos;une
+          vente. Et vous vous demandez s&apos;il faut tout placer maintenant ou
+          étaler sur quelques mois.
         </p>
-        <div className="overflow-x-auto rounded-2xl border border-gray-100 mb-6">
+
+        <h3 className="text-lg font-semibold text-gray-900 mb-3">
+          Le chiffre, et son cadre
+        </h3>
+        <p className="text-gray-600 leading-relaxed mb-4">
+          L&apos;étude de référence est celle de Vanguard,{" "}
+          <em>Cost averaging: Invest now or temporarily hold your cash?</em>,
+          publiée en février 2023. Son résultat principal :
+        </p>
+        <blockquote className="border-l-4 border-primary-200 pl-5 py-1 mb-5">
+          <p className="text-lg font-semibold text-gray-900 leading-snug">
+            Tout investir d&apos;un coup a produit plus de richesse que
+            l&apos;étalement dans 68 % des cas.
+          </p>
+        </blockquote>
+        <p className="text-gray-600 leading-relaxed mb-4">
+          Ce chiffre ne veut rien dire sans son cadre, alors le voici en entier :
+          portefeuille <strong>100 % actions</strong>, somme étalée sur{" "}
+          <strong>trois mois</strong> en trois versements égaux, richesse
+          comparée <strong>au bout d&apos;un an</strong>, sur l&apos;indice{" "}
+          <strong>MSCI World en dollars de 1976 à 2022</strong>, l&apos;argent en
+          attente ne rapportant <strong>aucun intérêt</strong>.
+        </p>
+        <p className="text-gray-600 leading-relaxed mb-5">
+          Chacune de ces conditions compte. Si l&apos;on rémunère l&apos;argent
+          en attente au taux du bon du Trésor américain à trois mois, le taux
+          tombe à <strong>65 %</strong>. Et pour un investisseur en euros, la
+          série disponible dans l&apos;étude ne commence pas en 1976 mais en{" "}
+          <strong>1998</strong> :
+        </p>
+
+        <div className="overflow-x-auto rounded-2xl border border-gray-100 mb-3">
           <table className="w-full text-sm border-collapse">
             <thead>
               <tr>
-                <th className="text-left px-4 py-3 bg-gray-50 font-semibold text-gray-500 border-b border-gray-100"></th>
-                <th className="text-center px-4 py-3 bg-primary-50 font-bold text-primary-700 border-b border-primary-100">DCA</th>
-                <th className="text-center px-4 py-3 bg-gray-50 font-semibold text-gray-600 border-b border-gray-100">Lump Sum</th>
+                <th className="text-left px-4 py-3 bg-gray-50 font-semibold text-gray-500 border-b border-gray-100">
+                  Somme étalée sur
+                </th>
+                <th className="text-center px-4 py-3 bg-gray-50 font-semibold text-gray-600 border-b border-gray-100">
+                  Tout d&apos;un coup l&apos;emporte
+                </th>
               </tr>
             </thead>
             <tbody>
               {[
-                { label: "Risque de mauvais timing",       dca: "Éliminé",           ls: "Élevé" },
-                { label: "Performance sur marchés haussiers", dca: "Légèrement inférieure", ls: "Optimale" },
-                { label: "Performance en correction",      dca: "Avantageuse",       ls: "Pénalisée" },
-                { label: "Discipline psychologique",       dca: "Facile à maintenir", ls: "Exige de la conviction" },
-                { label: "Adapté au revenu mensuel",       dca: "Oui",               ls: "Rare en pratique" },
-                { label: "Idéal pour",                     dca: "Salariés, débutants", ls: "Capital ponctuel (héritage, bonus)" },
+                { d: "3 mois", v: "66,4 %", fort: false },
+                { d: "4 mois", v: "66,8 %", fort: false },
+                { d: "5 mois", v: "67,2 %", fort: false },
+                { d: "6 mois", v: "67,9 %", fort: true },
               ].map((row, i) => (
-                <tr key={row.label} className={i % 2 === 0 ? "bg-white" : "bg-gray-50/50"}>
-                  <td className="px-4 py-3 text-gray-600 font-medium border-b border-gray-50">{row.label}</td>
-                  <td className="px-4 py-3 text-center text-primary-700 font-semibold border-b border-gray-50">{row.dca}</td>
-                  <td className="px-4 py-3 text-center text-gray-600 border-b border-gray-50">{row.ls}</td>
+                <tr key={row.d} className={i % 2 === 0 ? "bg-white" : "bg-gray-50/50"}>
+                  <td className="px-4 py-3 text-gray-600 font-medium border-b border-gray-50">
+                    {row.d}
+                  </td>
+                  <td className={`px-4 py-3 text-center border-b border-gray-50 tabular-nums ${row.fort ? "font-bold text-gray-900" : "text-gray-600"}`}>
+                    {row.v}
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-        <div className="rounded-2xl bg-gray-50 border border-gray-100 p-5">
-          <p className="text-sm font-semibold text-gray-900 mb-2">Notre verdict</p>
+        {/* ⚠️ Ligne « Global EUR » de la Figure 6, PAS la ligne « Europe » :
+            celle-ci est adossée au MSCI Europe, un portefeuille d'actions
+            européennes, et sa courbe est plate. Le lecteur de cette page
+            investit en MSCI World. */}
+        <p className="text-xs text-gray-500 mb-6">
+          MSCI World en euros, 1998-2022, 100 % actions, mesure à un an.
+        </p>
+
+        <p className="text-gray-600 leading-relaxed mb-8">
+          Le sens de la pente est la seule chose vraiment utile de ce tableau :{" "}
+          <strong className="text-gray-900">
+            plus on étale longtemps, plus souvent le versement unique
+            l&apos;emporte.
+          </strong>{" "}
+          L&apos;étude le formule ainsi : plus l&apos;horizon d&apos;étalement
+          est long, plus le coût d&apos;opportunité est élevé. Étaler, c&apos;est
+          rester en liquidités plus longtemps, et rester en liquidités a un prix.
+        </p>
+
+        <h3 className="text-lg font-semibold text-gray-900 mb-3">
+          Pourquoi mesurer à un an ne change rien
+        </h3>
+        <p className="text-gray-600 leading-relaxed mb-8">
+          L&apos;objection naturelle est qu&apos;un an, c&apos;est court. Elle
+          tombe pour une raison mécanique : une fois l&apos;étalement terminé,
+          les deux portefeuilles détiennent exactement les mêmes actifs. Celui
+          qui en détient le plus à cet instant le restera indéfiniment. Le
+          classement est décidé à la fin de l&apos;étalement, et il ne
+          s&apos;inverse plus jamais — seul l&apos;écart en euros continue de
+          grandir. Autrement dit, la décision se joue sur quelques mois, et pas
+          sur la durée de votre investissement.
+        </p>
+
+        <h3 className="text-lg font-semibold text-gray-900 mb-3">
+          Ce que l&apos;étude dit aussi, et qu&apos;on ne cite jamais
+        </h3>
+        <p className="text-gray-600 leading-relaxed mb-4">
+          <strong className="text-gray-900">
+            L&apos;étalement l&apos;emporte exactement là où on a peur.
+          </strong>{" "}
+          Sur 100 000 $ placés en actions, au bout d&apos;un an, dans les 5 % de
+          scénarios les plus défavorables :
+        </p>
+
+        <div className="overflow-x-auto rounded-2xl border border-gray-100 mb-5">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr>
+                <th className="text-left px-4 py-3 bg-gray-50 font-semibold text-gray-500 border-b border-gray-100"></th>
+                <th className="text-center px-4 py-3 bg-gray-50 font-semibold text-gray-600 border-b border-gray-100">
+                  Tout d&apos;un coup
+                </th>
+                <th className="text-center px-4 py-3 bg-primary-50 font-bold text-primary-700 border-b border-primary-100">
+                  Étalé sur 3 mois
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="bg-white">
+                <td className="px-4 py-3 text-gray-600 font-medium">5ᵉ percentile</td>
+                <td className="px-4 py-3 text-center font-bold text-gray-900 tabular-nums">82 947 $</td>
+                <td className="px-4 py-3 text-center font-bold text-primary-700 tabular-nums">85 906 $</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p className="text-gray-600 leading-relaxed mb-6">
+          L&apos;étude le dit dans ses propres termes : le versement unique
+          l&apos;emporte dans tous les cas <strong>sauf les pires</strong> — en
+          dessous du 25ᵉ percentile. Le versement unique gagne plus souvent et
+          gagne davantage : <strong>2,2 % de plus à la médiane</strong>, en
+          actions, au bout d&apos;un an. L&apos;étalement, lui, ne gagne que dans
+          le scénario dont vous avez peur. Ce n&apos;est pas un compromis :
+          c&apos;est le seul argument valable en sa faveur, et il est suffisant
+          si c&apos;est ce scénario-là qui vous empêche d&apos;appuyer sur le
+          bouton.
+        </p>
+
+        <div className="rounded-2xl bg-gray-50 border border-gray-100 p-5 mb-8">
+          <p className="text-sm font-semibold text-gray-900 mb-2">
+            Et attendre reste la pire option des trois
+          </p>
           <p className="text-sm text-gray-600 leading-relaxed">
-            Pour un salarié qui investit son revenu mensuel, la question ne se
-            pose pas : le DCA est la seule option réaliste. Pour quelqu&apos;un qui
-            dispose d&apos;un capital ponctuel (bonus, héritage, vente
-            immobilière), le lump sum est statistiquement optimal — mais un
-            DCA sur 6 à 12 mois reste une option valide si le risque de
-            mauvais timing vous préoccupe.
+            Étaler sa mise a battu le fait de rester en liquidités{" "}
+            <strong>69 % du temps</strong>. Si l&apos;hésitation porte non pas
+            sur <em>comment</em> entrer mais sur <em>quand</em>, l&apos;étude
+            répond que ne pas entrer perd contre les deux.
           </p>
         </div>
+
+        <h3 className="text-lg font-semibold text-gray-900 mb-3">
+          Ce que ces chiffres ne disent pas
+        </h3>
+        <p className="text-gray-600 leading-relaxed">
+          Ils portent sur des dollars, sur des étalements de trois à six mois, et
+          sur une richesse mesurée au bout d&apos;un an. Ils ne disent rien de ce
+          qui serait arrivé à quelqu&apos;un qui aurait tout placé au sommet
+          d&apos;octobre 2007, en euros, et de ce qu&apos;il serait devenu
+          jusqu&apos;à aujourd&apos;hui. C&apos;est la question que nous
+          calculons, et nous publierons le résultat qu&apos;il soit favorable ou
+          non à l&apos;étalement.
+        </p>
         <p className="text-gray-600 leading-relaxed mt-5">
           Quelle que soit l&apos;approche retenue, le choix du support compte
           autant que le rythme : notre{" "}
@@ -466,10 +628,18 @@ export default function StrategieDCAPage() {
       <SourcesReferences
         sources={[
           {
+            // Source des chiffres de la section « Ce que disent les chiffres ».
+            // Relevé page par page dans VERIF-VANGUARD.md.
+            label: "Cost averaging: Invest now or temporarily hold your cash? (étude)",
+            url: "https://corporate.vanguard.com/content/dam/corp/research/pdf/cost_averaging_invest_now_or_temporarily_hold_your_cash.pdf",
+            publisher: "Vanguard Research, février 2023",
+            note: "Source des 68 %, du tableau par durée d'étalement et des percentiles cités. Cadre : 100 % actions, étalement sur 3 mois, mesure à 1 an, liquidités non rémunérées.",
+          },
+          {
             label: "Dollar-Cost Averaging Just Means Taking Risk Later (étude)",
             url: "https://corporate.vanguard.com/content/dam/corp/research/pdf/Dollar-cost-averaging-just-means-taking-risk-later.pdf",
             publisher: "Vanguard Research",
-            note: "Whitepaper de référence comparant DCA vs Lump Sum sur 64 ans de données US/UK/Australie.",
+            note: "Étude antérieure sur 64 ans de données US/UK/Australie. Conclusions convergentes ; aucun chiffre de la page n'en est tiré.",
           },
           {
             label: "Espace épargnants — investir progressivement",
