@@ -1,11 +1,10 @@
+import { sendEmail } from "./emails/dispatch";
 // Newsletter subscription handler.
 // Delivers the "5 ETF Premium pour PEA" cheat sheet via Resend.
 // The `source` field is preserved in the footer for attribution tracking.
 
 import { resend } from "./resend-client";
 
-const FROM =
-  process.env.RESEND_FROM_EMAIL ?? "DCA Tracker <hello@dcatracker.fr>";
 const SITE_URL = "https://dcatracker.fr";
 const GUIDE_URL = `${SITE_URL}/guide-5-etf-pea-premium`;
 
@@ -215,23 +214,17 @@ export async function subscribeEmail({
       );
     }
 
-    const { data, error } = await resend.emails.send({
-      from: FROM,
+    // Passe par sendEmail() comme tous les autres envois : c'est un email
+    // d'acquisition, il doit porter un lien de désinscription et respecter une
+    // désinscription antérieure. Il partait sans, jusqu'ici.
+    await sendEmail({
       to: email,
       subject: "Votre cheat sheet : 5 ETF Premium pour PEA en 2026",
       html: buildHtml(source),
       text: buildText(source),
     });
 
-    if (error) {
-      console.error("[email-provider] Resend error:", error);
-      return {
-        success: false,
-        error: "Impossible d'envoyer l'email pour l'instant.",
-      };
-    }
-
-    console.log("[email-provider] Email sent:", data?.id, "to:", email, "source:", source);
+    console.log("[email-provider] Email sent to:", email, "source:", source);
     return { success: true };
   } catch (err) {
     console.error("[email-provider] Unexpected error:", err);

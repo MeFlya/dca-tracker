@@ -6,6 +6,7 @@
 
 import { NextResponse } from "next/server";
 import { denyUnlessCron } from "@/lib/cron-auth";
+import { isOptedOutFromMetadata } from "@/lib/email-preferences";
 import { clerkClient } from "@clerk/nextjs/server";
 import { getStrategyData } from "@/lib/user-strategy";
 import { currentMonth, previousMonth, computeStreak } from "@/lib/strategy-math";
@@ -20,6 +21,7 @@ export async function GET(req: Request) {
   const clerk = await clerkClient();
   let sent = 0;
   let errors = 0;
+  let skippedOptOut = 0;
   let skipped = 0;
   let offset = 0;
   const limit = 100;
@@ -32,6 +34,14 @@ export async function GET(req: Request) {
     if (!users.length) break;
 
     for (const user of users) {
+      // Désinscription lue depuis l'objet utilisateur déjà chargé — aucun appel
+      // réseau supplémentaire. Le garde-fou de dispatch.ts reste en second
+      // rideau pour les envois qui ne passent pas par une boucle de cron.
+      if (isOptedOutFromMetadata(user.privateMetadata)) {
+        skippedOptOut++;
+        continue;
+      }
+
       const plan = (user.publicMetadata?.plan as string) ?? "free";
       if (plan === "free") {
         skipped++;
@@ -85,6 +95,6 @@ export async function GET(req: Request) {
     offset += limit;
   }
 
-  console.log(`[cron/missed-month] sent=${sent} errors=${errors} skipped=${skipped}`);
+  console.log(`[cron/missed-month] sent=${sent} errors=${errors} skipped=${skipped} desinscrits=${skippedOptOut}`);
   return NextResponse.json({ sent, errors, skipped });
 }

@@ -1,14 +1,17 @@
+// ⚠️ Tous les envois passent par sendEmail() (./dispatch) : c'est là que
+// la désinscription est respectée et que le pied de page obligatoire est
+// ajouté. Ne jamais rappeler resend.emails.send directement ici.
+import { sendEmail } from "./dispatch";
 import { resend } from "@/lib/resend-client";
 import { formatEur } from "@/lib/simulator";
 
-const FROM = process.env.RESEND_FROM_EMAIL ?? "DCA Tracker <hello@dcatracker.fr>";
 
 export async function sendSubscriptionConfirmed(
   email: string,
   firstName: string,
 ) {
-  await resend.emails.send({
-    from: FROM,
+  await sendEmail({
+    kind: "transactional",
     to: email,
     subject: "Votre abonnement Premium est actif — commencez par le Monte Carlo",
     html: `
@@ -46,8 +49,7 @@ export async function sendOnboardingDay1(
   email: string,
   firstName: string,
 ) {
-  await resend.emails.send({
-    from: FROM,
+  await sendEmail({
     to: email,
     subject: "Avez-vous essayé le Monte Carlo ? (guide rapide)",
     scheduled_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
@@ -86,15 +88,15 @@ export async function sendOnboardingDay1(
   </p>
 </body>
 </html>`,
-  } as Parameters<typeof resend.emails.send>[0]);
+  });
 }
 
 export async function sendSubscriptionCancelled(
   email: string,
   firstName: string
 ) {
-  await resend.emails.send({
-    from: FROM,
+  await sendEmail({
+    kind: "transactional",
     to: email,
     subject: "Votre abonnement DCA Tracker a été annulé",
     html: `
@@ -124,8 +126,7 @@ export async function sendSubscriptionCancelled(
 /** J+7 — Ton honnête, demande feedback. Pas de pitch. */
 export async function sendWinBackJ7(email: string, firstName: string) {
   const SITE_URL = "https://dcatracker.fr";
-  await resend.emails.send({
-    from: FROM,
+  await sendEmail({
     to: email,
     subject: "Une semaine sans Premium — comment ça se passe ?",
     html: `<!DOCTYPE html>
@@ -187,8 +188,7 @@ export async function sendWinBackJ7(email: string, firstName: string) {
 /** J+30 — Soft pitch : nouveautés depuis le départ + offre soft */
 export async function sendWinBackJ30(email: string, firstName: string) {
   const SITE_URL = "https://dcatracker.fr";
-  await resend.emails.send({
-    from: FROM,
+  await sendEmail({
     to: email,
     subject: "Ce qui a changé sur DCA Tracker depuis votre départ",
     html: `<!DOCTYPE html>
@@ -247,8 +247,7 @@ export async function sendWinBackJ30(email: string, firstName: string) {
 }
 
 export async function sendWelcome(email: string, firstName: string) {
-  await resend.emails.send({
-    from: FROM,
+  await sendEmail({
     to: email,
     subject: "Bienvenue sur DCA Tracker 👋",
     html: `
@@ -356,8 +355,7 @@ export async function sendOnboardingWelcome(email: string, firstName: string) {
       Des questions ? Répondez simplement à cet email — c&apos;est moi qui le lis.
     </p>
   `;
-  await resend.emails.send({
-    from: FROM,
+  await sendEmail({
     to: email,
     subject: "Bienvenue — la fonctionnalité que la plupart des gens ratent",
     html: emailShell(body),
@@ -417,8 +415,7 @@ export async function sendOnboardingDay3(email: string, firstName: string) {
       déclaration.
     </p>
   `;
-  await resend.emails.send({
-    from: FROM,
+  await sendEmail({
     to: email,
     subject: "PEA ou CTO : combien ça change vraiment (le calcul)",
     html: emailShell(body),
@@ -484,8 +481,7 @@ export async function sendOnboardingDay7(email: string, firstName: string) {
       automatiquement pour chaque ETF.
     </p>
   `;
-  await resend.emails.send({
-    from: FROM,
+  await sendEmail({
     to: email,
     subject: "Le piège du \"100 % MSCI World\" (et comment le contourner)",
     html: emailShell(body),
@@ -562,8 +558,7 @@ export async function sendOnboardingDay14(email: string, firstName: string) {
       <strong>L&apos;équipe DCA Tracker</strong>
     </p>
   `;
-  await resend.emails.send({
-    from: FROM,
+  await sendEmail({
     to: email,
     subject: "Les 2 fonctions Premium qui valent vraiment 4,90 €/mois",
     html: emailShell(body),
@@ -636,8 +631,7 @@ export async function sendAnnualPush({
 
   const m = content[milestone];
 
-  await resend.emails.send({
-    from: FROM,
+  await sendEmail({
     to: email,
     subject: m.subject,
     html: `<!DOCTYPE html>
@@ -722,8 +716,7 @@ export async function sendMissedMonth({
         </p>`
       : "";
 
-  await resend.emails.send({
-    from: FROM,
+  await sendEmail({
     to: email,
     subject,
     html: `<!DOCTYPE html>
@@ -764,6 +757,19 @@ DCA Tracker · outil éducatif, pas de conseil en investissement.`,
   });
 }
 
+/** Données réellement saisies par l'abonné, quand il y en a. */
+export interface MonthlyRealData {
+  /** Valeur du portefeuille telle qu'il l'a renseignée. */
+  portfolioValue: number;
+  totalInvested: number;
+  totalGain: number;
+  /** portefeuille réel − projection. Négatif = en retard sur le plan. */
+  delta: number;
+  monthsLogged: number;
+  /** 0-100 : part des mois écoulés qui ont été saisis. */
+  disciplineScore: number;
+}
+
 export async function sendMonthlyUpdate({
   email,
   firstName,
@@ -771,6 +777,7 @@ export async function sendMonthlyUpdate({
   theoreticalValue,
   monthlyAmount,
   insight,
+  real,
 }: {
   email: string;
   firstName: string;
@@ -778,42 +785,83 @@ export async function sendMonthlyUpdate({
   theoreticalValue: number;
   monthlyAmount: number;
   insight: string;
+  /**
+   * Absent tant que l'abonné n'a rien saisi. Dans ce cas l'email retombe sur la
+   * projection — en l'annonçant comme telle, jamais en la faisant passer pour
+   * un suivi.
+   */
+  real?: MonthlyRealData | null;
 }) {
   const SITE_URL = "https://dcatracker.fr";
-  await resend.emails.send({
-    from: FROM,
-    to: email,
-    subject: `Mois ${monthNumber} de ta stratégie DCA`,
-    html: `<!DOCTYPE html>
-<html lang="fr">
-<body style="font-family:sans-serif;color:#1f2937;max-width:560px;margin:0 auto;padding:32px 16px">
-  <p style="color:#6b7280;margin-bottom:4px;font-size:14px">Mois ${monthNumber} de ta stratégie</p>
-  <h1 style="font-size:22px;font-weight:700;margin:0 0 24px 0">Bonjour ${firstName} 👋</h1>
 
+  const ahead = real ? real.delta >= 0 : false;
+  const deltaColor = ahead ? "#047857" : "#b45309";
+  const deltaBg = ahead ? "#ecfdf5" : "#fffbeb";
+  const deltaBorder = ahead ? "#a7f3d0" : "#fde68a";
+
+  // Bloc principal : le RÉEL quand il existe, la projection sinon.
+  const headline = real
+    ? `
+  <div style="background:${deltaBg};border:1px solid ${deltaBorder};border-radius:12px;padding:20px;margin-bottom:16px">
+    <p style="margin:0 0 4px 0;font-size:12px;font-weight:600;color:${deltaColor};text-transform:uppercase;letter-spacing:0.06em">
+      Votre portefeuille
+    </p>
+    <p style="margin:0;font-size:32px;font-weight:800;color:${deltaColor};line-height:1.1">
+      ${formatEur(real.portfolioValue)}
+    </p>
+    <p style="margin:8px 0 0 0;font-size:13px;color:${deltaColor}">
+      ${formatEur(real.totalInvested)} versés · ${real.totalGain >= 0 ? "+" : ""}${formatEur(real.totalGain)} de gains
+    </p>
+  </div>
+
+  <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px">
+    <tr>
+      <td width="50%" style="padding:12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px">
+        <p style="margin:0 0 2px 0;font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em">Projection</p>
+        <p style="margin:0;font-size:18px;font-weight:700;color:#1f2937">${formatEur(theoreticalValue)}</p>
+      </td>
+      <td width="8"></td>
+      <td width="50%" style="padding:12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px">
+        <p style="margin:0 0 2px 0;font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em">Écart</p>
+        <p style="margin:0;font-size:18px;font-weight:700;color:${deltaColor}">${real.delta >= 0 ? "+" : ""}${formatEur(real.delta)}</p>
+      </td>
+    </tr>
+  </table>
+
+  <p style="font-size:13px;color:#6b7280;margin:0 0 24px 0;line-height:1.6">
+    ${real.monthsLogged} mois enregistrés sur ${monthNumber} · régularité ${real.disciplineScore} %
+  </p>`
+    : `
   <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:20px;margin-bottom:24px">
     <p style="margin:0 0 4px 0;font-size:12px;font-weight:600;color:#2563eb;text-transform:uppercase;letter-spacing:0.06em">
-      Valeur théorique ce mois
+      Projection à ce mois
     </p>
     <p style="margin:0;font-size:32px;font-weight:800;color:#1e40af;line-height:1.1">
       ${formatEur(theoreticalValue)}
     </p>
     <p style="margin:8px 0 0 0;font-size:13px;color:#3b82f6">
-      Basé sur ${formatEur(monthlyAmount)}/mois à ton rendement cible.
+      Basé sur ${formatEur(monthlyAmount)}/mois à votre rendement cible — pas sur vos versements réels.
     </p>
-  </div>
+  </div>`;
 
+  await sendEmail({
+    to: email,
+    subject: real
+      ? `Mois ${monthNumber} : ${formatEur(real.portfolioValue)}, ${real.delta >= 0 ? "+" : ""}${formatEur(real.delta)} vs projection`
+      : `Mois ${monthNumber} de votre stratégie DCA`,
+    html: `<!DOCTYPE html>
+<html lang="fr">
+<body style="font-family:sans-serif;color:#1f2937;max-width:560px;margin:0 auto;padding:32px 16px">
+  <p style="color:#6b7280;margin-bottom:4px;font-size:14px">Mois ${monthNumber} de votre stratégie</p>
+  <h1 style="font-size:22px;font-weight:700;margin:0 0 24px 0">Bonjour ${firstName} 👋</h1>
+${headline}
   <p style="font-size:15px;color:#374151;margin-bottom:24px;line-height:1.6">
     ${insight}
   </p>
 
   <a href="${SITE_URL}/account" style="display:inline-block;background:#2563eb;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px">
-    Mettre à jour mon mois →
+    ${real ? "Enregistrer ce mois" : "Enregistrer mon premier versement"} →
   </a>
-
-  <p style="margin-top:32px;color:#9ca3af;font-size:11px;line-height:1.6">
-    DCA Tracker · outil éducatif, pas de conseil en investissement.<br/>
-    <a href="${SITE_URL}/account" style="color:#9ca3af">Gérer mon compte</a>
-  </p>
 </body>
 </html>`,
   });
@@ -1026,8 +1074,8 @@ export async function sendTrialEndingSoon({
 </body>
 </html>`;
 
-  await resend.emails.send({
-    from: FROM,
+  await sendEmail({
+    kind: "transactional",
     to: email,
     subject,
     html,
@@ -1053,8 +1101,8 @@ export async function sendProductDelivery(
     )
     .join("");
 
-  await resend.emails.send({
-    from: FROM,
+  await sendEmail({
+    kind: "transactional",
     to: email,
     subject: `Votre achat : ${productName} — liens de téléchargement`,
     html: emailShell(`

@@ -1,32 +1,79 @@
-// Monthly update cron — triggered on the 1st of each month via Vercel Cron.
-// Sends a personalised "Mois X" email to every Premium/Pro user with a saved strategy.
-// Protected by CRON_SECRET env var (set in Vercel project settings).
+// Email mensuel — déclenché le 1er de chaque mois par Vercel Cron.
+// Protégé par CRON_SECRET (fail-closed, cf. lib/cron-auth.ts).
+//
+// ─── Ce que ce cron faisait, et pourquoi c'était le problème ────────────────
+//
+// Les entrées de l'utilisateur étaient récupérées puis JAMAIS utilisées. Le
+// chiffre mis en avant était la « valeur théorique », c'est-à-dire la
+// projection. Conséquence : un abonné ayant saisi douze mois recevait
+// exactement le même email qu'un abonné n'ayant rien saisi.
+//
+// C'est la première ligne du comparatif /tarifs et ce qui justifie de payer
+// chaque année. Le moteur nécessaire — computeInsights() — existait déjà et
+// alimentait le tableau de bord ; il n'était simplement pas importé ici.
+// Ce n'était pas une capacité manquante, c'était un câblage oublié.
 
 import { NextResponse } from "next/server";
 import { denyUnlessCron } from "@/lib/cron-auth";
 import { clerkClient } from "@clerk/nextjs/server";
-import { getStrategyData, theoreticalValueAtMonth, monthsElapsed } from "@/lib/user-strategy";
+import {
+  getStrategyData,
+  theoreticalValueAtMonth,
+  monthsElapsed,
+} from "@/lib/user-strategy";
+import { computeInsights } from "@/lib/strategy-insights";
 import { sendMonthlyUpdate } from "@/lib/emails/send";
+import { isOptedOutFromMetadata } from "@/lib/email-preferences";
 
 export const dynamic = "force-dynamic";
 
-function buildInsight(monthNumber: number, theoreticalValue: number, monthlyAmount: number): string {
+const eur = (n: number) =>
+  new Intl.NumberFormat("fr-FR", {
+    style: "currency",
+    currency: "EUR",
+    maximumFractionDigits: 0,
+  }).format(n);
+
+/**
+ * Phrase du mois. Quand des versements sont enregistrés, elle parle de ce que
+ * l'utilisateur a RÉELLEMENT fait ; sinon elle retombe sur la projection, en
+ * l'annonçant explicitement comme telle.
+ */
+function buildInsight(
+  monthNumber: number,
+  theoreticalValue: number,
+  monthlyAmount: number,
+  real: {
+    delta: number;
+    monthsLogged: number;
+    disciplineScore: number;
+  } | null,
+): string {
+  if (real) {
+    const { delta, monthsLogged, disciplineScore } = real;
+    if (Math.abs(delta) < theoreticalValue * 0.02) {
+      return `Vous êtes sur votre trajectoire, à ${eur(Math.abs(delta))} près. C'est exactement ce qu'on cherche : la régularité, pas le timing.`;
+    }
+    if (delta > 0) {
+      return `Vous avez ${eur(delta)} d'avance sur votre projection. À ne pas sur-interpréter : sur un mois, c'est le marché qui parle, pas votre méthode.`;
+    }
+    if (disciplineScore >= 80) {
+      return `Vous êtes à ${eur(-delta)} sous votre projection, mais vous avez tenu ${monthsLogged} mois sur ${monthNumber}. C'est le marché qui est en retard, pas vous — et c'est dans ces mois-là que le DCA achète le plus de parts.`;
+    }
+    return `Vous êtes à ${eur(-delta)} sous votre projection. Une partie vient du marché, une partie des mois non saisis : ${monthsLogged} sur ${monthNumber}.`;
+  }
+
+  // Aucun versement enregistré — on le dit, plutôt que de faire passer une
+  // projection pour un suivi.
   if (monthNumber <= 1) {
-    return "Tu viens de démarrer ta stratégie. Continue, c'est le premier pas qui compte.";
+    return "Vous venez de démarrer. Enregistrez votre premier versement pour que ce message compare le réel à la projection dès le mois prochain.";
   }
-  if (monthNumber === 6) {
-    return `6 mois de régularité — c'est maintenant que les intérêts composés commencent à travailler.`;
-  }
-  if (monthNumber === 12) {
-    return `Un an de DCA complet. À ce rythme, dans 20 ans ta stratégie peut atteindre plusieurs fois ton capital investi.`;
-  }
-  // Generic insight
-  const totalInvested = monthlyAmount * monthNumber;
-  const gains = theoreticalValue - totalInvested;
-  if (gains > 0) {
-    return `Sur ${monthNumber} mois, les intérêts ont généré environ ${new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(gains)} en plus de tes versements.`;
-  }
-  return `Continue ton DCA — la régularité sur le long terme fait toute la différence.`;
+  const gains = theoreticalValue - monthlyAmount * monthNumber;
+  const projection =
+    gains > 0
+      ? `Sur ${monthNumber} mois, votre plan prévoit environ ${eur(gains)} d'intérêts en plus de vos versements.`
+      : `Votre plan porte sur ${monthNumber} mois de versements.`;
+  return `${projection} Ce chiffre reste une projection : enregistrez vos versements pour que je puisse le confronter à votre portefeuille réel.`;
 }
 
 export async function GET(req: Request) {
@@ -36,6 +83,8 @@ export async function GET(req: Request) {
   const clerk = await clerkClient();
   let sent = 0;
   let errors = 0;
+  let skippedOptOut = 0;
+  let withRealData = 0;
   let offset = 0;
   const limit = 100;
 
@@ -47,6 +96,13 @@ export async function GET(req: Request) {
       const plan = (user.publicMetadata?.plan as string) ?? "free";
       if (plan === "free") continue;
 
+      // Désinscription lue depuis l'objet utilisateur déjà chargé : aucun appel
+      // réseau supplémentaire dans la boucle.
+      if (isOptedOutFromMetadata(user.privateMetadata)) {
+        skippedOptOut++;
+        continue;
+      }
+
       const email = user.emailAddresses[0]?.emailAddress;
       if (!email) continue;
 
@@ -57,16 +113,40 @@ export async function GET(req: Request) {
         const elapsed = monthsElapsed(strategy.startMonth);
         const monthNumber = Math.max(elapsed, 1);
         const theoretical = theoreticalValueAtMonth(strategy.input, monthNumber);
-        const insight = buildInsight(monthNumber, theoretical, strategy.input.monthlyAmount);
-        const firstName = user.firstName ?? "Investisseur";
+
+        // Le cœur du correctif : les entrées servent enfin à quelque chose.
+        const insights = computeInsights(
+          strategy.input,
+          strategy.startMonth,
+          entries,
+        );
+
+        const real = insights
+          ? {
+              portfolioValue: insights.currentPortfolioValue,
+              totalInvested: insights.totalInvested,
+              totalGain: insights.totalGain,
+              delta: insights.currentPortfolioValue - theoretical,
+              monthsLogged: insights.monthsLogged,
+              disciplineScore: insights.disciplineScore,
+            }
+          : null;
+
+        if (real) withRealData++;
 
         await sendMonthlyUpdate({
           email,
-          firstName,
+          firstName: user.firstName ?? "Investisseur",
           monthNumber,
           theoreticalValue: theoretical,
           monthlyAmount: strategy.input.monthlyAmount,
-          insight,
+          insight: buildInsight(
+            monthNumber,
+            theoretical,
+            strategy.input.monthlyAmount,
+            real,
+          ),
+          real,
         });
 
         sent++;
@@ -80,6 +160,8 @@ export async function GET(req: Request) {
     offset += limit;
   }
 
-  console.log(`[cron/monthly-update] sent=${sent} errors=${errors}`);
-  return NextResponse.json({ sent, errors });
+  console.log(
+    `[cron/monthly-update] sent=${sent} avecDonneesReelles=${withRealData} desinscrits=${skippedOptOut} errors=${errors}`,
+  );
+  return NextResponse.json({ sent, withRealData, skippedOptOut, errors });
 }

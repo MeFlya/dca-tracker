@@ -19,6 +19,7 @@
 
 import { NextResponse } from "next/server";
 import { denyUnlessCron } from "@/lib/cron-auth";
+import { isOptedOutFromMetadata } from "@/lib/email-preferences";
 import { clerkClient } from "@clerk/nextjs/server";
 import { sendWinBackJ7, sendWinBackJ30 } from "@/lib/emails/send";
 
@@ -38,6 +39,7 @@ export async function GET(req: Request) {
   let sentJ7 = 0;
   let sentJ30 = 0;
   let errors = 0;
+  let skippedOptOut = 0;
   let offset = 0;
   const limit = 100;
 
@@ -46,6 +48,14 @@ export async function GET(req: Request) {
     if (!users.length) break;
 
     for (const user of users) {
+      // Désinscription lue depuis l'objet utilisateur déjà chargé — aucun appel
+      // réseau supplémentaire. Le garde-fou de dispatch.ts reste en second
+      // rideau pour les envois qui ne passent pas par une boucle de cron.
+      if (isOptedOutFromMetadata(user.privateMetadata)) {
+        skippedOptOut++;
+        continue;
+      }
+
       scanned++;
       const meta = user.privateMetadata as Record<string, unknown>;
       const publicMeta = user.publicMetadata as Record<string, unknown>;
