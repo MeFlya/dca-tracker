@@ -102,6 +102,7 @@ export function PortfolioChart({
       <p className="text-xs text-gray-500 mb-6">
         Projection hypothétique — pas une garantie de rendement
       </p>
+      <div className="min-w-0 overflow-hidden">
       <ResponsiveContainer width="100%" height={340}>
         <AreaChart data={data} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
           <defs>
@@ -135,8 +136,21 @@ export function PortfolioChart({
             }
           />
           <Tooltip content={<CustomTooltip />} />
+          {/* `width: 100%` et `whiteSpace: normal` sont indispensables en mobile :
+              Recharts dimensionne sinon le conteneur de légende sur la largeur
+              du graphique SANS retour à la ligne, ce qui faisait déborder
+              /simulateur de 65 px en 390 (scrollWidth 455). Une page qui défile
+              horizontalement sur un lien de blog ou de Reddit donne
+              immédiatement l'impression d'un site bâclé — et c'est la page
+              d'atterrissage principale. */}
           <Legend
-            wrapperStyle={{ fontSize: "12px", paddingTop: "16px" }}
+            wrapperStyle={{
+              fontSize: "12px",
+              paddingTop: "16px",
+              width: "100%",
+              whiteSpace: "normal",
+              lineHeight: "1.8",
+            }}
             formatter={(value) =>
               value.charAt(0).toUpperCase() + value.slice(1)
             }
@@ -192,6 +206,7 @@ export function PortfolioChart({
           />
         </AreaChart>
       </ResponsiveContainer>
+      </div>
     </div>
   );
 }
