@@ -29,8 +29,12 @@ const TITLE = "DCA ou tout investir d'un coup ? Ce que disent les chiffres";
 // lump sum au départ contre DCA sur cette série est une variante du code
 // existant, pas une nouvelle étude. À traiter — la meta pourra alors
 // revendiquer des chiffres réels.
+// La page contient désormais les chiffres de l'étude, leur cadre et la seule
+// situation où l'étalement gagne. La meta peut donc enfin porter le chiffre.
+// ⚠️ Le TITRE ne bouge pas : il a été modifié dans le lot SEO et le compteur de
+// 60 jours court dessus. Le changer maintenant rendrait la mesure illisible.
 const DESCRIPTION =
-  "DCA contre investissement en une fois : le comparatif point par point, et pourquoi le DCA reste la seule option réaliste quand on épargne chaque mois.";
+  "Tout d'un coup l'emporte 2 fois sur 3, sauf dans les pires scénarios. Et si vous épargnez chaque mois, la question ne se pose pas : voici pourquoi.";
 
 export const metadata: Metadata = {
   title: TITLE,
