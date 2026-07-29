@@ -5,7 +5,7 @@ import { JsonLd } from "@/components/ui/JsonLd";
 import { Disclaimer } from "@/components/ui/Disclaimer";
 import { ETF_LIST } from "@/lib/etf-config";
 
-const TITLE = "Allocation portefeuille ETF — Construisez et simulez votre mix";
+const TITLE = "Allocation de portefeuille ETF : construisez votre mix";
 const DESCRIPTION =
   "Combinez 2 à 5 ETF avec leurs poids et voyez en temps réel votre rendement attendu, vos frais pondérés et la projection sur 30 ans. Presets 80/20, 70/20/10, monde + small caps. Gratuit, sans inscription.";
 const CANONICAL = "/allocation-portefeuille";

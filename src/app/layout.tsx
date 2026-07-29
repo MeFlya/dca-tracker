@@ -44,10 +44,23 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL(CANONICAL_ORIGIN),
-  title: {
-    default: "DCA Tracker — Simulateur ETF & Investissement Progressif",
-    template: "%s | DCA Tracker",
-  },
+  // ⚠️ Titre en `string` simple, et surtout PAS `{ default, template }`.
+  // Ne pas réintroduire `template: "%s | DCA Tracker"`.
+  //
+  // Le suffixe ajoutait 14 caractères à CHAQUE page, soit près d'un quart du
+  // budget d'affichage de Google (~60 caractères), pour une valeur nulle : le
+  // domaine est déjà affiché au-dessus du titre dans les résultats, et Google
+  // rajoute lui-même le nom du site quand il le juge utile. Six des huit pages
+  // cibles étaient tronquées à cause de lui.
+  //
+  // Effet de bord réglé au passage : les pages qui posaient déjà « — DCA
+  // Tracker » dans leur propre titre (tarifs, mentions légales, CGV,
+  // confidentialité, a-propos, changelog, compte, upgrade…) affichaient la
+  // marque DEUX fois. Elles gardent leur suffixe, qui est désormais le seul.
+  //
+  // En `string`, cette valeur sert de titre aux pages qui n'en définissent pas,
+  // et n'est plus concaténée à celles qui en définissent un.
+  title: "DCA Tracker — Simulateur ETF & Investissement Progressif",
   description:
     "Simulez votre stratégie d'investissement progressif (DCA) sur des ETF. Visualisez la croissance de votre portefeuille, comparez les ETF populaires et comprenez l'effet des intérêts composés.",
   verification: {

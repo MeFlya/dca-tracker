@@ -5,9 +5,9 @@ import Link from "next/link";
 import { JsonLd } from "@/components/ui/JsonLd";
 
 const TITLE =
-  "Investir 500 € par mois en ETF = 260 500 € en 20 ans (simulation)";
+  "Investir 500 €/mois en ETF : combien après 10, 20, 30 ans ?";
 const DESCRIPTION =
-  "500 €/mois en ETF = 260 500 € en 20 ans, dont 140 500 € de gains. 3 scénarios, impact des frais, fiscalité PEA vs CTO. Gratuit, sans inscription.";
+  "500 €/mois en ETF, c'est 260 500 € en 20 ans dont 140 500 € de gains. Voyez aussi 10 et 30 ans, l'impact des frais, et la fiscalité PEA vs CTO.";
 const CANONICAL = "/investir-500-euros-mois-etf";
 
 export const metadata: Metadata = {

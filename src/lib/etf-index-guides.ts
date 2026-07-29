@@ -67,9 +67,11 @@ const MSCI_WORLD: IndexGuide = {
   icon: "Globe",
   simulator: { monthly: 200, years: 20, returnPct: 7, feesPct: 0.2 },
   allocationTicker: "CW8",
-  metaTitle: "ETF MSCI World : lequel choisir en PEA en 2026 ?",
+  // Les tickers dans le titre captent les requêtes secondaires (« cw8 »,
+  // « tracker world ») que la formulation générique laissait passer.
+  metaTitle: "ETF MSCI World en PEA : CW8, WPEA ou DCAM ? (2026)",
   metaDescription:
-    "ETF MSCI World en PEA : CW8 (0,38 %), WPEA et DCAM (0,20 %) — le même indice, des frais qui changent tout sur 20 ans. Comparatif clair + simulateur DCA pour choisir.",
+    "CW8 à 0,38 %, WPEA et DCAM à 0,20 % : même indice, des frais qui changent tout sur 20 ans. Comparatif chiffré et simulateur pour tester votre cas.",
   h1: "ETF MSCI World : lequel choisir pour votre PEA ?",
   eyebrow: "Guide ETF · indice mondial",
   subtitle:

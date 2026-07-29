@@ -52,7 +52,7 @@ export type ETFComparison = {
 const MSCI_WORLD_VS_SP500: ETFComparison = {
   slug: "msci-world-vs-sp500",
   title: "MSCI World vs S&P 500 : quel indice pour votre DCA ?",
-  metaTitle: "MSCI World ou S&P 500 : comparatif complet pour un DCA en ETF",
+  metaTitle: "MSCI World ou S&P 500 : lequel pour un DCA en ETF ?",
   metaDescription:
     "MSCI World ou S&P 500 ? Comparaison détaillée : couverture, TER, PEA, performance historique, profil d'investisseur. Guide clair pour choisir en 2026.",
 
@@ -370,12 +370,17 @@ const VWCE_VS_CW8: ETFComparison = {
 const CW8_VS_WPEA: ETFComparison = {
   slug: "cw8-vs-wpea",
   title: "CW8 vs WPEA : quel ETF MSCI World pour votre PEA ?",
-  // CTR-optimisé (audit 07/2026) : la SERP est passée au 3-way « CW8 vs WPEA
-  // vs DCAM » — le snippet doit couvrir l'intent DCAM sinon la page paraît
-  // datée face aux comparatifs concurrents à 3 (0,5 % de CTR mesuré).
-  metaTitle: "CW8 vs WPEA (vs DCAM) : le verdict 2026 pour votre PEA",
+  // Le titre portait « (vs DCAM) » pour couvrir la SERP 3-way (audit 07/2026).
+  // Retiré : le CTR mesuré était de 0,5 %, DCAM a sa propre page, et la
+  // parenthèse diluait le match principal — qui est aussi la requête la plus
+  // volumineuse du site. L'intent DCAM reste couvert par la meta, qui n'a pas
+  // la même contrainte de longueur.
+  // « sauf dans deux cas précis » n'est pas une accroche : la page contient
+  // exactement deux profils où CW8 l'emporte (encours CW8 existant, recherche
+  // de simplicité). Si un troisième est ajouté, corriger ce titre.
+  metaTitle: "CW8 vs WPEA : WPEA gagne, sauf dans deux cas précis",
   metaDescription:
-    "Verdict : WPEA à 0,20 % bat CW8 à 0,38 % — ~4 500 € d'écart sur 20 ans à 200 €/mois. Ne vendez pas votre CW8 pour autant. Et face à DCAM ? Tableau complet, frais réels, reco selon votre profil.",
+    "WPEA à 0,20 % bat CW8 à 0,38 % : ~4 500 € d'écart sur 20 ans à 200 €/mois. Les deux cas où garder CW8, et où se place DCAM.",
 
   left: {
     heading: "CW8",
@@ -492,9 +497,11 @@ const CW8_VS_WPEA: ETFComparison = {
 const WPEA_VS_DCAM: ETFComparison = {
   slug: "wpea-vs-dcam",
   title: "WPEA vs DCAM : quel MSCI World à 0,20 % pour votre PEA ?",
-  metaTitle: "WPEA ou DCAM : notre verdict 2026 pour votre PEA",
+  // Les deux formulations « vs » et « ou » sont recherchées : « ou » dans le
+  // titre, « vs » conservé dans le H1 de la page (champ `title` ci-dessus).
+  metaTitle: "WPEA ou DCAM : égalité technique, un détail décide",
   metaDescription:
-    "Même MSCI World, même TER 0,20 % : le match se joue ailleurs. Verdict : DCAM (part ~5 €) pour un DCA mensuel, WPEA pour les montants élevés. Et le cas où il ne faut PAS arbitrer. Comparatif complet.",
+    "Même indice, même TER de 0,20 %, même réplication : le match se joue sur le prix de part. DCAM à ~5 € pour un DCA mensuel, WPEA pour les gros montants.",
 
   left: {
     heading: "WPEA",

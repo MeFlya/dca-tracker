@@ -131,7 +131,7 @@ const BOURSORAMA: BrokerData = {
   tagline: "Banque en ligne française + courtier bourse intégré",
   homepageUrl: "https://www.boursorama-banque.com",
   metaTitle:
-    "Boursorama Bourse pour un DCA ETF : avis, frais et PEA en 2026",
+    "Boursorama Bourse pour un DCA ETF : avis, frais et PEA",
   metaDescription:
     "Boursorama Bourse est-il adapté à un DCA ETF ? Analyse complète des frais, du PEA et comparaison avec Trade Republic et Fortuneo.",
 

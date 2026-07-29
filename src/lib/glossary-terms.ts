@@ -80,7 +80,7 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
     term: "CTO — Compte-Titres Ordinaire",
     shortDef:
       "Compte d'investissement sans plafond ni restriction d'actifs, mais fiscalisé au PFU de 30 % sur les gains.",
-    metaTitle: "CTO (compte-titres) : définition, fiscalité, quand l'utiliser",
+    metaTitle: "CTO (compte-titres) : définition, fiscalité et usages",
     metaDescription:
       "Le compte-titres ordinaire en clair : aucun plafond, tous les ETF du monde accessibles (IWDA, VWCE, CSPX), mais 30 % de flat tax sur les gains. Quand le préférer au PEA — définition + cas d'usage.",
     definition: [
@@ -249,7 +249,7 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
     term: "Réplication synthétique (swap)",
     shortDef:
       "L'ETF reproduit la performance de l'indice via un contrat d'échange — c'est ce qui rend le MSCI World ou le S&P 500 éligibles au PEA.",
-    metaTitle: "ETF synthétique (swap) : définition, risques réels, intérêt PEA",
+    metaTitle: "ETF synthétique (swap) : définition, risques et intérêt PEA",
     metaDescription:
       "Un ETF synthétique réplique son indice via un swap : il détient des actions européennes et échange leur performance contre celle de l'indice. C'est le mécanisme qui met le MSCI World dans le PEA. Risques encadrés UCITS expliqués.",
     definition: [

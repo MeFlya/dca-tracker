@@ -6,9 +6,12 @@ import { EmailCapture } from "@/components/ui/EmailCapture";
 import { JsonLd } from "@/components/ui/JsonLd";
 
 const TITLE =
-  "Investir 100 € par mois en ETF = 52 000 € en 20 ans (simulation)";
+  // Le format « = X € en 20 ans » verrouillait sur un seul horizon alors que
+  // les requêtes réelles portent aussi sur 10 et 30 ans, que la page couvre.
+  // Le chiffre passe dans la meta, qui a la place de le porter.
+  "Investir 100 €/mois en ETF : combien après 10, 20, 30 ans ?";
 const DESCRIPTION =
-  "100 €/mois en ETF pendant 20 ans ≈ 52 000 €, dont 28 000 € générés par les intérêts composés (scénario 7 %/an). Simulation complète sur 10, 20 et 30 ans, 3 scénarios de rendement, sans inscription.";
+  "100 €/mois en ETF, c'est 52 100 € en 20 ans dont 28 100 € de gains. Voyez aussi 10 et 30 ans, l'impact des frais, et la fiscalité PEA vs CTO.";
 const CANONICAL = "/investir-100-euros-mois-etf";
 
 export const metadata: Metadata = {

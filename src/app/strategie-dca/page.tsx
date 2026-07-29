@@ -8,9 +8,17 @@ import { ArticleByline } from "@/components/ui/ArticleByline";
 import { BreadcrumbSchema } from "@/components/ui/BreadcrumbSchema";
 import { SourcesReferences } from "@/components/ui/SourcesReferences";
 
-const TITLE = "Stratégie DCA expliquée : avantages, limites et application ETF";
+// Repositionnement, pas simple réécriture : les requêtes « méthode dca » et
+// « dca investissement » sont à la position 47+. La question réellement posée
+// est « DCA ou tout investir d'un coup ? », et la littérature disponible est
+// américaine et en dollars. La page a déjà la section #dca-vs-lump-sum pour y
+// répondre.
+const TITLE = "DCA ou tout investir d'un coup ? Ce que disent les chiffres";
+// ⚠️ Ne pas promettre ici un backtest MSCI World en euros : la section
+// s'appuie aujourd'hui sur l'étude Vanguard. Si le backtest maison y est
+// ajouté un jour, cette meta pourra le revendiquer.
 const DESCRIPTION =
-  "DCA (Dollar Cost Averaging) : définition, comparatif vs lump sum (étude Vanguard), avantages psychologiques, et mise en pratique concrète sur ETF MSCI World en France.";
+  "DCA contre investissement en une fois : ce que dit l'étude Vanguard, et pourquoi le DCA reste le plus réaliste quand on épargne chaque mois.";
 
 export const metadata: Metadata = {
   title: TITLE,

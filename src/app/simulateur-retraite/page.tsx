@@ -2,10 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { JsonLd } from "@/components/ui/JsonLd";
 
-const TITLE =
-  "Simulateur de retraite DCA : combien investir par mois pour ma retraite ?";
+const TITLE = "Simulateur retraite : combien investir par mois ?";
 const DESCRIPTION =
-  "Simulez votre retraite avec un DCA en ETF : calcul du capital nécessaire, règle des 4 %, tableaux selon l'âge de départ. Guide complet pour préparer sa retraite.";
+  "Calculez le capital nécessaire à votre retraite avec un DCA en ETF : règle des 4 %, tableaux selon l'âge de départ, versement mensuel à tenir.";
 const CANONICAL = "/simulateur-retraite";
 
 export const metadata: Metadata = {

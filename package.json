@@ -9,7 +9,9 @@
     "lint": "next lint",
     "type-check": "tsc --noEmit",
     "refresh:backtest": "node scripts/refresh-backtest-data.mjs",
-    "assets:encrypt": "node scripts/encrypt-product-assets.mjs"
+    "assets:encrypt": "node scripts/encrypt-product-assets.mjs",
+    "postbuild": "node scripts/check-seo-lengths.mjs",
+    "seo:check": "node scripts/check-seo-lengths.mjs --report"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.2.3",

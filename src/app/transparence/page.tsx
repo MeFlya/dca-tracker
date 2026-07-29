@@ -394,10 +394,12 @@ export default function TransparencePage() {
             // Formulation volontairement impersonnelle. La version précédente
             // disait « pas de recommandation que je ne suivrais pas moi-même » :
             // l'intention était bonne mais elle transformait un comparatif en
-            // endossement personnel de produits financiers, ce qui est le
-            // registre que les régulateurs demandent aux éditeurs non agréés
-            // d'éviter. Un critère vérifiable dit la même chose sans engager
-            // une personne.
+            // endossement personnel de produits financiers.
+            // La recommandation conjointe AMF/ESMA aux « finfluenceurs » du
+            // 9 janvier 2026 demande précisément de distinguer le conseil en
+            // investissement de la recommandation, et de présenter les risques
+            // autant que les avantages. Un critère vérifiable dit la même chose
+            // sans engager une personne.
             [
               "Pas de recommandation que je ne peux pas justifier par un chiffre vérifiable.",
               "Le filtre est simple : si je ne peux pas montrer d'où sort l'avantage — un tarif, un TER, une condition écrite noir sur blanc sur le site du courtier — l'affirmation ne figure pas sur ce site.",

@@ -8,7 +8,7 @@ import { paramsFromSearch } from "@/lib/simulation-params";
 // l'affichent — et un title court qui ne se fait pas tronquer (~55 car. utiles).
 const TITLE = "Simulateur DCA ETF gratuit : 3 scénarios, sans inscription";
 const DESCRIPTION =
-  "Versement mensuel, durée, rendement : projection immédiate avec intérêts composés. 3 scénarios comparés, graphique interactif, export PDF. 100 % gratuit, sans inscription.";
+  "Versement mensuel, durée, rendement : projection immédiate avec intérêts composés et 3 scénarios de marché. Gratuit, sans inscription, formules publiques.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -71,7 +71,11 @@ export default async function SimulateurPage({ searchParams }: Props) {
       {/* Page header */}
       <div className="mb-10">
         <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-          Projetez votre futur financier
+          {/* Le H1 doit porter le SUJET de la page, pas la promesse
+              émotionnelle : il reprend l'intention de recherche (« simulateur
+              DCA », « ETF ») que l'ancien « Projetez votre futur financier » ne
+              contenait nulle part. La promesse vit dans le sous-titre. */}
+          Simulateur DCA : combien vaudra votre investissement en ETF ?
         </h1>
         <p className="text-gray-600 text-lg max-w-2xl">
           Ajustez les curseurs — votre projection se met à jour en temps réel.

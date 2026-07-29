@@ -91,7 +91,30 @@ vérification** : ils sont publiés sur `/transparence`. Si le barème n'est pas
 public, laisser vide — la page écrit « barème non public », ce qui est plus
 crédible qu'un chiffre inventé.
 
-### 4 bis. Vérifier que `hello@dcatracker.fr` est bien relevée
+### 4 bis. TVA intracommunautaire — à régler AVANT la première commission
+
+Sous franchise en base (art. 293 B CGI), un micro-entrepreneur qui vend une
+prestation de services à une entreprise établie dans un autre État membre de
+l'UE doit en principe demander un **numéro de TVA intracommunautaire** et
+déposer une **Déclaration Européenne de Services**, même sans facturer de TVA.
+
+Awin, TimeOne et Impact.com ne relèvent pas du même régime selon leur pays
+d'établissement. **À faire trancher par le SIE avant d'encaisser la première
+commission**, pas après — c'est typiquement le sujet qu'on découvre trop tard.
+
+### 4 ter. Ajouter une activité secondaire au SIRET
+
+Le code APE actuel est **5829C — Édition de logiciels applicatifs**. Une
+commission d'affiliation est une mise à disposition d'espace publicitaire,
+juridiquement autre chose.
+
+Ce n'est pas illégal et **ça ne change rien au régime fiscal** (les deux sont du
+BIC prestations de services : même abattement de 50 %, mêmes cotisations).
+Mais ajouter `6312Z — Portails Internet` ou `7311Z — Régie publicitaire` est
+gratuit et prend dix minutes sur le guichet INPI. Quand tu auras un moment,
+pas avant les candidatures.
+
+### 4 quater. Vérifier que `hello@dcatracker.fr` est bien relevée
 
 Le site utilisait deux adresses. `contact@` a été supprimée partout au profit de
 `hello@`, qui est aussi l'expéditeur Resend et l'adresse des CGV. **Vérifier que

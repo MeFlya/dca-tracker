@@ -10,9 +10,17 @@ import { SourcesReferences } from "@/components/ui/SourcesReferences";
 // CTR (audit 07/2026) : le title mettait en avant IWDA/VWCE (non éligibles
 // PEA — hors intent du débutant FR) et contredisait la meta. Title aligné
 // sur le verdict de la page.
-const TITLE = "Meilleur ETF pour débuter en 2026 : un seul suffit (verdict)";
+// La requête réelle est « quel etf choisir pour débuter », pas « meilleur ETF
+// pour débuter » : le titre reprend la formulation exacte, la seconde moitié
+// garde le verdict tranché.
+const TITLE = "Quel ETF choisir pour débuter en 2026 ? Un seul suffit";
 const DESCRIPTION =
-  "Verdict : un seul ETF MSCI World éligible PEA suffit pour démarrer — WPEA ou DCAM (0,20 % de frais), ou CW8 pour la liquidité. Tableau comparatif complet + les erreurs de débutant à éviter.";
+  // ⚠️ La meta décrit les sections qui EXISTENT (5 critères, 4 ETF, 3 étapes).
+  // L'ancienne promettait « les erreurs de débutant à éviter » — la page n'a
+  // jamais eu cette section. Une meta qui promet ce que la page ne contient pas
+  // fait remonter l'utilisateur dans les résultats, ce qui coûte plus cher que
+  // le clic gagné.
+  "Un seul ETF MSCI World éligible PEA suffit : WPEA ou DCAM à 0,20 %. Les 5 critères qui comptent, notre sélection de 4 ETF, et comment commencer.";
 
 export const metadata: Metadata = {
   title: TITLE,

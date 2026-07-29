@@ -103,7 +103,7 @@ const INFLATION_2022: BacktestStoryDef = {
   eyebrow: "Backtest réel · données MSCI World EUR",
   h1: "Commencer un DCA en janvier 2022, l'année rouge : le backtest réel",
   metaTitle: (r) =>
-    `DCA commencé début 2022 (l'année rouge) : ${r.gainPct >= 0 ? "+" : ""}${fmtPct(r.gainPct)} % aujourd'hui`,
+    `DCA commencé en 2022, l'année rouge : ${r.gainPct >= 0 ? "+" : ""}${fmtPct(r.gainPct)} % aujourd'hui`,
   metaDescription: (r) =>
     `Janvier 2022 : inflation record, remontée des taux, guerre en Ukraine — le MSCI World perd ~19 % en dollars sur l'année. Un DCA de 200 €/mois commencé à ce moment vaut aujourd'hui ${formatEurBacktest(r.finalValue)} (TRI ${fmtIrr(r)}). Données réelles.`,
   intro: (r) =>
@@ -155,7 +155,7 @@ const DEPUIS_2010: BacktestStoryDef = {
   eyebrow: "Backtest réel · données MSCI World EUR",
   h1: "200 € par mois depuis 2010 : le backtest réel sur 16 ans",
   metaTitle: (r) =>
-    `200 €/mois depuis 2010 : ${formatEurBacktest(r.finalValue)} aujourd'hui (réel, pas simulé)`,
+    `200 €/mois depuis 2010 : ${formatEurBacktest(r.finalValue)} aujourd'hui`,
   metaDescription: (r) =>
     `Un DCA de 200 €/mois sur le MSCI World commencé en janvier 2010 : ${formatEurBacktest(r.totalInvested)} investis, ${formatEurBacktest(r.finalValue)} aujourd'hui (${r.gainPct >= 0 ? "+" : ""}${fmtPct(r.gainPct)} %, TRI ${fmtIrr(r)}). Crise de l'euro, COVID, 2022 : tout est dedans. Données réelles.`,
   intro: (r) =>

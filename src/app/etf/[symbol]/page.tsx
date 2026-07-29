@@ -37,7 +37,10 @@ export async function generateMetadata({
   // analyse et simulation DCA"). Nouveau pattern : ticker + indice d'abord,
   // puis l'intention de recherche (frais, avis, alternatives) au lieu des
   // specs sèches (ISIN/réplication → reléguées au corps de page).
-  const title = `ETF ${etf.displaySymbol} (${etf.indexLabel}) : frais, avis et alternatives 2026`;
+  // Gabarit volontairement court : `indexLabel` peut être long (« Obligations
+  // EUR (court terme) »), et c'est lui qui faisait dépasser 60 caractères sur
+  // C3M, AEEM et PCEU. Le millésime est porté par la meta description.
+  const title = `ETF ${etf.displaySymbol} (${etf.indexLabel}) : frais et avis`;
   const description =
     `${etf.displaySymbol} — ${etf.name} : TER ${etf.ter.toString().replace(".", ",")} %, ` +
     `${etf.peaEligible ? "éligible PEA" : "réservé au CTO ou à l'assurance-vie"}, ` +

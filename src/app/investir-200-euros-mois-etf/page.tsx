@@ -6,9 +6,11 @@ import { EmailCapture } from "@/components/ui/EmailCapture";
 import { JsonLd } from "@/components/ui/JsonLd";
 
 const TITLE =
-  "Investir 200 € par mois en ETF = 104 000 € en 20 ans (simulation)";
+  "Investir 200 €/mois en ETF : combien après 10, 20, 30 ans ?";
 const DESCRIPTION =
-  "200€/mois investi en ETF pendant 20 ans = 104 000€. Simulation avec 3 scénarios (5%, 7%, 9%), impact des frais, fiscalité PEA vs CTO. Résultat interactif, sans inscription.";
+  // 104 200 €, pas 104 000 € : l'ancienne meta arrondissait sous le chiffre
+  // affiché par la page elle-même.
+  "200 €/mois en ETF, c'est 104 200 € en 20 ans dont 56 200 € de gains. Voyez aussi 10 et 30 ans, l'impact des frais, et la fiscalité PEA vs CTO.";
 const CANONICAL = "/investir-200-euros-mois-etf";
 
 export const metadata: Metadata = {

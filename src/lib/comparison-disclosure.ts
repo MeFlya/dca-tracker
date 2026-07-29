@@ -47,6 +47,20 @@
 //                 et uniquement si le RANG dépend d'une rémunération.
 //                 Non applicable ici : voir RANKING_IS_PAID_INFLUENCED.
 //
+//   D.111-7 III → 🔴 NON COUVERT À CE JOUR. Le texte impose, à proximité de
+//                 CHAQUE offre comparée, les caractéristiques essentielles et
+//                 « le prix total à payer par le consommateur », frais compris.
+//                 Le site affiche les frais en TEXTE LIBRE (« 0,20 % par ordre
+//                 (minimum applicable) ») : aucun total n'est calculable, et le
+//                 minimum d'ordre de Fortuneo n'est même pas documenté.
+//                 Structurer `BrokerSpecs` en valeurs numériques n'est donc pas
+//                 une amélioration produit, c'est la condition pour se
+//                 conformer — et le même chantier débloque le calcul du coût
+//                 réel d'un DCA courtier par courtier.
+//                 → lot dédié, avec revérification sourcée et datée de chaque
+//                   grille tarifaire. Ne pas prétendre à la conformité D.111-7
+//                   tant que ce point n'est pas traité.
+//
 // ⚠️ Ne pas dupliquer ces informations en dur dans une page. Elles doivent
 // rester dérivées d'ici, sinon elles divergeront de la réalité du site — ce qui
 // est exactement le manquement que les textes sanctionnent.

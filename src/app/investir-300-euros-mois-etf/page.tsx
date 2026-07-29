@@ -6,9 +6,11 @@ import { EmailCapture } from "@/components/ui/EmailCapture";
 import { JsonLd } from "@/components/ui/JsonLd";
 
 const TITLE =
-  "Investir 300 € par mois en ETF = 156 000 € en 20 ans (simulation)";
+  "Investir 300 €/mois en ETF : combien après 10, 20, 30 ans ?";
 const DESCRIPTION =
-  "300 €/mois en ETF = 156 000 € en 20 ans, dont 84 000 € d'intérêts composés. 3 scénarios, PEA vs CTO, règle des 4 %, Monte Carlo. Gratuit, sans inscription.";
+  // 156 300 € / 84 300 € : les chiffres du corps de la page. L'ancienne meta
+  // arrondissait à 156 000 / 84 000 et se contredisait avec son propre texte.
+  "300 €/mois en ETF, c'est 156 300 € en 20 ans dont 84 300 € de gains. Voyez aussi 10 et 30 ans, l'impact des frais, et la fiscalité PEA vs CTO.";
 const CANONICAL = "/investir-300-euros-mois-etf";
 
 export const metadata: Metadata = {

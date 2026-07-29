@@ -5,9 +5,13 @@ import { JsonLd } from "@/components/ui/JsonLd";
 import { ETF_COMPARISON_LIST } from "@/lib/etf-comparisons";
 import { ComparisonDisclosure } from "@/components/ui/ComparisonDisclosure";
 
-const TITLE = "Comparatifs ETF 2026 : CW8, WPEA, DCAM, VWCE — verdicts clairs";
+// « Comparateur » et « comparatif » ne se substituent pas dans l'index de
+// Google et le site n'est positionné sur ni l'un ni l'autre. Le titre prend
+// « comparateur » (le plus faible des deux positionnements) et garde les
+// tickers, qui portent la longue traîne ; « comparatifs » reste dans le H1.
+const TITLE = "Comparateur ETF PEA 2026 : CW8, WPEA, DCAM, VWCE";
 const DESCRIPTION =
-  "Un verdict tranché pour chaque duel d'ETF : CW8 vs WPEA, WPEA vs DCAM, VWCE vs CW8, IWDA vs CW8… TER, éligibilité PEA, frais réels sur 20 ans et notre reco selon votre profil.";
+  "Un verdict tranché pour chaque duel : CW8 vs WPEA, WPEA vs DCAM, VWCE vs CW8, IWDA vs CW8. TER, éligibilité PEA et coût réel des frais sur 20 ans.";
 
 export const metadata: Metadata = {
   title: TITLE,
