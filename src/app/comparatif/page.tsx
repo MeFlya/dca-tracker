@@ -5,6 +5,7 @@ import { BROKER_LIST } from "@/lib/brokers";
 import { BrokerLogoMark } from "@/components/ui/BrokerLogoMark";
 import { InvestCTA } from "@/components/ui/InvestCTA";
 import { AffiliationNotice } from "@/components/ui/AffiliationNotice";
+import { ComparisonDisclosure } from "@/components/ui/ComparisonDisclosure";
 
 const TITLE =
   "Comparatif des meilleurs courtiers pour un DCA ETF en 2026";
@@ -53,6 +54,10 @@ export default function ComparatifHubPage() {
         coûter plusieurs milliers d&apos;euros. Voici les 3 options les plus
         pertinentes pour un investisseur français.
       </p>
+
+      {/* Obligation D.111-7 II : critère + définition, exhaustivité + nombre,
+          référencement payant ou non — AVANT le classement, jamais après. */}
+      <ComparisonDisclosure kind="brokers" className="mb-6" />
 
       {/* Comparison table */}
       <div className="overflow-x-auto rounded-2xl border border-gray-100 mb-10">

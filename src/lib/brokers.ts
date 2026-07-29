@@ -1,6 +1,16 @@
 // Broker comparison data for /comparatif/*.
 // Static content — update carefully when broker pricing changes.
-// Last reviewed: 2026-03. Always link to the broker's official page for live prices.
+// Always link to the broker's official page for live prices.
+
+/**
+ * Mois de dernière revérification des conditions tarifaires, format YYYY-MM.
+ *
+ * ⚠️ Exporté et AFFICHÉ publiquement (page /transparence + bandeau des pages de
+ * comparaison) au titre de l'art. D.111-7 I 7° du code de la consommation
+ * — « la périodicité et la méthode d'actualisation des offres comparées ».
+ * À bumper à chaque revue réelle des tarifs, jamais par confort.
+ */
+export const BROKERS_REVIEWED_ON = "2026-03";
 
 export type BrokerSpecs = {
   pea: boolean;

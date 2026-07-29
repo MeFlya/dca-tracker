@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowLeftRight } from "lucide-react";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { ETF_COMPARISON_LIST } from "@/lib/etf-comparisons";
+import { ComparisonDisclosure } from "@/components/ui/ComparisonDisclosure";
 
 const TITLE = "Comparatifs ETF 2026 : CW8, WPEA, DCAM, VWCE — verdicts clairs";
 const DESCRIPTION =
@@ -72,6 +73,9 @@ export default function ComparatifETFHubPage() {
         {" "}qui creuse les écarts de performance — d&apos;où l&apos;importance
         de regarder le TER en priorité dans chaque comparatif ci-dessous.
       </p>
+
+      {/* Obligation D.111-7 II — avant la liste comparée. */}
+      <ComparisonDisclosure kind="etf-comparisons" className="mb-6" />
 
       {/* Comparison list */}
       <div className="space-y-4 mb-10">

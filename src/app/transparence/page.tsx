@@ -14,6 +14,15 @@ import {
   isBrokerCTAActive,
   type BrokerPartner,
 } from "@/lib/broker-config";
+import {
+  ALL_SURFACES,
+  DISCLOSURE_REVISED_ON,
+  getComparisonSurface,
+  PRICE_COMPOSITION,
+  RANKING_IS_PAID_INFLUENCED,
+  REFERENCING_RULES,
+  UPDATE_POLICY,
+} from "@/lib/comparison-disclosure";
 
 const TITLE = "Transparence : comment DCA Tracker gagne de l'argent";
 const DESCRIPTION =
@@ -158,6 +167,123 @@ export default function TransparencePage() {
         )}
       </Section>
 
+      {/* D.111-7 I 1° (critères + définition) et D.111-6 I 2° (critères par
+          défaut + principaux paramètres). */}
+      <Section title="Comment je classe">
+        <p>
+          Aucun classement de ce site n&apos;est calculé automatiquement, et
+          aucun n&apos;est à vendre. L&apos;ordre dans lequel les acteurs
+          apparaissent est une appréciation éditoriale — la mienne — et voici
+          exactement sur quoi elle repose, du plus au moins déterminant.
+        </p>
+
+        {ALL_SURFACES.map(({ kind, title, href }) => {
+          const { criterion, count, countLabel } = getComparisonSurface(kind);
+          return (
+            <div key={kind} className="rounded-2xl border border-gray-100 p-5">
+              <div className="flex flex-wrap items-baseline justify-between gap-2 mb-1">
+                <h3 className="text-base font-semibold text-gray-900">
+                  {title}
+                </h3>
+                <Link
+                  href={href}
+                  className="text-xs text-primary-600 hover:underline"
+                >
+                  voir la comparaison →
+                </Link>
+              </div>
+              <p className="text-sm text-gray-500 mb-3">
+                Critère par défaut : <strong>{criterion.label}</strong> —{" "}
+                {criterion.definition}. {count} {countLabel}.
+              </p>
+              <ol className="space-y-1.5 list-decimal pl-5 text-sm">
+                {criterion.parameters.map((p) => (
+                  <li key={p}>{p}</li>
+                ))}
+              </ol>
+            </div>
+          );
+        })}
+
+        <p>
+          Ces critères ne changent pas selon qu&apos;un acteur me rémunère ou
+          non.{" "}
+          {!RANKING_IS_PAID_INFLUENCED && (
+            <>
+              Aucune position dans aucune liste n&apos;est influencée par une
+              rémunération : un partenaire plus cher qu&apos;un autre est écrit
+              comme plus cher.
+            </>
+          )}
+        </p>
+      </Section>
+
+      {/* D.111-6 I 1° (conditions de référencement / déréférencement) et
+          D.111-7 I 6° (exhaustivité + nombre d'entreprises référencées). */}
+      <Section title="Qui figure ici, et pourquoi">
+        <p>
+          <strong className="text-gray-900">
+            Ces comparaisons ne sont pas exhaustives.
+          </strong>{" "}
+          Elles portent aujourd&apos;hui sur{" "}
+          {ALL_SURFACES.map(({ kind }, i) => {
+            const { count, countLabel } = getComparisonSurface(kind);
+            const last = i === ALL_SURFACES.length - 1;
+            return (
+              <span key={kind}>
+                {i > 0 && (last ? " et " : ", ")}
+                <strong className="text-gray-900">
+                  {count} {countLabel}
+                </strong>
+              </span>
+            );
+          })}
+          . Bien d&apos;autres courtiers et plusieurs centaines d&apos;ETF sont
+          accessibles depuis la France sans figurer ici.
+        </p>
+
+        <p className="font-medium text-gray-900">Pour être référencé, il faut :</p>
+        <ul className="space-y-1.5 list-disc pl-5">
+          {REFERENCING_RULES.inclusion.map((r) => (
+            <li key={r}>{r}</li>
+          ))}
+        </ul>
+
+        <p className="font-medium text-gray-900">
+          Un acteur est retiré si :
+        </p>
+        <ul className="space-y-1.5 list-disc pl-5">
+          {REFERENCING_RULES.exclusion.map((r) => (
+            <li key={r}>{r}</li>
+          ))}
+        </ul>
+        <p>
+          Un retrait est consigné dans le{" "}
+          <Link href="/changelog" className="text-primary-600 hover:underline">
+            journal des changements
+          </Link>
+          .
+        </p>
+
+        <p>
+          <strong className="text-gray-900">
+            Personne ne peut acheter son référencement.
+          </strong>{" "}
+          Aucun acteur listé ici n&apos;a payé pour y figurer, et aucun
+          n&apos;en a été retiré à sa demande. Certains périmètres sont par
+          ailleurs exclus par principe :{" "}
+          {REFERENCING_RULES.outOfScope.join(" ; ")}.
+        </p>
+
+        <p>
+          Ce qui est absent l&apos;est donc pour l&apos;une de ces trois
+          raisons : je n&apos;ai pas encore vérifié les données moi-même,
+          l&apos;acteur ne remplit pas les conditions, ou il relève d&apos;un
+          périmètre que je m&apos;interdis.{" "}
+          <em>L&apos;absence n&apos;est pas un jugement de valeur.</em>
+        </p>
+      </Section>
+
       <Section title="Ce que ça ne change pas">
         <p>
           C&apos;est la partie qui compte, parce que c&apos;est celle sur
@@ -195,6 +321,57 @@ export default function TransparencePage() {
         </ul>
       </Section>
 
+      {/* D.111-7 I 4° (éléments constitutifs du prix + frais supplémentaires
+          possibles) et 5° (variation des garanties commerciales). */}
+      <Section title="Ce que recouvrent les prix comparés">
+        <p>
+          Quand je compare des frais, voici ce que le chiffre affiché contient
+          — et surtout ce qu&apos;il ne contient pas, parce que c&apos;est là
+          que les mauvaises surprises arrivent.
+        </p>
+
+        <p className="font-medium text-gray-900">Compris dans les montants comparés :</p>
+        <ul className="space-y-1.5 list-disc pl-5">
+          {PRICE_COMPOSITION.included.map((p) => (
+            <li key={p}>{p}</li>
+          ))}
+        </ul>
+
+        <p className="font-medium text-gray-900">
+          Non compris — des frais supplémentaires peuvent donc s&apos;ajouter :
+        </p>
+        <ul className="space-y-1.5 list-disc pl-5">
+          {PRICE_COMPOSITION.excluded.map((p) => (
+            <li key={p}>{p}</li>
+          ))}
+        </ul>
+
+        <p>{PRICE_COMPOSITION.commercialGuarantees}</p>
+      </Section>
+
+      {/* D.111-7 I 7° — périodicité et méthode d'actualisation. */}
+      <Section title="Quand tout ça est mis à jour">
+        <p>{UPDATE_POLICY.cadence}</p>
+        <p>{UPDATE_POLICY.method}</p>
+        <p>{UPDATE_POLICY.quotes}</p>
+        <div className="rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm">
+          {ALL_SURFACES.map(({ kind, title }) => (
+            <p key={kind} className="text-gray-600">
+              {title} — données revérifiées en{" "}
+              <strong className="text-gray-900">
+                {formatMonth(getComparisonSurface(kind).reviewedOn)}
+              </strong>
+            </p>
+          ))}
+          <p className="mt-2 pt-2 border-t border-gray-200 text-gray-500">
+            Dernière mise à jour de cette page :{" "}
+            <time dateTime={DISCLOSURE_REVISED_ON}>
+              {formatDay(DISCLOSURE_REVISED_ON)}
+            </time>
+          </p>
+        </div>
+      </Section>
+
       <Section title="Ce que je refuse">
         <p>
           Il y a de l&apos;argent que je pourrais prendre et que je ne prendrai
@@ -214,9 +391,16 @@ export default function TransparencePage() {
               "Pas de conseil personnalisé.",
               "Je ne suis ni CGP ni CIF. Je peux vous montrer des chiffres, des formules et des comparaisons ; je ne peux pas vous dire quoi acheter, et je ne le ferai pas.",
             ],
+            // Formulation volontairement impersonnelle. La version précédente
+            // disait « pas de recommandation que je ne suivrais pas moi-même » :
+            // l'intention était bonne mais elle transformait un comparatif en
+            // endossement personnel de produits financiers, ce qui est le
+            // registre que les régulateurs demandent aux éditeurs non agréés
+            // d'éviter. Un critère vérifiable dit la même chose sans engager
+            // une personne.
             [
-              "Pas de recommandation que je ne suivrais pas moi-même.",
-              "Le filtre est simple : si je ne mettrais pas mon propre argent chez ce courtier, il n'est pas dans le comparatif, quelle que soit la commission.",
+              "Pas de recommandation que je ne peux pas justifier par un chiffre vérifiable.",
+              "Le filtre est simple : si je ne peux pas montrer d'où sort l'avantage — un tarif, un TER, une condition écrite noir sur blanc sur le site du courtier — l'affirmation ne figure pas sur ce site.",
             ],
           ].map(([strong, rest]) => (
             <li key={strong} className="flex gap-3">
@@ -293,10 +477,10 @@ export default function TransparencePage() {
           Une question sur un partenariat, un doute sur une recommandation, un
           chiffre qui vous paraît faux ? Écrivez-moi à{" "}
           <a
-            href="mailto:contact@dcatracker.fr"
+            href="mailto:hello@dcatracker.fr"
             className="text-primary-600 hover:underline font-medium"
           >
-            contact@dcatracker.fr
+            hello@dcatracker.fr
           </a>
           . Les corrections factuelles sont appliquées et créditées.
         </p>
@@ -362,13 +546,21 @@ function PartnerTable({ partners }: { partners: BrokerPartner[] }) {
   );
 }
 
+const MONTHS = [
+  "janvier", "février", "mars", "avril", "mai", "juin",
+  "juillet", "août", "septembre", "octobre", "novembre", "décembre",
+];
+
 /** "2026-07" → "juillet 2026". Format figé, aucune dépendance à la locale du serveur. */
 function formatMonth(yyyyMm: string): string {
-  const MONTHS = [
-    "janvier", "février", "mars", "avril", "mai", "juin",
-    "juillet", "août", "septembre", "octobre", "novembre", "décembre",
-  ];
   const [year, month] = yyyyMm.split("-");
   const name = MONTHS[Number(month) - 1];
   return name ? `${name} ${year}` : yyyyMm;
+}
+
+/** "2026-07-28" → "28 juillet 2026". */
+function formatDay(iso: string): string {
+  const [year, month, day] = iso.split("-");
+  const name = MONTHS[Number(month) - 1];
+  return name ? `${Number(day)} ${name} ${year}` : iso;
 }

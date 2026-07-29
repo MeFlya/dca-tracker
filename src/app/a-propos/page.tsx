@@ -484,10 +484,10 @@ export default function AboutPage() {
           <p className="text-sm text-gray-600 leading-relaxed">
             Une question, un bug, une suggestion ? Écris-moi à{" "}
             <a
-              href="mailto:contact@dcatracker.fr"
+              href="mailto:hello@dcatracker.fr"
               className="text-primary-600 hover:underline font-medium"
             >
-              contact@dcatracker.fr
+              hello@dcatracker.fr
             </a>
             . Je lis tout, je réponds à tout.
           </p>

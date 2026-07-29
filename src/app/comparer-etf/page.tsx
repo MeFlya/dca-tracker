@@ -3,6 +3,7 @@ import { ETF_LIST } from "@/lib/etf-config";
 import { getMarketDataProvider, isDemo } from "@/lib/market-data";
 import { DemoBadge } from "@/components/ui/Disclaimer";
 import { ETFGrid } from "./ETFGrid";
+import { ComparisonDisclosure } from "@/components/ui/ComparisonDisclosure";
 
 const ETF_COUNT = ETF_LIST.length;
 const TITLE = "Comparer les ETF — CW8, VWCE, IWDA, ANX, AEEM et plus";
@@ -76,6 +77,9 @@ export default async function ComparerETFPage() {
             Filtrez par région, éligibilité PEA ou niveau de frais.
           </p>
         </div>
+
+        {/* Obligation D.111-7 II — avant la grille comparée. */}
+        <ComparisonDisclosure kind="etf-list" className="mb-6" />
 
         {/* Filterable grid */}
         <ETFGrid etfs={ETF_LIST} quotes={quotes} providerLabel={demo ? undefined : providerLabel} />

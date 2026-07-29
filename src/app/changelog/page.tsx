@@ -98,10 +98,10 @@ export default function ChangelogPage() {
           </Link>
           . Une erreur repérée ?{" "}
           <a
-            href="mailto:contact@dcatracker.fr"
+            href="mailto:hello@dcatracker.fr"
             className="text-primary-600 hover:underline font-medium"
           >
-            contact@dcatracker.fr
+            hello@dcatracker.fr
           </a>
           .
         </p>

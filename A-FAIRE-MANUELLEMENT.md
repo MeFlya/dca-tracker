@@ -39,35 +39,64 @@ horaires inattendus). Si oui, il faudra surveiller la réputation d'expéditeur.
 
 ### 3. Confirmer les taux fiscaux 2026 auprès d'une source officielle
 
-J'ai vérifié la hausse (LFSS 2026, loi n° 2025-1403 du 30/12/2025) :
+La hausse est vérifiée (LFSS 2026, loi n° 2025-1403 du 30/12/2025) :
 prélèvements sociaux **18,6 %** (CSG 10,6 %), PFU **31,4 %**.
 
-**Mais le document reçu simplifie le PEA, et c'est important :** le PEA applique
-un **taux historique par millésime** — les gains 2026+ à 18,6 %, ceux de
-2018-2025 restent à **17,2 %**. L'assurance-vie et l'immobilier restent aussi à
-17,2 %. Un simple remplacement `17,2 → 18,6` dans le site produirait donc des
-**chiffres faux** sur le PEA, qui est justement le cœur de l'audience.
+**Correction de ce que j'avais écrit ici le 28/07 :** j'affirmais que les gains
+PEA de 2018-2025 restaient à 17,2 % via un taux historique. **C'est faux.** Les
+taux historiques ont été supprimés par la LFSS 2018 (art. 8, V) pour tous les
+faits générateurs postérieurs au 01/01/2018. Règle réelle :
 
-À faire confirmer sur **impots.gouv.fr / Légifrance** avant que je code le
-barème (surtout pour la rétroactivité 2025 évoquée, que je n'ai pas pu vérifier).
-Je livrerai un barème **versionné par année avec tests**, pas des constantes.
+- **PEA ouvert à partir du 01/01/2018** → aucun taux historique. Le taux en
+  vigueur au retrait s'applique à **la totalité du gain**. C'est le cas
+  majoritaire de l'audience (PEA ouverts pendant le boom ETF 2023-2025).
+- **PEA ouvert avant 2018** → clause de sauvegarde sur la seule fraction
+  acquise avant le 01/01/2018 (et, si le plan avait moins de 5 ans à cette
+  date, jusqu'à son 5ᵉ anniversaire).
+
+Ma règle initiale aurait **sous-estimé l'impôt** de la majorité des lecteurs —
+l'erreur la plus dangereuse dans un module vendu. Reste à faire confirmer sur
+Légifrance avant codage : la rétroactivité 2025 sur les plus-values mobilières,
+et le traitement de la fraction 2018→5ᵉ anniversaire d'un plan pré-2018.
+
+Le moteur aura besoin de la **date d'ouverture du PEA** en paramètre d'entrée,
+et d'un barème **versionné par année avec tests**, pas de constantes.
 
 ### 4. S'inscrire aux programmes d'affiliation (Lot 1)
 
-Rien ne peut avancer côté revenu sans ces identifiants :
+✅ **Le SIRET existe déjà** (`10500270300012`, publié dans les mentions
+légales). Il n'y a donc aucun prérequis administratif bloquant — j'avais repris
+à tort cette alerte sans vérifier le dépôt.
 
-| Courtier | Où | À récupérer |
+Ordre de priorité retenu :
+
+| Courtier | Plateforme | Pourquoi |
 |---|---|---|
-| Trade Republic | programme apporteur / Impact | URL affiliée + ID |
-| BoursoBank | Awin ou FinanceAds | URL affiliée + ID |
-| Fortuneo | Awin / TimeOne | URL affiliée + ID |
+| **Trade Republic** | Impact.com | PEA + plans DCA ETF — c'est le sujet du site |
+| **Fortuneo** | TimeOne (programme 1325) | seul du lot à commissionner réellement du PEA/CTO ; barème négociable via `timeone@isoskele.fr` |
+| **LYNX Broker** | programme direct | seul barème public : 70 € minimum par lead, cookie 30 j |
 
-⚠️ **Ne pas prendre de programme assurance-vie** (Linxea, Yomoni, Nalo,
-Goodvest, Ramify) : ça ferait basculer le site sous la directive distribution
-d'assurance et imposerait une immatriculation ORIAS.
+⚠️ **BoursoBank écarté** (Awin 6992) : leur programme rémunère l'ouverture d'un
+**compte bancaire**, pas la Bourse. Un lien payé 80 € sur une page qui analyse
+leur offre Bourse crée un désalignement entre ce qui est recommandé et ce qui
+est rémunéré. À reconsidérer seulement si une page dédiée à leur offre bancaire
+existe un jour.
 
-Noter aussi le **barème de commission** de chacun (pour la page `/transparence`)
-et la **date de vérification** des conditions tarifaires.
+⚠️ **Ne jamais prendre** : assurance-vie (Linxea, Yomoni, Nalo, Goodvest,
+Ramify → immatriculation ORIAS) ni CFD (XTB, Trading 212 → périmètre pénalement
+encadré de l'art. L.533-12-7 CMF).
+
+Pour chaque programme accepté, noter le **barème de commission** et sa **date de
+vérification** : ils sont publiés sur `/transparence`. Si le barème n'est pas
+public, laisser vide — la page écrit « barème non public », ce qui est plus
+crédible qu'un chiffre inventé.
+
+### 4 bis. Vérifier que `hello@dcatracker.fr` est bien relevée
+
+Le site utilisait deux adresses. `contact@` a été supprimée partout au profit de
+`hello@`, qui est aussi l'expéditeur Resend et l'adresse des CGV. **Vérifier que
+cette boîte est réellement relevée** : le site invite à y signaler les erreurs
+et y promet les remboursements sous 14 jours.
 
 ### 5. Créer une Audience Resend
 

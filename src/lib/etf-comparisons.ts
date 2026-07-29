@@ -1,6 +1,12 @@
 // ETF vs ETF comparison data for /comparatif-etf/*.
-// Static educational content. Last reviewed: 2026-06 (TER CW8/WPEA/DCAM
-// re-vérifiés via fiches émetteurs lors de la création des pages indice).
+// Static educational content. TER CW8/WPEA/DCAM re-vérifiés via fiches
+// émetteurs lors de la création des pages indice.
+
+/**
+ * Mois de dernière revérification des TER et caractéristiques, format YYYY-MM.
+ * Exporté et affiché publiquement — cf. commentaire de BROKERS_REVIEWED_ON.
+ */
+export const ETF_COMPARISONS_REVIEWED_ON = "2026-06";
 // Performance figures are approximate — always verify on live data sources
 // before investment decisions.
 

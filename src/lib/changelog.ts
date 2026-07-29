@@ -44,7 +44,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     kind: "correction",
     title: "Les compteurs de la page d'accueil affichaient des valeurs planchers",
     body:
-      "Le bloc de statistiques de la page d'accueil appliquait des valeurs minimales codées en dur : si les compteurs réels étaient inférieurs, ce sont ces minimums qui s'affichaient, sous un libellé « Données réelles ». Ces planchers sont supprimés. Le bloc affiche désormais soit les compteurs réels, soit des mesures de contenu du site (nombre de comparatifs, mois de données historiques, termes de glossaire), calculées et donc exactes.",
+      "Le bloc de statistiques de la page d'accueil appliquait des valeurs minimales codées en dur — 247 investisseurs, 180 stratégies, 620 mois — sous un libellé « Données réelles ». Tant que les compteurs réels restaient en dessous, ce sont ces minimums qui s'affichaient. Ces planchers sont supprimés. Le bloc affiche désormais soit les compteurs réels au-delà d'un seuil, soit des mesures de contenu du site (nombre de comparatifs, mois de données historiques, termes de glossaire), calculées depuis les sources et donc exactes. Un second défaut, indépendant, a été corrigé au passage : une animation de comptage remettait l'affichage à zéro tant que le bloc n'était pas atteint en défilant, si bien qu'une partie des visiteurs voyait trois zéros.",
     why:
       "Le positionnement du site repose sur des chiffres vérifiables. Un chiffre de réassurance gonflé, sur un site qui vend la transparence, est une contradiction — et le code étant public, il était de toute façon lisible par n'importe qui.",
   },
