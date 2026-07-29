@@ -1,13 +1,27 @@
 # À faire manuellement — actions qui nécessitent Maël
 
-Mis à jour : 28 juillet 2026, après le Lot 0.
+Mis à jour : 29 juillet 2026.
 Classé par urgence. Ce que je ne peux pas faire depuis le code.
+
+⚠️ **Ce document ne se met pas à jour tout seul, et je ne vois pas ce qui se
+passe hors du dépôt.** Une action faite dans un navigateur — une candidature,
+une variable posée sur Vercel, une demande d'indexation — ne laisse aucune trace
+que je puisse lire. Une ligne encore présente ici n'est donc pas une preuve
+qu'elle reste à faire : c'est une preuve que personne ne me l'a dit. Corrigez-la
+ou dites-le-moi.
 
 ---
 
 ## 🔴 URGENT — avant / au moment du merge du Lot 0
 
-### 1. Définir `CRON_SECRET` sur Vercel
+### 1. ✅ `CRON_SECRET` — fait et vérifié le 29/07
+
+Les 5 routes répondent `401`, contrôlé en production :
+`monthly-update`, `missed-month`, `annual-push`, `onboarding-emails`,
+`winback-emails`. La faille est fermée. *Section conservée pour la procédure,
+au cas où le secret devrait être renouvelé.*
+
+<details><summary>Procédure d'origine</summary>
 
 **Sans ça, les emails automatiques s'arrêtent.** Les 5 routes cron sont passées
 en *fail-closed* : si la variable est absente, elles répondent `503` au lieu de
@@ -26,6 +40,8 @@ sur ses appels cron, donc rien d'autre à configurer côté code.
 ```bash
 curl -s -o /dev/null -w "%{http_code}\n" https://dcatracker.fr/api/cron/monthly-update
 ```
+
+</details>
 
 ### 2. Vérifier qu'aucun email de masse n'est parti pendant la faille
 
@@ -82,34 +98,25 @@ Conséquence : **modifier les deux constantes corrigerait le calculateur en
 laissant tout le contenu faux.** Le lot fiscal doit donc traiter les deux, et
 idéalement faire dériver la copie des constantes partout où c'est possible.
 
-### 4. S'inscrire aux programmes d'affiliation (Lot 1)
+### 4. Programmes d'affiliation — ✅ traité, plus rien à faire ici
 
-✅ **Le SIRET existe déjà** (`10500270300012`, publié dans les mentions
-légales). Il n'y a donc aucun prérequis administratif bloquant — j'avais repris
-à tort cette alerte sans vérifier le dépôt.
+*Mis à jour le 29 juillet 2026. Cette section listait trois candidatures à
+déposer ; elles l'ont toutes été. Je la corrige plutôt que de la laisser
+réclamer un travail déjà fait.*
 
-Ordre de priorité retenu :
-
-| Courtier | Plateforme | Pourquoi |
+| Programme | État | Suite |
 |---|---|---|
-| **Trade Republic** | Impact.com | PEA + plans DCA ETF — c'est le sujet du site |
-| **Fortuneo** | TimeOne (programme 1325) | seul du lot à commissionner réellement du PEA/CTO ; barème négociable via `timeone@isoskele.fr` |
-| **LYNX Broker** | programme direct | seul barème public : 70 € minimum par lead, cookie 30 j |
+| **Impact.com** (Trade Republic) | 🔴 **Refusé**, motif écrit : « Low reach (traffic, followers) » | À retenter **avec de l'audience**. Ce n'est pas un dossier à refaire, c'est un seuil à franchir. |
+| **TimeOne** (Fortuneo) | 🟠 Déposée, ~15 jours de délai annoncé | Attendre |
+| **LYNX** | ⚪ **Écartée volontairement** | Ne pas represcrire : le courtier n'est pas présenté sur le site, le référencer pour toucher une commission contredirait `/transparence` |
 
-⚠️ **BoursoBank écarté** (Awin 6992) : leur programme rémunère l'ouverture d'un
-**compte bancaire**, pas la Bourse. Un lien payé 80 € sur une page qui analyse
-leur offre Bourse crée un désalignement entre ce qui est recommandé et ce qui
-est rémunéré. À reconsidérer seulement si une page dédiée à leur offre bancaire
-existe un jour.
+**Ce que ce refus dit, et qui vaut plus que la candidature :** le blocage n'est
+pas la conformité du site — elle est en place — c'est l'audience. La priorité
+est donc le trafic, et l'affiliation se relance quand il y a quelque chose à
+montrer.
 
 ⚠️ **Ne jamais prendre** : assurance-vie (Linxea, Yomoni, Nalo, Goodvest,
-Ramify → immatriculation ORIAS) ni CFD (XTB, Trading 212 → périmètre pénalement
-encadré de l'art. L.533-12-7 CMF).
-
-Pour chaque programme accepté, noter le **barème de commission** et sa **date de
-vérification** : ils sont publiés sur `/transparence`. Si le barème n'est pas
-public, laisser vide — la page écrit « barème non public », ce qui est plus
-crédible qu'un chiffre inventé.
+Ramify → immatriculation ORIAS) ni CFD (XTB, Trading 212 → art. L.533-12-7 CMF).
 
 ### 4 bis. TVA intracommunautaire — à régler AVANT la première commission
 
@@ -160,19 +167,21 @@ conversions que s'ils sont déclarés en *goals* : `invest_cta_click`,
 
 Plausible → Site Settings → Goals → Add goal → Custom event.
 
-### 7. Search Console
+### 7. ✅ Search Console — fait les 28 et 29/07
 
-- Renvoyer le sitemap (il n'a pas été relu depuis le 20 avril — les `lastmod`
-  sont des constantes figées au 10 juin, correction prévue au Lot 3).
-- Demander l'indexation de `/simulateur` : son nouveau title du 7 juillet n'est
-  toujours pas pris en compte.
+- Sitemap renvoyé : dernière lecture passée du 20 avril au 28 juillet, et
+  **46 → 78 pages découvertes**. L'hypothèse des `lastmod` figés était la bonne.
+- Indexation demandée pour `/simulateur`, `/comparatif-etf` et `/strategie-dca`.
 
-### 8. Vérifier l'archivage de `/a-propos` avant de réécrire l'engagement
+Reste à surveiller, sans action immédiate : la prise en compte des nouveaux
+titres, à relire le **26 septembre** (cf. `SUIVI-SEO.md`), pas avant.
 
-Avant de modifier la puce « je ne prendrai jamais de commission », vérifier si
-la page est capturée sur [web.archive.org](https://web.archive.org). Le repo
-étant public, le diff sera de toute façon traçable — d'où le changelog daté
-prévu au Lot 1.
+### 8. ✅ Archivage de `/a-propos` — vérifié le 28/07
+
+`/a-propos` n'a **jamais** été capturée par la Wayback Machine : aucune version
+antérieure de l'engagement ne circule. Le seul historique traçable est le diff
+du dépôt public — d'où le changelog daté, qui reste la bonne réponse et qui est
+en ligne.
 
 ---
 
