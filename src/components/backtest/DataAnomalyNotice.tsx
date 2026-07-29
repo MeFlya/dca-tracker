@@ -18,7 +18,11 @@
 // `node scripts/verifier-serie-backtest.mjs`. Un seul endroit à toucher : ne pas
 // dupliquer ce texte dans les pages, sinon il en restera un quelque part.
 
-const ANOMALIE_ACTIVE = true;
+// Éteint le 29/07/2026 : la série a été reconstruite avec la bonne conversion
+// de fuseau et revalidée (mars 2020 à −10,9 %, avril à +9,5 %, 0,5 point d'écart
+// aux références annuelles). Les chiffres publiés sont justes.
+// Le composant est conservé : il resservira, et le rallumer coûte une ligne.
+const ANOMALIE_ACTIVE = false;
 
 /** Date de détection — celle du commit de diagnostic, pas celle d'écriture. */
 const DETECTEE_LE = "29 juillet 2026";
