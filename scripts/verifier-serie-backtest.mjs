@@ -148,8 +148,39 @@ export function correlationCroisee(serieA, serieB, retardsMax = 3) {
   return { retards: out, meilleur, aligne: meilleur.retard === 0 };
 }
 
-console.log("\n─── Corrélation croisée ───");
-console.log(
-  "  ⏸  En attente de la seconde série (DBXW). La fonction est prête :\n" +
-    "     correlationCroisee(serieIWDA, serieDBXW) — le maximum doit être au retard 0."
-);
+console.log("\n─── Corrélation croisée avec la série de contrôle ───");
+try {
+  const ctrl = JSON.parse(
+    await readFile("src/data/msci-world-eur-controle.json", "utf8")
+  );
+  const { retards, meilleur, aligne } = correlationCroisee(d, ctrl.data);
+  for (const r of retards) {
+    const marque = r.retard === meilleur.retard ? " ←" : "";
+    console.log(
+      `  retard ${r.retard >= 0 ? "+" : ""}${r.retard} : ${r.correlation.toFixed(4)} (${r.n} mois)${marque}`
+    );
+  }
+  console.log(
+    aligne
+      ? "  ✓ maximum au retard 0 — les deux séries sont alignées."
+      : `  🔴 maximum au retard ${meilleur.retard} — DÉCALAGE de ${Math.abs(meilleur.retard)} mois.`
+  );
+
+  // Résidu : il doit être petit, sans structure, et de l'ordre de l'écart de TER.
+  const rend = (s2) =>
+    s2.slice(1).map((pt, i) => ({ month: pt.month, r: pt.value / s2[i].value - 1 }));
+  const b = new Map(rend(ctrl.data).map((x) => [x.month, x.r]));
+  const res = rend(d)
+    .filter((x) => b.has(x.month))
+    .map((x) => (x.r - b.get(x.month)) * 100);
+  const moy = res.reduce((a2, b2) => a2 + b2, 0) / res.length;
+  const et = Math.sqrt(res.reduce((a2, b2) => a2 + (b2 - moy) ** 2, 0) / res.length);
+  console.log(
+    `  résidu : ${moy.toFixed(3)} pt/mois (${(moy * 12).toFixed(2)} pt/an), écart-type ${et.toFixed(3)} pt`
+  );
+  if (Math.abs(moy * 12) > 2) {
+    console.log("  🔴 Résidu moyen trop élevé — les deux séries ne suivent pas le même indice.");
+  }
+} catch {
+  console.log("  ⏸  Série de contrôle absente (src/data/msci-world-eur-controle.json).");
+}
