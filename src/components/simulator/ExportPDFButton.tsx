@@ -19,13 +19,15 @@ export function ExportPDFButton({ output }: { output: SimulatorOutput }) {
 
   async function handleClick() {
     if (state === "generating") return;
-    if (!isPremium) {
-      router.push(buildUpgradeUrl("pdf-export", output.input));
-      return;
-    }
+    // Le plan gratuit reçoit un PDF FILIGRANÉ, pas une redirection.
+    // /tarifs annonce « Export PDF · Gratuit : Filigrané » : rediriger vers
+    // /upgrade sans rien générer rendait cette ligne fausse (art. L.121-2).
+    // Le filigrane existait déjà dans pdf-export.ts (paramètre withWatermark),
+    // il n'était simplement jamais activé. Accessoirement, un PDF filigrané qui
+    // circule est un support d'acquisition, là où une redirection ne produit rien.
     setState("generating");
     try {
-      await generateSimulationPDF(output, false);
+      await generateSimulationPDF(output, !isPremium);
       setState("idle");
     } catch {
       setState("error");

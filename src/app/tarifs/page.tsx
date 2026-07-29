@@ -41,8 +41,8 @@ const COMPARISON_SECTIONS = [
     rows: [
       { feature: "Calculateur fiscal PEA vs CTO",           free: true,        premium: true   },
       { feature: "Comparaison net après impôt sur 30 ans",  free: true,        premium: true   },
-      { feature: "Récap fiscal annuel (cases 2042 et 2074 calculées)", free: false, premium: true },
-      { feature: "Suivi année par année des plus-values",   free: false,       premium: true   },
+      { feature: "Récap fiscal annuel (montants des cases 2042 et 2074)", free: false, premium: true },
+      { feature: "Suivi année par année de la plus-value latente", free: false, premium: true },
     ],
   },
   {
@@ -50,7 +50,7 @@ const COMPARISON_SECTIONS = [
     rows: [
       { feature: "Simulation DCA mensuelle",               free: true,        premium: true   },
       { feature: "3 scénarios (conservateur/base/optimiste)", free: true,     premium: true   },
-      { feature: "Durée jusqu'à 30 ans",                   free: true,        premium: true   },
+      { feature: "Durée jusqu'à 40 ans",                   free: true,        premium: true   },
       { feature: "Intégration TER automatique",            free: true,        premium: true   },
       { feature: "Analyse Monte Carlo (1 000 scénarios)",  free: false,       premium: true   },
       { feature: "Backtest historique (DCA sur données réelles MSCI World)", free: false, premium: true },
@@ -62,7 +62,7 @@ const COMPARISON_SECTIONS = [
     rows: [
       { feature: "Accès à tous les ETF",                   free: true,        premium: true   },
       { feature: "Fiches ETF détaillées",                  free: true,        premium: true   },
-      { feature: "Données de marché (délai ~15 min)",      free: true,        premium: true   },
+      { feature: "Données de marché (différées)",          free: true,        premium: true   },
     ],
   },
   {
@@ -76,7 +76,7 @@ const COMPARISON_SECTIONS = [
     category: "Guides & Support",
     rows: [
       { feature: "Guides PEA / CTO / fiscalité",           free: true,        premium: true   },
-      { feature: "Support par email",                      free: false,       premium: true   },
+      { feature: "Support par email",                      free: true,        premium: true   },
     ],
   },
 ];
@@ -96,7 +96,7 @@ const FAQ = [
   },
   {
     q: "Le récap fiscal annuel : qu'est-ce que ça contient exactement ?",
-    a: "Pour chaque année fiscale, une synthèse PDF qui contient : vos plus-values réalisées (PEA et CTO), les prélèvements applicables (PFU 30 % ou 17,2 % selon durée de détention), les montants à reporter dans les cases 2042 et 2074 de votre déclaration, et un export en CSV. Le calculateur PEA vs CTO public donne déjà un aperçu — la version Premium suit votre situation réelle année après année. Cette synthèse est une aide à la déclaration, pas un document fiscal officiel — elle ne remplace pas l'IFU fourni par votre courtier ni la consultation d'un expert-comptable pour les cas complexes.",
+    a: "Pour chaque année fiscale, une synthèse PDF qui contient : vos plus-values réalisées (PEA et CTO), les prélèvements applicables selon l'enveloppe et la durée de détention, et les montants à reporter dans les cases 2042 et 2074 de votre déclaration. Le calculateur PEA vs CTO public donne déjà un aperçu — la version Premium suit votre situation réelle année après année. Cette synthèse est une aide à la déclaration, pas un document fiscal officiel — elle ne remplace pas l'IFU fourni par votre courtier ni la consultation d'un expert-comptable pour les cas complexes.",
   },
   {
     q: "Les simulations sauvegardées sont-elles accessibles sur tous mes appareils ?",
