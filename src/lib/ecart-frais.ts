@@ -89,18 +89,6 @@ export function ecartCapital(
 }
 
 /**
- * Ce qu'un TER coûte sur la période, par rapport à des frais nuls — la ligne
- * « Impact TER sur 20 ans » des tableaux de comparaison. Signe négatif inclus.
- *
- * `coutFrais(0.38)` → « −4 300 »
- *
- * Cette ligne portait « −7 400 € » pour CW8 et « −2 900 € » pour ESE comme
- * pour WPEA — le même nombre pour deux TER différents, et tous deux faux.
- * C'est le format le plus vérifiable d'une page : un tableau annonce ses
- * hypothèses entre parenthèses, donc n'importe quel lecteur peut refaire le
- * calcul. Raison de plus pour qu'il vienne du moteur.
- */
-/**
  * Capital final pour un TER donné, formaté. `capitalPour(0.2)` → « 99 800 ».
  *
  * C'est ici qu'était la RACINE du 4 500 €. Le glossaire écrivait « avec un TER
@@ -114,7 +102,35 @@ export function capitalPour(terPct: number, hyp = HYPOTHESES_COMPARATIFS): strin
   return formaterEuros(arrondirEnviron(capitalFinal(terPct, hyp)));
 }
 
+/**
+ * Ce qu’un TER coûte sur la période, par rapport à des frais nuls — la ligne
+ * « Impact TER sur 20 ans » des tableaux de comparaison. Signe négatif inclus.
+ *
+ * `coutFrais(0.38)` → « −4 300 »
+ *
+ * Cette ligne portait « −7 400 € » pour CW8 et « −2 900 € » pour ESE comme
+ * pour WPEA — le même nombre pour deux TER différents, et tous deux faux.
+ * C’est le format le plus vérifiable d’une page : un tableau annonce ses
+ * hypothèses entre parenthèses, donc n’importe quel lecteur peut refaire le
+ * calcul. Raison de plus pour qu’il vienne du moteur.
+ */
 export function coutFrais(terPct: number, hyp = HYPOTHESES_COMPARATIFS): string {
   const brut = capitalFinal(terPct, hyp) - capitalFinal(0, hyp);
   return `−${formaterEuros(arrondirEnviron(Math.abs(brut)))}`;
+}
+
+/**
+ * Plus-value latente pour un TER donné : capital final moins total versé.
+ *
+ * Existe parce que deux pages posaient « capital final ≈ 102 000 €, dont
+ * ≈ 54 000 € de gains » — deux nombres liés, écrits séparément, dont l'un
+ * était en réalité le capital AVANT frais. Les faire calculer ensemble
+ * garantit que la soustraction reste vraie.
+ */
+export function gainsPour(terPct: number, hyp = HYPOTHESES_COMPARATIFS): string {
+  const { finalValue, totalInvested } = runSimulation({
+    ...hyp,
+    annualFeesPct: terPct,
+  }).base;
+  return formaterEuros(arrondirEnviron(finalValue - totalInvested));
 }
