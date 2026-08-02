@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { TER_REFERENCE_SIMULATEUR } from "@/lib/etf-config";
 import { ArticleByline } from "@/components/ui/ArticleByline";
 import { SourcesReferences } from "@/components/ui/SourcesReferences";
 import Link from "next/link";
@@ -167,7 +168,7 @@ export default function Investir500Page() {
           <strong>140 500 €</strong> restants viennent des intérêts composés.
         </p>
         <Link
-          href="/simulateur?monthly=500&years=20&return=7&fees=0.3"
+          href={`/simulateur?monthly=500&years=20&return=7&fees=${TER_REFERENCE_SIMULATEUR}`}
           className="btn-white-primary mt-5 btn-lift"
         >
           Simuler ma propre version →
@@ -512,7 +513,7 @@ export default function Investir500Page() {
           composés.
         </p>
         <Link
-          href="/simulateur?monthly=500&years=20&return=7&fees=0.3"
+          href={`/simulateur?monthly=500&years=20&return=7&fees=${TER_REFERENCE_SIMULATEUR}`}
           className="btn-primary text-sm px-5 py-2.5 inline-block btn-lift"
         >
           Ouvrir le simulateur →

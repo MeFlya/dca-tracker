@@ -15,6 +15,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { TER_REFERENCE_SIMULATEUR } from "@/lib/etf-config";
 
 const MONTHLY_OPTIONS = [100, 200, 500, 1000] as const;
 const YEARS_OPTIONS = [10, 20, 30] as const;
@@ -228,7 +229,7 @@ export function HeroDemoCard() {
 
         {/* CTA — passe les params actuels au simulateur */}
         <Link
-          href={`/simulateur?monthly=${monthly}&years=${years}&return=7&fees=0.3`}
+          href={`/simulateur?monthly=${monthly}&years=${years}&return=7&fees=${TER_REFERENCE_SIMULATEUR}`}
           className="group mt-1 flex items-center justify-center gap-1.5 w-full py-2.5 rounded-xl bg-primary-50 hover:bg-primary-100 text-primary-700 text-sm font-semibold transition-colors duration-150"
         >
           Tester avec mes chiffres

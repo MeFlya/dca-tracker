@@ -119,3 +119,47 @@ Ce qu'on cherche à distinguer :
   d'ailleurs l'hypothèse de départ sur `/etf-msci-world` (position 17,9) et
   `/comparatif-etf` (position 41 sur `comparatif etf`), où il a été dit dès le
   départ que le titre ne suffirait pas.
+
+---
+
+## ⚠️ Ce que cette mesure ne pourra PAS dire — à lire avant de conclure
+
+**Le site n'a pas le volume pour arbitrer finement, et il vaut mieux le savoir
+avant de bâtir un protocole qui prétendrait le faire.**
+
+La meilleure page, `/comparatif-etf/cw8-vs-wpea`, fait **1 258 impressions et
+13 clics par trimestre**. À ce volume, **un clic vaut 0,08 point de CTR**, et
+l'intervalle de confiance à 95 % autour de son 1 % s'étend d'environ **0,5 % à
+1,6 %**. Conséquence directe :
+
+- un effet **fort** (×2 ou ×3 — passer à 2 ou 3 %, soit 25 à 38 clics) sera
+  visible sur un trimestre plein ;
+- un effet **modéré** (1 % → 1,5 %) ne sera **jamais** détectable à ce volume.
+
+La lecture du 26 septembre ne peut donc répondre qu'à « est-ce que ça a
+beaucoup bougé ? », jamais à « est-ce que c'est un peu mieux ? ». Un résultat
+nul ne prouvera pas que les titres n'ont rien fait — seulement qu'ils n'ont pas
+fait beaucoup. Ne pas conclure « les titres ne servent à rien » sur une absence
+d'effet mesurable.
+
+## ⚠️ Et une condition sans laquelle la mesure ne vaut rien
+
+**Une moyenne sur une fenêtre n'a de sens que si l'objet mesuré est resté
+stable sur toute la fenêtre.**
+
+Règle apprise en s'y faisant prendre le 2 août 2026 : un relevé Search Console
+sur 90 jours a été lu comme le verdict de l'extrait de `cw8-vs-wpea`, alors que
+son `<title>` avait changé **deux fois** pendant la fenêtre — le 2 juin puis le
+29 juillet. Le « 1 % » mesurait donc majoritairement un titre remplacé depuis,
+et la conclusion qu'on en tirait (« l'extrait est mauvais, réécrivons-le »)
+aurait détruit la mesure en cours pour corriger un problème déjà corrigé.
+
+Avant toute lecture : **vérifier la date du dernier changement de titre et de
+meta**, et ne comparer que des fenêtres où ils n'ont pas bougé. Search Console
+sait comparer deux périodes — s'en servir.
+
+C'est la raison de l'embargo, et elle est plus forte qu'elle n'en avait l'air :
+chaque changement de titre remet le compteur à zéro. Le titre de `cw8-vs-wpea`
+a déjà bougé le 02/06 et le 29/07, et sa meta le 02/08 (correction d'un chiffre
+faux, non négociable). **La fenêtre exploitable commence donc au 2 août 2026,
+pas au 29 juillet.**

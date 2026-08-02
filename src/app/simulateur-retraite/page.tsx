@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { TER_REFERENCE_SIMULATEUR } from "@/lib/etf-config";
 import Link from "next/link";
 import { JsonLd } from "@/components/ui/JsonLd";
 
@@ -181,7 +182,7 @@ export default function SimulateurRetraitePage() {
           <strong> 650 €/mois </strong> si vous démarrez à 35 ans.
         </p>
         <Link
-          href="/simulateur?monthly=300&years=40&return=7&fees=0.3"
+          href={`/simulateur?monthly=300&years=40&return=7&fees=${TER_REFERENCE_SIMULATEUR}`}
           className="btn-white-primary btn-lift"
         >
           Simuler ma propre retraite →
@@ -359,7 +360,7 @@ export default function SimulateurRetraitePage() {
           3 scénarios de marché et l&apos;analyse Monte Carlo en Premium.
         </p>
         <Link
-          href="/simulateur?monthly=300&years=30&return=7&fees=0.3"
+          href={`/simulateur?monthly=300&years=30&return=7&fees=${TER_REFERENCE_SIMULATEUR}`}
           className="btn-primary text-sm px-5 py-2.5 inline-block btn-lift"
         >
           Ouvrir le simulateur →

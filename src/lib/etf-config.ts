@@ -288,3 +288,30 @@ export const ETF_LIST: ETFConfig[] = [
 export function getETFBySymbol(symbol: string): ETFConfig | undefined {
   return ETF_LIST.find((e) => e.symbol === symbol || e.displaySymbol === symbol);
 }
+
+/**
+ * TER de référence pour préremplir le simulateur depuis une page générique.
+ *
+ * ─── Pourquoi une constante dérivée et non un nombre écrit ──────────────────
+ *
+ * Six liens du site passaient `fees=0.3` au simulateur. Or 0,30 % n'est le TER
+ * d'AUCUN ETF du catalogue — qui va de 0,07 % à 0,38 % sans jamais passer par
+ * 0,30. C'était la même classe de défaut que le `fees=0.25` retiré des pages de
+ * comparaison : un chiffre plausible, choisi au jugé, sur un site dont
+ * l'argument est que ses chiffres sont vérifiables.
+ *
+ * ─── Pourquoi CW8 et pas le moins cher ──────────────────────────────────────
+ *
+ * Arbitrage de Maël, le 2 août 2026 : c'est le MSCI World le plus détenu en
+ * France, le seul du catalogue éligible au PEA, et celui que le site décrit
+ * lui-même par « gros encours, liquidité, présence chez tous les courtiers ».
+ * Une projection par défaut doit refléter ce que les gens DÉTIENNENT, pas ce
+ * qu'on leur recommanderait d'acheter — sinon elle flatte le résultat, et un
+ * lecteur qui possède du CW8 verrait une projection qui n'est pas la sienne.
+ * Prendre 0,20 % aurait embelli la courbe de 2 000 € sur vingt ans.
+ *
+ * Lu dans le catalogue plutôt que recopié : le jour où le TER de CW8 change,
+ * les six liens suivent. C'est tout l'objet de l'exercice.
+ */
+export const TER_REFERENCE_SIMULATEUR =
+  ETF_LIST.find((e) => e.displaySymbol === "CW8")?.ter ?? 0.38;

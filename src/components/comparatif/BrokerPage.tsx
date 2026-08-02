@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { TER_REFERENCE_SIMULATEUR } from "@/lib/etf-config";
 import { Check, X, ExternalLink, Smartphone, Shield, Euro } from "lucide-react";
 import type { BrokerData } from "@/lib/brokers";
 import { BROKER_LIST } from "@/lib/brokers";
@@ -251,7 +252,7 @@ export function BrokerPage({ broker }: { broker: BrokerData }) {
           votre montant mensuel et comparez plusieurs hypothèses en 60 secondes.
         </p>
         <Link
-          href="/simulateur?monthly=200&years=20&return=7&fees=0.3"
+          href={`/simulateur?monthly=200&years=20&return=7&fees=${TER_REFERENCE_SIMULATEUR}`}
           className="btn-primary text-sm px-5 py-2.5 inline-block btn-lift"
         >
           Ouvrir le simulateur →
