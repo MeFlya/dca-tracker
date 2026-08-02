@@ -4,6 +4,7 @@ import { SourcesReferences } from "@/components/ui/SourcesReferences";
 import Link from "next/link";
 import { EmailCapture } from "@/components/ui/EmailCapture";
 import { JsonLd } from "@/components/ui/JsonLd";
+import { EtapeSuivante } from "@/components/ui/EtapeSuivante";
 
 const TITLE =
   // Le format « = X € en 20 ans » verrouillait sur un seul horizon alors que
@@ -603,6 +604,8 @@ export default function Investir100EurosMoisPage() {
         </div>
       </section>
 
+
+      <EtapeSuivante montantMensuel={100} />
 
       <SourcesReferences
         sources={[

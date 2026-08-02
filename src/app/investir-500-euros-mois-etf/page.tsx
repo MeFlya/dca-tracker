@@ -3,6 +3,7 @@ import { ArticleByline } from "@/components/ui/ArticleByline";
 import { SourcesReferences } from "@/components/ui/SourcesReferences";
 import Link from "next/link";
 import { JsonLd } from "@/components/ui/JsonLd";
+import { EtapeSuivante } from "@/components/ui/EtapeSuivante";
 
 const TITLE =
   "Investir 500 €/mois en ETF : combien après 10, 20, 30 ans ?";
@@ -540,6 +541,8 @@ export default function Investir500Page() {
           </Link>
         </div>
       </div>
+
+      <EtapeSuivante montantMensuel={500} />
 
       <SourcesReferences
         sources={[

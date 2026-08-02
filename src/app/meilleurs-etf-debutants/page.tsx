@@ -6,6 +6,7 @@ import { JsonLd } from "@/components/ui/JsonLd";
 import { ArticleByline } from "@/components/ui/ArticleByline";
 import { BreadcrumbSchema } from "@/components/ui/BreadcrumbSchema";
 import { SourcesReferences } from "@/components/ui/SourcesReferences";
+import { EtapeSuivante } from "@/components/ui/EtapeSuivante";
 
 // CTR (audit 07/2026) : le title mettait en avant IWDA/VWCE (non éligibles
 // PEA — hors intent du débutant FR) et contredisait la meta. Title aligné
@@ -596,6 +597,8 @@ export default function MeilleursETFDebutantsPage() {
           ))}
         </div>
       </section>
+
+      <EtapeSuivante />
 
       <SourcesReferences
         sources={[

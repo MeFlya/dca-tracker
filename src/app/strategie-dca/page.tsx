@@ -7,6 +7,7 @@ import { EducationalHeader } from "@/components/ui/EducationalHeader";
 import { ArticleByline } from "@/components/ui/ArticleByline";
 import { BreadcrumbSchema } from "@/components/ui/BreadcrumbSchema";
 import { SourcesReferences } from "@/components/ui/SourcesReferences";
+import { EtapeSuivante } from "@/components/ui/EtapeSuivante";
 
 // Repositionnement, pas simple réécriture : les requêtes « méthode dca » et
 // « dca investissement » sont à la position 47+. La question réellement posée
@@ -628,6 +629,8 @@ export default function StrategieDCAPage() {
           ))}
         </div>
       </section>
+
+      <EtapeSuivante />
 
       <SourcesReferences
         sources={[

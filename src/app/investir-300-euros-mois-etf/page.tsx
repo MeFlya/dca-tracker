@@ -4,6 +4,7 @@ import { SourcesReferences } from "@/components/ui/SourcesReferences";
 import Link from "next/link";
 import { EmailCapture } from "@/components/ui/EmailCapture";
 import { JsonLd } from "@/components/ui/JsonLd";
+import { EtapeSuivante } from "@/components/ui/EtapeSuivante";
 
 const TITLE =
   "Investir 300 €/mois en ETF : combien après 10, 20, 30 ans ?";
@@ -635,6 +636,8 @@ export default function Investir300EurosMoisPage() {
         </div>
       </section>
 
+
+      <EtapeSuivante montantMensuel={300} />
 
       <SourcesReferences
         sources={[
