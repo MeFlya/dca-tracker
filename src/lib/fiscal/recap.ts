@@ -110,6 +110,20 @@ export interface DeclarationGuide {
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
+/**
+ * Un taux (0.314) en pourcentage affichable (« 31,4 »).
+ *
+ * Existe parce que la ligne 3VG utilisait `toFixed(0)` : elle n’affichait
+ * « PFU 30 % » que parce que 30 est un nombre rond. Avec un taux à
+ * 31,4 %, elle aurait rendu « PFU 31 % » — un taux faux sur une fonctionnalité
+ * payante, et un défaut qui ne se déclenche QUE le jour où l’on corrige les
+ * taux, c’est-à-dire au pire moment. Un seul formateur pour tout le fichier.
+ */
+function tauxAffiche(taux: number): string {
+  const pct = taux * 100;
+  return (Number.isInteger(pct) ? String(pct) : pct.toFixed(1)).replace(".", ",");
+}
+
 function entriesInYear(entries: MonthlyEntry[], year: number): MonthlyEntry[] {
   return entries
     .filter((e) => e.month.startsWith(`${year}-`))
@@ -162,9 +176,9 @@ function buildDeclarationGuide(
       form2042: [
         {
           caseId: "3VG",
-          label: "Plus-values de cession de valeurs mobilières (PFU 30 %)",
+          label: `Plus-values de cession de valeurs mobilières (PFU ${tauxAffiche(PFU_RATE)} %)`,
           amount: roundedGain,
-          note: `PFU ${(PFU_RATE * 100).toFixed(0)} % appliqué par défaut. Vous pouvez opter pour le barème IR + ${(SOCIAL_CHARGES_RATE * 100).toFixed(1).replace(".", ",")} % social via la case 2OP si votre TMI < 12,8 %.`,
+          note: `PFU ${tauxAffiche(PFU_RATE)} % appliqué par défaut. Vous pouvez opter pour le barème IR + ${tauxAffiche(SOCIAL_CHARGES_RATE)} % social via la case 2OP si votre TMI < 12,8 %.`,
         },
       ],
     };
@@ -177,14 +191,14 @@ function buildDeclarationGuide(
       form2074: {
         applicable: true,
         plusValueAmount: roundedGain,
-        note: "Clôture PEA avant 5 ans = imposition au PFU 30 % comme un CTO. Détaillez la cession sur le 2074. Votre IFU PEA contient les chiffres à reporter.",
+        note: `Clôture PEA avant 5 ans = imposition au PFU ${tauxAffiche(PFU_RATE)} % comme un CTO. Détaillez la cession sur le 2074. Votre IFU PEA contient les chiffres à reporter.`,
       },
       form2042: [
         {
           caseId: "3VG",
-          label: "Plus-value PEA clôturé avant 5 ans (PFU 30 %)",
+          label: `Plus-value PEA clôturé avant 5 ans (PFU ${tauxAffiche(PFU_RATE)} %)`,
           amount: roundedGain,
-          note: "Clôture PEA avant 5 ans → traité fiscalement comme un CTO. PFU 30 % par défaut.",
+          note: `Clôture PEA avant 5 ans → traité fiscalement comme un CTO. PFU ${tauxAffiche(PFU_RATE)} % par défaut.`,
         },
       ],
     };
@@ -200,9 +214,9 @@ function buildDeclarationGuide(
     form2042: [
       {
         caseId: "3SG",
-        label: `Plus-value PEA ≥ 5 ans (prélèvements sociaux ${(SOCIAL_CHARGES_RATE * 100).toFixed(1).replace(".", ",")} % uniquement)`,
+        label: `Plus-value PEA ≥ 5 ans (prélèvements sociaux ${tauxAffiche(SOCIAL_CHARGES_RATE)} % uniquement)`,
         amount: roundedGain,
-        note: `PEA détenu plus de 5 ans : seuls les prélèvements sociaux ${(SOCIAL_CHARGES_RATE * 100).toFixed(1).replace(".", ",")} % s'appliquent. Pas d'impôt sur le revenu.`,
+        note: `PEA détenu plus de 5 ans : seuls les prélèvements sociaux ${tauxAffiche(SOCIAL_CHARGES_RATE)} % s'appliquent. Pas d'impôt sur le revenu.`,
       },
     ],
   };
