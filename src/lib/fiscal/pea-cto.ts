@@ -12,7 +12,7 @@
  *   immediate taxable event in CTO. PEA is exempt during the holding
  *   period anyway. → modeling capital-gains-only is conservative-correct
  *   for the MVP.
- * - The PFU (flat tax 30 %) for CTO. The IR + 17.2 % social charges
+ * - The PFU for CTO (rate from BAREMES_CAPITAL). The IR + social-charges
  *   option is more advantageous for low TMI brackets but is too complex
  *   for the MVP. To add later.
  * - The PEA cap of €150,000 in deposits (not portfolio value).
@@ -24,6 +24,8 @@
  *   2018 etc).
  * - PEA-PME, PER, AV, IFI — out of scope.
  */
+
+import { currentYear } from "@/lib/strategy-math";
 
 export interface FiscalInput {
   /** Total invested over the lifetime (cumulative deposits). */
@@ -87,20 +89,90 @@ export interface OptimalMix {
 export const PEA_DEPOSIT_CAP_EUR = 150_000;
 
 /**
- * Social charges (CSG/CRDS/Prélèvement de solidarité) — applies to PEA gains
- * after 5 years of holding, AND is the social part of the PFU 30 %.
+ * Barème des prélèvements sur les revenus du capital, PAR MILLÉSIME.
+ *
+ * ─── Pourquoi un barème et non deux constantes ──────────────────────────────
+ *
+ * Deux constantes de module ne peuvent pas répondre à « quel taux s'appliquait
+ * en 2025 ? », question que pose n'importe quel récap fiscal établi l'année
+ * suivante. Elles obligent aussi à réécrire le code à chaque loi de finances,
+ * et c'est ainsi que le site s'est retrouvé à publier 17,2 % après la hausse.
+ *
+ * ─── Sources, lues sur le texte et non sur un commentaire ───────────────────
+ *
+ * Loi n° 2025-1403 du 30 décembre 2025 (LFSS 2026), article 12 : au 2° du I de
+ * l'article L. 136-8 du code de la sécurité sociale, le taux de CSG sur les
+ * revenus du capital passe de 9,2 % à 10,6 %.
+ *   → prélèvements sociaux = CSG 10,6 % + CRDS 0,5 % (art. 19 ord. n° 96-50)
+ *     + prélèvement de solidarité 7,5 % (art. 235 ter CGI) = 18,6 %.
+ *   → PFU = 12,8 % d'IR (art. 200 A CGI, inchangé) + 18,6 % = 31,4 %.
+ *
+ * ⚠️ LA HAUSSE N'EST PAS GÉNÉRALE, et c'est le piège de ce dossier. Le même
+ * article 12 rétablit un IV à L. 136-8 qui MAINTIENT 9,2 % de CSG — donc
+ * 17,2 % au total — pour cinq catégories : revenus fonciers, plus-values
+ * immobilières, PEL/CEL, assurance-vie et bons de capitalisation, PEP.
+ * Un remplacement global de « 17,2 » par « 18,6 » dans le contenu du site
+ * rendrait fausses toutes les pages qui comparent le PEA à l'assurance-vie.
+ *
+ * LE CAS DU PEA, qui est le cadre majoritaire de l'audience : le gain net de
+ * PEA relève du 5° du II de l'article L. 136-7. La liste dérogatoire du IV
+ * couvre les 1°, 2°, 2° bis, 3° et 4° de ce même II — elle s'arrête au 4°.
+ * Le PEA n'y figure pas : il suit donc la hausse, à 18,6 %. Vérifié en lisant
+ * les deux articles, pas en le déduisant.
+ *
+ * ─── Ce que ce barème NE modélise PAS ───────────────────────────────────────
+ *
+ * La clause de sauvegarde des PEA ouverts AVANT le 01/01/2018 (LFSS 2018,
+ * art. 8, V), qui conserve les taux historiques sur la seule fraction de gain
+ * acquise avant cette date. `FiscalInput` ne porte pas de date d'ouverture, on
+ * ne peut donc pas distinguer les deux cas. Le calcul est juste pour un plan
+ * ouvert à partir de 2018 — le cas majoritaire — et SURESTIME légèrement
+ * l'impôt d'un plan plus ancien. Surestimer est le bon sens de l'erreur, mais
+ * ça reste une limite : à lever en ajoutant la date d'ouverture en entrée.
  */
-export const SOCIAL_CHARGES_RATE = 0.172;
+export const BAREMES_CAPITAL: Record<number, { sociaux: number; pfu: number }> = {
+  2018: { sociaux: 0.172, pfu: 0.3 },
+  2026: { sociaux: 0.186, pfu: 0.314 },
+};
 
-/** PFU (Prélèvement Forfaitaire Unique) — flat tax CTO + PEA closure < 5 years. */
-export const PFU_RATE = 0.30;
+/**
+ * Barème applicable à une année : le millésime le plus récent qui lui soit
+ * antérieur ou égal. Une année inconnue ne renvoie donc jamais `undefined`,
+ * elle prolonge le dernier barème connu — le contraire ferait planter un récap
+ * sur une année non encore inscrite.
+ */
+export function baremeCapital(annee: number): { sociaux: number; pfu: number } {
+  const millesimes = Object.keys(BAREMES_CAPITAL)
+    .map(Number)
+    .sort((a, b) => a - b);
+  const retenu = millesimes.filter((m) => m <= annee).pop() ?? millesimes[0];
+  return BAREMES_CAPITAL[retenu];
+}
+
+/**
+ * Alias sur le millésime en cours, pour les appelants qui n'ont pas d'année à
+ * fournir. `currentYear()` répond dans le fuseau de l'audience, pas dans celui
+ * du serveur : au 1er janvier, un serveur en UTC aurait basculé une heure trop
+ * tard pour un lecteur français.
+ */
+export const SOCIAL_CHARGES_RATE = baremeCapital(currentYear()).sociaux;
+
+/** PFU (Prélèvement Forfaitaire Unique) — CTO, et PEA clôturé avant 5 ans. */
+export const PFU_RATE = baremeCapital(currentYear()).pfu;
+
+/** Un taux (0.186) en pourcentage affichable (« 18,6 »). Garde la décimale
+ *  quand elle existe, la supprime quand le taux est entier. */
+function tauxAffiche(taux: number): string {
+  const pct = taux * 100;
+  return (Number.isInteger(pct) ? String(pct) : pct.toFixed(1)).replace(".", ",");
+}
 
 // ─── Per-account calculations ────────────────────────────────────────────────
 
 /**
  * PEA tax computation.
- * - Closure < 5 years: gain × 30 % (PFU)
- * - Closure ≥ 5 years: gain × 17.2 % (social charges only — PEA is income-tax exempt)
+ * - Closure < 5 years: gain × PFU du millésime
+ * - Closure ≥ 5 years: gain × prélèvements sociaux du millésime (only — PEA is income-tax exempt)
  * - Loss: 0 tax (loss can be carried forward but we don't model that)
  */
 function computePeaResult(input: FiscalInput): AccountResult {
@@ -130,7 +202,7 @@ function computePeaResult(input: FiscalInput): AccountResult {
       taxDue,
       netFinalValue: finalValue - taxDue,
       netGain: finalValue - taxDue - totalInvested,
-      taxRuleLabel: "PFU 30 % (clôture avant 5 ans)",
+      taxRuleLabel: `PFU ${tauxAffiche(PFU_RATE)} % (clôture avant 5 ans)`,
     };
   }
 
@@ -143,7 +215,7 @@ function computePeaResult(input: FiscalInput): AccountResult {
     taxDue,
     netFinalValue: finalValue - taxDue,
     netGain: finalValue - taxDue - totalInvested,
-    taxRuleLabel: "Prélèvements sociaux 17,2 % uniquement (≥ 5 ans)",
+    taxRuleLabel: `Prélèvements sociaux ${tauxAffiche(SOCIAL_CHARGES_RATE)} % uniquement (≥ 5 ans)`,
   };
 }
 
@@ -177,7 +249,7 @@ function computeCtoResult(input: FiscalInput): AccountResult {
     taxDue,
     netFinalValue: finalValue - taxDue,
     netGain: finalValue - taxDue - totalInvested,
-    taxRuleLabel: "PFU 30 % (12,8 % IR + 17,2 % CSG)",
+    taxRuleLabel: `PFU ${tauxAffiche(PFU_RATE)} % (${tauxAffiche(PFU_RATE - SOCIAL_CHARGES_RATE)} % IR + ${tauxAffiche(SOCIAL_CHARGES_RATE)} % sociaux)`,
   };
 }
 

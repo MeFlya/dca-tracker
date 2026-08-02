@@ -6,7 +6,7 @@ import { Disclaimer } from "@/components/ui/Disclaimer";
 
 const TITLE = "Calculateur fiscal PEA vs CTO — Comparez l'impôt sur vos ETF";
 const DESCRIPTION =
-  "Combien d'impôt sur votre DCA ETF en PEA ou en CTO ? Calculateur instantané : règle des 5 ans, plafond 150 000 €, PFU 30 %, prélèvements sociaux. Gratuit, sans inscription.";
+  "Combien d'impôt sur votre DCA ETF en PEA ou en CTO ? Calculateur instantané : règle des 5 ans, plafond 150 000 €, PFU 31,4 %, prélèvements sociaux. Gratuit, sans inscription.";
 const CANONICAL = "/calculateur-fiscal-pea-cto";
 
 export const metadata: Metadata = {
@@ -25,11 +25,11 @@ export const metadata: Metadata = {
 const FAQ = [
   {
     q: "PEA ou CTO : lequel paie le moins d'impôts ?",
-    a: "Sur l'investissement long-terme en ETF (≥ 5 ans), le PEA paie nettement moins : 17,2 % de prélèvements sociaux uniquement, contre 30 % de PFU sur le CTO. La différence est importante : pour 50 000 € de plus-values sur 20 ans, vous économisez environ 6 400 € en PEA. Le PEA est donc le compte à privilégier en premier, dans la limite de son plafond de versement (150 000 €).",
+    a: "Sur l'investissement long-terme en ETF (≥ 5 ans), le PEA paie nettement moins : 18,6 % de prélèvements sociaux uniquement, contre 31,4 % de PFU sur le CTO. La différence est importante : pour 50 000 € de plus-values sur 20 ans, vous économisez environ 6 400 € en PEA. Le PEA est donc le compte à privilégier en premier, dans la limite de son plafond de versement (150 000 €).",
   },
   {
     q: "Comment fonctionne la règle des 5 ans du PEA ?",
-    a: "À l'ouverture, le PEA est imposé comme un CTO classique (30 % PFU sur les plus-values) si vous clôturez avant 5 ans. À partir de la 5e année exacte (jour pour jour), les plus-values ne supportent plus que les prélèvements sociaux (17,2 %) en cas de retrait. C'est pourquoi il est conseillé d'ouvrir un PEA même sans verser dessus immédiatement : le compteur démarre à l'ouverture, pas au premier versement.",
+    a: "À l'ouverture, le PEA est imposé comme un CTO classique (31,4 % PFU sur les plus-values) si vous clôturez avant 5 ans. À partir de la 5e année exacte (jour pour jour), les plus-values ne supportent plus que les prélèvements sociaux (18,6 %) en cas de retrait. C'est pourquoi il est conseillé d'ouvrir un PEA même sans verser dessus immédiatement : le compteur démarre à l'ouverture, pas au premier versement.",
   },
   {
     q: "Quel est le plafond de versement du PEA ?",
@@ -41,7 +41,7 @@ const FAQ = [
   },
   {
     q: "Quelle différence entre PFU et option pour l'IR ?",
-    a: "Le PFU (Prélèvement Forfaitaire Unique) à 30 % est appliqué par défaut à toutes les plus-values mobilières. Vous pouvez opter pour l'imposition au barème progressif de l'IR (+ 17,2 % de prélèvements sociaux) si votre tranche marginale d'imposition (TMI) est inférieure à 12,8 % — ce qui est rare pour les épargnants concernés. Notre calculateur applique le PFU 30 % qui est le cas par défaut majoritaire.",
+    a: "Le PFU (Prélèvement Forfaitaire Unique) à 31,4 % est appliqué par défaut à toutes les plus-values mobilières. Vous pouvez opter pour l'imposition au barème progressif de l'IR (+ 18,6 % de prélèvements sociaux) si votre tranche marginale d'imposition (TMI) est inférieure à 12,8 % — ce qui est rare pour les épargnants concernés. Notre calculateur applique le PFU 31,4 % qui est le cas par défaut majoritaire.",
   },
   {
     q: "Les ETF World comme CW8 ou VWCE sont-ils éligibles au PEA ?",
@@ -49,7 +49,7 @@ const FAQ = [
   },
   {
     q: "Cette simulation tient-elle compte des dividendes ?",
-    a: "Notre calculateur modélise les ETF accumulants (CW8, VWCE, IWDA), majoritaires dans les stratégies DCA long-terme. Les dividendes y sont automatiquement réinvestis dans le fonds — vous ne les recevez pas en cash, donc aucun événement fiscal pendant la durée de détention. Pour des ETF distribuants (qui versent des dividendes en cash), la fiscalité serait différente : sur CTO, les dividendes seraient taxés annuellement à 30 % PFU. Sur PEA, ils restent exonérés tant qu'ils ne sont pas retirés.",
+    a: "Notre calculateur modélise les ETF accumulants (CW8, VWCE, IWDA), majoritaires dans les stratégies DCA long-terme. Les dividendes y sont automatiquement réinvestis dans le fonds — vous ne les recevez pas en cash, donc aucun événement fiscal pendant la durée de détention. Pour des ETF distribuants (qui versent des dividendes en cash), la fiscalité serait différente : sur CTO, les dividendes seraient taxés annuellement à 31,4 % PFU. Sur PEA, ils restent exonérés tant qu'ils ne sont pas retirés.",
   },
 ];
 
@@ -76,7 +76,7 @@ export default function CalculateurFiscalPage() {
             availability: "https://schema.org/InStock",
           },
           description:
-            "Comparez l'impôt sur vos plus-values ETF en PEA vs CTO. Règle des 5 ans, plafond 150 000 €, PFU 30 % vs prélèvements sociaux 17,2 %.",
+            "Comparez l'impôt sur vos plus-values ETF en PEA vs CTO. Règle des 5 ans, plafond 150 000 €, PFU 31,4 % vs prélèvements sociaux 18,6 %.",
         }}
       />
       <JsonLd
@@ -142,16 +142,16 @@ export default function CalculateurFiscalPage() {
               <ul className="space-y-2 list-disc pl-5">
                 <li>
                   <strong>PEA après 5 ans</strong> : seuls les prélèvements
-                  sociaux s&apos;appliquent (17,2 %). C&apos;est le compte
+                  sociaux s&apos;appliquent (18,6 %). C&apos;est le compte
                   fiscalement le plus avantageux pour le DCA ETF long-terme.
                 </li>
                 <li>
                   <strong>PEA avant 5 ans</strong> : si vous clôturez avant
-                  les 5 ans, vous payez le PFU complet à 30 %. Dans ce cas, le
+                  les 5 ans, vous payez le PFU complet à 31,4 %. Dans ce cas, le
                   PEA n&apos;a plus d&apos;intérêt fiscal vs CTO.
                 </li>
                 <li>
-                  <strong>CTO</strong> : PFU 30 % flat (12,8 % IR + 17,2 % CSG)
+                  <strong>CTO</strong> : PFU 31,4 % flat (12,8 % IR + 18,6 % CSG)
                   sur toutes les plus-values, peu importe la durée de
                   détention.
                 </li>
@@ -173,14 +173,14 @@ export default function CalculateurFiscalPage() {
             </p>
             <ul className="text-sm text-gray-700 space-y-1.5">
               <li>
-                <strong>En PEA</strong> (≥ 5 ans) : 54 000 € × 17,2 % ={" "}
-                <strong>9 288 €</strong> d&apos;impôt → net{" "}
-                <strong>92 712 €</strong>
+                <strong>En PEA</strong> (≥ 5 ans) : 54 000 € × 18,6 % ={" "}
+                <strong>10 044 €</strong> d&apos;impôt → net{" "}
+                <strong>91 956 €</strong>
               </li>
               <li>
-                <strong>En CTO</strong> : 54 000 € × 30 % ={" "}
-                <strong>16 200 €</strong> d&apos;impôt → net{" "}
-                <strong>85 800 €</strong>
+                <strong>En CTO</strong> : 54 000 € × 31,4 % ={" "}
+                <strong>16 956 €</strong> d&apos;impôt → net{" "}
+                <strong>85 044 €</strong>
               </li>
               <li className="pt-1.5 border-t border-slate-200/70 mt-1.5 font-semibold text-primary-700">
                 → Avantage PEA : <strong>+6 912 €</strong> (+ 8 % de net)
