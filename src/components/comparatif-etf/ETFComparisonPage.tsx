@@ -268,9 +268,21 @@ export function ETFComparisonPage({ comparison }: { comparison: ETFComparison })
       {/* FAQ */}
       <h2 className="text-xl font-bold text-gray-900 mb-4">Questions fréquentes</h2>
       <div className="space-y-3 mb-10">
+        {/* `open` par défaut, et une ancre par question.
+            Les réponses étaient repliées : sur une page dont l'argument est
+            « on vous donne la réponse », six réponses derrière un accordéon
+            fermé sont une contradiction — quelqu'un qui arrive de la recherche
+            veut lire, pas cliquer six fois.
+            Le bénéfice technique vient en prime : Google ne propose de liens
+            vers une section que si le contenu est « not hidden behind an
+            expandable section », et ce sont les ANCRES qu'il suit, pas la
+            forme interrogative des titres. On garde <details> — l'affordance
+            de repli reste utile à la lecture, seul le défaut change. */}
         {comparison.faq.map(({ q, a }) => (
           <details
             key={q}
+            id={ancre(q)}
+            open
             className="group rounded-xl border border-gray-100 bg-white p-4 open:bg-gray-50/50"
           >
             <summary className="cursor-pointer list-none flex items-center justify-between gap-3">
@@ -367,4 +379,23 @@ export function ETFComparisonPage({ comparison }: { comparison: ETFComparison })
 /** 0.2 → « 0,20 % ». Virgule décimale et deux décimales, comme le reste du site. */
 function formatTer(v: number): string {
   return `${v.toFixed(2).replace(".", ",")} %`;
+}
+
+/**
+ * Ancre stable pour une question de FAQ. Sert de cible aux liens de section
+ * que Google génère « completely algorithmically, based on page structure » —
+ * sans ancre, un titre de question ne produit rien.
+ * Volontairement déterministe : une ancre qui change casse les liens entrants.
+ */
+function ancre(question: string): string {
+  return (
+    "faq-" +
+    question
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 60)
+  );
 }

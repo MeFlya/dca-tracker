@@ -10,8 +10,10 @@
     "type-check": "tsc --noEmit",
     "refresh:backtest": "node scripts/refresh-backtest-data.mjs",
     "assets:encrypt": "node scripts/encrypt-product-assets.mjs",
-    "postbuild": "node scripts/check-seo-lengths.mjs",
-    "seo:check": "node scripts/check-seo-lengths.mjs --report"
+    "postbuild": "node scripts/check-seo-lengths.mjs && node scripts/check-montants-calcules.mjs",
+    "seo:check": "node scripts/check-seo-lengths.mjs --report",
+    "montants:check": "node scripts/check-montants-calcules.mjs",
+    "montants:accept": "node scripts/check-montants-calcules.mjs --accept"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.2.3",

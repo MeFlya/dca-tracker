@@ -25,6 +25,13 @@ export type BrokerSpecs = {
 };
 
 export type BrokerData = {
+  /** Dates ISO relevées dans git, courtier par courtier — cf. etf-comparisons.ts.
+   *  Elles étaient écrites en dur dans BrokerPage.tsx : les trois fiches
+   *  affichaient « 10 juin 2026 », ce qui était vrai pour une seule d’entre
+   *  elles. Sur des pages dont le sujet EST les frais, une date fausse invite
+   *  le lecteur à douter du reste. */
+  publishedAt: string;
+  updatedAt: string;
   slug: string;
   name: string;
   shortName?: string;
@@ -48,6 +55,8 @@ export type BrokerData = {
 
 const TRADE_REPUBLIC: BrokerData = {
   slug: "trade-republic",
+  publishedAt: "2026-04-19",
+  updatedAt: "2026-06-10",
   name: "Trade Republic",
   shortName: "Trade Republic",
   tagline: "Courtier allemand, 0 € sur l'épargne programmée",
@@ -126,6 +135,8 @@ const TRADE_REPUBLIC: BrokerData = {
 
 const BOURSORAMA: BrokerData = {
   slug: "boursorama-bourse",
+  publishedAt: "2026-04-19",
+  updatedAt: "2026-07-29",
   name: "Boursorama Bourse",
   shortName: "Boursorama",
   tagline: "Banque en ligne française + courtier bourse intégré",
@@ -204,6 +215,8 @@ const BOURSORAMA: BrokerData = {
 
 const FORTUNEO: BrokerData = {
   slug: "fortuneo",
+  publishedAt: "2026-04-19",
+  updatedAt: "2026-04-19",
   name: "Fortuneo",
   shortName: "Fortuneo",
   tagline: "Courtier français bon rapport qualité-prix",

@@ -9,6 +9,8 @@
 // Cohérence YMYL : les chiffres (17,2 %, 30 %, 150 000 €, TER…) doivent
 // rester alignés avec /pea-ou-cto, /etf-msci-world et les comparatifs.
 
+import { capitalPour, ecartCapital } from "@/lib/ecart-frais";
+
 export type GlossaryTerm = {
   slug: string;
   /** Nom complet affiché en H1 — ex: "PEA — Plan d'Épargne en Actions". */
@@ -168,7 +170,7 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
       "Frais annuels d'un ETF, prélevés automatiquement sur la performance — de 0,07 % à 0,40 % pour les grands indices.",
     metaTitle: "TER d'un ETF : définition et vrai impact sur 20 ans",
     metaDescription:
-      "Le TER (frais annuels d'un ETF) en clair : comment il est prélevé, pourquoi 0,18 % d'écart représente ~4 500 € sur 20 ans de DCA, et à partir de quel écart il doit guider votre choix. Définition + exemples.",
+      `Le TER (frais annuels d'un ETF) en clair : comment il est prélevé, pourquoi 0,18 % d'écart représente ~${ecartCapital(0.38, 0.2)} € sur 20 ans de DCA, et à partir de quel écart il doit guider votre choix. Définition + exemples.`,
     definition: [
       "Le Total Expense Ratio représente les frais courants annuels d'un ETF : gestion, licence de l'indice, frais administratifs. Il s'exprime en pourcentage de l'encours et il est prélevé automatiquement, jour après jour, sur la valeur du fonds — vous ne recevez jamais de facture, la performance affichée est déjà nette de TER.",
       "Sur les grands indices, les TER s'échelonnent d'environ 0,07 % (S&P 500 physique en CTO) à 0,38 % (CW8). La guerre des frais de 2024-2025 a divisé par deux le coût du MSCI World en PEA : WPEA et DCAM à 0,20 % contre 0,38 % pour le CW8 historique.",
@@ -176,7 +178,7 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
     inPractice: [
       {
         title: "L'effet est composé, comme les gains",
-        text: "Un TER de 0,38 % au lieu de 0,20 % ne coûte pas « 0,18 % » : il coûte 0,18 % par an sur un capital qui grossit, soit environ 4 500 € sur 20 ans à 200 €/mois. Les frais composent contre vous comme les gains composent pour vous.",
+        text: `Un TER de 0,38 % au lieu de 0,20 % ne coûte pas « 0,18 % » : il coûte 0,18 % par an sur un capital qui grossit, soit environ ${ecartCapital(0.38, 0.2)} € sur 20 ans à 200 €/mois. Les frais composent contre vous comme les gains composent pour vous.`,
       },
       {
         title: "Le seuil de pertinence",
@@ -184,7 +186,7 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
       },
     ],
     example:
-      "200 €/mois sur 20 ans à 7 %/an brut : avec un TER de 0,20 %, capital final ≈ 102 000 € ; avec 0,38 %, ≈ 97 500 €. L'écart (~4 500 €) part en frais — pour exactement le même indice.",
+      `200 €/mois sur 20 ans à 7 %/an brut : avec un TER de 0,20 %, capital final ≈ ${capitalPour(0.2)} € ; avec 0,38 %, ≈ ${capitalPour(0.38)} €. L’écart (~${ecartCapital(0.38, 0.2)} €) part en frais — pour exactement le même indice.`,
     faq: [
       {
         q: "Le TER est-il le seul coût d'un ETF ?",

@@ -8,6 +8,8 @@
 // le composant affiche un disclaimer + les sources. Toujours vérifier la
 // fiche officielle de l'émetteur avant d'investir.
 
+import { ecartCapital } from "@/lib/ecart-frais";
+
 export type IndexTracker = {
   ticker: string;
   name: string;
@@ -140,7 +142,7 @@ const MSCI_WORLD: IndexGuide = {
   verdict: [
     {
       label: "Pour un débutant en PEA",
-      text: "WPEA ou DCAM (0,20 %). Même indice que le CW8, frais 2× plus bas. Sur 20 ans à 200 €/mois et 7 %/an, ces 0,18 % de TER en moins représentent environ 4 500 € de capital final en plus. Prenez DCAM si votre courtier le propose et que vous investissez de petits montants (prix de part bas).",
+      text: `WPEA ou DCAM (0,20 %). Même indice que le CW8, frais 2× plus bas. Sur 20 ans à 200 €/mois et 7 %/an, ces 0,18 % de TER en moins représentent environ ${ecartCapital(0.38, 0.2)} € de capital final en plus. Prenez DCAM si votre courtier le propose et que vous investissez de petits montants (prix de part bas).`,
     },
     {
       label: "Si vous voulez le plus liquide / le plus simple",

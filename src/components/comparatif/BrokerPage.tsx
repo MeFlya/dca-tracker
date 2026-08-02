@@ -83,8 +83,8 @@ export function BrokerPage({ broker }: { broker: BrokerData }) {
       </div>
 
       <ArticleByline
-        publishedAt="2026-04-19"
-        updatedAt="2026-06-10"
+        publishedAt={broker.publishedAt}
+        updatedAt={broker.updatedAt}
         readingMinutes={6}
         url={canonical}
         headline={broker.metaTitle}
@@ -228,6 +228,8 @@ export function BrokerPage({ broker }: { broker: BrokerData }) {
         {broker.faq.map(({ q, a }) => (
           <details
             key={q}
+            id={ancre(q)}
+            open
             className="group rounded-xl border border-gray-100 bg-white p-4 open:bg-gray-50/50"
           >
             <summary className="cursor-pointer list-none flex items-center justify-between gap-3">
@@ -340,5 +342,24 @@ export function BrokerPage({ broker }: { broker: BrokerData }) {
         tarifaires à jour.
       </p>
     </article>
+  );
+}
+
+/**
+ * Ancre stable pour une question de FAQ. Sert de cible aux liens de section
+ * que Google génère « completely algorithmically, based on page structure » —
+ * sans ancre, un titre de question ne produit rien.
+ * Volontairement déterministe : une ancre qui change casse les liens entrants.
+ */
+function ancre(question: string): string {
+  return (
+    "faq-" +
+    question
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 60)
   );
 }
