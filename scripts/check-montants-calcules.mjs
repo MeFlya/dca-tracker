@@ -71,6 +71,60 @@ function extraire(chemin) {
   return trouves.sort();
 }
 
+// ─── Contrôle 1 : aucun montant à cheval ────────────────────────────────────
+//
+// RÈGLE ABSOLUE, sans dette possible — contrairement au cliquet ci-dessous.
+//
+// Elle existe parce que le cliquet a un angle mort structurel : il compte les
+// montants ÉCRITS. Un remplacement automatisé a mordu à l'intérieur de
+// « 102 000 € » et laissé `≈ 10${ecartCapital(0.38, 0.2)} €` sur deux pages
+// indexées. Le montant n'avait pas disparu — il avait CHANGÉ DE CATÉGORIE,
+// devenant moitié littéral, moitié calculé. Il est sorti de l'inventaire sans
+// sortir du code, et ne rendait juste que par coïncidence : le jour où l'appel
+// retourne autre chose que « 2 000 », la page affiche un capital absurde.
+//
+// La leçon générale : un garde-fou défini comme « compter les mauvaises
+// choses » est aveugle à une mauvaise chose qui a changé de catégorie. Il faut
+// donc aussi INTERDIRE UN MOTIF, sans tolérance.
+//
+// Le principe éditorial correspondant : un montant est soit entièrement
+// calculé, soit entièrement écrit. Jamais à cheval.
+const FUSION = [
+  { motif: /\d\s*\$\{/g, quoi: "un chiffre collé devant une interpolation" },
+  { motif: /\}\s*\d/g, quoi: "un chiffre collé derrière une interpolation" },
+];
+
+const fusions = [];
+for (const f of SOURCES) {
+  if (!existsSync(join(RACINE, f))) continue;
+  const src = readFileSync(join(RACINE, f), "utf8");
+  const lignes = src.split("\n");
+  lignes.forEach((ligne, i) => {
+    for (const { motif, quoi } of FUSION) {
+      motif.lastIndex = 0;
+      if (motif.test(ligne)) {
+        fusions.push({ fichier: `${f}:${i + 1}`, quoi, extrait: ligne.trim().slice(0, 120) });
+      }
+    }
+  });
+}
+
+if (fusions.length > 0) {
+  console.error(`\n✗ ${fusions.length} montant(s) à cheval entre littéral et calcul :\n`);
+  for (const { fichier, quoi, extrait } of fusions) {
+    console.error(`   ${fichier} — ${quoi}`);
+    console.error(`      ${extrait}\n`);
+  }
+  console.error(
+    `   Un montant est soit entièrement calculé, soit entièrement écrit.\n` +
+      `   À cheval, il ne rend juste que par coïncidence.\n` +
+      `   Aucune dette n'est acceptée sur ce motif : corriger l'expression.\n`
+  );
+  process.exit(1);
+}
+
+// ─── Contrôle 2 : cliquet sur les montants écrits à la main ─────────────────
+
 const actuel = {};
 for (const f of SOURCES) {
   if (existsSync(join(RACINE, f))) actuel[f] = extraire(f);
