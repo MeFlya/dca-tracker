@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { ArrowLeftRight } from "lucide-react";
 import type { ETFComparison, ETFSide, UseCase } from "@/lib/etf-comparisons";
-import { ETF_COMPARISON_LIST } from "@/lib/etf-comparisons";
+import { ETF_COMPARISON_LIST, terLePlusBas } from "@/lib/etf-comparisons";
 import { JsonLd } from "@/components/ui/JsonLd";
+import { ArticleByline } from "@/components/ui/ArticleByline";
 import { IssuerLogoMark } from "@/components/ui/IssuerLogoMark";
 import { AuroraSweep } from "@/components/ui/AuroraSweep";
 
@@ -116,23 +117,20 @@ function UseCaseCard({ useCase, leftName, rightName }: { useCase: UseCase; leftN
 }
 
 export function ETFComparisonPage({ comparison }: { comparison: ETFComparison }) {
-  const siteUrl = "https://dcatracker.fr";
   const canonical = `/comparatif-etf/${comparison.slug}`;
+  const terBas = terLePlusBas(comparison);
   const otherComparisons = ETF_COMPARISON_LIST.filter((c) => c.slug !== comparison.slug);
 
   return (
     <article className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
-      <JsonLd
-        data={{
-          "@context": "https://schema.org",
-          "@type": "Article",
-          headline: comparison.metaTitle,
-          description: comparison.metaDescription,
-          url: `${siteUrl}${canonical}`,
-          author: { "@type": "Organization", name: "DCA Tracker" },
-          publisher: { "@type": "Organization", name: "DCA Tracker", url: siteUrl },
-        }}
-      />
+      {/* Le schema Article est émis par ArticleByline (author Person Maël +
+          datePublished/dateModified) au lieu de l'ancien JsonLd Article
+          anonyme, qui n'avait ni auteur identifié ni dates. Ces pages étaient
+          la DERNIÈRE famille éditoriale à ne pas avoir été migrée le
+          10/06/2026 — d'où l'absence de date dans les résultats de recherche
+          alors que les guides d'indice et les fiches courtiers en affichent
+          une. Deux schemas Article sur la même page se contrediraient : ne pas
+          réintroduire celui-ci. */}
       <JsonLd
         data={{
           "@context": "https://schema.org",
@@ -163,6 +161,16 @@ export function ETFComparisonPage({ comparison }: { comparison: ETFComparison })
       <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">
         {comparison.title}
       </h1>
+
+      <ArticleByline
+        publishedAt={comparison.publishedAt}
+        updatedAt={comparison.updatedAt}
+        readingMinutes={6}
+        url={canonical}
+        headline={comparison.metaTitle}
+        description={comparison.metaDescription}
+      />
+
       <p className="text-base text-gray-600 leading-relaxed mb-10">
         {comparison.intro}
       </p>
@@ -274,20 +282,50 @@ export function ETFComparisonPage({ comparison }: { comparison: ETFComparison })
         ))}
       </div>
 
-      {/* CTA */}
+      {/* Étape suivante.
+          Ce bloc terminait sur « Ouvrir le simulateur → » et un TER de 0,25 %
+          qui n'était le TER d'aucun ETF de la page — un chiffre sans source
+          sur un site qui vend la vérifiabilité.
+          Quelqu'un qui finit cette page vient de choisir son ETF : l'étape
+          utile n'est pas de rejouer une simulation générique, c'est de poser
+          son plan et de pouvoir le suivre. On préremplit donc avec le TER
+          RÉEL le plus bas du duel, et on mène à l'enregistrement, devenu
+          gratuit le 29/07.
+          Formulation neutre à dessein : on annonce un paramètre de calcul, pas
+          un conseil d'achat — nommer un instrument comme recommandation
+          relèverait du statut de conseiller en investissements financiers. */}
       <div className="rounded-2xl border border-primary-100 bg-primary-50/40 p-6 text-center mb-10">
         <p className="text-base font-bold text-gray-900 mb-2">
-          Simulez l&apos;impact du TER sur 20 ans
+          {terBas != null
+            ? "Passez du comparatif à votre plan"
+            : "Chiffrez l'impact des frais sur 20 ans"}
         </p>
         <p className="text-sm text-gray-500 mb-4 max-w-md mx-auto">
-          0,2 % de TER en plus ou en moins sur 20 ans, c&apos;est des milliers
-          d&apos;euros d&apos;écart. Testez votre scénario dans le simulateur.
+          {terBas != null ? (
+            <>
+              Le simulateur s&apos;ouvre avec {formatTer(terBas)} de frais — le
+              TER le plus bas de ce comparatif. Ajustez votre montant, puis
+              enregistrez votre plan pour pointer vos versements mois après
+              mois. C&apos;est gratuit.
+            </>
+          ) : (
+            <>
+              Quelques dixièmes de point de frais changent le capital final sur
+              vingt ans. Testez votre montant, puis enregistrez votre plan pour
+              le suivre — c&apos;est gratuit.
+            </>
+          )}
         </p>
         <Link
-          href="/simulateur?monthly=200&years=20&return=7&fees=0.25"
+          // Sans TER exploitable, on omet `fees` : le simulateur applique sa
+          // propre valeur par défaut. Poser un nombre ici reviendrait à
+          // réintroduire le 0,25 % qu'on vient de retirer.
+          href={`/simulateur?monthly=200&years=20&return=7${terBas != null ? `&fees=${terBas}` : ""}`}
           className="btn-primary text-sm px-5 py-2.5 inline-block btn-lift"
         >
-          Ouvrir le simulateur →
+          {terBas != null
+            ? `Ouvrir avec ${formatTer(terBas)} de frais →`
+            : "Ouvrir le simulateur →"}
         </Link>
       </div>
 
@@ -324,4 +362,9 @@ export function ETFComparisonPage({ comparison }: { comparison: ETFComparison })
       </p>
     </article>
   );
+}
+
+/** 0.2 → « 0,20 % ». Virgule décimale et deux décimales, comme le reste du site. */
+function formatTer(v: number): string {
+  return `${v.toFixed(2).replace(".", ",")} %`;
 }

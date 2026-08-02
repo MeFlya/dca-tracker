@@ -25,6 +25,30 @@ export type ETFSide = {
   weakPoint: string;           // headline con
 };
 
+/**
+ * TER d'un côté en nombre, ou null s'il n'est pas exploitable.
+ *
+ * Volontairement STRICT : n'accepte que la forme exacte « 0,20 %/an ». Les
+ * pages qui opposent deux INDICES écrivent « ETF à partir de 0,12 % (EWLD,
+ * WPEA) » — une fourchette, pas le TER d'un produit. Une regex permissive du
+ * type /(\d+,\d+)\s*%/ en tirerait 0,12 et préremplirait un simulateur avec le
+ * TER d'un ETF que la page ne compare pas. Ici, un format inattendu renvoie
+ * null et l'appelant retombe sur un comportement générique — jamais sur un
+ * chiffre deviné.
+ */
+export function terNumerique(side: ETFSide): number | null {
+  const m = /^(\d+),(\d{1,2}) %\/an$/.exec(side.ter.trim());
+  if (!m) return null;
+  return Number(`${m[1]}.${m[2]}`);
+}
+
+/** Le TER le plus bas du duel, quand les DEUX côtés sont exploitables. */
+export function terLePlusBas(c: ETFComparison): number | null {
+  const g = terNumerique(c.left);
+  const d = terNumerique(c.right);
+  return g == null || d == null ? null : Math.min(g, d);
+}
+
 export type UseCase = {
   profile: string;             // short persona label
   winner: "left" | "right" | "both";
@@ -38,6 +62,24 @@ export type ETFComparison = {
   title: string;               // H1
   metaTitle: string;
   metaDescription: string;
+  /**
+   * Dates ISO affichées publiquement par ArticleByline et émises en
+   * datePublished / dateModified.
+   *
+   * ⚠️ CE SONT DES AFFIRMATIONS FACTUELLES, pas un levier de référencement.
+   * Elles ont été relevées dans l'historique git, duel par duel : date du
+   * commit qui a introduit le slug pour `publishedAt`, date du dernier commit
+   * ayant réellement modifié CE bloc pour `updatedAt` — pas la date du dernier
+   * commit touchant le fichier, qui les daterait toutes du même jour et serait
+   * faux pour sept d'entre elles.
+   *
+   * Antidote au réflexe : quand on met une page à jour, on bouge `updatedAt`.
+   * Quand on ne la met PAS à jour, on n'y touche pas. Une date de fraîcheur
+   * mensongère est un chiffre inventé, et ce site n'en publie pas.
+   * `node scripts/verifier-dates-comparatifs.mjs` compare ces valeurs à git.
+   */
+  publishedAt: string;
+  updatedAt: string;
   verdict: string;              // 2-sentence verdict
   intro: string;                // 1-paragraph intro
   keyDifferences: { criterion: string; leftValue: string; rightValue: string }[];
@@ -51,6 +93,8 @@ export type ETFComparison = {
 
 const MSCI_WORLD_VS_SP500: ETFComparison = {
   slug: "msci-world-vs-sp500",
+  publishedAt: "2026-04-19",
+  updatedAt: "2026-07-29",
   title: "MSCI World vs S&P 500 : quel indice pour votre DCA ?",
   metaTitle: "MSCI World ou S&P 500 : lequel pour un DCA en ETF ?",
   metaDescription:
@@ -150,6 +194,8 @@ const MSCI_WORLD_VS_SP500: ETFComparison = {
 
 const CW8_VS_ESE: ETFComparison = {
   slug: "cw8-vs-ese",
+  publishedAt: "2026-04-19",
+  updatedAt: "2026-04-19",
   title: "CW8 vs ESE : quel ETF pour votre PEA ?",
   metaTitle: "CW8 ou ESE : comparatif des deux ETF PEA les plus populaires",
   metaDescription:
@@ -172,10 +218,10 @@ const CW8_VS_ESE: ETFComparison = {
 
   right: {
     heading: "ESE",
-    subheading: "Amundi S&P 500 UCITS ETF — ISIN LU1681048804",
+    subheading: "BNP Paribas Easy S&P 500 UCITS ETF — ISIN FR0011550185",
     type: "ETF",
     coverage: "S&P 500 — 500 plus grandes capitalisations américaines",
-    issuer: "Amundi ETF",
+    issuer: "BNP Paribas Easy",
     ter: "0,15 %/an",
     replication: "Synthétique (swap)",
     distribution: "Capitalisant",
@@ -213,7 +259,7 @@ const CW8_VS_ESE: ETFComparison = {
       profile: "Vous êtes sensible aux frais cumulés",
       winner: "right",
       explanation:
-        "Sur 20 ans à 200 €/mois, 0,23 % de TER en moins représente environ 4 500 € de capital final en plus. Si vous êtes à l'aise avec la concentration US (~70 % du CW8 de toute façon), ESE peut être la meilleure option coûts/performance.",
+        "Sur 20 ans à 200 €/mois, 0,23 % de TER en moins représente environ 2 600 € de capital final en plus. Si vous êtes à l'aise avec la concentration US (~70 % du CW8 de toute façon), ESE peut être la meilleure option coûts/performance.",
     },
     {
       profile: "Vous voulez combiner les deux",
@@ -258,6 +304,8 @@ const CW8_VS_ESE: ETFComparison = {
 
 const VWCE_VS_CW8: ETFComparison = {
   slug: "vwce-vs-cw8",
+  publishedAt: "2026-04-19",
+  updatedAt: "2026-04-19",
   title: "VWCE vs CW8 : FTSE All-World ou MSCI World ?",
   metaTitle: "VWCE ou CW8 : quel ETF mondial choisir selon votre compte",
   metaDescription:
@@ -369,6 +417,8 @@ const VWCE_VS_CW8: ETFComparison = {
 
 const CW8_VS_WPEA: ETFComparison = {
   slug: "cw8-vs-wpea",
+  publishedAt: "2026-05-25",
+  updatedAt: "2026-07-29",
   title: "CW8 vs WPEA : quel ETF MSCI World pour votre PEA ?",
   // Le titre portait « (vs DCAM) » pour couvrir la SERP 3-way (audit 07/2026).
   // Retiré : le CTR mesuré était de 0,5 %, DCAM a sa propre page, et la
@@ -380,7 +430,7 @@ const CW8_VS_WPEA: ETFComparison = {
   // de simplicité). Si un troisième est ajouté, corriger ce titre.
   metaTitle: "CW8 vs WPEA : WPEA gagne, sauf dans deux cas précis",
   metaDescription:
-    "WPEA à 0,20 % bat CW8 à 0,38 % : ~4 500 € d'écart sur 20 ans à 200 €/mois. Les deux cas où garder CW8, et où se place DCAM.",
+    "WPEA à 0,20 % bat CW8 à 0,38 % : ~2 000 € d'écart sur 20 ans à 200 €/mois. Les deux cas où garder CW8, et où se place DCAM.",
 
   left: {
     heading: "CW8",
@@ -413,7 +463,7 @@ const CW8_VS_WPEA: ETFComparison = {
   },
 
   verdict:
-    "WPEA gagne sur les frais (0,20 % vs 0,38 %) pour la même exposition MSCI World et la même éligibilité PEA. Sur 20 ans à 200 €/mois et 7 %/an net, ces 0,18 % de TER en moins représentent environ 4 500 € de capital final supplémentaire. CW8 garde l'avantage de l'antériorité (gros encours, liquidité, présence chez tous les courtiers). Pour une ouverture de position en 2026, WPEA est probablement le meilleur choix.",
+    "WPEA gagne sur les frais (0,20 % vs 0,38 %) pour la même exposition MSCI World et la même éligibilité PEA. Sur 20 ans à 200 €/mois et 7 %/an net, ces 0,18 % de TER en moins représentent environ 2 000 € de capital final supplémentaire. CW8 garde l'avantage de l'antériorité (gros encours, liquidité, présence chez tous les courtiers). Pour une ouverture de position en 2026, WPEA est probablement le meilleur choix.",
 
   intro:
     "Pendant des années, CW8 (Amundi MSCI World) a été l'ETF de référence pour s'exposer au monde développé dans un PEA français. Fin 2024, iShares a sorti WPEA — un MSCI World PEA-éligible à un TER deux fois plus bas. Deux ETF qui répliquent le même indice, avec des frais qui changent significativement la performance à long terme. Voici comment trancher.",
@@ -496,6 +546,8 @@ const CW8_VS_WPEA: ETFComparison = {
 
 const WPEA_VS_DCAM: ETFComparison = {
   slug: "wpea-vs-dcam",
+  publishedAt: "2026-06-10",
+  updatedAt: "2026-07-29",
   title: "WPEA vs DCAM : quel MSCI World à 0,20 % pour votre PEA ?",
   // Les deux formulations « vs » et « ou » sont recherchées : « ou » dans le
   // titre, « vs » conservé dans le H1 de la page (champ `title` ci-dessus).
@@ -606,6 +658,8 @@ const WPEA_VS_DCAM: ETFComparison = {
 
 const IWDA_VS_CW8: ETFComparison = {
   slug: "iwda-vs-cw8",
+  publishedAt: "2026-06-10",
+  updatedAt: "2026-06-10",
   title: "IWDA vs CW8 : physique en CTO ou synthétique en PEA ?",
   metaTitle: "IWDA ou CW8 : CTO ou PEA pour votre MSCI World ?",
   metaDescription:
@@ -686,7 +740,7 @@ const IWDA_VS_CW8: ETFComparison = {
   ],
 
   analysis:
-    "La comparaison IWDA vs CW8 est l'exemple type d'une optimisation au mauvais étage. L'écart de TER (0,18 %) représente environ 4 500 € sur 20 ans à 200 €/mois. L'écart d'enveloppe fiscale (17,2 % vs 30 % sur ~54 000 € de gains) en représente environ 6 900 € — et il s'applique APRÈS l'effet des frais. Autrement dit : même le pire ETF MSCI World du PEA bat IWDA en CTO pour un résident fiscal français qui n'a pas plafonné son PEA. La hiérarchie de décision correcte : 1) l'enveloppe (PEA d'abord), 2) les frais à l'intérieur de l'enveloppe (WPEA/DCAM 0,20 % plutôt que CW8 0,38 % pour de nouveaux achats), 3) la réplication, qui est un critère de confort. Le swap des ETF synthétiques est encadré par UCITS (exposition de contrepartie limitée à 10 %, collatéralisée en pratique quotidiennement) — un risque réel mais faible, sans commune mesure avec 13 points de fiscalité.",
+    "La comparaison IWDA vs CW8 est l'exemple type d'une optimisation au mauvais étage. L'écart de TER (0,18 %) représente environ 2 000 € sur 20 ans à 200 €/mois. L'écart d'enveloppe fiscale (17,2 % vs 30 % sur ~54 000 € de gains) en représente environ 6 900 € — et il s'applique APRÈS l'effet des frais. Autrement dit : même le pire ETF MSCI World du PEA bat IWDA en CTO pour un résident fiscal français qui n'a pas plafonné son PEA. La hiérarchie de décision correcte : 1) l'enveloppe (PEA d'abord), 2) les frais à l'intérieur de l'enveloppe (WPEA/DCAM 0,20 % plutôt que CW8 0,38 % pour de nouveaux achats), 3) la réplication, qui est un critère de confort. Le swap des ETF synthétiques est encadré par UCITS (exposition de contrepartie limitée à 10 %, collatéralisée en pratique quotidiennement) — un risque réel mais faible, sans commune mesure avec 13 points de fiscalité.",
 
   faq: [
     {
@@ -695,7 +749,7 @@ const IWDA_VS_CW8: ETFComparison = {
     },
     {
       q: "Le TER plus bas d'IWDA ne compense-t-il jamais la fiscalité ?",
-      a: "Sur les hypothèses classiques (20 ans, 200 €/mois, 7 %/an), non : l'économie de TER (~4 500 €) reste inférieure au surcoût fiscal du CTO (~6 900 €). Et ce raisonnement compare IWDA au CW8 (0,38 %) — face à WPEA ou DCAM (0,20 % en PEA), IWDA n'a plus aucun avantage de frais, il ne reste que le débat physique vs synthétique.",
+      a: "Sur les hypothèses classiques (20 ans, 200 €/mois, 7 %/an), non : l'économie de TER (~2 000 €) reste inférieure au surcoût fiscal du CTO (~6 900 €). Et ce raisonnement compare IWDA au CW8 (0,38 %) — face à WPEA ou DCAM (0,20 % en PEA), IWDA n'a plus aucun avantage de frais, il ne reste que le débat physique vs synthétique.",
     },
     {
       q: "La réplication synthétique est-elle dangereuse ?",
@@ -714,10 +768,12 @@ const IWDA_VS_CW8: ETFComparison = {
 
 const ESE_VS_PSP5: ETFComparison = {
   slug: "ese-vs-psp5",
+  publishedAt: "2026-06-10",
+  updatedAt: "2026-06-10",
   title: "ESE vs PSP5 : quel ETF S&P 500 pour votre PEA ?",
   metaTitle: "ESE ou PSP5 : quel ETF S&P 500 choisir en PEA en 2026 ?",
   metaDescription:
-    "PSP5 (Amundi) est le moins cher (0,12 %), ESE (BNP Paribas) le plus liquide (0,15 %). Écart réel : ~750 € sur 20 ans à 200 €/mois — vos frais d'ordre comptent plus. Comparatif des deux S&P 500 éligibles PEA.",
+    "PSP5 (Amundi) est le moins cher (0,12 %), ESE (BNP Paribas) le plus liquide (0,15 %). Écart réel : ~340 € sur 20 ans à 200 €/mois — vos frais d'ordre comptent plus. Comparatif des deux S&P 500 éligibles PEA.",
 
   left: {
     heading: "ESE",
@@ -750,7 +806,7 @@ const ESE_VS_PSP5: ETFComparison = {
   },
 
   verdict:
-    "PSP5 gagne sur le papier (0,12 % vs 0,15 %) mais l'écart réel est minime : environ 750 € sur 20 ans à 200 €/mois. À ce niveau, vos frais d'ordre et la disponibilité chez votre courtier pèsent plus lourd que le TER. Règle simple : si votre courtier propose les deux aux mêmes conditions, prenez PSP5 ; sinon, prenez celui qui vous coûte le moins en frais de transaction — probablement ESE, le plus répandu.",
+    "PSP5 gagne sur le papier (0,12 % vs 0,15 %) mais l'écart réel est minime : environ 340 € sur 20 ans à 200 €/mois. À ce niveau, vos frais d'ordre et la disponibilité chez votre courtier pèsent plus lourd que le TER. Règle simple : si votre courtier propose les deux aux mêmes conditions, prenez PSP5 ; sinon, prenez celui qui vous coûte le moins en frais de transaction — probablement ESE, le plus répandu.",
 
   intro:
     "Pour s'exposer au S&P 500 dans un PEA, deux ETF synthétiques dominent : ESE (BNP Paribas), la référence historique, et PSP5 (Amundi), l'option la moins chère. Contrairement au match CW8 vs WPEA où l'écart de frais était massif (×2), ici les deux sont déjà très bon marché — le choix se joue sur des détails.",
@@ -759,7 +815,7 @@ const ESE_VS_PSP5: ETFComparison = {
     { criterion: "Indice répliqué", leftValue: "S&P 500", rightValue: "S&P 500 (identique)" },
     { criterion: "TER", leftValue: "0,15 %/an", rightValue: "0,12 %/an" },
     { criterion: "Émetteur", leftValue: "BNP Paribas AM", rightValue: "Amundi" },
-    { criterion: "Impact TER — 20 ans à 200 €/mois", leftValue: "Référence", rightValue: "≈ +750 € de capital final" },
+    { criterion: "Impact TER — 20 ans à 200 €/mois", leftValue: "Référence", rightValue: "≈ +340 € de capital final" },
     { criterion: "Liquidité / spread", leftValue: "Très bonne — le plus traité", rightValue: "Bonne" },
     { criterion: "Prix de part indicatif", leftValue: "~30 €", rightValue: "~30 €" },
     { criterion: "Réplication", leftValue: "Synthétique", rightValue: "Synthétique" },
@@ -794,12 +850,12 @@ const ESE_VS_PSP5: ETFComparison = {
   ],
 
   analysis:
-    "Ce match illustre la notion de seuil de pertinence des frais. Passer de 0,38 % à 0,20 % (CW8 → WPEA) économise ~4 500 € sur 20 ans : ça vaut une décision. Passer de 0,15 % à 0,12 % en économise ~750 € : c'est réel, mais du même ordre de grandeur que quelques années de frais d'ordre, un spread défavorable répété, ou un mois de retard à investir. Autrement dit : choisissez vite, investissez tôt — l'erreur coûteuse serait de passer trois mois à hésiter entre deux excellents ETF. Rappel utile : le S&P 500 en PEA passe par la réplication synthétique (les actions américaines ne sont pas éligibles en direct), mécanisme encadré par UCITS. Et si vous hésitez encore entre S&P 500 et MSCI World, c'est une décision plus structurante que ESE vs PSP5 — le World contient déjà ~70 % de S&P 500.",
+    "Ce match illustre la notion de seuil de pertinence des frais. Passer de 0,38 % à 0,20 % (CW8 → WPEA) économise ~2 000 € sur 20 ans : ça vaut une décision. Passer de 0,15 % à 0,12 % en économise ~340 € : c'est réel, mais du même ordre de grandeur que quelques années de frais d'ordre, un spread défavorable répété, ou un mois de retard à investir. Autrement dit : choisissez vite, investissez tôt — l'erreur coûteuse serait de passer trois mois à hésiter entre deux excellents ETF. Rappel utile : le S&P 500 en PEA passe par la réplication synthétique (les actions américaines ne sont pas éligibles en direct), mécanisme encadré par UCITS. Et si vous hésitez encore entre S&P 500 et MSCI World, c'est une décision plus structurante que ESE vs PSP5 — le World contient déjà ~70 % de S&P 500.",
 
   faq: [
     {
       q: "ESE ou PSP5 : lequel performe le mieux ?",
-      a: "Même indice, même mécanisme : la différence théorique est l'écart de TER (0,03 %/an en faveur de PSP5), soit ~750 € sur 20 ans à 200 €/mois. Les écarts de tracking réels peuvent ponctuellement inverser ce classement une année donnée. En pratique : équivalents.",
+      a: "Même indice, même mécanisme : la différence théorique est l'écart de TER (0,03 %/an en faveur de PSP5), soit ~340 € sur 20 ans à 200 €/mois. Les écarts de tracking réels peuvent ponctuellement inverser ce classement une année donnée. En pratique : équivalents.",
     },
     {
       q: "Pourquoi pas un S&P 500 physique comme CSPX ou VUSA ?",
@@ -822,6 +878,8 @@ const ESE_VS_PSP5: ETFComparison = {
 
 const VWCE_VS_WPEA: ETFComparison = {
   slug: "vwce-vs-wpea",
+  publishedAt: "2026-06-10",
+  updatedAt: "2026-06-10",
   title: "VWCE vs WPEA : All-World en CTO ou MSCI World en PEA ?",
   metaTitle: "VWCE ou WPEA : All-World ou MSCI World pour votre DCA ?",
   metaDescription:

@@ -4,6 +4,7 @@ import { useUser } from "@clerk/nextjs";
 import { useState } from "react";
 import Link from "next/link";
 import type { SimulatorInput } from "@/lib/simulator";
+import { paramsToSearch } from "@/lib/simulation-params";
 import { track } from "@/lib/analytics";
 
 interface Props {
@@ -17,10 +18,37 @@ export function SaveStrategyButton({ input, plan }: Props) {
   const { isSignedIn } = useUser();
   const [state, setState] = useState<State>("idle");
 
+  // Reconstruit depuis `input` — l'état réel des curseurs — et non depuis
+  // window.location, qui ne porte que les paramètres d'ARRIVÉE : le simulateur
+  // ne réécrit pas l'URL quand on bouge un curseur. Quelqu'un qui arrive d'un
+  // comparatif puis passe de 200 à 400 €/mois retrouve bien ses 400 €.
+  // Pur calcul, donc rendu côté serveur sans effet ni bascule en client.
+  const retour = `/sign-in?redirect_url=${encodeURIComponent(
+    `/simulateur?${paramsToSearch({
+      input,
+      inflationEnabled: input.annualInflationPct != null,
+    }).toString()}`
+  )}`;
+
+  // ⚠️ Le lien pointait sur "/sign-in" nu. Clerk retombait alors sur son
+  // fallbackRedirectUrl — /account — et le visiteur perdait les paramètres
+  // qu'il venait de régler : montant, durée, rendement, frais. Il revenait
+  // devant un simulateur vide, sans rien de sauvegardé.
+  //
+  // C'est le même défaut que le mur à quatre-vingt-dix secondes, un cran plus
+  // tôt dans le tunnel : la rupture tombe pile à l'instant d'intention. Le cas
+  // qui compte est celui de quelqu'un qui arrive d'un comparatif sur une URL
+  // préparamétrée — améliorer l'appel à l'action sans réparer ça reviendrait à
+  // envoyer plus de monde dans le même cul-de-sac.
+  //
+  // `redirect_url` est le paramètre que Clerk lit en priorité sur son fallback
+  // /account. Écarté au passage : `useSearchParams`, qui aurait fait basculer
+  // la page en rendu client — or /simulateur est servie en SSR exprès, pour
+  // que les robots reçoivent les vrais chiffres dans le HTML initial.
   if (!isSignedIn) {
     return (
       <Link
-        href="/sign-in"
+        href={retour}
         onClick={() => track({ name: "click_save_strategy", props: { has_account: false, plan: "free" } })}
         className="inline-flex items-center gap-2 text-sm font-semibold text-primary-600 hover:text-primary-700 transition-colors"
       >
