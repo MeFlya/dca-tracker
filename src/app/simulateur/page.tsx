@@ -5,9 +5,31 @@ import { JsonLd } from "@/components/ui/JsonLd";
 import { runSimulation, formatEur } from "@/lib/simulator";
 import { paramsFromSearch } from "@/lib/simulation-params";
 
-// CTR (audit 07/2026) : « gratuit » en tête — tous les concurrents de la SERP
-// l'affichent — et un title court qui ne se fait pas tronquer (~55 car. utiles).
-const TITLE = "Simulateur DCA ETF gratuit : 3 scénarios, sans inscription";
+// ─── Titre : 44 caractères, et c'est le point ───────────────────────────────
+//
+// L'audit du 07/2026 avait raison de mettre « gratuit » tôt : tous les
+// concurrents de la SERP l'affichent. Mais il avait empilé trois arguments de
+// vente derrière l'identité de la page — « 3 scénarios », « sans inscription »
+// — pour arriver à 58 caractères.
+//
+// Deux conséquences, l'une constatée, l'autre mesurée.
+// · Dans un onglet de navigateur chargé, la partie utile disparaît : ce qui
+//   reste visible est « 3 scénarios », qui ne dit pas de quelle page il s'agit.
+//   Un titre sert d'abord à retrouver un onglet parmi trente.
+// · La requête « simulateur dca » vaut 135 impressions en position 8,1 sur
+//   90 jours — pour ZÉRO clic. C'est le plus gros zéro-clic du site, et à cette
+//   position c'est le titre qui décide. Le titre actuel étant en place depuis
+//   le 07/07, une bonne partie de cette fenêtre le mesure lui.
+//
+// On garde donc les deux crochets qui portent (gratuit, sans inscription) et on
+// retire le troisième, qui coûtait quatorze caractères pour un argument que le
+// lecteur découvre de toute façon en arrivant.
+//
+// ⚠️ Ce changement démarre le compteur de mesure de CETTE page. /simulateur ne
+// fait PAS partie des huit pages du lot du 29/07 (cf. SUIVI-SEO.md) : l'embargo
+// du 26 septembre n'est donc pas rompu, mais cette page se lira sur sa propre
+// fenêtre, à partir du 04/08/2026.
+const TITLE = "Simulateur DCA ETF gratuit, sans inscription";
 const DESCRIPTION =
   "Versement mensuel, durée, rendement : projection immédiate avec intérêts composés et 3 scénarios de marché. Gratuit, sans inscription, formules publiques.";
 
