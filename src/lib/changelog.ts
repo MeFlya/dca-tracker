@@ -42,6 +42,15 @@ export interface ChangelogEntry {
 /** Du plus récent au plus ancien. Garder cet ordre à la main. */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    date: "2026-08-03",
+    kind: "correction",
+    title: "Le décalage d'un mois était revenu, et cette page affirmait le contraire",
+    body:
+      "Du 2 au 3 août 2026, la série de prix qui alimente les backtests était de nouveau décalée d'un cran : le mois de mars 2020, celui du krach Covid, affichait une hausse de 9,5 %. C'est exactement le défaut annoncé comme corrigé le 29 juillet, et pendant deux jours cette page a donc affirmé qu'il était réglé alors qu'il ne l'était plus. Voici pourquoi. Le 29 juillet, le fichier de données a été reconstruit à la main, mais le script qui le régénère automatiquement chaque mois n'a pas été corrigé. Le 2 août, ce script a tourné comme prévu, a réappliqué la mauvaise conversion de fuseau horaire et a réécrit la série fausse — sans que rien ne s'y oppose. Les montants affichés sous-estimaient de nouveau le résultat réel : un versement de 100 € par mois depuis janvier 2020 affichait 12 494 € au lieu de 12 713 €. La cause est corrigée dans le script lui-même, et non plus seulement dans le fichier : l'horodatage est désormais ramené à l'heure de la place de cotation avant d'en lire le mois, et le script refuse de produire une série si cette information manque, au lieu de deviner. Deux défauts voisins ont été corrigés au passage : la série se terminait par le mois en cours, incomplet — deux jours de bourse présentés comme un mois entier — et il est désormais retiré.",
+    why:
+      "Un contrôle automatique existait pourtant depuis le 29 juillet, et il détectait précisément ce décalage. Il n'a rien empêché pour deux raisons qui valent d'être dites. D'abord il n'était branché nulle part : aucun automate ne l'exécutait. Ensuite, et c'est pire, il n'échouait jamais — il affichait des alertes et se terminait normalement, si bien que même branché il aurait laissé passer. Un garde-fou qui signale sans bloquer suppose que quelqu'un lit les journaux d'une tâche mensuelle, ce que personne ne fait. Il s'arrête maintenant en erreur, et le rafraîchissement mensuel refuse de publier une série qui ne passe pas ses contrôles : mieux vaut une mise à jour qui échoue qu'un chiffre faux en ligne. La leçon est moins technique qu'il n'y paraît : corriger le symptôme sans corriger ce qui le produit garantit son retour, et le rend plus difficile à voir la seconde fois puisqu'on le croit réglé.",
+  },
+  {
     date: "2026-07-29",
     kind: "correction",
     title: "Décalage d'un mois dans la série de données historiques",
