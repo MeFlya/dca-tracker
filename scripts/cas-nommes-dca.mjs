@@ -35,22 +35,29 @@
 
 import { readFileSync } from "node:fs";
 
-const SERIE = "src/data/msci-world-eur-controle.json";
+const SERIE = "src/data/msci-world-eur.json"; // la série PUBLIÉE — la pièce doit être reproductible avec l'outil
 const MONTANT = 24_000;
 const ETALEMENTS = [3, 6, 12, 24];
 const CSV = process.argv.includes("--csv");
 
 /**
- * Libellés délibérément prudents.
+ * Libellés délibérément prudents, et deux cas plutôt qu'un.
  *
- * Le sommet mondial de l'indice est d'octobre 2007, hors de portée de cette
- * série. Février 2008 n'est donc PAS « le sommet » et on ne l'écrit pas.
- * Mesuré sur les données disponibles, ce mois se situe à 2,7 % sous le plus
- * haut de la fenêtre 2008-2009 (mai 2008), et la chute qui suit atteint
- * −37,2 % en février 2009 : c'est un plateau d'avant-krach, pas un sommet.
+ * Le sommet MONDIAL de l'indice est d'octobre 2007, hors de portée de cette
+ * série qui démarre en janvier 2008. On n'écrit donc jamais « au sommet » sans
+ * préciser de quoi.
+ *
+ * Mesuré sur les données disponibles, le plus haut de la fenêtre 2008-2009 est
+ * MAI 2008 (22,69), et la chute qui suit atteint −38,8 % en février 2009.
+ * Février 2008 (22,10) se situe 2,7 % en dessous : c'est un plateau
+ * d'avant-krach, pas un sommet.
+ *
+ * Les deux sont calculés, et c'est délibéré : ne garder que le plus favorable
+ * serait choisir son cas après avoir vu le résultat.
  */
 const CAS = [
-  { debut: "2008-02", nom: "Juste avant le krach de 2008" },
+  { debut: "2008-05", nom: "Au sommet de la série (mai 2008)" },
+  { debut: "2008-02", nom: "Quelques mois avant le krach de 2008" },
   { debut: "2020-01", nom: "Juste avant le Covid" },
   { debut: "2022-01", nom: "Le krach que les gens ont vécu" },
   { debut: "2009-03", nom: "Au creux — le cas défavorable à l'étalement" },
@@ -106,6 +113,12 @@ if (CSV) {
 }
 
 console.log(`\nSérie : ${JSON.parse(readFileSync(SERIE, "utf8")).source}`);
+console.log(
+  "⚠️ LES QUATRE DURÉES SONT RAPPORTÉES, TOUJOURS. Choisir après coup celle qui\n" +
+    "   arrange revient à fabriquer le résultat : sur janvier 2020, l'étalement\n" +
+    "   gagne à 3, 6 et 12 mois et PERD à 24. Une durée se fixe AVANT de regarder,\n" +
+    "   et la pièce publie les quatre."
+);
 console.log(`Période : ${serie[0].month} → ${serie.at(-1).month}`);
 console.log(`Montant : ${eur(MONTANT)} · aucun TER ajouté (les cours sont déjà nets) · liquidités à 0 %\n`);
 
