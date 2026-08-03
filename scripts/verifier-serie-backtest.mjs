@@ -32,13 +32,27 @@ const perf = (a, b) => {
 console.log(`Série : ${d[0].month} → ${d[d.length - 1].month} · ${d.length} points\n`);
 
 // 1. Continuité
+// ─── Sortie non nulle en cas d'échec ────────────────────────────────────────
+//
+// Ce script n'échouait JAMAIS : il affichait des 🔴 et sortait en 0. Le
+// 2 août 2026, le cron a régénéré une série décalée d'un mois, l'a commitée
+// avec [skip ci], et rien ne l'a arrêtée — le vérificateur existait depuis
+// quatre jours mais n'était branché nulle part, et il n'aurait de toute façon
+// pas fait échouer le job.
+//
+// Un contrôle qui signale sans bloquer suppose que quelqu'un lit les journaux
+// d'un cron mensuel. Personne ne les lit.
+let echecs = 0;
+const echec = (msg) => { echecs++; console.log(msg); };
+
 const trous = [];
 for (let i = 1; i < d.length; i++) {
   const [y1, m1] = d[i - 1].month.split("-").map(Number);
   const [y2, m2] = d[i].month.split("-").map(Number);
   if (y2 * 12 + m2 - (y1 * 12 + m1) !== 1) trous.push(`${d[i - 1].month}→${d[i].month}`);
 }
-console.log(trous.length ? `🔴 ${trous.length} trou(s) : ${trous.join(", ")}` : "✓ série continue");
+if (trous.length) echec(`🔴 ${trous.length} trou(s) : ${trous.join(", ")}`);
+else console.log("✓ série continue");
 
 // 2. Alignement des étiquettes
 let eBrut = 0, eDec = 0, n = 0;
@@ -57,7 +71,7 @@ console.log(
 );
 console.log(
   eDec < eBrut - 1
-    ? "\n🔴 LES ÉTIQUETTES SONT DÉCALÉES : la valeur du mois M porte la clôture de M+1.\n" +
+    ? (echecs++, "\n🔴 LES ÉTIQUETTES SONT DÉCALÉES : la valeur du mois M porte la clôture de M+1.\n") +
         "   Ne pas publier de chiffre issu de cette série avant de la reconstruire."
     : "\n✓ Alignement cohérent avec les références."
 );
@@ -89,7 +103,7 @@ for (const { mois, signe, raison } of MOIS_REFERENCE) {
     `  ${ok ? "✓" : "🔴"} ${mois} : ${r >= 0 ? "+" : ""}${r.toFixed(1)} % — attendu ${signe} (${raison})`
   );
 }
-if (refKo) console.log(`  🔴 ${refKo} mois de référence incohérent(s) — série non validée.`);
+if (refKo) echec(`  🔴 ${refKo} mois de référence incohérent(s) — série non validée.`);
 
 // ─── Contrôle 4 : le décalage est-il constant de part et d'autre d'un trou ? ──
 //
@@ -163,7 +177,7 @@ try {
   console.log(
     aligne
       ? "  ✓ maximum au retard 0 — les deux séries sont alignées."
-      : `  🔴 maximum au retard ${meilleur.retard} — DÉCALAGE de ${Math.abs(meilleur.retard)} mois.`
+      : (echecs++, `  🔴 maximum au retard ${meilleur.retard} — DÉCALAGE de ${Math.abs(meilleur.retard)} mois.`)
   );
 
   // Résidu : il doit être petit, sans structure, et de l'ordre de l'écart de TER.
@@ -179,8 +193,18 @@ try {
     `  résidu : ${moy.toFixed(3)} pt/mois (${(moy * 12).toFixed(2)} pt/an), écart-type ${et.toFixed(3)} pt`
   );
   if (Math.abs(moy * 12) > 2) {
-    console.log("  🔴 Résidu moyen trop élevé — les deux séries ne suivent pas le même indice.");
+    echec("  🔴 Résidu moyen trop élevé — les deux séries ne suivent pas le même indice.");
   }
 } catch {
   console.log("  ⏸  Série de contrôle absente (src/data/msci-world-eur-controle.json).");
 }
+
+// ─── Verdict ────────────────────────────────────────────────────────────────
+if (echecs > 0) {
+  console.log(
+    `\n🔴 ${echecs} contrôle(s) en échec — NE PAS PUBLIER cette série.\n` +
+      "   Le cron de rafraîchissement s'arrête ici plutôt que de committer."
+  );
+  process.exit(1);
+}
+console.log("\n✓ Tous les contrôles passent — série publiable.");
