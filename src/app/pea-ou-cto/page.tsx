@@ -9,7 +9,7 @@ import { SourcesReferences } from "@/components/ui/SourcesReferences";
 
 const TITLE = "PEA ou CTO en 2026 : comparatif fiscal complet pour vos ETF";
 const DESCRIPTION =
-  "PEA vs compte-titres ordinaire pour vos ETF : fiscalité (17,2 % vs 30 %), plafond (150 000 €), ETF éligibles (CW8, EWLD, AEEM) et recommandation chiffrée selon votre profil.";
+  "PEA vs compte-titres ordinaire pour vos ETF : fiscalité (18,6 % vs 31,4 %), plafond (150 000 €), ETF éligibles (CW8, EWLD, AEEM) et recommandation chiffrée selon votre profil.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -33,8 +33,8 @@ export const metadata: Metadata = {
 
 const ROWS = [
   { label: "Plafond de versements",  pea: "150 000 €",              cto: "Illimité"                },
-  { label: "Fiscalité avant 5 ans",  pea: "30 % (flat tax)",        cto: "30 % (flat tax)"         },
-  { label: "Fiscalité après 5 ans",  pea: "17,2 % (PS uniquement)", cto: "30 % (flat tax)"         },
+  { label: "Fiscalité avant 5 ans",  pea: "31,4 % (flat tax)",        cto: "31,4 % (flat tax)"         },
+  { label: "Fiscalité après 5 ans",  pea: "18,6 % (PS uniquement)", cto: "31,4 % (flat tax)"         },
   { label: "ETF éligibles",          pea: "EU uniquement",           cto: "Monde entier"            },
   { label: "Retraits",               pea: "Libres après 5 ans",      cto: "Toujours libres"         },
   { label: "Durée idéale",           pea: "Long terme (≥ 5 ans)",    cto: "Toute durée"             },
@@ -64,7 +64,7 @@ const FAQ = [
   },
   {
     q: "Que se passe-t-il si je retire de l'argent avant 5 ans sur un PEA ?",
-    a: "Un retrait avant 5 ans entraîne la clôture automatique du PEA et l'imposition des gains au taux de 30 % (flat tax). Après 5 ans, vous pouvez retirer sans fermer le compte et sans payer d'impôt sur le revenu — seuls les prélèvements sociaux (17,2 %) s'appliquent.",
+    a: "Un retrait avant 5 ans entraîne la clôture automatique du PEA et l'imposition des gains au taux de 31,4 % (flat tax). Après 5 ans, vous pouvez retirer sans fermer le compte et sans payer d'impôt sur le revenu — seuls les prélèvements sociaux (18,6 %) s'appliquent.",
   },
   {
     q: "Quels ETF MSCI World sont éligibles au PEA ?",
@@ -147,16 +147,16 @@ export default function PEAouCTOPage() {
         <p className="text-gray-600 leading-relaxed mb-4">
           C&apos;est le principal argument du PEA : après 5 ans de détention, vos
           plus-values sont exonérées d&apos;impôt sur le revenu. Vous ne payez
-          que les prélèvements sociaux à 17,2 % — contre 30 % en flat tax sur un
-          CTO (12,8 % d&apos;impôt + 17,2 % de PS).
+          que les prélèvements sociaux à 18,6 % — contre 31,4 % en flat tax sur un
+          CTO (12,8 % d&apos;impôt + 18,6 % de PS).
         </p>
         <div className="rounded-2xl bg-primary-50 border border-primary-100 p-5 mb-4">
           <p className="text-sm font-semibold text-primary-800 mb-2">Exemple concret</p>
           <p className="text-sm text-primary-700 leading-relaxed">
             Vous investissez 200 € par mois pendant 20 ans à 7 %/an.
             Gain projeté : ~54 000 €. Sur ce gain :<br />
-            <span className="font-semibold">• PEA (&gt;5 ans) :</span> 54 000 × 17,2 % = <strong>9 288 € d&apos;impôts</strong><br />
-            <span className="font-semibold">• CTO :</span> 54 000 × 30 % = <strong>16 200 € d&apos;impôts</strong><br />
+            <span className="font-semibold">• PEA (&gt;5 ans) :</span> 54 000 × 18,6 % = <strong>10 044 € d&apos;impôts</strong><br />
+            <span className="font-semibold">• CTO :</span> 54 000 × 31,4 % = <strong>16 956 € d&apos;impôts</strong><br />
             Soit <strong>6 912 € économisés</strong> grâce au PEA.{" "}
             <Link href="/simulateur" className="underline hover:text-primary-900 transition-colors">
               Calculez votre propre scénario →
@@ -376,13 +376,13 @@ export default function PEAouCTOPage() {
             label: "Plan d'Épargne en Actions (PEA) — règles et fiscalité",
             url: "https://www.service-public.fr/particuliers/vosdroits/F2385",
             publisher: "service-public.fr",
-            note: "Plafond 150 000 €, exonération d'IR après 5 ans, prélèvements sociaux 17,2 %.",
+            note: "Plafond 150 000 €, exonération d'IR après 5 ans, prélèvements sociaux 18,6 %.",
           },
           {
             label: "Imposition des plus-values mobilières (CTO)",
             url: "https://www.service-public.fr/particuliers/vosdroits/F1404",
             publisher: "service-public.fr",
-            note: "Prélèvement forfaitaire unique (PFU/Flat Tax) à 30 % sur CTO.",
+            note: "Prélèvement forfaitaire unique (PFU/Flat Tax) à 31,4 % sur CTO.",
           },
           {
             label: "Guide pratique du PEA",

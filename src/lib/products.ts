@@ -80,7 +80,7 @@ const TEMPLATE: Product = {
   features: [
     "Dashboard complet : valeur du portefeuille, total versé, plus-value €/%, TRI annualisé (XIRR), frais cumulés, répartition réelle vs cible — tout se met à jour seul",
     "« Versement du mois » : saisissez votre montant, il le répartit en parts entières par ETF pour revenir vers votre allocation cible",
-    "Onglet PEA : jauge du plafond de 150 000 €, compte à rebours des 5 ans, estimation des prélèvements sociaux (17,2 %) si retrait",
+    "Onglet PEA : jauge du plafond de 150 000 €, compte à rebours des 5 ans, estimation des prélèvements sociaux (18,6 %) si retrait",
     "Journal de transactions : 1 000 lignes pré-câblées (date, ETF, parts, prix, frais), PRU frais inclus — rien ne casse quand vous ajoutez des lignes",
     "Vue Par ETF : PRU, valeur actuelle, performance, poids réel vs cible — jusqu'à 10 ETF",
     "Projection : simulateur d'intérêts composés paramétrable (versement, rendement, horizon 1 à 40 ans) avec graphique capital vs versements",
@@ -92,7 +92,7 @@ const TEMPLATE: Product = {
     { title: "Versement du mois", detail: "Le calculateur de rééquilibrage par les flux : votre montant est réparti en parts entières par ETF pour revenir vers la cible." },
     { title: "Transactions", detail: "Le journal de vos achats : 1 000 lignes pré-câblées, PRU frais inclus calculé automatiquement." },
     { title: "Par ETF", detail: "PRU, valeur actuelle, performance et poids réel vs cible pour chacun de vos ETF (jusqu'à 10)." },
-    { title: "PEA", detail: "Jauge du plafond de 150 000 €, compte à rebours des 5 ans, estimation des prélèvements sociaux (17,2 %) en cas de retrait." },
+    { title: "PEA", detail: "Jauge du plafond de 150 000 €, compte à rebours des 5 ans, estimation des prélèvements sociaux (18,6 %) en cas de retrait." },
     { title: "Projection", detail: "Intérêts composés paramétrables (versement, rendement, 1 à 40 ans) avec graphique capital vs versements." },
     { title: "Frais", detail: "L'impact réel du courtage et du TER sur votre patrimoine à 10, 20 et 30 ans — en euros, pas en pourcentages abstraits." },
     { title: "Mode d'emploi", detail: "La prise en main en 5 minutes : cases jaunes = à remplir, tout le reste est automatique. Exemple pré-rempli à remplacer par vos données." },
@@ -114,7 +114,7 @@ const TEMPLATE: Product = {
     rows: [
       {
         them: "Templates gratuits (YouTube, Reddit) : génériques, pensés pour l'investisseur américain, en anglais ou en dollars",
-        us: "100 % PEA français : plafond, cap des 5 ans, 17,2 %, PRU frais inclus, vocabulaire FR",
+        us: "100 % PEA français : plafond, cap des 5 ans, 18,6 %, PRU frais inclus, vocabulaire FR",
       },
       {
         them: "Plus-value simple, qui ment en DCA (elle ignore le calendrier de vos versements)",

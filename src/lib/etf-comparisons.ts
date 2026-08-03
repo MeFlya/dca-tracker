@@ -2,6 +2,8 @@
 // Static educational content. TER CW8/WPEA/DCAM re-vérifiés via fiches
 // émetteurs lors de la création des pages indice.
 
+import { ecartFiscalEnviron, impotCTOEnviron, impotPEAEnviron } from "@/lib/impot-affiche";
+
 import { capitalPour, coutFrais, ecartCapital, gainsPour } from "@/lib/ecart-frais";
 
 /**
@@ -365,7 +367,7 @@ const VWCE_VS_CW8: ETFComparison = {
       profile: "Vous débutez avec un PEA uniquement",
       winner: "right",
       explanation:
-        "CW8 est votre seule option réaliste entre les deux — VWCE n'est pas éligible PEA. Vous perdez l'exposition émergents, mais vous gagnez le bénéfice fiscal du PEA (17,2 % vs 30 % à la sortie). Sur 20 ans, l'avantage fiscal surpasse largement l'avantage de diversification.",
+        "CW8 est votre seule option réaliste entre les deux — VWCE n'est pas éligible PEA. Vous perdez l'exposition émergents, mais vous gagnez le bénéfice fiscal du PEA (18,6 % vs 31,4 % à la sortie). Sur 20 ans, l'avantage fiscal surpasse largement l'avantage de diversification.",
     },
     {
       profile: "Vous investissez sur un CTO",
@@ -665,7 +667,7 @@ const IWDA_VS_CW8: ETFComparison = {
   title: "IWDA vs CW8 : physique en CTO ou synthétique en PEA ?",
   metaTitle: "IWDA ou CW8 : CTO ou PEA pour votre MSCI World ?",
   metaDescription:
-    "IWDA (physique, CTO) ou CW8 (synthétique, PEA) ? Même indice MSCI World, mais l'enveloppe change tout : ~6 900 € d'impôt en moins en PEA sur 20 ans à 200 €/mois. Le vrai match est fiscal — comparatif complet.",
+    `IWDA (physique, CTO) ou CW8 (synthétique, PEA) ? Même indice MSCI World, mais l'enveloppe change tout : ~${ecartFiscalEnviron(54000)} € d'impôt en moins en PEA sur 20 ans à 200 €/mois. Le vrai match est fiscal — comparatif complet.`,
 
   left: {
     heading: "IWDA",
@@ -679,7 +681,7 @@ const IWDA_VS_CW8: ETFComparison = {
     currency: "USD (cotation EUR sur Euronext Amsterdam)",
     peaEligible: "Non — CTO ou assurance-vie uniquement",
     strongPoint: "Réplication physique (détient réellement les actions) · l'un des plus gros ETF d'Europe · TER 0,20 %",
-    weakPoint: "Non éligible PEA → fiscalité CTO (PFU 30 %) sur les gains",
+    weakPoint: "Non éligible PEA → fiscalité CTO (PFU 31,4 %) sur les gains",
   },
 
   right: {
@@ -693,12 +695,12 @@ const IWDA_VS_CW8: ETFComparison = {
     distribution: "Capitalisant",
     currency: "EUR",
     peaEligible: "Oui",
-    strongPoint: "Éligible PEA → 17,2 % de prélèvements après 5 ans au lieu de 30 %",
+    strongPoint: "Éligible PEA → 18,6 % de prélèvements après 5 ans au lieu de 31,4 %",
     weakPoint: "TER le plus élevé des MSCI World (0,38 %) — préférez WPEA/DCAM à 0,20 % pour de nouveaux achats en PEA",
   },
 
   verdict:
-    `Le match n'est pas « physique vs synthétique » mais « PEA vs CTO » — et le PEA gagne presque toujours. Sur 20 ans à 200 €/mois (≈ ${capitalPour(0)} € avant frais, dont ≈ ${gainsPour(0)} € de gains), la fiscalité PEA (17,2 %) économise environ 6 900 € d'impôt par rapport au CTO (PFU 30 %). Cet écart écrase largement les 0,18 % de TER d'avantage d'IWDA. Si votre PEA n'est pas plein : MSCI World en PEA (et plutôt WPEA ou DCAM à 0,20 % que CW8 pour de nouveaux achats). IWDA se justifie en CTO une fois le PEA plafonné, ou si la réplication physique est une exigence personnelle.`,
+    `Le match n'est pas « physique vs synthétique » mais « PEA vs CTO » — et le PEA gagne presque toujours. Sur 20 ans à 200 €/mois (≈ ${capitalPour(0)} € avant frais, dont ≈ ${gainsPour(0)} € de gains), la fiscalité PEA (18,6 %) économise environ ${ecartFiscalEnviron(54000)} € d'impôt par rapport au CTO (PFU 31,4 %). Cet écart écrase largement les 0,18 % de TER d'avantage d'IWDA. Si votre PEA n'est pas plein : MSCI World en PEA (et plutôt WPEA ou DCAM à 0,20 % que CW8 pour de nouveaux achats). IWDA se justifie en CTO une fois le PEA plafonné, ou si la réplication physique est une exigence personnelle.`,
 
   intro:
     "IWDA est la référence européenne du MSCI World : réplication physique, encours massif, TER de 0,20 %. CW8 est la référence française en PEA. Beaucoup de débutants comparent leurs TER et concluent qu'IWDA est « meilleur » — en oubliant que l'enveloppe fiscale pèse dix fois plus lourd que les frais dans le résultat final. Voici le vrai calcul.",
@@ -708,8 +710,8 @@ const IWDA_VS_CW8: ETFComparison = {
     { criterion: "Réplication", leftValue: "Physique optimisée", rightValue: "Synthétique (swap)" },
     { criterion: "TER", leftValue: "0,20 %/an", rightValue: "0,38 %/an" },
     { criterion: "Éligibilité PEA", leftValue: "Non", rightValue: "Oui" },
-    { criterion: "Fiscalité des gains (après 5 ans)", leftValue: "PFU 30 % (CTO)", rightValue: "17,2 % (PEA)" },
-    { criterion: "Impact fiscal — 20 ans à 200 €/mois", leftValue: "≈ 16 200 € de prélèvements", rightValue: "≈ 9 300 € de prélèvements" },
+    { criterion: "Fiscalité des gains (après 5 ans)", leftValue: "PFU 31,4 % (CTO)", rightValue: "18,6 % (PEA)" },
+    { criterion: "Impact fiscal — 20 ans à 200 €/mois", leftValue: `≈ ${impotCTOEnviron(54000)} € de prélèvements`, rightValue: `≈ ${impotPEAEnviron(54000)} € de prélèvements` },
     { criterion: "Encours", leftValue: "Énorme — l'un des plus gros d'Europe", rightValue: "Très important (~5-6 Md€)" },
     { criterion: "Risque de contrepartie", leftValue: "Aucun (détention directe)", rightValue: "Encadré à 10 % max (UCITS)" },
   ],
@@ -719,7 +721,7 @@ const IWDA_VS_CW8: ETFComparison = {
       profile: "PEA non plafonné (moins de 150 000 € de versements)",
       winner: "right",
       explanation:
-        "L'avantage fiscal du PEA (17,2 % vs 30 % sur les gains) écrase l'écart de TER. Et pour de NOUVEAUX achats en PEA, WPEA ou DCAM (0,20 %) font encore mieux que CW8 — même enveloppe, frais divisés par deux.",
+        "L'avantage fiscal du PEA (18,6 % vs 31,4 % sur les gains) écrase l'écart de TER. Et pour de NOUVEAUX achats en PEA, WPEA ou DCAM (0,20 %) font encore mieux que CW8 — même enveloppe, frais divisés par deux.",
     },
     {
       profile: "PEA plafonné, on continue d'investir",
@@ -742,7 +744,7 @@ const IWDA_VS_CW8: ETFComparison = {
   ],
 
   analysis:
-    `La comparaison IWDA vs CW8 est l'exemple type d'une optimisation au mauvais étage. L'écart de TER (0,18 %) représente environ ${ecartCapital(0.38, 0.2)} € sur 20 ans à 200 €/mois. L'écart d'enveloppe fiscale (17,2 % vs 30 % sur ~54 000 € de gains) en représente environ 6 900 € — et il s'applique APRÈS l'effet des frais. Autrement dit : même le pire ETF MSCI World du PEA bat IWDA en CTO pour un résident fiscal français qui n'a pas plafonné son PEA. La hiérarchie de décision correcte : 1) l'enveloppe (PEA d'abord), 2) les frais à l'intérieur de l'enveloppe (WPEA/DCAM 0,20 % plutôt que CW8 0,38 % pour de nouveaux achats), 3) la réplication, qui est un critère de confort. Le swap des ETF synthétiques est encadré par UCITS (exposition de contrepartie limitée à 10 %, collatéralisée en pratique quotidiennement) — un risque réel mais faible, sans commune mesure avec 13 points de fiscalité.`,
+    `La comparaison IWDA vs CW8 est l'exemple type d'une optimisation au mauvais étage. L'écart de TER (0,18 %) représente environ ${ecartCapital(0.38, 0.2)} € sur 20 ans à 200 €/mois. L'écart d'enveloppe fiscale (18,6 % vs 31,4 % sur ~54 000 € de gains) en représente environ ${ecartFiscalEnviron(54000)} € — et il s'applique APRÈS l'effet des frais. Autrement dit : même le pire ETF MSCI World du PEA bat IWDA en CTO pour un résident fiscal français qui n'a pas plafonné son PEA. La hiérarchie de décision correcte : 1) l'enveloppe (PEA d'abord), 2) les frais à l'intérieur de l'enveloppe (WPEA/DCAM 0,20 % plutôt que CW8 0,38 % pour de nouveaux achats), 3) la réplication, qui est un critère de confort. Le swap des ETF synthétiques est encadré par UCITS (exposition de contrepartie limitée à 10 %, collatéralisée en pratique quotidiennement) — un risque réel mais faible, sans commune mesure avec 13 points de fiscalité.`,
 
   faq: [
     {
@@ -751,7 +753,7 @@ const IWDA_VS_CW8: ETFComparison = {
     },
     {
       q: "Le TER plus bas d'IWDA ne compense-t-il jamais la fiscalité ?",
-      a: `Sur les hypothèses classiques (20 ans, 200 €/mois, 7 %/an), non : l'économie de TER (~${ecartCapital(0.38, 0.2)} €) reste inférieure au surcoût fiscal du CTO (~6 900 €). Et ce raisonnement compare IWDA au CW8 (0,38 %) — face à WPEA ou DCAM (0,20 % en PEA), IWDA n'a plus aucun avantage de frais, il ne reste que le débat physique vs synthétique.`,
+      a: `Sur les hypothèses classiques (20 ans, 200 €/mois, 7 %/an), non : l'économie de TER (~${ecartCapital(0.38, 0.2)} €) reste inférieure au surcoût fiscal du CTO (~${ecartFiscalEnviron(54000)} €). Et ce raisonnement compare IWDA au CW8 (0,38 %) — face à WPEA ou DCAM (0,20 % en PEA), IWDA n'a plus aucun avantage de frais, il ne reste que le débat physique vs synthétique.`,
     },
     {
       q: "La réplication synthétique est-elle dangereuse ?",
@@ -885,7 +887,7 @@ const VWCE_VS_WPEA: ETFComparison = {
   title: "VWCE vs WPEA : All-World en CTO ou MSCI World en PEA ?",
   metaTitle: "VWCE ou WPEA : All-World ou MSCI World pour votre DCA ?",
   metaDescription:
-    "VWCE ajoute les marchés émergents (~10 %) mais se loge en CTO (30 % d'impôt). WPEA s'arrête aux pays développés mais profite du PEA (17,2 %). Sur 20 ans, la fiscalité l'emporte presque toujours — comparatif chiffré.",
+    "VWCE ajoute les marchés émergents (~10 %) mais se loge en CTO (31,4 % d'impôt). WPEA s'arrête aux pays développés mais profite du PEA (18,6 %). Sur 20 ans, la fiscalité l'emporte presque toujours — comparatif chiffré.",
 
   left: {
     heading: "VWCE",
@@ -899,7 +901,7 @@ const VWCE_VS_WPEA: ETFComparison = {
     currency: "USD (cotation EUR disponible)",
     peaEligible: "Non — CTO ou assurance-vie uniquement",
     strongPoint: "La diversification maximale en un seul ETF (développés + émergents) · Vanguard, pionnier du passif",
-    weakPoint: "Non éligible PEA → PFU 30 % sur les gains en CTO",
+    weakPoint: "Non éligible PEA → PFU 31,4 % sur les gains en CTO",
   },
 
   right: {
@@ -918,7 +920,7 @@ const VWCE_VS_WPEA: ETFComparison = {
   },
 
   verdict:
-    "Pour un résident fiscal français avec un PEA non plafonné, WPEA gagne dans la grande majorité des cas : l'avantage fiscal du PEA (17,2 % vs 30 % sur les gains, soit ≈ 6 900 € sur 20 ans à 200 €/mois) dépasse largement le bénéfice attendu des ~10 % d'émergents de VWCE. Et si les émergents vous tiennent à cœur, l'association WPEA + AEEM (émergents PEA) réplique l'exposition All-World… en restant dans le PEA. VWCE redevient le meilleur choix en CTO (PEA plein) ou en assurance-vie.",
+    `Pour un résident fiscal français avec un PEA non plafonné, WPEA gagne dans la grande majorité des cas : l'avantage fiscal du PEA (18,6 % vs 31,4 % sur les gains, soit ≈ ${ecartFiscalEnviron(54000)} € sur 20 ans à 200 €/mois) dépasse largement le bénéfice attendu des ~10 % d'émergents de VWCE. Et si les émergents vous tiennent à cœur, l'association WPEA + AEEM (émergents PEA) réplique l'exposition All-World… en restant dans le PEA. VWCE redevient le meilleur choix en CTO (PEA plein) ou en assurance-vie.`,
 
   intro:
     "VWCE est l'ETF chouchou des investisseurs européens : tout le marché mondial, émergents compris, en un seul fonds Vanguard. WPEA est le MSCI World optimisé pour le PEA français. Le débat « faut-il les émergents ? » est légitime — mais pour un investisseur français, il est presque toujours tranché par un facteur que les comparatifs européens ignorent : l'enveloppe fiscale.",
@@ -929,8 +931,8 @@ const VWCE_VS_WPEA: ETFComparison = {
     { criterion: "TER", leftValue: "0,22 %/an", rightValue: "0,20 %/an" },
     { criterion: "Réplication", leftValue: "Physique optimisée", rightValue: "Synthétique (swap)" },
     { criterion: "Éligibilité PEA", leftValue: "Non", rightValue: "Oui" },
-    { criterion: "Fiscalité des gains (après 5 ans)", leftValue: "PFU 30 % (CTO)", rightValue: "17,2 % (PEA)" },
-    { criterion: "Impact fiscal — 20 ans à 200 €/mois", leftValue: "≈ 16 200 € de prélèvements", rightValue: "≈ 9 300 € de prélèvements" },
+    { criterion: "Fiscalité des gains (après 5 ans)", leftValue: "PFU 31,4 % (CTO)", rightValue: "18,6 % (PEA)" },
+    { criterion: "Impact fiscal — 20 ans à 200 €/mois", leftValue: `≈ ${impotCTOEnviron(54000)} € de prélèvements`, rightValue: `≈ ${impotPEAEnviron(54000)} € de prélèvements` },
     { criterion: "Équivalent émergents en PEA", leftValue: "—", rightValue: "Possible via WPEA + AEEM (~90/10)" },
   ],
 
@@ -962,7 +964,7 @@ const VWCE_VS_WPEA: ETFComparison = {
   ],
 
   analysis:
-    `Les comparatifs européens de VWCE ne tiennent jamais compte du PEA — c'est pourtant le facteur décisif pour un investisseur français. Posons les ordres de grandeur sur 20 ans à 200 €/mois et 7 %/an : capital avant frais ≈ ${capitalPour(0)} €, dont ≈ ${gainsPour(0)} € de gains. En PEA (WPEA), prélèvements sociaux de 17,2 % ≈ 9 300 €. En CTO (VWCE), PFU de 30 % ≈ 16 200 €. L'écart (~6 900 €) représente plusieurs fois l'impact espéré des émergents : sur les 30 dernières années, développés et émergents ont alterné les périodes de sur/sous-performance, sans gagnant structurel — et les émergents ne pèsent que ~10 % de l'All-World, diluant leur effet. Conclusion pragmatique : l'enveloppe d'abord, l'indice ensuite. WPEA (ou WPEA + AEEM) en PEA tant qu'il n'est pas plein ; VWCE en CTO au-delà. Les deux stratégies sont excellentes — c'est l'ordre qui compte.`,
+    `Les comparatifs européens de VWCE ne tiennent jamais compte du PEA — c'est pourtant le facteur décisif pour un investisseur français. Posons les ordres de grandeur sur 20 ans à 200 €/mois et 7 %/an : capital avant frais ≈ ${capitalPour(0)} €, dont ≈ ${gainsPour(0)} € de gains. En PEA (WPEA), prélèvements sociaux de 18,6 % ≈ 10 000 €. En CTO (VWCE), PFU de 31,4 % ≈ 16 956 €. L'écart (~${ecartFiscalEnviron(54000)} €) représente plusieurs fois l'impact espéré des émergents : sur les 30 dernières années, développés et émergents ont alterné les périodes de sur/sous-performance, sans gagnant structurel — et les émergents ne pèsent que ~10 % de l'All-World, diluant leur effet. Conclusion pragmatique : l'enveloppe d'abord, l'indice ensuite. WPEA (ou WPEA + AEEM) en PEA tant qu'il n'est pas plein ; VWCE en CTO au-delà. Les deux stratégies sont excellentes — c'est l'ordre qui compte.`,
 
   faq: [
     {
@@ -979,7 +981,7 @@ const VWCE_VS_WPEA: ETFComparison = {
     },
     {
       q: "J'ai déjà du VWCE en CTO : dois-je vendre pour passer en PEA ?",
-      a: "Vendre déclencherait l'imposition immédiate des plus-values latentes (PFU 30 %) — souvent contre-productif. La stratégie habituelle : conserver le VWCE existant et diriger les NOUVEAUX versements vers le PEA (WPEA/DCAM) jusqu'au plafond. Cas par cas selon les montants — un conseiller peut affiner.",
+      a: "Vendre déclencherait l'imposition immédiate des plus-values latentes (PFU 31,4 %) — souvent contre-productif. La stratégie habituelle : conserver le VWCE existant et diriger les NOUVEAUX versements vers le PEA (WPEA/DCAM) jusqu'au plafond. Cas par cas selon les montants — un conseiller peut affiner.",
     },
   ],
 

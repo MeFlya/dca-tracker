@@ -9,6 +9,8 @@
 // Cohérence YMYL : les chiffres (17,2 %, 30 %, 150 000 €, TER…) doivent
 // rester alignés avec /pea-ou-cto, /etf-msci-world et les comparatifs.
 
+import { impotCTO, impotCTOEnviron, impotPEA, impotPEAEnviron } from "@/lib/impot-affiche";
+
 import { capitalPour, ecartCapital } from "@/lib/ecart-frais";
 
 export type GlossaryTerm = {
@@ -38,12 +40,12 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
     slug: "pea",
     term: "PEA — Plan d'Épargne en Actions",
     shortDef:
-      "Enveloppe fiscale française : après 5 ans, les gains ne supportent que 17,2 % de prélèvements sociaux au lieu de 30 %.",
+      "Enveloppe fiscale française : après 5 ans, les gains ne supportent que 18,6 % de prélèvements sociaux au lieu de 31,4 %.",
     metaTitle: "PEA : définition, plafond, fiscalité — le guide simple",
     metaDescription:
-      "Le PEA en clair : plafond de 150 000 €, exonération d'impôt sur le revenu après 5 ans (reste 17,2 % de prélèvements sociaux), ETF éligibles. Définition + exemple chiffré pour un DCA.",
+      "Le PEA en clair : plafond de 150 000 €, exonération d'impôt sur le revenu après 5 ans (reste 18,6 % de prélèvements sociaux), ETF éligibles. Définition + exemple chiffré pour un DCA.",
     definition: [
-      "Le Plan d'Épargne en Actions est une enveloppe fiscale française destinée à l'investissement en actions européennes — et, grâce aux ETF synthétiques, en indices mondiaux comme le MSCI World ou le S&P 500. Son atout : après 5 ans de détention, les gains sont exonérés d'impôt sur le revenu. Seuls les prélèvements sociaux de 17,2 % restent dus, contre 30 % de flat tax sur un compte-titres ordinaire.",
+      "Le Plan d'Épargne en Actions est une enveloppe fiscale française destinée à l'investissement en actions européennes — et, grâce aux ETF synthétiques, en indices mondiaux comme le MSCI World ou le S&P 500. Son atout : après 5 ans de détention, les gains sont exonérés d'impôt sur le revenu. Seuls les prélèvements sociaux de 18,6 % restent dus, contre 31,4 % de flat tax sur un compte-titres ordinaire.",
       "Le plafond de versement est de 150 000 € par personne (les gains peuvent faire croître le portefeuille au-delà sans limite). Un retrait avant 5 ans entraîne en principe la clôture du plan — d'où la règle d'or : n'y investir que de l'épargne de long terme.",
     ],
     inPractice: [
@@ -57,7 +59,7 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
       },
     ],
     example:
-      "200 €/mois pendant 20 ans à 7 %/an ≈ 102 000 € finaux dont ≈ 54 000 € de gains. Prélèvements à la sortie : ≈ 9 300 € en PEA (17,2 %) contre ≈ 16 200 € en CTO (30 %) — environ 6 900 € d'écart.",
+      `200 €/mois pendant 20 ans à 7 %/an ≈ 102 000 € finaux dont ≈ 54 000 € de gains. Prélèvements à la sortie : ≈ ${impotPEAEnviron(54000)} € en PEA (18,6 %) contre ≈ ${impotCTOEnviron(54000)} € en CTO (31,4 %) — environ 6 900 € d'écart.`,
     faq: [
       {
         q: "Quels ETF peut-on loger dans un PEA ?",
@@ -65,7 +67,7 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
       },
       {
         q: "Que se passe-t-il si je retire avant 5 ans ?",
-        a: "Un retrait avant 5 ans entraîne en principe la clôture du plan et l'imposition des gains au PFU de 30 % (sauf cas particuliers : licenciement, invalidité, création d'entreprise…). Après 5 ans, les retraits sont libres sans clôture.",
+        a: "Un retrait avant 5 ans entraîne en principe la clôture du plan et l'imposition des gains au PFU de 31,4 % (sauf cas particuliers : licenciement, invalidité, création d'entreprise…). Après 5 ans, les retraits sont libres sans clôture.",
       },
     ],
     related: [
@@ -81,12 +83,12 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
     slug: "cto",
     term: "CTO — Compte-Titres Ordinaire",
     shortDef:
-      "Compte d'investissement sans plafond ni restriction d'actifs, mais fiscalisé au PFU de 30 % sur les gains.",
+      "Compte d'investissement sans plafond ni restriction d'actifs, mais fiscalisé au PFU de 31,4 % sur les gains.",
     metaTitle: "CTO (compte-titres) : définition, fiscalité et usages",
     metaDescription:
-      "Le compte-titres ordinaire en clair : aucun plafond, tous les ETF du monde accessibles (IWDA, VWCE, CSPX), mais 30 % de flat tax sur les gains. Quand le préférer au PEA — définition + cas d'usage.",
+      "Le compte-titres ordinaire en clair : aucun plafond, tous les ETF du monde accessibles (IWDA, VWCE, CSPX), mais 31,4 % de flat tax sur les gains. Quand le préférer au PEA — définition + cas d'usage.",
     definition: [
-      "Le compte-titres ordinaire est le compte d'investissement « sans contrainte » : aucun plafond de versement, accès à tous les titres cotés du monde (actions, ETF physiques américains ou mondiaux, obligations…). En contrepartie, les gains — plus-values comme dividendes — sont imposés au Prélèvement Forfaitaire Unique de 30 % dès le premier euro.",
+      "Le compte-titres ordinaire est le compte d'investissement « sans contrainte » : aucun plafond de versement, accès à tous les titres cotés du monde (actions, ETF physiques américains ou mondiaux, obligations…). En contrepartie, les gains — plus-values comme dividendes — sont imposés au Prélèvement Forfaitaire Unique de 31,4 % dès le premier euro.",
       "Pour un investisseur DCA français, le CTO est le complément du PEA, pas son concurrent : il prend le relais quand le PEA est plafonné (150 000 € de versements) ou pour loger des ETF non éligibles comme IWDA ou VWCE.",
     ],
     inPractice: [
@@ -102,7 +104,7 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
     faq: [
       {
         q: "PEA ou CTO pour commencer un DCA ?",
-        a: "PEA dans la grande majorité des cas pour un résident fiscal français : la fiscalité après 5 ans (17,2 % vs 30 %) représente plusieurs milliers d'euros d'écart sur un DCA long terme. Le CTO devient pertinent une fois le PEA plafonné, ou pour des besoins spécifiques (ETF non éligibles, expatriation prévue).",
+        a: "PEA dans la grande majorité des cas pour un résident fiscal français : la fiscalité après 5 ans (18,6 % vs 31,4 %) représente plusieurs milliers d'euros d'écart sur un DCA long terme. Le CTO devient pertinent une fois le PEA plafonné, ou pour des besoins spécifiques (ETF non éligibles, expatriation prévue).",
       },
       {
         q: "Peut-on avoir plusieurs CTO ?",
@@ -122,18 +124,18 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
     slug: "pfu",
     term: "PFU — Prélèvement Forfaitaire Unique (flat tax)",
     shortDef:
-      "Imposition forfaitaire de 30 % sur les revenus du capital : 12,8 % d'impôt sur le revenu + 17,2 % de prélèvements sociaux.",
-    metaTitle: "PFU (flat tax 30 %) : définition et impact sur vos ETF",
+      "Imposition forfaitaire de 31,4 % sur les revenus du capital : 12,8 % d'impôt sur le revenu + 18,6 % de prélèvements sociaux.",
+    metaTitle: "PFU (flat tax 31,4 %) : définition et impact sur vos ETF",
     metaDescription:
-      "Le Prélèvement Forfaitaire Unique en clair : 30 % sur les plus-values et dividendes en CTO (12,8 % IR + 17,2 % sociaux). Comment le PEA permet d'y échapper en partie — définition + exemple chiffré.",
+      "Le Prélèvement Forfaitaire Unique en clair : 31,4 % sur les plus-values et dividendes en CTO (12,8 % IR + 18,6 % sociaux). Comment le PEA permet d'y échapper en partie — définition + exemple chiffré.",
     definition: [
-      "Le Prélèvement Forfaitaire Unique — souvent appelé « flat tax » — s'applique depuis 2018 aux revenus du capital : plus-values de cession, dividendes, intérêts. Son taux global est de 30 %, décomposé en 12,8 % d'impôt sur le revenu et 17,2 % de prélèvements sociaux.",
+      "Le Prélèvement Forfaitaire Unique — souvent appelé « flat tax » — s'applique depuis 2018 aux revenus du capital : plus-values de cession, dividendes, intérêts. Son taux global est de 31,4 %, décomposé en 12,8 % d'impôt sur le revenu et 18,6 % de prélèvements sociaux.",
       "C'est le régime par défaut des gains réalisés sur un compte-titres ordinaire. L'option pour le barème progressif de l'impôt sur le revenu reste possible si elle est plus avantageuse (revenus modestes), mais elle s'applique alors à l'ensemble des revenus du capital de l'année.",
     ],
     inPractice: [
       {
         title: "Le chiffre qui justifie le PEA",
-        text: "L'écart entre le PFU (30 %) et la fiscalité PEA après 5 ans (17,2 %) est LE levier d'optimisation d'un DCA français : 12,8 points sur la totalité des gains, sans aucun risque supplémentaire.",
+        text: "L'écart entre le PFU (31,4 %) et la fiscalité PEA après 5 ans (18,6 %) est LE levier d'optimisation d'un DCA français : 12,8 points sur la totalité des gains, sans aucun risque supplémentaire.",
       },
       {
         title: "Imposé seulement à la vente",
@@ -141,11 +143,11 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
       },
     ],
     example:
-      "54 000 € de gains réalisés en CTO → 16 200 € de PFU (30 %). Les mêmes gains dans un PEA de plus de 5 ans → 9 288 € de prélèvements sociaux (17,2 %). Écart : ≈ 6 900 €.",
+      `54 000 € de gains réalisés en CTO → ${impotCTO(54000)} € de PFU (31,4 %). Les mêmes gains dans un PEA de plus de 5 ans → ${impotPEA(54000)} € de prélèvements sociaux (18,6 %). Écart : ≈ 6 900 €.`,
     faq: [
       {
         q: "Le PFU s'applique-t-il dans un PEA ?",
-        a: "Non, tant que le plan a plus de 5 ans : les retraits ne supportent que les prélèvements sociaux de 17,2 %. Un retrait avant 5 ans fait en revanche basculer les gains dans le régime du PFU (30 %) et entraîne en principe la clôture du plan.",
+        a: "Non, tant que le plan a plus de 5 ans : les retraits ne supportent que les prélèvements sociaux de 18,6 %. Un retrait avant 5 ans fait en revanche basculer les gains dans le régime du PFU (31,4 %) et entraîne en principe la clôture du plan.",
       },
       {
         q: "Les ETF capitalisants évitent-ils le PFU ?",

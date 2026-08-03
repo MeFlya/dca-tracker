@@ -270,7 +270,7 @@ Optimiste   : rendement_brut + 2 %`}
             label: "Plan d'Épargne en Actions — règles fiscales",
             url: "https://www.service-public.fr/particuliers/vosdroits/F2385",
             publisher: "service-public.fr",
-            note: "Conditions d'exonération d'IR après 5 ans (prélèvements sociaux 17,2 % maintenus).",
+            note: "Conditions d'exonération d'IR après 5 ans (prélèvements sociaux 18,6 % maintenus).",
           },
           {
             label: "Document d'Informations Clés (DIC) — règles d'information investisseur",

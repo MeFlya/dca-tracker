@@ -56,7 +56,7 @@ L'IWDA est également capitalisant, mais il n'est PAS éligible au PEA : c'est u
       "iShares (BlackRock) : l'émetteur le plus important au monde, infrastructure solide et grande transparence sur les holdings",
     ],
     watchOut: [
-      "Non éligible PEA — à loger en CTO (PFU 30 % sur les gains) ou assurance-vie ; pour un PEA, préférez un World synthétique (WPEA, DCAM, CW8)",
+      "Non éligible PEA — à loger en CTO (PFU 31,4 % sur les gains) ou assurance-vie ; pour un PEA, préférez un World synthétique (WPEA, DCAM, CW8)",
       "L'écart de suivi réel peut dépasser le TER affiché selon les conditions de marché (réplication par échantillonnage)",
       "Coté sur Euronext Amsterdam (et non Paris) — vérifiez les frais de place de votre courtier",
     ],
@@ -101,7 +101,7 @@ Contrairement aux ETF UCITS européens, le SPY est un trust américain (grantor 
     ],
     watchOut: [
       "Exposition 100 % américaine — risque de concentration géographique important en cas de correction durable aux États-Unis",
-      "Distribuant : les dividendes sont versés trimestriellement, à déclarer et fiscaliser chaque année en France (flat tax 30 %)",
+      "Distribuant : les dividendes sont versés trimestriellement, à déclarer et fiscaliser chaque année en France (flat tax 31,4 %)",
       "Non éligible PEA — à loger en compte-titres ordinaire",
       "Libellé en USD — exposition au risque de change EUR/USD pour un investisseur européen",
     ],
@@ -121,7 +121,7 @@ Le S&P 500 est l'indice de référence de la gestion d'actifs mondiale. Il couvr
 
 Avec un TER de 0,15 %, l'Amundi S&P 500 est l'une des façons les moins chères d'accéder au S&P 500 en Europe, et la seule solution PEA-éligible à ce niveau de frais. Note : le ticker historique "SP5" (Lyxor avant 2022) reste actif via redirection — le fonds est aujourd'hui le même, sous bannière Amundi.`,
     whyChooseIt: [
-      "Éligible PEA — le seul moyen d'investir sur le S&P 500 avec la fiscalité avantageuse du PEA (17,2 % après 5 ans)",
+      "Éligible PEA — le seul moyen d'investir sur le S&P 500 avec la fiscalité avantageuse du PEA (18,6 % après 5 ans)",
       "TER ultra-compétitif à 0,15 % — parmi les moins chers de l'univers ETF S&P 500 accessibles en Europe",
       "Capitalisant — les dividendes sont réinvestis automatiquement, sans friction fiscale annuelle",
       "Amundi : émetteur n°1 européen, gestionnaire de référence sur les ETF actions PEA",
@@ -234,7 +234,7 @@ Capitalisant : les dividendes ne sont pas versés mais réinvestis dans le fonds
   VUSA: {
     whatItTracks: `Le VUSA réplique le S&P 500 par réplication physique complète — le fonds détient directement les 500 actions composant l'indice, dans des proportions reflétant exactement leur poids dans le S&P 500. Vanguard, le gestionnaire, est l'un des deux pionniers historiques de l'investissement passif (avec State Street). Sa structure coopérative unique — les fonds appartiennent à leurs investisseurs — l'incite structurellement à minimiser les frais sur la durée.
 
-Le VUSA est domicilié en Irlande (ISIN IE00B3XXRP09), coté à Amsterdam en USD. Avec un TER de 0,07 %, il est à parité avec le CSPX d'iShares pour le titre de l'ETF S&P 500 physique le moins cher d'Europe. La domiciliation irlandaise bénéficie d'une convention fiscale avantageuse avec les États-Unis : la retenue à la source sur les dividendes est de 15 % au lieu des 30 % standards, réduisant la friction fiscale sur les dividendes réinvestis.
+Le VUSA est domicilié en Irlande (ISIN IE00B3XXRP09), coté à Amsterdam en USD. Avec un TER de 0,07 %, il est à parité avec le CSPX d'iShares pour le titre de l'ETF S&P 500 physique le moins cher d'Europe. La domiciliation irlandaise bénéficie d'une convention fiscale avantageuse avec les États-Unis : la retenue à la source sur les dividendes est de 15 % au lieu des 31,4 % standards, réduisant la friction fiscale sur les dividendes réinvestis.
 
 Politique capitalisante : les dividendes ne sont pas distribués mais réinvestis dans le fonds, optimisant l'effet des intérêts composés et simplifiant la gestion fiscale pour l'investisseur français (pas de revenus annuels à déclarer en CTO).
 
@@ -243,7 +243,7 @@ Le S&P 500 lui-même couvre environ 80 % de la capitalisation boursière améric
       "TER ultra-compétitif (0,07 %) — à parité avec le CSPX iShares pour le titre du S&P 500 physique le moins cher d'Europe",
       "Vanguard : modèle coopératif unique qui aligne structurellement les intérêts du gestionnaire et des investisseurs",
       "Réplication physique complète — le fonds détient les 500 actions du S&P 500, transparence maximale",
-      "Domiciliation irlandaise : convention fiscale US-Irlande avantageuse (retenue à la source 15 % vs 30 %), capitalisant pour optimiser la fiscalité",
+      "Domiciliation irlandaise : convention fiscale US-Irlande avantageuse (retenue à la source 15 % vs 31,4 %), capitalisant pour optimiser la fiscalité",
     ],
     watchOut: [
       "Non éligible PEA — à loger impérativement en CTO, PER ou assurance-vie. Pour le S&P 500 en PEA, voir l'Amundi 500.",
@@ -268,7 +268,7 @@ Historiquement, les small caps américaines ont surperformé les large caps sur 
 
 Le RS2K capitalise les dividendes (peu nombreux dans le segment small caps de toute façon) et présente un TER de 0,35 % — supérieur à un ETF S&P 500 PEA (le 500 Amundi est à 0,15 %), ce qui se justifie par la complexité de gestion du swap sur 2 000 sous-jacents.`,
     whyChooseIt: [
-      "**Éligible PEA** — l'un des très rares ETF qui permettent une exposition aux small caps américaines dans le cadre fiscal du PEA (17,2 % après 5 ans au lieu de 30 %)",
+      "**Éligible PEA** — l'un des très rares ETF qui permettent une exposition aux small caps américaines dans le cadre fiscal du PEA (18,6 % après 5 ans au lieu de 31,4 %)",
       "Capture le \"small cap premium\" historiquement observé sur le long terme — diversification de style en plus de la diversification sectorielle",
       "Complète parfaitement un cœur MSCI World ou S&P 500 : le MSCI World ne contient que des large/mid caps, le RS2K vient ajouter le segment des petites capi US",
       "Amundi : émetteur n°1 européen, structure swap éprouvée et liquide, ETF coté sur Euronext Paris",

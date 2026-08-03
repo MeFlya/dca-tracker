@@ -91,7 +91,7 @@ const FAQ = [
   },
   {
     q: "PEA ou CTO pour investir 500€ par mois ?",
-    a: "Le PEA est presque toujours préférable pour un résident français. Plafond de versement : 150 000€ — atteint en 25 ans à 500€/mois. Fiscalité après 5 ans : 17,2 % de prélèvements sociaux uniquement, vs 30 % de flat tax sur CTO. Sur 20 ans avec ~140 000€ de gains, cette différence représente environ 18 000€ économisés. Si vous atteignez le plafond du PEA, continuez en CTO.",
+    a: "Le PEA est presque toujours préférable pour un résident français. Plafond de versement : 150 000€ — atteint en 25 ans à 500€/mois. Fiscalité après 5 ans : 18,6 % de prélèvements sociaux uniquement, vs 31,4 % de flat tax sur CTO. Sur 20 ans avec ~140 000€ de gains, cette différence représente environ 18 000€ économisés. Si vous atteignez le plafond du PEA, continuez en CTO.",
   },
   {
     q: "Quel impact si j'augmente à 600€/mois ?",
@@ -408,16 +408,16 @@ export default function Investir500Page() {
                   <p className="text-xs text-gray-500">Prélèvements sociaux uniquement</p>
                 </td>
                 <td className="px-4 py-2.5 text-right tabular-nums text-gray-600">140 500 €</td>
-                <td className="px-4 py-2.5 text-right tabular-nums text-emerald-700 font-medium">−24 166 € (17,2 %)</td>
+                <td className="px-4 py-2.5 text-right tabular-nums text-emerald-700 font-medium">−26 133 € (18,6 %)</td>
                 <td className="px-4 py-2.5 text-right tabular-nums font-bold text-gray-900">236 334 €</td>
               </tr>
               <tr>
                 <td className="px-4 py-2.5">
                   <p className="text-gray-700 font-medium">CTO</p>
-                  <p className="text-xs text-gray-500">Flat tax 30 % systématique</p>
+                  <p className="text-xs text-gray-500">Flat tax 31,4 % systématique</p>
                 </td>
                 <td className="px-4 py-2.5 text-right tabular-nums text-gray-600">140 500 €</td>
-                <td className="px-4 py-2.5 text-right tabular-nums text-red-600 font-medium">−42 150 € (30 %)</td>
+                <td className="px-4 py-2.5 text-right tabular-nums text-red-600 font-medium">−44 117 € (31,4 %)</td>
                 <td className="px-4 py-2.5 text-right tabular-nums font-bold text-gray-900">218 350 €</td>
               </tr>
             </tbody>

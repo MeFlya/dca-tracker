@@ -85,7 +85,7 @@ const ETFS: ETFRow[] = [
     ter: "0,23 %",
     replication: "Synthétique (swap)",
     why: "Seule option PEA pour s'exposer au Nasdaq-100. Capture la croissance tech US — moteur principal de la performance de la décennie 2010-2020.",
-    watchOut: "Volatilité élevée et concentration sectorielle (>50 % tech). Sensible aux taux d'intérêt. Ne dépassez pas 20-30 % du portefeuille.",
+    watchOut: "Volatilité élevée et concentration sectorielle (>50 % tech). Sensible aux taux d'intérêt. Ne dépassez pas 20-31,4 % du portefeuille.",
     role: "Boost croissance",
   },
   {

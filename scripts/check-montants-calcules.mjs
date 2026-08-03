@@ -60,10 +60,33 @@ const MONTANT = /(\d{1,3}(?:[  ]\d{3})+|\d{3,})\s*€/g;
 function extraire(chemin) {
   const src = readFileSync(join(RACINE, chemin), "utf8");
   const trouves = [];
-  // On ne regarde que l'intérieur des littéraux "..." — pas les gabarits `...`,
-  // dont les montants sont produits à l'exécution.
-  for (const lit of src.matchAll(/"((?:[^"\\]|\\.)*)"/g)) {
-    for (const m of lit[1].matchAll(MONTANT)) {
+
+  // ⚠️ On scrute les DEUX formes de chaîne, et c'est un correctif.
+  //
+  // La version initiale ne regardait que les littéraux "…", en partant du
+  // principe que les gabarits `…` contiennent des montants calculés. Faux : un
+  // gabarit contient des montants calculés ET tout le texte autour, dont
+  // d'autres montants restés écrits à la main. Convertir une chaîne en gabarit
+  // pour y interpoler UN nombre faisait donc disparaître de l'inventaire tous
+  // les autres — la dette est tombée de 62 à 48 sans qu'aucun de ces quatorze
+  // montants n'ait été calculé.
+  //
+  // C'est exactement l'angle mort déjà rencontré : un garde-fou qui compte les
+  // mauvaises choses est aveugle à une mauvaise chose qui a changé de
+  // catégorie. Ici, la catégorie « littéral » perdait des membres au profit de
+  // « gabarit », qui n'était pas comptée.
+  //
+  // Les interpolations `${…}` sont retirées AVANT la recherche : ce sont les
+  // seuls montants réellement produits par le moteur.
+  const chaines = [
+    ...[...src.matchAll(/"((?:[^"\\]|\\.)*)"/g)].map((m) => m[1]),
+    ...[...src.matchAll(/`((?:[^`\\]|\\.)*)`/g)].map((m) =>
+      m[1].replace(/\$\{[^}]*\}/g, "")
+    ),
+  ];
+
+  for (const texte of chaines) {
+    for (const m of texte.matchAll(MONTANT)) {
       const valeur = Number(m[1].replace(/[  ]/g, ""));
       if (valeur >= 100) trouves.push(m[0].trim());
     }

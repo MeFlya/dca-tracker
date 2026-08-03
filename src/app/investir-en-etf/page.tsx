@@ -102,8 +102,8 @@ const STEPS = [
             Pour la majorité des débutants : commencez par le PEA.
           </p>
           <p className="text-primary-700">
-            Après 5 ans, vos gains ne sont taxés qu&apos;à 17,2 % (prélèvements
-            sociaux uniquement), contre 30 % en CTO. Sur 20 ans de DCA, la
+            Après 5 ans, vos gains ne sont taxés qu&apos;à 18,6 % (prélèvements
+            sociaux uniquement), contre 31,4 % en CTO. Sur 20 ans de DCA, la
             différence peut représenter plusieurs milliers d&apos;euros.
           </p>
         </div>

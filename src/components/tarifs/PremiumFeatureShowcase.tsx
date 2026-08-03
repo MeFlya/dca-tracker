@@ -174,7 +174,7 @@ function FiscalMockup() {
     { label: "Plus-values réalisées", value: "1 240 €" },
     { label: "À reporter case 2042", value: "1 240 €" },
     { label: "À reporter case 2074", value: "372 €" },
-    { label: "Prélèvement (PFU)", value: "30 %" },
+    { label: "Prélèvement (PFU)", value: "31,4 %" },
   ];
   return (
     <div className="w-full h-full bg-white rounded-xl border border-slate-200/80 px-4 py-3 flex flex-col">

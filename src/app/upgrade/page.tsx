@@ -527,7 +527,7 @@ const RECAP_FISCAL: FeatureCopy = {
       {
         icon: "🔒",
         title: "Identifier les bonnes cases 2042 et 2074",
-        desc: "PFU 30 % ou 17,2 % ? Quelle case selon le type de gain ? Vous googlez, vous lisez, vous doutez.",
+        desc: "PFU 31,4 % ou 18,6 % ? Quelle case selon le type de gain ? Vous googlez, vous lisez, vous doutez.",
       },
       {
         icon: "🔒",
@@ -542,7 +542,7 @@ const RECAP_FISCAL: FeatureCopy = {
     intro: "Pour chaque année fiscale, une synthèse PDF prête pour votre déclaration :",
     rows: [
       { label: "Plus-values réalisées (PEA et CTO)", value: "Calculées", baseline: true },
-      { label: "Prélèvements applicables (PFU 30 % ou PS 17,2 %)", value: "Pré-déterminés", locked: true },
+      { label: "Prélèvements applicables (PFU 31,4 % ou PS 18,6 %)", value: "Pré-déterminés", locked: true },
       { label: "Montants à reporter case 2042", value: "Calculés", locked: true },
       { label: "Montants à reporter case 2074", value: "Calculés", locked: true },
       { label: "Export CSV pour archivage", value: "Inclus", locked: true },
@@ -589,7 +589,7 @@ const RECAP_FISCAL: FeatureCopy = {
     },
     {
       q: "Le calcul fonctionne pour PEA et CTO ?",
-      a: "Oui. Le récap distingue automatiquement les plus-values PEA (PFU 30 % avant 5 ans, PS 17,2 % après) et CTO (PFU 30 % systématique sauf option barème).",
+      a: "Oui. Le récap distingue automatiquement les plus-values PEA (PFU 31,4 % avant 5 ans, PS 18,6 % après) et CTO (PFU 31,4 % systématique sauf option barème).",
     },
     {
       q: "Et si je n'ai rien retiré dans l'année ?",

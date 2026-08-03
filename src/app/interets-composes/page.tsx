@@ -78,7 +78,7 @@ const FAQ = [
   },
   {
     q: "Les intérêts composés fonctionnent-ils aussi dans un PEA ?",
-    a: "Oui, et le PEA les amplifie encore. Dans un PEA, les gains ne sont pas imposés annuellement — ils se réinvestissent dans leur intégralité. Sur 20-30 ans, cette absence de friction fiscale produit une différence significative par rapport à un compte-titres où la flat tax de 30 % s'applique à chaque retrait.",
+    a: "Oui, et le PEA les amplifie encore. Dans un PEA, les gains ne sont pas imposés annuellement — ils se réinvestissent dans leur intégralité. Sur 20-30 ans, cette absence de friction fiscale produit une différence significative par rapport à un compte-titres où la flat tax de 31,4 % s'applique à chaque retrait.",
   },
   {
     q: "Quelle est la différence entre intérêts simples et intérêts composés ?",
@@ -339,7 +339,7 @@ export default function InteretsComposesPage() {
             },
             {
               title: "PEA : zéro friction fiscale pendant la période de composition",
-              body: "Dans un PEA, les gains ne sont pas taxés annuellement. Toute la croissance se réinvestit intégralement. Sur 30 ans, l'absence de la flat tax 30 % sur les dividendes intermédiaires représente une différence de patrimoine très significative par rapport à un CTO.",
+              body: "Dans un PEA, les gains ne sont pas taxés annuellement. Toute la croissance se réinvestit intégralement. Sur 30 ans, l'absence de la flat tax 31,4 % sur les dividendes intermédiaires représente une différence de patrimoine très significative par rapport à un CTO.",
             },
             {
               title: "Frais bas : chaque centime de frais est un centime qui ne compose pas",
@@ -445,7 +445,7 @@ export default function InteretsComposesPage() {
             label: "Plan d'Épargne en Actions — fiscalité après 5 ans",
             url: "https://www.service-public.fr/particuliers/vosdroits/F2385",
             publisher: "service-public.fr",
-            note: "Exonération d'impôt sur le revenu pour amplifier la composition (PS 17,2 % restent dus).",
+            note: "Exonération d'impôt sur le revenu pour amplifier la composition (PS 18,6 % restent dus).",
           },
         ]}
       />

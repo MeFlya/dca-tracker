@@ -353,13 +353,13 @@ export function RecapFiscalClient({
             réalisez une plus-value.
           </li>
           <li>
-            <strong>PEA &lt; 5 ans</strong> : clôture taxée au PFU 30 % comme
+            <strong>PEA &lt; 5 ans</strong> : clôture taxée au PFU 31,4 % comme
             un CTO. <strong>PEA ≥ 5 ans</strong> : seulement les prélèvements
-            sociaux 17,2 % à la sortie.
+            sociaux 18,6 % à la sortie.
           </li>
           <li>
-            <strong>CTO</strong> : PFU 30 % constant sur les plus-values
-            réalisées (12,8 % IR + 17,2 % social), peu importe la durée.
+            <strong>CTO</strong> : PFU 31,4 % constant sur les plus-values
+            réalisées (12,8 % IR + 18,6 % social), peu importe la durée.
           </li>
           <li>
             <strong>Plafond PEA</strong> : 150 000 € de versements cumulés.

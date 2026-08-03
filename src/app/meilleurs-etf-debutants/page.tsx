@@ -135,7 +135,7 @@ const CRITERIA = [
   {
     title: "Éligibilité PEA",
     icon: "🏛️",
-    body: "Pour les résidents français, le PEA est l'enveloppe fiscale la plus avantageuse. Après 5 ans, vos plus-values sont exonérées d'impôt sur le revenu (seuls les 17,2 % de prélèvements sociaux s'appliquent vs 30 % en flat tax sur CTO).",
+    body: "Pour les résidents français, le PEA est l'enveloppe fiscale la plus avantageuse. Après 5 ans, vos plus-values sont exonérées d'impôt sur le revenu (seuls les 18,6 % de prélèvements sociaux s'appliquent vs 31,4 % en flat tax sur CTO).",
   },
   {
     title: "Politique de distribution",
@@ -459,7 +459,7 @@ export default function MeilleursETFDebutantsPage() {
             {
               n: "1",
               title: "Choisir votre enveloppe : PEA ou CTO",
-              body: "Si vous résidez en France et visez un horizon 5+ ans, ouvrez un PEA en premier. La fiscalité après 5 ans (17,2 % vs 30 %) justifie presque toujours ce choix pour les ETF monde.",
+              body: "Si vous résidez en France et visez un horizon 5+ ans, ouvrez un PEA en premier. La fiscalité après 5 ans (18,6 % vs 31,4 %) justifie presque toujours ce choix pour les ETF monde.",
               link: { href: "/pea-ou-cto", label: "Comprendre la différence PEA / CTO →" },
             },
             {

@@ -318,7 +318,7 @@ export default function SimulateurRetraitePage() {
           </p>
           <p className="text-sm text-gray-600 leading-relaxed">
             Plafond 150 000 € de versements. Après 5 ans, plus-values exonérées
-            d&apos;impôt (17,2 % de prélèvements sociaux uniquement vs 30 %
+            d&apos;impôt (18,6 % de prélèvements sociaux uniquement vs 31,4 %
             flat tax en CTO). <strong>Option par défaut</strong> pour
             commencer — liquidité + fiscalité excellente.
           </p>

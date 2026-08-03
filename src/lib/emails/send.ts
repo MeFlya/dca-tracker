@@ -380,12 +380,12 @@ export async function sendOnboardingDay3(email: string, firstName: string) {
 
     <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:18px 20px;margin:20px 0">
       <p style="margin:0 0 8px 0;font-size:14px;color:#0f172a">
-        <strong>En PEA</strong> (≥ 5 ans) : 54 000 € × 17,2 % =
-        <strong>9 288 €</strong> d&apos;impôt → net 92 712 €
+        <strong>En PEA</strong> (≥ 5 ans) : 54 000 € × 18,6 % =
+        <strong>10 044 €</strong> d&apos;impôt → net 91 956 €
       </p>
       <p style="margin:0 0 8px 0;font-size:14px;color:#0f172a">
-        <strong>En CTO</strong> : 54 000 € × 30 % =
-        <strong>16 200 €</strong> d&apos;impôt → net 85 800 €
+        <strong>En CTO</strong> : 54 000 € × 31,4 % =
+        <strong>16 956 €</strong> d&apos;impôt → net 85 044 €
       </p>
       <p style="margin:12px 0 0 0;padding-top:10px;border-top:1px solid #e2e8f0;font-size:14px;color:#1e40af;font-weight:700">
         Différence : <span style="color:#15803d">+6 912 €</span>
