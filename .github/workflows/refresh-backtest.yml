@@ -17,14 +17,34 @@ jobs:
         with:
           node-version: "20"
       - run: node scripts/refresh-backtest-data.mjs
+
+      # ─── Le contrôle qui manquait ──────────────────────────────────────────
+      # Le 2 août 2026, ce cron a régénéré la série avec un décalage d'un mois
+      # et l'a commitée avec [skip ci] : rien ne l'a vue partir en production.
+      # Le vérificateur existait pourtant depuis le 29 juillet — il n'était
+      # simplement branché nulle part. Un garde-fou qu'aucun automate n'exécute
+      # ne protège de rien.
+      # Il sort en 1 si les mois de référence sont incohérents ou si la
+      # corrélation croisée avec la série de contrôle n'est pas maximale au
+      # retard 0. Le job échoue AVANT le commit : mieux vaut un cron rouge
+      # qu'une série fausse en ligne.
+      - name: Vérifier l'intégrité de la série avant tout commit
+        run: node scripts/verifier-serie-backtest.mjs
+
+      # ⚠️ LES DEUX SÉRIES, pas seulement la publiée.
+      # Depuis le 04/08/2026 le script écrit aussi la série de CONTRÔLE, qui
+      # sert à valider la publiée par corrélation croisée. Ne committer que la
+      # publiée aurait figé le contrôle à sa date de création : chaque mois un
+      # mois de plus d'un côté, aucun de l'autre, donc un recouvrement qui
+      # rétrécit et un garde-fou qui s'affaiblit sans prévenir.
       - name: Commit & push if changed
         run: |
-          if git diff --quiet -- src/data/msci-world-eur.json; then
+          if git diff --quiet -- src/data/; then
             echo "Pas de changement — rien à committer."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/data/msci-world-eur.json
-          git commit -m "chore(data): refresh backtest MSCI World EUR [skip ci]"
+          git add src/data/msci-world-eur.json src/data/msci-world-eur-controle.json
+          git commit -m "chore(data): refresh des deux séries MSCI World EUR [skip ci]"
           git push
