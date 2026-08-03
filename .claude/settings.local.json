@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(export PATH=\"$PATH:/usr/local/bin:/opt/homebrew/bin:/usr/bin\")",
-      "Read(//opt/homebrew/bin/**)",
-      "Read(//Users/maelfaleyras/.nvm/versions/**)"
-    ]
-  }
-}

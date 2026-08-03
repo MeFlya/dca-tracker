@@ -15,7 +15,7 @@ suffisant pour démarrer.
 2. Clique sur **"Add your domain"**
 3. Renseigne `dcatracker.fr`
 4. Choisis **Free plan**
-5. Crée ton compte avec ton email perso (`mael.faleyras@gmail.com`)
+5. Crée ton compte avec ton email perso (`(ton adresse personnelle)`)
 
 ---
 
@@ -68,10 +68,10 @@ le dashboard) :
 
    | Alias       | Forward to              |
    | ----------- | ----------------------- |
-   | `hello`     | `mael.faleyras@gmail.com` |
-   | `contact`   | `mael.faleyras@gmail.com` |
-   | `support`   | `mael.faleyras@gmail.com` |
-   | `*`         | `mael.faleyras@gmail.com` |
+   | `hello`     | `(ton adresse personnelle)` |
+   | `contact`   | `(ton adresse personnelle)` |
+   | `support`   | `(ton adresse personnelle)` |
+   | `*`         | `(ton adresse personnelle)` |
 
    Le `*` (catch-all) capture tout email envoyé à n'importe quelle adresse
    `@dcatracker.fr`.
@@ -119,7 +119,7 @@ Resend est gratuite et utilise déjà l'infrastructure email existante du site.
 Envoie un mail à `hello@dcatracker.fr` depuis une autre adresse (Gmail
 personnelle, par exemple). Tu dois :
 
-- ✅ Le recevoir dans `mael.faleyras@gmail.com` en moins d'une minute
+- ✅ Le recevoir dans `(ton adresse personnelle)` en moins d'une minute
 - ✅ Pouvoir y répondre depuis Gmail avec `hello@dcatracker.fr` comme expéditeur
 - ✅ Le destinataire reçoit ta réponse comme venant de `hello@dcatracker.fr`
 

@@ -29,3 +29,19 @@ private-assets/raw/
 .DS_Store
 *.pem
 .vercel
+# ⚠️ NE PAS SUPPRIMER CETTE LIGNE — elle a l'air redondante avec les noms
+# exacts listés plus haut, elle ne l'est pas. `.env.local.full` (produit par
+# `vercel env pull`) n'est couvert QUE par ce motif, et il contient une clé
+# Stripe LIVE, la clé Resend et le secret de webhook. Le dépôt est public :
+# un commit accidentel, et les scanners GitHub moissonnent la clé en quelques
+# minutes. Vérifié le 04/08/2026 : aucune de ces valeurs n'est dans
+# l'historique — la ligne a fait son travail jusqu'ici.
+.env*
+
+# clerk configuration (can include secrets)
+/.clerk/
+
+# Fichiers d'outillage et de contexte : locaux, jamais publiés.
+/.claude/settings.local.json
+/.claude/worktrees/
+/CONTEXTE-PROJET.md
