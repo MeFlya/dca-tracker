@@ -41,6 +41,16 @@ private-assets/raw/
 # clerk configuration (can include secrets)
 /.clerk/
 
+# Documents internes : trafic, chiffre d'affaires, refus de partenaires.
+# Le dépôt reste PUBLIC — c'est un choix, et /transparence s'y appuie. Ce qui
+# en sort ici n'est pas du code mais de l'information commerciale, qui n'a
+# jamais eu vocation à être publiée.
+# ⚠️ VERIF-VANGUARD.md reste suivi À DESSEIN : c'est le relevé page par page
+# qui prouve que les chiffres publiés sont justes. C'est exactement ce que le
+# site invite à vérifier — le cacher retirerait la preuve avec la donnée.
+/SUIVI-SEO.md
+/A-FAIRE-MANUELLEMENT.md
+
 # Fichiers d'outillage et de contexte : locaux, jamais publiés.
 /.claude/settings.local.json
 /.claude/worktrees/

@@ -89,7 +89,7 @@ const COVID_2020: BacktestStoryDef = {
     },
     {
       q: "Ces chiffres sont-ils une projection ?",
-      a: "Non — c'est tout l'intérêt. Ce sont les clôtures mensuelles réelles du MSCI World en euros (via l'ETF IWDA coté à Amsterdam), de janvier 2020 à aujourd'hui. Aucune hypothèse de rendement : juste ce qui s'est passé. Limites : TER (~0,20 %/an), frais de courtage et fiscalité non déduits.",
+      a: "Non — c'est tout l'intérêt. Ce sont les clôtures mensuelles réelles du MSCI World en euros — relevées sur l’ETF Xtrackers MSCI World coté à Milan (XMWO) —, de janvier 2020 à aujourd'hui. Aucune hypothèse de rendement : juste ce qui s'est passé. Un point de méthode : le cours d’un ETF est DÉJÀ net de ses frais de gestion, prélevés en continu sur l’actif — les 0,45 %/an de ce fonds sont donc bien dans ces chiffres, et il serait faux de les retrancher une seconde fois. Ce qui n’y est pas : les frais de courtage et la fiscalité.",
     },
   ],
 };
@@ -189,7 +189,7 @@ const DEPUIS_2010: BacktestStoryDef = {
     },
     {
       q: "Quel ETF concret pour répliquer ce backtest en PEA ?",
-      a: "Le backtest utilise le MSCI World en euros (via IWDA comme proxy). En PEA, les équivalents sont WPEA ou DCAM (TER 0,20 %) — voire CW8 (0,38 %), la référence historique. Voir notre guide des ETF MSCI World pour choisir.",
+      a: "Le backtest utilise le MSCI World en euros — relevé sur l’ETF Xtrackers MSCI World (XMWO), retenu parce qu’il couvre la crise de 2008 —. En PEA, les équivalents sont WPEA ou DCAM (TER 0,20 %) — voire CW8 (0,38 %), la référence historique. Voir notre guide des ETF MSCI World pour choisir.",
     },
     {
       q: "Que serait-il arrivé en commençant en 2008, avant la crise financière ?",
