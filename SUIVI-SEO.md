@@ -163,3 +163,54 @@ chaque changement de titre remet le compteur à zéro. Le titre de `cw8-vs-wpea`
 a déjà bougé le 02/06 et le 29/07, et sa meta le 02/08 (correction d'un chiffre
 faux, non négociable). **La fenêtre exploitable commence donc au 2 août 2026,
 pas au 29 juillet.**
+
+## ⚠️ Une position moyenne de page ne décrit aucune requête réelle
+
+Troisième piège de la même famille, trouvé le 2 août au niveau des requêtes.
+
+La page `/comparatif-etf/cw8-vs-wpea` affiche une position moyenne de **9,7**.
+Mais la requête qui porte la moitié de ses impressions — « cw8 vs wpea »,
+658 impressions sur 90 jours — est en position **19,7**. Page 2. La moyenne de
+la page est pondérée sur des dizaines de requêtes, dont beaucoup sont minuscules
+et bien classées ; elle ne décrit aucune requête réelle.
+
+Conséquence : le CTR de 0,6 % sur cette requête n'a rien d'anormal, c'est ce
+qu'on attend en position 19,7. **Ce n'est pas un extrait à réécrire, c'est un
+classement à gagner** — contenu, maillage, liens entrants. Toujours descendre
+au niveau requête avant de conclure sur une page.
+
+Corollaire pour le 26 septembre : lire les positions **par requête**, pas par
+page. Une page peut progresser en moyenne en reculant sur sa requête
+principale.
+
+## 🔴 Un facteur de confusion introduit par le lot 3 lui-même
+
+**À lire avant toute conclusion le 26 septembre.**
+
+Le commit du 29/07 a réécrit le titre de `/etf-msci-world` :
+
+```
+avant : ETF MSCI World : lequel choisir en PEA en 2026 ?
+après : ETF MSCI World en PEA : CW8, WPEA ou DCAM ? (2026)
+```
+
+L'ancien ciblait l'intention propre de la page (« etf msci world », « quel etf
+msci world »). Le nouveau place « CW8, WPEA ou DCAM ? » dans le titre —
+c'est-à-dire **la requête que `/comparatif-etf/cw8-vs-wpea` vise**. Trois pages
+du site nomment désormais CW8 et WPEA dans leur `<title>` : le duel, ce guide,
+et le hub `/comparatif-etf`.
+
+Ce qu'on peut affirmer et ce qu'on ne peut pas :
+
+- **La collision existe depuis le 29/07 et n'existait pas avant.** Vérifiable
+  dans le diff.
+- **Elle n'explique PAS la position 19,7 observée**, qui porte sur une fenêtre
+  antérieure au changement. Les deux pages étaient déjà autour de la position 19.
+- **Elle contamine en revanche la lecture du 26 septembre** : si les deux pages
+  se disputent la même grappe, aucun des deux effets de titre ne sera lisible
+  isolément. Ne pas attribuer à un titre ce qui pourrait venir de la collision.
+
+Le maillage, lui, est déjà correct : `/etf-msci-world` pointe vers le duel avec
+l'ancre « CW8 vs WPEA : le comparatif détaillé », et le hub avec « CW8 vs WPEA ».
+Le seul levier restant est le titre — donc une décision qui s'oppose à
+l'embargo, et qui doit être prise en connaissance de cause plutôt que subie.
