@@ -33,9 +33,7 @@
     "200 €",
     "54 000 €"
   ],
-  "src/lib/etf-index-guides.ts": [
-    "200 €"
-  ],
+  "src/lib/etf-index-guides.ts": [],
   "src/lib/etf-detail-content.ts": [],
   "src/lib/glossary-terms.ts": [
     "102 000 €",

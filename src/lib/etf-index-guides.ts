@@ -142,7 +142,7 @@ const MSCI_WORLD: IndexGuide = {
   verdict: [
     {
       label: "Pour un débutant en PEA",
-      text: `WPEA ou DCAM (0,20 %). Même indice que le CW8, frais 2× plus bas. Sur 20 ans à 200 €/mois et 7 %/an, ces 0,18 % de TER en moins représentent environ ${ecartCapital(0.38, 0.2)} € de capital final en plus. Prenez DCAM si votre courtier le propose et que vous investissez de petits montants (prix de part bas).`,
+      text: `WPEA ou DCAM (0,20 %). Même indice que le CW8, frais deux fois plus bas — un écart qui se compte en milliers d'euros sur vingt ans, chiffré dans notre comparatif CW8 vs WPEA. Prenez DCAM si votre courtier le propose et que vous versez de petits montants (prix de part plus bas), WPEA sinon.`,
     },
     {
       label: "Si vous voulez le plus liquide / le plus simple",
@@ -161,7 +161,7 @@ const MSCI_WORLD: IndexGuide = {
   faq: [
     {
       q: "Quel est le meilleur ETF MSCI World pour un PEA en 2026 ?",
-      a: "Pour une nouvelle position, WPEA (iShares) ou DCAM (Amundi) sont les meilleurs choix : TER de 0,20 % contre 0,38 % pour le CW8, pour exactement le même indice MSCI World. Le CW8 reste pertinent si vous privilégiez la liquidité maximale ou s'il est le seul disponible chez votre courtier.",
+      a: "Pour une nouvelle position, visez un TER de 0,20 % — c'est le niveau de WPEA (iShares) et de DCAM (Amundi), contre 0,38 % pour le CW8, à indice identique. Le choix entre ces deux-là se joue sur des détails d'encours et de prix de part ; celui entre eux et le CW8 est chiffré sur vingt ans dans notre comparatif CW8 vs WPEA.",
     },
     {
       q: "CW8, WPEA ou DCAM : quelle vraie différence ?",

@@ -353,11 +353,26 @@ export function ETFComparisonPage({ comparison }: { comparison: ETFComparison })
               href={`/comparatif-etf/${c.slug}`}
               className="rounded-xl border border-gray-100 bg-white p-4 card-hover"
             >
+              {/* ─── Le titre du duel, PAS son verdict ────────────────────
+                  Cette carte affichait `c.verdict`. Comme le bloc est rendu au
+                  pied de CHAQUE duel, la phrase qui répond à « cw8 vs wpea »
+                  était donc publiée verbatim sur les huit pages de la grappe —
+                  chacune devenant une correspondance littérale légitime pour
+                  la requête. Ce n'est pas Google qui hésitait entre huit
+                  pages : c'était huit pages qui contenaient la réponse.
+
+                  Le hub avait le même défaut, corrigé le 04/08. Le corriger
+                  là et pas ici, c'était corriger UN consommateur du champ et
+                  pas le champ : la même forme d'échec que la série de données
+                  réparée sans réparer le script qui la produit.
+
+                  Une carte de navigation annonce où l'on va. La réponse est
+                  sur la page qui la démontre, et nulle part ailleurs. */}
               <p className="text-sm font-semibold text-gray-900 mb-1">
                 {c.left.heading} vs {c.right.heading}
               </p>
               <p className="text-xs text-gray-500 leading-relaxed line-clamp-2">
-                {c.verdict}
+                {c.title}
               </p>
             </Link>
           ))}
