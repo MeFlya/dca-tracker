@@ -11,7 +11,7 @@ import { ComparisonDisclosure } from "@/components/ui/ComparisonDisclosure";
 // tickers, qui portent la longue traîne ; « comparatifs » reste dans le H1.
 const TITLE = "Comparateur ETF PEA 2026 : CW8, WPEA, DCAM, VWCE";
 const DESCRIPTION =
-  "Un verdict tranché pour chaque duel : CW8 vs WPEA, WPEA vs DCAM, VWCE vs CW8, IWDA vs CW8. TER, éligibilité PEA et coût réel des frais sur 20 ans.";
+  "Tous nos face-à-face d’ETF PEA : CW8, WPEA, DCAM, VWCE, ESE. Choisissez votre duel — TER, éligibilité PEA et coût réel des frais sur 20 ans.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -101,8 +101,19 @@ export default function ComparatifETFHubPage() {
             <p className="text-base font-semibold text-gray-900 mb-1.5 group-hover:text-primary-700 transition-colors">
               {c.title}
             </p>
+            {/* ─── La question, PAS le verdict ─────────────────────────────
+                Cette carte affichait `c.verdict` : le hub reproduisait donc
+                mot pour mot la réponse que porte la page dédiée. Résultat
+                mesuré sur 90 jours — il capte 182 impressions sur « cw8 vs
+                wpea » en position 17,9, contre 5 impressions sur sa propre
+                requête « comparatif etf » en position 37,2. Il n'existait aux
+                yeux de Google que comme doublon des duels qu'il liste.
+
+                Une page d'aiguillage oriente, elle ne tranche pas. Chaque
+                carte pose maintenant la question ; la réponse est à un clic,
+                sur la page qui la démontre. */}
             <p className="text-sm text-gray-500 leading-relaxed mb-2 line-clamp-2">
-              {c.verdict}
+              {c.intro}
             </p>
             <p className="text-xs font-semibold text-primary-600 group-hover:text-primary-700 transition-colors">
               Lire le comparatif complet →

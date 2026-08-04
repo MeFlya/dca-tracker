@@ -165,7 +165,14 @@ const MSCI_WORLD: IndexGuide = {
     },
     {
       q: "CW8, WPEA ou DCAM : quelle vraie différence ?",
-      a: "Ils répliquent tous le MSCI World et sont éligibles PEA en réplication synthétique. WPEA (iShares) et DCAM (Amundi) ont un TER de 0,20 %, contre 0,38 % pour le CW8. DCAM a un prix de part plus bas (~5 €), pratique pour un DCA de petits montants. CW8 a la plus grande antériorité et liquidité.",
+      // ─── Cette réponse tranchait un duel qui a sa propre page ─────────────
+      // Mesuré sur 90 jours : la requête n°1 de CETTE page est « cw8 vs
+      // wpea », avec 87 impressions — loin devant ses requêtes propres, qui
+      // en cumulent 5. Google l'associe donc à une question qu'elle ne fait
+      // que recopier, pendant que /comparatif-etf/cw8-vs-wpea, qui la
+      // démontre, se bat pour la même place.
+      // Une page d'indice pose le cadre et oriente ; le face-à-face tranche.
+      a: "Ils répliquent tous le MSCI World et sont éligibles au PEA en réplication synthétique — c'est ce qui les distingue des ETF physiques comme IWDA. Là où ils diffèrent, c'est sur les frais annuels, l'encours et le prix de la part, et ces écarts pèsent différemment selon le montant que vous versez chaque mois. Nous les avons chiffrés côte à côte dans notre comparatif CW8 vs WPEA, qui tranche la question sur vingt ans.",
     },
     {
       q: "Le MSCI World inclut-il les marchés émergents ?",
