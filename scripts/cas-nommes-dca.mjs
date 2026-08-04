@@ -67,7 +67,7 @@ const CAS = [
   { debut: "2008-02", nom: "février 2008 — 2,7 % sous le plus haut de la série" },
   { debut: "2020-01", nom: "janvier 2020 — juste avant le Covid" },
   { debut: "2022-01", nom: "janvier 2022 — le krach que les gens ont vécu" },
-  { debut: "2009-03", nom: "mars 2009 — juste après le creux, cas défavorable à l'étalement" },
+  { debut: "2009-02", nom: "février 2009 — le creux, cas défavorable à l'étalement" },
 ];
 
 const serie = JSON.parse(readFileSync(SERIE, "utf8")).data;
