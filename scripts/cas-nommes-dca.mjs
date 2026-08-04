@@ -59,15 +59,51 @@ const CSV = process.argv.includes("--csv");
  * dans ce que republiera n'importe qui, détaché de cette page et de ses
  * précautions. « Au sommet de la série » était exact et n'aurait pas survécu à
  * la première citation — la parenthèse tombe, « au sommet » reste. Chaque
- * libellé porte donc sa propre restriction. Même raison pour mars 2009, qui
- * n'est PAS le creux : le creux est février 2009 (13,88 contre 14,13).
+ * libellé porte donc sa propre restriction — et une seule chacun. « février
+ * 2009 — le creux, cas défavorable à l'étalement » en revendiquait DEUX, dont
+ * la seconde est fausse : voir ci-dessous.
+ *
+ * ─── LE CREUX N'EST PAS LE PIRE MOMENT POUR ÉTALER ──────────────────────────
+ *
+ * C'est la trouvaille de la grille, et elle est contre-intuitive.
+ *
+ * Partir du creux (février 2009) rend l'étalement MOINS perdant que partir un
+ * mois après : −17,8 % contre −18,9 % à douze mois, et l'écart tient aux quatre
+ * durées sans exception.
+ *
+ * La formule dit pourquoi. Le creux minimise P₀ ; le pire cas maximise H/P₀.
+ * Rien n'oblige les deux à tomber le même mois. En partant du creux, la fenêtre
+ * d'achat attrape encore le creux lui-même et le mois suivant — deux mois bas
+ * qui tirent H vers le bas. Un mois plus tard, on perd ces deux mois et on gagne
+ * un mois de remontée à l'autre bout : H monte plus vite que P₀ ne baisse.
+ * Mesuré : P₀ recule de 1,8 %, H de 3,1 %.
+ *
+ * VÉRIFIÉ SUR TOUTE LA SÉRIE, pas seulement sur 2009 — sinon ce serait une
+ * anecdote et pas un mécanisme. Sur les 211 fenêtres de douze mois disponibles,
+ * le minimum de P₀/H tombe en mars 2009, soit un mois après le minimum de P₀
+ * (février 2009). Et les mois suivants du classement — octobre 2020, mars 2020,
+ * octobre 2023 — sont eux aussi des phases de remontée, pas des creux.
+ *
+ * Ce qui pénalise l'étalement n'est donc pas d'entrer au plus bas, c'est
+ * d'acheter pendant une remontée. Et la remontée la plus raide commence juste
+ * APRÈS le creux.
+ *
+ * LES DEUX MOIS SONT PUBLIÉS. Affirmer « mars est pire que février » sans
+ * fournir les deux rendrait l'affirmation non recalculable, ce qui est
+ * exactement ce qu'on reproche aux autres. Six cas, vingt-quatre lignes.
+ *
+ * (Ironie à noter : on allait supprimer mars 2009 au nom de la rigueur
+ * méthodologique, et c'est mars 2009 qui porte la seule observation
+ * contre-intuitive de la grille. Retirer un cas parce qu'il est « moins pur »
+ * aurait retiré l'information.)
  */
 const CAS = [
   { debut: "2008-05", nom: "mai 2008 — plus haut de la série, pas du marché" },
   { debut: "2008-02", nom: "février 2008 — 2,7 % sous le plus haut de la série" },
   { debut: "2020-01", nom: "janvier 2020 — juste avant le Covid" },
   { debut: "2022-01", nom: "janvier 2022 — le krach que les gens ont vécu" },
-  { debut: "2009-02", nom: "février 2009 — le creux, cas défavorable à l'étalement" },
+  { debut: "2009-02", nom: "février 2009 — le creux de la série" },
+  { debut: "2009-03", nom: "mars 2009 — le pire mois pour l'étalement, un mois après le creux" },
 ];
 
 const serie = JSON.parse(readFileSync(SERIE, "utf8")).data;
