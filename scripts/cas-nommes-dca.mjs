@@ -54,13 +54,20 @@ const CSV = process.argv.includes("--csv");
  *
  * Les deux sont calculés, et c'est délibéré : ne garder que le plus favorable
  * serait choisir son cas après avoir vu le résultat.
+ *
+ * ⚠️ LES LIBELLÉS VOYAGENT SEULS. Ils partent dans un CSV sous CC-BY, donc
+ * dans ce que republiera n'importe qui, détaché de cette page et de ses
+ * précautions. « Au sommet de la série » était exact et n'aurait pas survécu à
+ * la première citation — la parenthèse tombe, « au sommet » reste. Chaque
+ * libellé porte donc sa propre restriction. Même raison pour mars 2009, qui
+ * n'est PAS le creux : le creux est février 2009 (13,88 contre 14,13).
  */
 const CAS = [
-  { debut: "2008-05", nom: "Au sommet de la série (mai 2008)" },
-  { debut: "2008-02", nom: "Quelques mois avant le krach de 2008" },
-  { debut: "2020-01", nom: "Juste avant le Covid" },
-  { debut: "2022-01", nom: "Le krach que les gens ont vécu" },
-  { debut: "2009-03", nom: "Au creux — le cas défavorable à l'étalement" },
+  { debut: "2008-05", nom: "mai 2008 — plus haut de la série, pas du marché" },
+  { debut: "2008-02", nom: "février 2008 — 2,7 % sous le plus haut de la série" },
+  { debut: "2020-01", nom: "janvier 2020 — juste avant le Covid" },
+  { debut: "2022-01", nom: "janvier 2022 — le krach que les gens ont vécu" },
+  { debut: "2009-03", nom: "mars 2009 — juste après le creux, cas défavorable à l'étalement" },
 ];
 
 const serie = JSON.parse(readFileSync(SERIE, "utf8")).data;

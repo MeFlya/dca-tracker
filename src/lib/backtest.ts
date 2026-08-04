@@ -11,10 +11,23 @@
 //     one-shot.
 //
 // Limites assumées (à afficher dans l'UI) :
-//   - Pas de TER déduit (~0,20 % du rendement annuel en moins en réalité)
 //   - Pas de frais de courtage par ordre
 //   - Pas de fiscalité (PFU/PS) à la sortie
-//   - L'ETF n'existe que depuis sept 2009 → pas de dot-com / pic 2007
+//   - La série démarre en janvier 2008 : la crise de 2008 est couverte, le
+//     sommet mondial d'octobre 2007 et la bulle internet ne le sont pas.
+//
+// ⚠️ CE QUI N'EST PAS UNE LIMITE, contrairement à ce qui était écrit ici :
+// « pas de TER déduit ». C'était faux dans les deux sens. Le moteur achète des
+// parts au COURS DE MARCHÉ (ligne ~230, monthlyAmount / price), et la valeur
+// liquidative d'un ETF est déjà nette de ses frais de gestion, prélevés en
+// continu sur l'actif. Les 0,45 %/an du fonds sont donc DANS ces chiffres ;
+// les retrancher les compterait deux fois. Le taux cité était en outre celui
+// d'IWDA (0,20 %), série remplacée le 04/08/2026.
+//
+// Ce commentaire disait « à afficher dans l'UI », et il l'a été : trois pages
+// publiaient cette fausse limite. Un commentaire de code qui décrit une
+// intention finit par être recopié dans du contenu — il vaut mieux qu'il soit
+// juste.
 
 import dataset from "@/data/msci-world-eur.json";
 

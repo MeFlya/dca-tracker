@@ -77,7 +77,7 @@ const COVID_2020: BacktestStoryDef = {
   faq: (r) => [
     {
       q: "Combien aurait rapporté un DCA commencé juste avant le krach COVID ?",
-      a: `Un DCA de 200 €/mois sur le MSCI World (EUR) commencé en janvier 2020 — un mois avant le krach — représente aujourd'hui ${formatEurBacktest(r.finalValue)} pour ${formatEurBacktest(r.totalInvested)} investis, soit ${r.gainPct >= 0 ? "+" : ""}${fmtPct(r.gainPct)} % et un TRI d'environ ${fmtIrr(r)}. Calcul sur clôtures mensuelles réelles, hors TER (~0,20 %) et frais de courtage.`,
+      a: `Un DCA de 200 €/mois sur le MSCI World (EUR) commencé en janvier 2020 — un mois avant le krach — représente aujourd'hui ${formatEurBacktest(r.finalValue)} pour ${formatEurBacktest(r.totalInvested)} investis, soit ${r.gainPct >= 0 ? "+" : ""}${fmtPct(r.gainPct)} % et un TRI d'environ ${fmtIrr(r)}. Calcul sur clôtures mensuelles réelles. Le cours d’un ETF étant déjà net de ses frais de gestion, ceux du fonds (0,45 %/an) sont dans ces chiffres — les retrancher les compterait deux fois. Hors frais de courtage et fiscalité.`,
     },
     {
       q: "Pourquoi le krach n'a-t-il presque pas pénalisé ce DCA ?",
@@ -129,7 +129,7 @@ const INFLATION_2022: BacktestStoryDef = {
   faq: (r) => [
     {
       q: "Combien vaut un DCA commencé en janvier 2022 ?",
-      a: `200 €/mois sur le MSCI World (EUR) depuis janvier 2022 représentent aujourd'hui ${formatEurBacktest(r.finalValue)} pour ${formatEurBacktest(r.totalInvested)} investis (${r.gainPct >= 0 ? "+" : ""}${fmtPct(r.gainPct)} %, TRI ${fmtIrr(r)}). Calcul sur les clôtures mensuelles réelles, hors TER et frais.`,
+      a: `200 €/mois sur le MSCI World (EUR) depuis janvier 2022 représentent aujourd'hui ${formatEurBacktest(r.finalValue)} pour ${formatEurBacktest(r.totalInvested)} investis (${r.gainPct >= 0 ? "+" : ""}${fmtPct(r.gainPct)} %, TRI ${fmtIrr(r)}). Calcul sur les clôtures mensuelles réelles, déjà nettes des frais de gestion du fonds. Hors frais de courtage et fiscalité.`,
     },
     {
       q: "Pourquoi la baisse de 2022 paraît-elle faible en euros ?",
@@ -181,7 +181,7 @@ const DEPUIS_2010: BacktestStoryDef = {
   faq: (r) => [
     {
       q: "Combien rapporte 200 €/mois investis depuis 2010 ?",
-      a: `Sur les données réelles du MSCI World en euros : ${formatEurBacktest(r.totalInvested)} investis depuis janvier 2010 valent aujourd'hui ${formatEurBacktest(r.finalValue)}, soit ${r.gainPct >= 0 ? "+" : ""}${fmtPct(r.gainPct)} % et un TRI d'environ ${fmtIrr(r)}. Hors TER (~0,20 %/an), frais de courtage et fiscalité.`,
+      a: `Sur les données réelles du MSCI World en euros : ${formatEurBacktest(r.totalInvested)} investis depuis janvier 2010 valent aujourd'hui ${formatEurBacktest(r.finalValue)}, soit ${r.gainPct >= 0 ? "+" : ""}${fmtPct(r.gainPct)} % et un TRI d'environ ${fmtIrr(r)}. Le cours d’un ETF est déjà net de ses frais de gestion : ceux du fonds (0,45 %/an) sont dans ces chiffres. Hors frais de courtage et fiscalité.`,
     },
     {
       q: "Ce rendement va-t-il se reproduire sur les 16 prochaines années ?",
