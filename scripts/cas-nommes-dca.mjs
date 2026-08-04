@@ -111,6 +111,20 @@ const idx = (m) => serie.findIndex((d) => d.month === m);
 
 /**
  * Trajectoire mois par mois. `D = 1` est le versement unique.
+ *
+ * ─── CONVENTION DE CALENDRIER, sans laquelle rien n'est reproductible ───────
+ *
+ * LE PREMIER VERSEMENT DE L'ÉTALEMENT TOMBE LE MÊME MOIS QUE LE VERSEMENT
+ * UNIQUE, au prix P₀. La boucle démarre à `t = i0`, pas à `i0 + 1`.
+ *
+ * Les deux conventions donnent des résultats différents et aucune n'est
+ * déductible du CSV publié : elles restent toutes deux compatibles avec les
+ * P₀ et H qu'il contient. C'est donc le premier endroit où quelqu'un qui
+ * essaie de refaire le calcul se trompera, et il faut l'écrire.
+ *
+ * Contrôle immédiat de cette convention : à D = 1, la moyenne harmonique d'un
+ * seul prix vaut ce prix, donc H = P₀ et le rapport vaut exactement 1. C'est
+ * vérifiable sur le fichier, ce qui vaut mieux qu'une affirmation.
  * Renvoie la valeur finale, le nombre de parts, et le nombre de mois passés
  * sous le capital effectivement versé à cet instant.
  */
