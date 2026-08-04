@@ -78,6 +78,14 @@ export type Product = {
 // prix dans Stripe.
 const TEMPLATE: Product = {
   id: "template-suivi-dca",
+  screenshots: [
+    {
+      src: "/produits/cockpit-pea.png",
+      alt: "Onglet PEA du Cockpit : jauge du plafond de 150 000 €, compte à rebours des 5 ans et prélèvements sociaux estimés à 18,6 %",
+      width: 1400,
+      height: 1141,
+    },
+  ],
   slug: "template-suivi-dca",
   name: "Cockpit DCA — Tableau de bord PEA (Excel + Google Sheets)",
   shortName: "Cockpit DCA",
