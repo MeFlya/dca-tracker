@@ -30,6 +30,22 @@ export type Product = {
    * de prix barré fictif ni de fausse urgence.
    */
   priceNote?: string;
+  /**
+   * Captures du produit réel, dans `public/produits/`.
+   *
+   * ⚠️ DES CAPTURES DU VRAI FICHIER, jamais une maquette. Ce site vend la
+   * vérifiabilité : un visuel reconstitué qui ne correspondrait pas à ce que
+   * l'acheteur reçoit serait exactement le contraire de l'argument.
+   *
+   * Tant que ce champ est absent, la page affiche un cadre vide de la même
+   * hauteur — ce qui est honnête mais coûte cher : on demande 19 € pour un
+   * fichier que personne ne peut voir. C'est l'état depuis le 11/06/2026.
+   *
+   * `alt` est lu par les lecteurs d'écran ET par Google Images : décrire ce
+   * qu'on voit, pas répéter le nom du produit.
+   */
+  screenshots?: { src: string; alt: string; width: number; height: number }[];
+
   /** Tableau comparatif « eux vs nous » — section différenciation. */
   comparison?: {
     intro: string;

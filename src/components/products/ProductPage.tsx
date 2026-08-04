@@ -3,12 +3,14 @@
 // features, contenu détaillé, pour qui / pas pour qui (honnêteté = conversion
 // qualifiée), FAQ (+ schema), cross-sell, schema.org Product.
 //
-// Emplacements visuels : le bloc <ProductVisualPlaceholder /> réserve
-// l'espace des captures d'écran des produits (fournies par Maël plus tard)
-// avec une hauteur FIXE — zéro CLS quand les vraies images arriveront
-// (next/image avec width/height aux mêmes dimensions).
+// Visuels : <ProductVisual /> affiche les captures déclarées dans
+// `product.screenshots`, et retombe sur un cadre vide de MÊME HAUTEUR quand il
+// n'y en a pas — donc aucun saut de mise en page le jour où elles arrivent.
+// Déposer les fichiers dans public/produits/ et renseigner le champ suffit :
+// aucune modification de ce composant n'est nécessaire.
 
 import Link from "next/link";
+import Image from "next/image";
 import { Check, X, FileText, Table2, Package } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { BreadcrumbSchema } from "@/components/ui/BreadcrumbSchema";
@@ -25,13 +27,55 @@ const PRODUCT_ICONS: Record<string, LucideIcon> = {
   "bundle-dca": Package,
 };
 
-function ProductVisualPlaceholder({ label }: { label: string }) {
+/**
+ * Visuel du produit : les vraies captures si elles existent, un cadre vide de
+ * la même hauteur sinon.
+ *
+ * La hauteur est FIXE dans les deux cas — l'ajout d'une capture ne fait donc
+ * pas sauter la page au chargement.
+ *
+ * Le cadre vide n'est pas neutre : depuis le 11/06/2026, cette page demande
+ * 19 € pour un classeur que le visiteur ne peut pas voir. C'est probablement
+ * le premier frein à l'achat, avant le prix.
+ */
+function ProductVisual({
+  label,
+  screenshots,
+}: {
+  label: string;
+  screenshots?: { src: string; alt: string; width: number; height: number }[];
+}) {
+  if (!screenshots?.length) {
+    return (
+      <div
+        className="h-[320px] rounded-2xl border border-gray-200 bg-gradient-to-br from-primary-50/50 via-white to-slate-50 flex items-center justify-center"
+        aria-hidden
+      >
+        <p className="text-sm text-gray-400 font-medium">{label}</p>
+      </div>
+    );
+  }
+
   return (
-    <div
-      className="h-[320px] rounded-2xl border border-gray-200 bg-gradient-to-br from-primary-50/50 via-white to-slate-50 flex items-center justify-center"
-      aria-hidden
-    >
-      <p className="text-sm text-gray-400 font-medium">{label}</p>
+    <div className={screenshots.length > 1 ? "grid gap-4 sm:grid-cols-2" : ""}>
+      {screenshots.map((s, i) => (
+        <figure
+          key={s.src}
+          className="overflow-hidden rounded-2xl border border-gray-200 bg-white"
+        >
+          <Image
+            src={s.src}
+            alt={s.alt}
+            width={s.width}
+            height={s.height}
+            /* La première capture est au-dessus de la ligne de flottaison :
+               elle se charge en priorité, les suivantes paresseusement. */
+            priority={i === 0}
+            sizes="(max-width: 640px) 100vw, 50vw"
+            className="w-full h-auto"
+          />
+        </figure>
+      ))}
     </div>
   );
 }
@@ -107,7 +151,10 @@ export function ProductPage({ product }: { product: Product }) {
 
       {/* ── Visuel (placeholder hauteur fixe — capture produit à venir) ────── */}
       <div className="mb-10">
-        <ProductVisualPlaceholder label={`Aperçu — ${product.shortName}`} />
+        <ProductVisual
+          label={`Aperçu — ${product.shortName}`}
+          screenshots={product.screenshots}
+        />
       </div>
 
       {/* ── Abstract ────────────────────────────────────────────────────────── */}
