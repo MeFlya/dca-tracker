@@ -253,7 +253,7 @@ function BestLeverTeaser({ input }: { input?: SimulatorInput }) {
           autres leviers chiffrés.
         </p>
         <a
-          href={buildUpgradeUrl("comparison", input)}
+          href={buildUpgradeUrl("ab-comparison", input)}
           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gray-900 text-white text-sm font-semibold hover:bg-gray-800 transition-colors"
         >
           Comparer mes deux scénarios →

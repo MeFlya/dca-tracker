@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
 import { track } from "@/lib/analytics";
@@ -118,7 +118,14 @@ function CheckoutButton({
 
   async function handleClick() {
     if (!isSignedIn) {
-      window.location.href = `/sign-up?redirect_url=${encodeURIComponent("/tarifs")}`;
+      // ⚠️ Le choix mensuel/annuel ET l'intention d'achat voyagent dans le
+      // redirect_url. Sans ça, le visiteur qui avait basculé sur « Mensuel »
+      // revenait sur une page repassée à l'annuel — et devait re-cliquer le
+      // bouton qu'il venait déjà de cliquer. Deux étapes ajoutées à un tunnel
+      // qui n'a converti personne, et un plan présélectionné qui n'est pas
+      // celui qu'il avait choisi.
+      const retour = `/tarifs?billing=${billing}&checkout=premium#premium`;
+      window.location.href = `/sign-up?redirect_url=${encodeURIComponent(retour)}`;
       return;
     }
     // with_cb: true → flux actuel = Stripe Checkout standard (CB collectée à
@@ -145,6 +152,36 @@ function CheckoutButton({
     }
   }
 
+  // ─── Reprise du checkout au retour de l'inscription ───────────────────────
+  //
+  // Ne se déclenche que sur `?checkout=premium`, une seule fois, et seulement
+  // pour un utilisateur connecté qui n'est pas déjà abonné. Le paramètre est
+  // consommé AVANT l'appel : un rafraîchissement ou un retour arrière ne doit
+  // pas relancer un second checkout.
+  //
+  // Aucun débit n'est possible à cet instant — la session Stripe ouvre sur
+  // sept jours d'essai — mais la garde du « une seule fois » vaut quand même :
+  // deux sessions ouvertes pour un même visiteur, c'est deux factures
+  // possibles et une trace illisible.
+  const repriseFaite = useRef(false);
+  useEffect(() => {
+    if (!isLoaded || !isSignedIn || isAlreadyPremium || repriseFaite.current) return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("checkout") !== "premium") return;
+    repriseFaite.current = true;
+    params.delete("checkout");
+    const reste = params.toString();
+    window.history.replaceState(
+      null,
+      "",
+      `${window.location.pathname}${reste ? `?${reste}` : ""}${window.location.hash}`,
+    );
+    void handleClick();
+    // handleClick est stable pour ce qui nous intéresse ici : il ne dépend que
+    // de `billing`, qui est déjà figé par le paramètre d'URL lu au montage.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoaded, isSignedIn, isAlreadyPremium]);
+
   return (
     <div className="relative mb-6">
       <button
@@ -164,7 +201,20 @@ function CheckoutButton({
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export function PricingCards() {
+  // L'annuel reste le défaut — c'est l'offre mise en avant. Mais si l'URL
+  // porte `billing=monthly`, c'est que le visiteur l'a choisi avant d'aller
+  // s'inscrire, et le lui reprendre au retour serait lui vendre autre chose
+  // que ce qu'il a demandé.
+  //
+  // La lecture se fait dans un effet, pas à l'initialisation : `window`
+  // n'existe pas au rendu serveur, et lire l'URL pendant l'hydratation
+  // produirait un écart entre le HTML servi et le premier rendu client.
   const [yearly, setYearly] = useState(true);
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("billing") === "monthly") {
+      setYearly(false);
+    }
+  }, []);
 
   return (
     <section className="mb-20">

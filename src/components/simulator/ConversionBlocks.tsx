@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { runSimulation, formatEur } from "@/lib/simulator";
 import type { SimulatorOutput, SimulatorInput, MonthlyDataPoint } from "@/lib/simulator";
-import { buildUpgradeUrl } from "@/lib/upgrade-link";
+import { buildUpgradeUrl, type FeatureKey } from "@/lib/upgrade-link";
 
 // ─── Milestone helpers ────────────────────────────────────────────────────────
 
@@ -90,7 +90,7 @@ export function ConversionBlocks({ output }: { output: SimulatorOutput }) {
 }
 
 /** CTA routing: Premium → /account, Free → /upgrade?feature=... */
-function ctaHref(isPremium: boolean, feature: string, input: SimulatorInput): string {
+function ctaHref(isPremium: boolean, feature: FeatureKey, input: SimulatorInput): string {
   if (isPremium) return "/account";
   return buildUpgradeUrl(feature, input);
 }

@@ -200,29 +200,74 @@ export async function subscribeEmail({
   source,
 }: EmailSubscription): Promise<EmailProviderResult> {
   try {
+    // ─── L'INSCRIPTION À LA LISTE, ET CE QU'ELLE PROMETTAIT SANS LE TENIR ────
+    //
+    // Il n'y a pas de base de données : l'audience Resend est le SEUL endroit
+    // où un prospect existe. Or ce bloc était sauté sans un mot quand
+    // RESEND_AUDIENCE_ID manquait, la requête n'était pas attendue, et son
+    // échec ne faisait qu'un `console.warn`. Dans les trois cas la fonction
+    // arrivait à `return { success: true }` : le visiteur voyait une
+    // confirmation, et la liste ne grossissait pas.
+    //
+    // La cheat sheet part quand même — l'adresse reste retrouvable dans le
+    // journal d'envoi Resend — mais une liste qu'on croit remplie et qui est
+    // vide est pire qu'une liste vide : on ne va pas la chercher.
+    //
+    // On attend la requête, on lit sa réponse, et on journalise une erreur
+    // plutôt qu'un avertissement. L'envoi de la cheat sheet n'est PAS
+    // conditionné à ce succès : le visiteur a demandé un document, il doit le
+    // recevoir même si notre liste est mal configurée.
     const audienceId = process.env.RESEND_AUDIENCE_ID;
-    if (audienceId) {
-      fetch(`https://api.resend.com/audiences/${audienceId}/contacts`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, unsubscribed: false }),
-      }).catch((err) =>
-        console.warn("[email-provider] Audience add failed (non-blocking):", err)
+    if (!audienceId) {
+      console.error(
+        "[email-provider] RESEND_AUDIENCE_ID absent — le contact n'est enregistré NULLE PART. " +
+          `Adresse récupérable uniquement dans le journal Resend (source : ${source}).`,
       );
+    } else {
+      try {
+        const res = await fetch(
+          `https://api.resend.com/audiences/${audienceId}/contacts`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${process.env.RESEND_API_KEY ?? ""}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email, unsubscribed: false }),
+          },
+        );
+        if (!res.ok) {
+          console.error(
+            `[email-provider] Ajout à l'audience refusé (HTTP ${res.status}) — ` +
+              `contact non enregistré (source : ${source}).`,
+          );
+        }
+      } catch (err) {
+        console.error("[email-provider] Ajout à l'audience impossible :", err);
+      }
     }
 
     // Passe par sendEmail() comme tous les autres envois : c'est un email
     // d'acquisition, il doit porter un lien de désinscription et respecter une
     // désinscription antérieure. Il partait sans, jusqu'ici.
-    await sendEmail({
+    // `sendEmail` renvoie `false` quand l'adresse s'est déjà désinscrite —
+    // l'envoi est alors supprimé volontairement. Répondre « succès » sans le
+    // dire laissait le visiteur attendre un document qui ne partait pas.
+    const parti = await sendEmail({
       to: email,
       subject: "Votre cheat sheet : 5 ETF Premium pour PEA en 2026",
       html: buildHtml(source),
       text: buildText(source),
     });
+
+    if (!parti) {
+      console.log("[email-provider] Supprimé (désinscrit) :", email);
+      return {
+        success: false,
+        error:
+          "Cette adresse s'est désinscrite de nos emails. Réinscrivez-vous depuis le lien en bas d'un de nos messages, ou écrivez-nous.",
+      };
+    }
 
     console.log("[email-provider] Email sent to:", email, "source:", source);
     return { success: true };

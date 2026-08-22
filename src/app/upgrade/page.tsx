@@ -15,6 +15,8 @@ import { PremiumTrialLink } from "@/components/checkout/PremiumTrialLink";
 import type { SimulatorInput } from "@/lib/simulator";
 import { runMonteCarlo } from "@/lib/monte-carlo";
 import { theoreticalValueAtMonth } from "@/lib/strategy-math";
+import { estCleConnue, type FeatureKey } from "@/lib/upgrade-link";
+import { log } from "@/lib/logger";
 
 // Icône Lucide associée à chaque feature pour la section "inclut aussi".
 // Garde l'emoji (FeatureCopy.icon) pour le hero, et un SVG propre pour la
@@ -34,7 +36,8 @@ export const metadata: Metadata = {
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type FeatureKey = "monte-carlo" | "save-strategy" | "pdf-export" | "ab-comparison" | "recap-fiscal";
+// FeatureKey vit désormais dans src/lib/upgrade-link.ts, au plus près de la
+// fonction qui fabrique les URL — c'est là que la clé peut être fausse.
 
 type FeatureCopy = {
   plan: "Premium";
@@ -723,8 +726,16 @@ type Props = {
 
 export default async function UpgradePage({ searchParams }: Props) {
   const params = await searchParams;
-  const key = (params.feature ?? "") as FeatureKey;
-  const base = FEATURES[key] ?? FALLBACK;
+  // ⚠️ Le cast aveugle d'avant (`as FeatureKey`) faisait taire le compilateur
+  // sur une chaîne arbitraire : une clé inconnue tombait sur FALLBACK sans que
+  // rien ne le dise. Une page servie au bon format, en 200, avec le mauvais
+  // contenu — c'est le pire des états, parce qu'il ressemble à un choix.
+  const brute = params.feature ?? "";
+  const key: FeatureKey | null = estCleConnue(brute) ? brute : null;
+  if (brute && !key) {
+    log.error("upgrade", "feature_inconnue", { feature: brute });
+  }
+  const base = key ? FEATURES[key] : FALLBACK;
 
   // Parse strategy params (fallback to defaults if missing or invalid).
   const rawMonthly = Number(params.monthly);
@@ -744,7 +755,7 @@ export default async function UpgradePage({ searchParams }: Props) {
   // Override projection with dynamic values per feature.
   const f: FeatureCopy = {
     ...base,
-    projection: buildDynamicProjection(key, base, input, hasExplicitParams),
+    projection: buildDynamicProjection(key ?? "monte-carlo", base, input, hasExplicitParams),
   };
 
   return (

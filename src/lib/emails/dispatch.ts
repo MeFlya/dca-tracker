@@ -10,7 +10,7 @@
 
 // Client partagé : il gère le cas RESEND_API_KEY absent, que le constructeur
 // de Resend refuse — sinon le build échoue à la collecte des routes.
-import { resend } from "@/lib/resend-client";
+import { resend, cleResendManquante } from "@/lib/resend-client";
 import {
   createUnsubscribeToken,
   isOptedOutByEmail,
@@ -129,7 +129,34 @@ export async function sendEmail({
   const url = unsubscribeUrl(to);
   const isMailto = url.startsWith("mailto:");
 
-  await resend.emails.send({
+  // ─── POURQUOI CE BLOC EST ÉCRIT AINSI ─────────────────────────────────────
+  //
+  // Le SDK Resend NE LÈVE JAMAIS. Ni sur une réponse HTTP en erreur, ni sur une
+  // coupure réseau : il renvoie `{ data: null, error }`. Et il est muet en
+  // production — sa journalisation interne est gardée par
+  // `NODE_ENV !== "production"`, donc sur Vercel un échec n'écrit pas une ligne.
+  //
+  // Tant que cette valeur de retour n'était pas lue, un envoi raté était
+  // indistinguable d'un envoi parti : la fonction renvoyait `true`, le webhook
+  // Stripe journalisait « product_delivered » et répondait 200. Stripe
+  // considérait l'événement traité et ne le rejouait pas. Un acheteur pouvait
+  // donc payer et ne rien recevoir, avec un journal affirmant le contraire.
+  //
+  // On lève. Ce n'est pas un choix esthétique : c'est ce qui fait retourner 500
+  // au webhook, et 500 est le signal qui déclenche le rejeu automatique de
+  // Stripe. Sans base de données, ce rejeu EST le mécanisme de reprise.
+  //
+  // Les cinq crons qui envoient en lot ont chacun un try/catch par
+  // utilisateur : une levée y est attrapée et journalisée sans interrompre le
+  // lot. Vérifié avant d'écrire ceci.
+  if (cleResendManquante) {
+    throw new Error(
+      "RESEND_API_KEY absent — aucun email ne peut partir. " +
+        "Le client tourne sur une clé factice qui produirait un 401 silencieux.",
+    );
+  }
+
+  const { data, error } = await resend.emails.send({
     from: FROM,
     to,
     subject,
@@ -155,6 +182,16 @@ export async function sendEmail({
         : { "List-Unsubscribe-Post": "List-Unsubscribe=One-Click" }),
     },
   });
+
+  if (error) {
+    throw new Error(
+      `Resend a refusé l'envoi « ${subject} » : ${error.name} — ${error.message}`,
+    );
+  }
+  // L'identifiant Resend est la seule trace qui prouve qu'un email est parti.
+  // Sans base de données, c'est aussi le seul moyen de retrouver la livraison
+  // d'un acheteur qui réclame.
+  console.log(`[email] envoyé ${data?.id ?? "sans id"} : ${subject}`);
 
   return true;
 }
