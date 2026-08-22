@@ -14,10 +14,19 @@ import { NotificationBell } from "@/components/layout/NotificationBell";
 // plus dans NAV_LINKS. Il est rendu explicitement entre "Comparer les ETF" et
 // "Marchés" (desktop) et dans le menu hamburger (mobile).
 const NAV_LINKS = [
-  { href: "/simulateur",      label: "Simulateur" },
+  { href: "/simulateur",     label: "Simulateur" },
   { href: "/comparer-etf",   label: "Comparer les ETF" },
   { href: "/donnees-marche", label: "Marchés" },
-  { href: "/tarifs",          label: "Tarifs" },
+  // Ajouté le 22/08/2026. Le Cockpit à 19 € n'avait AUCUN point d'entrée dans
+  // le site : absent de l'en-tête, absent des 28 liens du pied de page, absent
+  // de l'accueil. Le seul chemin passait par un bloc en bas de /tarifs intitulé
+  // « Pas prêt pour un abonnement ? » — qui définit l'acheteur comme quelqu'un
+  // qui a renoncé, et qui n'affiche pas le prix.
+  //
+  // C'est pourtant l'offre à la friction la plus faible du site : ni compte, ni
+  // abonnement, ni carte enregistrée. Elle méritait mieux qu'un lien de repli.
+  { href: "/produits",       label: "Ressources" },
+  { href: "/tarifs",         label: "Tarifs" },
 ];
 
 export function Header() {

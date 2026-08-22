@@ -7,6 +7,7 @@ import {
   Flame,
   Check,
 } from "lucide-react";
+import { prixMensuel } from "@/lib/tarifs-affiches";
 
 const BULLETS = [
   {
@@ -185,11 +186,11 @@ export function TrackingPitch() {
           <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-slate-400">
             <span className="inline-flex items-center gap-1">
               <Check size={12} className="text-emerald-400" />
-              Pas de carte requise après l&apos;essai
+              Rien n&apos;est prélevé avant le 8e jour
             </span>
             <span className="inline-flex items-center gap-1">
               <Check size={12} className="text-emerald-400" />
-              4,90 €/mois ensuite
+              {prixMensuel} ensuite
             </span>
             <span className="inline-flex items-center gap-1">
               <Check size={12} className="text-emerald-400" />
