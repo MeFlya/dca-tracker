@@ -15,15 +15,29 @@ export const dynamic = "force-static";
 // fiable pour Google : avant, on mettait `new Date()` partout → toutes les
 // URLs apparaissaient "modifiées" à chaque build, ce qui pousse Google à
 // ignorer le signal lastmod (jugé non fiable).
+// ⚠️ Recalées le 22/08/2026 : elles annonçaient mai et juin alors qu'une
+// douzaine de pages avaient été modifiées début août. Le sitemap disait donc à
+// Google que rien n'avait bougé, au moment précis où on avait besoin qu'il
+// repasse. Une date de révision est une affirmation factuelle : ne bumper que
+// ce qui a réellement changé, et le vérifier avec
+// `git log -1 --format=%ad --date=short -- <fichiers de la catégorie>`.
 const REV = {
-  ymyl: "2026-06-10",       // pages YMYL (maillage courtiers + byline/sources juin)
-  newFeature: "2026-06-02", // /backtest, pages indice, comparatifs ETF récents
-  tools: "2026-05-25",      // simulateur, tarifs, a-propos (évoluent régulièrement)
-  longtail: "2026-06-10",   // pages "investir X €/mois" (byline + sources ajoutées)
-  legal: "2026-05-18",      // mentions légales, CGV, confidentialité (SIRET finalisé)
-  evergreen: "2026-06-10",  // fiches courtiers (byline juin), glossaire, pages stables
-  market: "2026-05-25",     // pages avec données de marché (template, pas la donnée live)
-  affiliation: "2026-07-28",// /transparence, /changelog, /a-propos (engagement affiliation révisé)
+  // taux fiscaux 2026 appliqués par produit (18,6 % titres, 17,2 % maintenu ailleurs)
+  ymyl: "2026-08-03",
+  // série backtest étendue à janvier 2008, verdicts retirés des pages qui ne les démontrent pas
+  newFeature: "2026-08-05",
+  // titre du simulateur raccourci, « Ressources » en navigation, prix unifiés
+  tools: "2026-08-22",
+  // bloc de fin menant à la sauvegarde de plan sur les pages « investir X €/mois »
+  longtail: "2026-08-03",
+  // inchangées depuis juin — recalées sur leur dernière modification réelle
+  legal: "2026-06-11",
+  // dates réelles par courtier, FAQ ouvertes et ancrées
+  evergreen: "2026-08-03",
+  // inchangées depuis juillet — recalées sur leur dernière modification réelle
+  market: "2026-07-29",
+  // entrée de changelog sur la régression de série du 2 août
+  affiliation: "2026-08-04",
 } as const;
 
 type PageEntry = {
