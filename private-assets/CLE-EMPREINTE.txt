@@ -1,0 +1,5 @@
+# Empreinte de la clé ayant chiffré les .enc de ce dossier.
+# HMAC-SHA256(clé, "dcatracker-cle-empreinte-v1"), 16 premiers caractères.
+# Ne révèle pas le secret. Commitée exprès : c'est ce qui permet à une autre
+# machine de refuser de chiffrer avec la mauvaise clé.
+5df4722868119d27
