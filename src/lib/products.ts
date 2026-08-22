@@ -80,10 +80,16 @@ const TEMPLATE: Product = {
   id: "template-suivi-dca",
   screenshots: [
     {
-      src: "/produits/cockpit-pea.png",
-      alt: "Onglet PEA du Cockpit : jauge du plafond de 150 000 €, compte à rebours des 5 ans et prélèvements sociaux estimés à 18,6 %",
+      src: "/produits/cockpit-versement-du-mois.png",
+      alt: "Onglet Versement du mois : 300 € à verser, et le tableau qui indique combien de parts de chaque ETF acheter pour revenir à l'allocation cible",
       width: 1400,
-      height: 1141,
+      height: 773,
+    },
+    {
+      src: "/produits/cockpit-dashboard.png",
+      alt: "Tableau de bord du Cockpit : valeur du portefeuille, plus-value, TRI annualisé, frais de courtage cumulés et répartition par ETF",
+      width: 1400,
+      height: 1235,
     },
   ],
   slug: "template-suivi-dca",
