@@ -89,7 +89,7 @@ const TEMPLATE: Product = {
       src: "/produits/cockpit-dashboard.png",
       alt: "Tableau de bord du Cockpit : valeur du portefeuille, plus-value, TRI annualisé, frais de courtage cumulés et répartition par ETF",
       width: 1400,
-      height: 1235,
+      height: 1303,
     },
   ],
   slug: "template-suivi-dca",
