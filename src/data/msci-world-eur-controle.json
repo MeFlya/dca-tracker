@@ -3,6 +3,7 @@
   "role": "contrôle",
   "description": "SÉRIE DE CONTRÔLE. Sert à valider la série publiée par corrélation croisée, PAS à alimenter les backtests. Émetteur, méthode de réplication (physique) et place de cotation différents : c'est ce qui en fait une référence non dérivée.",
   "currency": "EUR",
+  "ter_annuel_pct": 0.2,
   "source_url": "https://finance.yahoo.com/quote/IWDA.AS/history",
   "fetched_at": "2026-08-03",
   "notes": "Données publiques (cours de marché), déjà nettes du TER de l'ETF (0,20 %/an). Ne pas utiliser pour un chiffre publié : cette série existe pour contredire l'autre, pas pour la remplacer.",

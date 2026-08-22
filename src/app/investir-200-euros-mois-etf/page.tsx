@@ -5,6 +5,7 @@ import Link from "next/link";
 import { EmailCapture } from "@/components/ui/EmailCapture";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { EtapeSuivante } from "@/components/ui/EtapeSuivante";
+import { RenvoiProduit } from "@/components/products/RenvoiProduit";
 
 const TITLE =
   "Investir 200 €/mois en ETF : combien après 10, 20, 30 ans ?";
@@ -525,6 +526,8 @@ export default function Investir200EurosMoisPage() {
 
 
       <EtapeSuivante montantMensuel={200} />
+
+      <RenvoiProduit contexte="Une fois le premier versement passé, la difficulté n'est plus le calcul : c'est de tenir le rythme, et de savoir chaque mois quelle ligne renforcer pour rester sur la répartition qu'on s'était fixée." />
 
       <SourcesReferences
         sources={[

@@ -108,6 +108,8 @@ export function getDatasetMeta() {
     source: dataset.source,
     currency: dataset.currency,
     sourceUrl: dataset.source_url,
+    /** TER du fonds, en % par an. Déjà déduit des cours — voir /backtest. */
+    terAnnuelPct: dataset.ter_annuel_pct,
     fetchedAt: dataset.fetched_at,
     pointsCount: PRICES.length,
     notes: dataset.notes,

@@ -58,6 +58,12 @@ const SERIES = [
   {
     role: "publiée",
     symbol: "XMWO.MI",
+    // Le TER devient un CHAMP, pas une phrase noyée dans `notes`. La page
+    // /backtest l'affichait en dur à 0,20 % — la valeur de l'ANCIENNE série —
+    // à côté d'une ligne « source » qui, elle, était dynamique et disait XMWO.
+    // Le même bloc se contredisait donc lui-même, sur la page au meilleur taux
+    // de clic du site. Un chiffre affiché doit venir du fichier qui le connaît.
+    terAnnuelPct: 0.45,
     start: "2008-01-01",
     fichier: "msci-world-eur.json",
     minPoints: 200,
@@ -72,6 +78,7 @@ const SERIES = [
   {
     role: "contrôle",
     symbol: "IWDA.AS",
+    terAnnuelPct: 0.2,
     start: "2009-08-01",
     fichier: "msci-world-eur-controle.json",
     minPoints: 180,
@@ -90,7 +97,7 @@ function fail(msg) {
   process.exit(1);
 }
 
-async function fetchSerie({ role, symbol, start, fichier, minPoints, source, description, source_url, notes }) {
+async function fetchSerie({ role, symbol, start, fichier, minPoints, source, description, source_url, notes, terAnnuelPct }) {
   const OUT_PATH = join(DATA_DIR, fichier);
   const SYMBOL = symbol;
   const START = start;
@@ -209,6 +216,7 @@ async function fetchSerie({ role, symbol, start, fichier, minPoints, source, des
     role,
     description,
     currency: "EUR",
+    ter_annuel_pct: terAnnuelPct,
     source_url,
     fetched_at: new Date().toISOString().slice(0, 10),
     notes,

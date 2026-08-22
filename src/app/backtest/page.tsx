@@ -2,7 +2,8 @@
 //
 // Différence avec /simulateur : le simulateur projette à partir d'un rendement
 // THÉORIQUE constant (6-7 %/an). Cette page utilise des données HISTORIQUES
-// RÉELLES du MSCI World (proxy IWDA.AS EUR) → on voit les vrais creux COVID,
+// RÉELLES du MSCI World (série publiée : XMWO.MI en EUR, cf. src/data/) → on
+// voit les vrais creux COVID,
 // 2022, 2018, etc.
 //
 // Pourquoi Premium : c'est la seule feature intrinsèquement RÉCURRENTE
@@ -156,10 +157,19 @@ export default async function BacktestPage() {
               au cours de clôture. Pas de frais de courtage modélisés.
             </li>
             <li>
-              <strong>Ne tient PAS compte :</strong> du TER de l&apos;ETF (≈
-              0,20 %/an), de la fiscalité (PFU/PS), de l&apos;impact des
-              dividendes en cas d&apos;ETF distribuant (IWDA est capitalisant
-              donc déjà inclus dans le cours).
+              <strong>Le TER est déjà compté, et une seule fois :</strong> les
+              frais de gestion du fonds ({meta.terAnnuelPct.toFixed(2).replace(".", ",")} %/an)
+              sont prélevés en continu sur l&apos;actif — le cours de clôture
+              en est donc déjà net. Les retrancher une seconde fois les
+              compterait deux fois. L&apos;ETF est capitalisant : les
+              dividendes sont réinvestis dans le cours, ils ne manquent pas
+              davantage.
+            </li>
+            <li>
+              <strong>Ne tient PAS compte :</strong> de la fiscalité (PFU,
+              prélèvements sociaux) ni des frais de courtage. Ces derniers
+              pénalisent le versement mensuel plus qu&apos;un achat unique —
+              plusieurs ordres au lieu d&apos;un.
             </li>
             <li>
               <strong>Drawdown :</strong> calculé sur la valeur du portefeuille

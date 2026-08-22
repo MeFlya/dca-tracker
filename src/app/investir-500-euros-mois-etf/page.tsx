@@ -5,6 +5,7 @@ import { SourcesReferences } from "@/components/ui/SourcesReferences";
 import Link from "next/link";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { EtapeSuivante } from "@/components/ui/EtapeSuivante";
+import { RenvoiProduit } from "@/components/products/RenvoiProduit";
 
 const TITLE =
   "Investir 500 €/mois en ETF : combien après 10, 20, 30 ans ?";
@@ -544,6 +545,8 @@ export default function Investir500Page() {
       </div>
 
       <EtapeSuivante montantMensuel={500} />
+
+      <RenvoiProduit contexte="Ces projections supposent des versements tenus mois après mois pendant des années. Le jour où ça commence, la question n'est plus « combien à la fin » mais « combien de parts j'achète ce mois-ci, et où en est mon allocation »." />
 
       <SourcesReferences
         sources={[

@@ -3,6 +3,7 @@
   "role": "publiée",
   "description": "Cours mensuel de clôture (dernier jour de bourse du mois) en EUR. Série de référence des backtests publiés : elle couvre la crise de 2008, contrairement à IWDA qui ne commence qu'en octobre 2009.",
   "currency": "EUR",
+  "ter_annuel_pct": 0.45,
   "source_url": "https://finance.yahoo.com/quote/XMWO.MI/history",
   "fetched_at": "2026-08-03",
   "notes": "Données publiques (cours de marché). ⚠️ Le cours d'un ETF est DÉJÀ net de ses frais de gestion (TER 0,45 %/an) : ils sont prélevés en continu sur l'actif, il ne faut donc pas les retrancher une seconde fois dans un calcul. Ne tient pas compte des frais de courtage ni de la fiscalité. Réplication synthétique (swap), encadrée par UCITS. Performances passées non garantes des performances futures.",
