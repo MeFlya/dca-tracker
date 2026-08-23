@@ -340,7 +340,7 @@ export default function AboutPage() {
               </span>
               <span>
                 <strong>Je ne vendrai pas tes données.</strong>{" "}
-                L&apos;analytics utilise Plausible (anonyme, sans cookies). Ta
+                L&apos;analytics utilise Vercel Web Analytics (anonyme, sans
                 stratégie t&apos;appartient.
               </span>
             </li>

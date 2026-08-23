@@ -5,12 +5,17 @@
  * function is a no-op in production and logs to the console in development —
  * so you can drop it in anywhere without breaking anything.
  *
- * ─── Connecting a provider ───────────────────────────────────────────────────
+ * ─── Le fournisseur, et pourquoi il a changé le 23/08/2026 ──────────────────
  *
- * Plausible (sole supported provider — cookie-free, GDPR-compliant by default,
- * exempt from prior consent per CNIL guidance):
- *   NEXT_PUBLIC_ANALYTICS_PROVIDER=plausible
- *   NEXT_PUBLIC_SITE_DOMAIN=dcatracker.fr
+ * Vercel Web Analytics, monté par <Analytics /> dans le layout racine. Sans
+ * variable d'environnement à poser : le composant suffit.
+ *
+ * Plausible a été retiré. L'abonnement n'était plus payé, mais son script
+ * continuait d'être servi à chaque visite — 6 Ko par page pour n'enregistrer
+ * nulle part, et 25 appels de mesure qui ne mesuraient plus rien. Une panne
+ * silencieuse de plus : le code se lisait comme s'il collectait.
+ *
+ * Vercel est sans cookie, comme Plausible l'était : pas de bandeau de consentement.
  *
  * Note (2026-04-29): Google Analytics support was removed to keep the site
  * cookieless and avoid the consent-banner requirement.
@@ -20,6 +25,8 @@
  * snake_case, descriptive, no PII in event names or props.
  * Props are aggregate signals only (amounts, durations, identifiers, flags).
  */
+
+import { track as vercelTrack } from "@vercel/analytics";
 
 // ─── Event catalog (discriminated union — typed per-event props) ──────────────
 
@@ -139,23 +146,35 @@ export function track(event: AnalyticsEvent): void {
     console.debug(`[analytics] ${event.name}`, mergedProps);
   }
 
-  const provider = process.env.NEXT_PUBLIC_ANALYTICS_PROVIDER;
+  // Les événements qui ne font que doubler une page vue ne partent pas.
+  // Le plan Hobby inclut 2 500 événements par mois, et une page vue en
+  // consomme un : envoyer « visit_home » à chaque arrivée sur l'accueil
+  // paierait deux fois la même information, et le quota s'épuiserait en plein
+  // mois — c'est-à-dire qu'on perdrait la mesure sans être prévenu.
+  if (EVENEMENTS_REDONDANTS.has(event.name)) return;
 
-  if (provider === "plausible") {
-    // Plausible custom events: https://plausible.io/docs/custom-event-goals
-    const plausible = (window as Window & { plausible?: PlausibleFn }).plausible;
-    if (typeof plausible === "function") {
-      plausible(event.name, Object.keys(mergedProps).length > 0 ? { props: mergedProps } : undefined);
-    }
-    return;
-  }
-
-  // No provider configured — already logged in dev above, silent in prod.
+  vercelTrack(event.name, primitivesSeules(mergedProps));
 }
 
-// ─── Provider type stubs ──────────────────────────────────────────────────────
+/** Doublons purs d'une page vue, que Vercel compte déjà. */
+const EVENEMENTS_REDONDANTS = new Set<AnalyticsEvent["name"]>([
+  "visit_home",
+  "visit_about",
+]);
 
-type PlausibleFn = (
-  name: string,
-  options?: { props?: Record<string, unknown>; callback?: () => void }
-) => void;
+/**
+ * Vercel n'accepte que des valeurs plates. Tout le reste est écarté plutôt que
+ * converti : un objet transformé en « [object Object] » occuperait une place
+ * dans le quota pour ne rien apprendre.
+ */
+function primitivesSeules(
+  props: Record<string, unknown>,
+): Record<string, string | number | boolean | null> | undefined {
+  const out: Record<string, string | number | boolean | null> = {};
+  for (const [k, v] of Object.entries(props)) {
+    if (v === null || ["string", "number", "boolean"].includes(typeof v)) {
+      out[k] = v as string | number | boolean | null;
+    }
+  }
+  return Object.keys(out).length > 0 ? out : undefined;
+}

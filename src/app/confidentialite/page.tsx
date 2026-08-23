@@ -99,7 +99,7 @@ export default function ConfidentialitePage() {
         <ul>
           <li>
             mesure d&apos;audience anonyme via{" "}
-            <strong>Plausible Analytics</strong> (page consultée, pays, navigateur,
+            <strong>Vercel Web Analytics</strong> (page consultée, pays, navigateur,
             sans identifiant individuel ni cookie) ;
           </li>
           <li>journaux serveur (logs d&apos;erreur, requêtes API) — conservés 30 jours.</li>
@@ -148,7 +148,7 @@ export default function ConfidentialitePage() {
                 <td>Consentement explicite (art. 6.1.a) — désinscription en 1 clic</td>
               </tr>
               <tr>
-                <td>Mesure d&apos;audience anonyme (Plausible)</td>
+                <td>Mesure d&apos;audience anonyme (Vercel Web Analytics)</td>
                 <td>Intérêt légitime (art. 6.1.f) — aucun cookie, aucun identifiant</td>
               </tr>
               <tr>
@@ -188,7 +188,7 @@ export default function ConfidentialitePage() {
             désinscription par l&apos;utilisateur.
           </li>
           <li>
-            <strong>Données de mesure d&apos;audience (Plausible) :</strong>{" "}
+            <strong>Données de mesure d&apos;audience (Vercel Web Analytics) :</strong>{" "}
             agrégées et anonymes — conservées sans limite spécifique.
           </li>
         </ul>
@@ -215,7 +215,7 @@ export default function ConfidentialitePage() {
             <tbody>
               <tr>
                 <td>Vercel Inc.</td>
-                <td>Hébergement et infrastructure</td>
+                <td>Hébergement, infrastructure et mesure d&apos;audience</td>
                 <td>États-Unis</td>
                 <td>Clauses contractuelles types (CCT) + DPF</td>
               </tr>
@@ -236,12 +236,6 @@ export default function ConfidentialitePage() {
                 <td>Envoi des emails transactionnels et newsletter</td>
                 <td>États-Unis</td>
                 <td>Clauses contractuelles types (CCT) + DPF</td>
-              </tr>
-              <tr>
-                <td>Plausible Insights OÜ</td>
-                <td>Mesure d&apos;audience anonyme</td>
-                <td>Estonie (UE)</td>
-                <td>Pas de transfert hors UE</td>
               </tr>
               <tr>
                 <td>Twelve Data Inc.</td>
@@ -330,10 +324,12 @@ export default function ConfidentialitePage() {
           ou de profilage</strong>.
         </p>
         <p>
-          La mesure d&apos;audience est assurée par <strong>Plausible Analytics</strong>,
-          une solution européenne (Estonie) qui ne dépose aucun cookie, ne
-          collecte aucune donnée personnelle identifiante et est exemptée du
-          consentement préalable selon les recommandations de la CNIL.
+          La mesure d&apos;audience est assurée par{" "}
+          <strong>Vercel Web Analytics</strong>, qui ne dépose aucun cookie et
+          ne collecte aucun identifiant individuel : les mesures sont agrégées
+          et ne permettent pas de reconstituer un parcours nominatif. Vercel
+          Inc. figure déjà au tableau des sous-traitants ci-dessus, au titre de
+          l&apos;hébergement, avec le même encadrement de transfert.
         </p>
         <p>
           Seuls des cookies strictement nécessaires au fonctionnement du

@@ -130,12 +130,12 @@ export default function MentionsLegalesPage() {
       <section>
         <h2>5. Cookies et traceurs</h2>
         <p>
-          Le Site utilise <strong>Plausible Analytics</strong> pour mesurer son
-          audience. Plausible est une solution de mesure d&apos;audience{" "}
-          <strong>respectueuse de la vie privée</strong> qui ne dépose
-          <strong> aucun cookie</strong>, ne collecte aucune donnée personnelle
-          identifiante et est conforme au RGPD sans nécessité de consentement
-          préalable (avis CNIL).
+            Le Site utilise <strong>Vercel Web Analytics</strong> pour mesurer
+            son audience. C&apos;est une solution de mesure{" "}
+            <strong>respectueuse de la vie privée</strong> qui ne dépose
+            <strong> aucun cookie</strong> et ne collecte aucun identifiant
+            individuel : les mesures sont agrégées et ne permettent pas de
+            reconstituer un parcours nominatif.
         </p>
         <p>
           Aucun autre cookie de traçage publicitaire ou de profilage n&apos;est

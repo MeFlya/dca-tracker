@@ -8,7 +8,7 @@ import { JsonLd } from "@/components/ui/JsonLd";
 import { AmbientBackground } from "@/components/ui/AmbientBackground";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { clerkAppearance } from "@/lib/clerk-appearance";
-import { PlausibleScript } from "@/components/analytics/PlausibleScript";
+import { Analytics } from "@vercel/analytics/next";
 import { AnalyticsContextProvider } from "@/components/analytics/AnalyticsContext";
 
 // Hardcoded — never trust NEXT_PUBLIC_SITE_URL for canonical/metadataBase
@@ -136,7 +136,7 @@ export default function RootLayout({
       <head>
         {/* Plus de preconnect Google Fonts : les polices sont self-hostées
             par next/font (servies depuis /_next/static, même origine). */}
-        <PlausibleScript />
+
       </head>
       <body className="min-h-screen flex flex-col">
         {/* Sans JS, on n'applique pas l'état caché du scroll-reveal. */}
@@ -188,6 +188,7 @@ export default function RootLayout({
         <main className="flex-1">{children}</main>
         <Footer />
         </ClerkProvider>
+        <Analytics />
       </body>
     </html>
   );
