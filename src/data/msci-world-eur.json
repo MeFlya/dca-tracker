@@ -5,7 +5,7 @@
   "currency": "EUR",
   "ter_annuel_pct": 0.45,
   "source_url": "https://finance.yahoo.com/quote/XMWO.MI/history",
-  "fetched_at": "2026-08-03",
+  "fetched_at": "2026-09-02",
   "notes": "Données publiques (cours de marché). ⚠️ Le cours d'un ETF est DÉJÀ net de ses frais de gestion (TER 0,45 %/an) : ils sont prélevés en continu sur l'actif, il ne faut donc pas les retrancher une seconde fois dans un calcul. Ne tient pas compte des frais de courtage ni de la fiscalité. Réplication synthétique (swap), encadrée par UCITS. Performances passées non garantes des performances futures.",
   "data": [
     {
@@ -899,6 +899,10 @@
     {
       "month": "2026-07",
       "value": 133.09
+    },
+    {
+      "month": "2026-08",
+      "value": 135.86
     }
   ]
 }

@@ -5,7 +5,7 @@
   "currency": "EUR",
   "ter_annuel_pct": 0.2,
   "source_url": "https://finance.yahoo.com/quote/IWDA.AS/history",
-  "fetched_at": "2026-08-03",
+  "fetched_at": "2026-09-02",
   "notes": "Données publiques (cours de marché), déjà nettes du TER de l'ETF (0,20 %/an). Ne pas utiliser pour un chiffre publié : cette série existe pour contredire l'autre, pas pour la remplacer.",
   "data": [
     {
@@ -819,6 +819,10 @@
     {
       "month": "2026-07",
       "value": 124.23
+    },
+    {
+      "month": "2026-08",
+      "value": 126.78
     }
   ]
 }
