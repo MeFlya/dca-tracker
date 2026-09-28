@@ -111,14 +111,14 @@ export function CeQuAuraitDonne({ monthlyAmount }: { monthlyAmount: number }) {
                     <span className="block text-xs font-normal text-gray-400">{repere}</span>
                   ) : null}
                 </th>
-                <td className="py-2 px-2 text-right text-gray-600">{formatEur(r.totalInvested)}</td>
-                <td className="py-2 px-2 text-right font-semibold text-gray-900">{formatEur(r.finalValue)}</td>
-                <td className="py-2 px-2 text-right text-gray-700">
+                <td className="py-2 px-2 text-right text-gray-600 whitespace-nowrap">{formatEur(r.totalInvested)}</td>
+                <td className="py-2 px-2 text-right font-semibold text-gray-900 whitespace-nowrap">{formatEur(r.finalValue)}</td>
+                <td className="py-2 px-2 text-right text-gray-700 whitespace-nowrap">
                   {r.irrAnnualPct != null ? `${pct(r.irrAnnualPct)} %` : "—"}
                 </td>
                 <td className="py-2 px-2 text-right">
                   {pire.mois ? (
-                    <span className="text-red-600">
+                    <span className="text-red-600 whitespace-nowrap">
                       {pct(pire.ecart * 100)} %
                       <span className="block text-xs text-gray-400">{libelleMois(pire.mois)}</span>
                     </span>

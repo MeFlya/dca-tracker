@@ -554,20 +554,39 @@ const CW8_VS_WPEA: ETFComparison = {
 
 // ─── WPEA vs DCAM ─────────────────────────────────────────────────────────────
 
+// ⚠️ RÉÉCRIT LE 28/09/2026 — l'ancienne fiche reposait sur deux faits faux.
+//
+// 1. L'ISIN de WPEA était IE0006WW1TQ4, qui est celui du « Xtrackers MSCI World
+//    ex USA UCITS ETF 1C », non éligible au PEA. Le vrai : IE0002XZSHO1.
+// 2. Tout le verdict tenait sur le prix de part : « DCAM à ~5 € contre quelques
+//    centaines d'euros pour WPEA ». Au 28/09/2026, WPEA cote ~7,07 € et DCAM
+//    ~6,26 € (Boursorama ; VL émetteur 7,08 € au 25/09 et 6,16 € au 31/08). Les
+//    deux sont sous 10 € : le prix de part ne départage rien.
+//
+// C'était la page n°1 du site (84 clics en 90 jours). Un lecteur qui recopiait
+// l'ISIN achetait un autre fonds, hors PEA.
+//
+// Vérifié le 28/09/2026 par deux familles de sources indépendantes : pages et
+// DIC des émetteurs (blackrock.com/fr, amundietf.fr) d'une part, justETF,
+// Boursorama et Euronext d'autre part. Aucun cours précis n'est affiché dans la
+// page : il se périmerait. Seul le seuil « sous 10 € » l'est, et il tient large.
 const WPEA_VS_DCAM: ETFComparison = {
   slug: "wpea-vs-dcam",
   publishedAt: "2026-06-10",
-  updatedAt: "2026-07-29",
+  updatedAt: "2026-09-28",
   title: "WPEA vs DCAM : quel MSCI World à 0,20 % pour votre PEA ?",
   // Les deux formulations « vs » et « ou » sont recherchées : « ou » dans le
   // titre, « vs » conservé dans le H1 de la page (champ `title` ci-dessus).
+  // Le metaTitle est CONSERVÉ : c'est celui de la page au meilleur CTR du site,
+  // et il reste vrai — le détail qui décide n'est plus le prix de part, c'est
+  // le courtier.
   metaTitle: "WPEA ou DCAM : égalité technique, un détail décide",
   metaDescription:
-    "Même indice, même TER de 0,20 %, même réplication : le match se joue sur le prix de part. DCAM à ~5 € pour un DCA mensuel, WPEA pour les gros montants.",
+    "Même indice, même TER de 0,20 %, deux parts sous 10 € : le prix ne départage pas. Ce qui compte : encours, ancienneté, frais d'ordre de votre courtier.",
 
   left: {
     heading: "WPEA",
-    subheading: "iShares Core MSCI World UCITS ETF (PEA) — ISIN IE0006WW1TQ4",
+    subheading: "iShares MSCI World Swap PEA UCITS ETF EUR (Acc) — ISIN IE0002XZSHO1",
     type: "ETF",
     coverage: "MSCI World — ~1 500 sociétés des 23 pays développés",
     issuer: "iShares (BlackRock)",
@@ -576,13 +595,13 @@ const WPEA_VS_DCAM: ETFComparison = {
     distribution: "Capitalisant",
     currency: "EUR",
     peaEligible: "Oui",
-    strongPoint: "Le premier à avoir cassé le monopole d'Amundi (2024) · iShares = n°1 mondial de l'ETF",
-    weakPoint: "Prix de part plus élevé que DCAM — moins souple pour les petits versements mensuels",
+    strongPoint: "Le plus ancien des deux (lancé en mars 2024) · le plus gros encours (≈ 2,1 Md€ fin août 2026)",
+    weakPoint: "Aucun avantage de frais ni d'indice sur DCAM : l'écart est pratique, pas financier",
   },
 
   right: {
     heading: "DCAM",
-    subheading: "Amundi PEA Monde (MSCI World) UCITS ETF — ISIN FR001400U5Q4",
+    subheading: "Amundi PEA Monde (MSCI World) UCITS ETF Acc — ISIN FR001400U5Q4",
     type: "ETF",
     coverage: "MSCI World — ~1 500 sociétés des 23 pays développés",
     issuer: "Amundi",
@@ -591,39 +610,40 @@ const WPEA_VS_DCAM: ETFComparison = {
     distribution: "Capitalisant",
     currency: "EUR",
     peaEligible: "Oui",
-    strongPoint: "Prix de part ~5 € — le plus pratique pour un DCA de petits montants · croissance d'encours très rapide (≈ 1 Md€ en un an)",
-    weakPoint: "Le plus récent du marché (mars 2025) — historique de réplication encore court",
+    strongPoint: "≈ 1,4 Md€ d'encours en dix-huit mois (fin août 2026) · fonds de droit français",
+    weakPoint: "Le plus récent (mars 2025) — historique de réplication plus court",
   },
 
   verdict:
-    "Égalité technique : même indice MSCI World, même TER de 0,20 %, même réplication synthétique, même éligibilité PEA. La performance sera quasi identique. Le départage se fait sur deux critères pratiques : le prix de part (~5 € pour DCAM contre quelques centaines d'euros pour WPEA — décisif si vous investissez 50-150 €/mois sans fractionné) et la disponibilité chez votre courtier. À montants élevés, prenez celui que votre courtier traite le mieux.",
+    "Égalité sur tout ce qui fait la performance : même indice MSCI World, même TER de 0,20 %, même réplication synthétique, même éligibilité PEA — et deux parts sous 10 €, donc aucune différence de souplesse pour un petit versement mensuel. Ce qui les sépare est secondaire : WPEA a un an d'historique de plus et un encours plus gros (≈ 2,1 Md€ contre ≈ 1,4 Md€ fin août 2026). Le vrai départage est chez votre courtier : prenez celui qu'il propose avec les frais d'ordre les plus bas, et gardez-le.",
 
   intro:
-    "C'est le match le plus récent du PEA : iShares a lancé WPEA en avril 2024 pour casser le quasi-monopole d'Amundi sur le MSCI World PEA, et Amundi a répliqué en mars 2025 avec DCAM — même indice, même 0,20 %. Pour l'investisseur, c'est une excellente nouvelle : la guerre des frais a divisé le coût par deux par rapport au CW8 historique (0,38 %). Reste à choisir entre deux jumeaux.",
+    "C'est le duel le plus récent du PEA : iShares a lancé WPEA en 2024 pour casser le quasi-monopole d'Amundi sur le MSCI World en PEA, et Amundi a répondu en mars 2025 avec DCAM — même indice, même 0,20 %. Pour l'investisseur, c'est une excellente nouvelle : la concurrence a divisé les frais par près de deux par rapport au CW8 historique (0,38 %). Reste à choisir entre deux jumeaux.",
 
   keyDifferences: [
     { criterion: "Indice répliqué", leftValue: "MSCI World", rightValue: "MSCI World (identique)" },
     { criterion: "TER", leftValue: "0,20 %/an", rightValue: "0,20 %/an (identique)" },
     { criterion: "Émetteur", leftValue: "iShares (BlackRock)", rightValue: "Amundi (Crédit Agricole)" },
-    { criterion: "Lancement", leftValue: "Avril 2024", rightValue: "Mars 2025" },
-    { criterion: "Prix de part indicatif", leftValue: "Élevé (centaines d'€)", rightValue: "~5 € — pensé pour le DCA" },
-    { criterion: "Encours", leftValue: "En forte croissance", rightValue: "≈ 1 Md€ en moins d'un an" },
+    { criterion: "Lancement", leftValue: "Mars 2024 (cotation à Paris en avril)", rightValue: "Mars 2025" },
+    { criterion: "Prix de part", leftValue: "Sous 10 €", rightValue: "Sous 10 € — aucun écart utile" },
+    { criterion: "Encours (fin août 2026)", leftValue: "≈ 2,1 Md€", rightValue: "≈ 1,4 Md€" },
+    { criterion: "Domicile du fonds", leftValue: "Irlande", rightValue: "France" },
     { criterion: "Réplication", leftValue: "Synthétique", rightValue: "Synthétique" },
     { criterion: "Éligibilité PEA", leftValue: "Oui", rightValue: "Oui" },
   ],
 
   useCases: [
     {
-      profile: "DCA de petits montants (50-200 €/mois) sans fractionné",
-      winner: "right",
+      profile: "DCA de petits montants (50-200 €/mois)",
+      winner: "both",
       explanation:
-        "Avec une part à ~5 €, DCAM permet d'investir la quasi-totalité de votre versement chaque mois, sans laisser de liquidités dormantes. Avec une part chère, une partie de votre versement attend le mois suivant.",
+        "Les deux parts cotent sous 10 € : un versement de 100 € s'investit presque entièrement chaque mois, avec l'un comme avec l'autre. Prenez celui que votre courtier facture le moins cher à l'ordre.",
     },
     {
       profile: "Courtier avec achat fractionné (Trade Republic…)",
       winner: "both",
       explanation:
-        "Si votre courtier permet d'acheter des fractions de part, le prix de part ne compte plus. Choisissez celui qui est disponible avec les frais d'ordre les plus bas chez votre courtier.",
+        "Avec l'achat fractionné, le prix de part ne compte plus du tout. Choisissez celui qui est disponible avec les frais d'ordre les plus bas chez votre courtier.",
     },
     {
       profile: "Préférence pour la diversification des émetteurs",
@@ -632,32 +652,36 @@ const WPEA_VS_DCAM: ETFComparison = {
         "Si votre portefeuille est déjà très exposé à Amundi (CW8, PSP5, PUST…), prendre l'émetteur concurrent répartit le risque opérationnel — un argument de confort plus que de performance.",
     },
     {
-      profile: "Investisseur qui veut le maximum d'antériorité",
+      profile: "Investisseur qui veut le maximum d'antériorité et d'encours",
       winner: "left",
       explanation:
-        "WPEA a un an de plus de track record de réplication. C'est court dans les deux cas, mais si l'historique vous rassure, WPEA a l'avantage — en sachant que les deux émetteurs sont des géants éprouvés.",
+        "WPEA a un an d'historique de plus et l'encours le plus élevé des deux. C'est court dans les deux cas, mais si l'historique vous rassure, WPEA a l'avantage — en sachant que les deux émetteurs sont des géants éprouvés.",
     },
   ],
 
   analysis:
-    "Ce duel illustre la meilleure dynamique possible pour les épargnants : la concurrence par les frais. Pendant des années, le CW8 d'Amundi (0,38 %) était l'option par défaut faute d'alternative. L'arrivée de WPEA à 0,20 % a forcé Amundi à répondre avec DCAM au même tarif — et un prix de part délibérément bas, calibré pour le DCA mensuel des particuliers. Sur la performance, n'attendez aucune différence significative : même indice, même mécanisme de swap encadré par UCITS, même TER. Les écarts de tracking se joueront au centième de pourcent. La vraie décision est logistique : prix de part, disponibilité et frais d'ordre chez VOTRE courtier. C'est aussi un rappel utile : si vous détenez du CW8 acheté avant 2024, il n'y a pas urgence à vendre (pas de friction fiscale en PEA, mais pas de raison de payer 0,38 % sur vos NOUVEAUX versements non plus — basculez simplement vos achats futurs vers WPEA ou DCAM).",
+    "Ce duel illustre la meilleure dynamique possible pour les épargnants : la concurrence par les frais. Pendant des années, le CW8 d'Amundi (0,38 %) était l'option par défaut faute d'alternative. L'arrivée de WPEA à 0,20 % a forcé Amundi à répondre avec DCAM au même tarif. Sur la performance, n'attendez aucune différence significative : même indice, même mécanisme de swap encadré par UCITS, même TER. Les écarts de suivi se joueront au centième de pourcent. La décision est donc logistique : disponibilité et frais d'ordre chez VOTRE courtier. Si vous détenez du CW8 acheté avant 2024, il n'y a pas urgence à vendre (pas de friction fiscale en PEA, mais pas de raison de payer 0,38 % sur vos NOUVEAUX versements non plus — basculez simplement vos achats futurs vers WPEA ou DCAM).",
 
   faq: [
     {
       q: "WPEA et DCAM ont-ils exactement la même performance ?",
-      a: "En théorie oui : même indice MSCI World, même TER de 0,20 %, même réplication synthétique. En pratique, de micro-écarts de tracking (qualité du swap, frais de rééquilibrage) peuvent apparaître, de l'ordre du centième de pourcent par an. Aucun des deux n'a d'avantage structurel sur l'autre.",
+      a: "En théorie oui : même indice MSCI World, même TER de 0,20 %, même réplication synthétique. En pratique, de micro-écarts de suivi (qualité du swap, coûts de rééquilibrage) peuvent apparaître, de l'ordre du centième de pourcent par an. Aucun des deux n'a d'avantage structurel sur l'autre.",
     },
     {
       q: "Je détiens déjà du CW8 : dois-je vendre pour acheter WPEA ou DCAM ?",
-      a: "Pas nécessairement. Dans un PEA, vendre du CW8 pour racheter du WPEA/DCAM n'a pas de coût fiscal, mais génère des frais d'ordre. La stratégie la plus simple : conserver le CW8 existant et diriger vos nouveaux versements vers WPEA ou DCAM (0,20 % au lieu de 0,38 %). À gros encours, un arbitrage complet peut se justifier — faites le calcul frais d'ordre vs économie de TER.",
+      a: "Pas nécessairement. Dans un PEA, vendre du CW8 pour racheter du WPEA/DCAM n'a pas de coût fiscal, mais génère des frais d'ordre. La stratégie la plus simple : conserver le CW8 existant et diriger vos nouveaux versements vers WPEA ou DCAM (0,20 % au lieu de 0,38 %). À gros encours, un arbitrage complet peut se justifier — faites le calcul frais d'ordre contre économie de TER.",
     },
     {
-      q: "Pourquoi le prix de part de DCAM est-il si bas (~5 €) ?",
-      a: "C'est un choix délibéré d'Amundi pour cibler le DCA des particuliers : avec une part à 5 €, un versement de 100 €/mois s'investit presque intégralement chaque mois, sans liquidités dormantes. Le prix de part n'a aucun impact sur la performance — c'est uniquement une question de granularité d'achat.",
+      q: "Le prix de part change-t-il quelque chose entre les deux ?",
+      a: "Non. Les deux parts cotent sous 10 €, si bien qu'un versement de 100 € s'investit presque intégralement chaque mois dans l'un comme dans l'autre. Et le prix de part n'a aucun effet sur la performance : c'est seulement une question de granularité d'achat.",
+    },
+    {
+      q: "Quels sont les ISIN à vérifier avant de passer l'ordre ?",
+      a: "WPEA : IE0002XZSHO1 (iShares MSCI World Swap PEA UCITS ETF EUR Acc). DCAM : FR001400U5Q4 (Amundi PEA Monde MSCI World UCITS ETF Acc). Vérifiez toujours l'ISIN dans l'écran d'ordre de votre courtier : un mnémonique proche peut désigner un autre fonds, parfois non éligible au PEA.",
     },
     {
       q: "Les deux sont-ils éligibles au PEA chez tous les courtiers ?",
-      a: "Les deux sont juridiquement éligibles au PEA (réplication synthétique conforme). En pratique, la disponibilité dépend du catalogue de votre courtier — DCAM et WPEA sont désormais référencés chez les principaux courtiers français (Boursorama, Fortuneo, Bourse Direct…). Vérifiez les frais d'ordre, qui peuvent différer d'un ETF à l'autre.",
+      a: "Les deux sont éligibles au PEA — c'est écrit dans leur document d'informations clés. En pratique, la disponibilité dépend du catalogue de votre courtier. Vérifiez aussi les frais d'ordre, qui peuvent différer d'un ETF à l'autre chez un même courtier.",
     },
   ],
 
