@@ -309,6 +309,17 @@ export function BacktestClient({ isPremium, minMonth, maxMonth }: Props) {
 // ─── Sub: Results (Premium) ──────────────────────────────────────────────────
 
 function BacktestResults({ result }: { result: BacktestResult }) {
+  // Pire écart entre valeur et total versé, sur la série du résultat.
+  const pireSousVerse = (() => {
+    let pire = { e: 0, mois: "" };
+    for (const p of result.series) {
+      const e = p.invested > 0 ? p.value / p.invested - 1 : 0;
+      if (e < pire.e) pire = { e, mois: p.month };
+    }
+    return pire.mois ? { pct: -pire.e * 100, mois: pire.mois } : null;
+  })();
+  const un = (v: number) =>
+    v.toLocaleString("fr-FR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
   const chartData = useMemo(
     () =>
       result.series.map((p) => ({
@@ -356,8 +367,14 @@ function BacktestResults({ result }: { result: BacktestResult }) {
         />
       </div>
 
-      {/* Drawdown */}
-      {result.maxDrawdown && (
+      {/* Drawdown — deux mesures, parce qu'une seule mentait au début d'un
+          DCA. maxDrawdown suit la VALEUR (versements compris) : les
+          versements masquent les pertes des premiers mois. Jusqu'au
+          28/09/2026 ce bloc la présentait comme « la pire perte papier que
+          vous auriez vue » ; pour un départ en janvier 2020, il affichait un
+          creux de 2025 alors qu'en mars 2020 le portefeuille était à −9,9 %
+          sous le total versé. */}
+      {(result.maxDrawdown || pireSousVerse) && (
         <div className="rounded-2xl border border-amber-200 bg-amber-50/60 p-5">
           <div className="flex items-start gap-3">
             <TrendingDown
@@ -365,19 +382,31 @@ function BacktestResults({ result }: { result: BacktestResult }) {
               className="text-amber-700 shrink-0 mt-0.5"
               aria-hidden
             />
-            <div>
-              <p className="text-sm font-bold text-amber-900 mb-1">
-                Pire creux traversé en route :{" "}
-                <span className="tabular-nums">
-                  −{result.maxDrawdown.pct.toFixed(1)} %
-                </span>
-              </p>
+            <div className="space-y-2">
               <p className="text-sm text-amber-800 leading-relaxed">
-                De {formatMonthFr(result.maxDrawdown.peakMonth)} (pic) à{" "}
-                {formatMonthFr(result.maxDrawdown.troughMonth)} (creux). C&apos;est
-                la pire perte papier que vous auriez vue à un moment donné, sans
-                vendre.
+                <span className="font-bold text-amber-900">Sous le total versé :</span>{" "}
+                {pireSousVerse ? (
+                  <>
+                    au pire moment, en {formatMonthFr(pireSousVerse.mois)}, le
+                    portefeuille valait{" "}
+                    <span className="tabular-nums font-semibold">{un(pireSousVerse.pct)} %</span>{" "}
+                    de moins que ce que vous aviez versé. C&apos;est la perte que
+                    vous auriez lue sur votre relevé.
+                  </>
+                ) : (
+                  <>jamais : la valeur n&apos;est pas passée sous le total versé.</>
+                )}
               </p>
+              {result.maxDrawdown && (
+                <p className="text-sm text-amber-800 leading-relaxed">
+                  <span className="font-bold text-amber-900">Pire recul de la valeur :</span>{" "}
+                  <span className="tabular-nums font-semibold">−{un(result.maxDrawdown.pct)} %</span>,
+                  de {formatMonthFr(result.maxDrawdown.peakMonth)} à{" "}
+                  {formatMonthFr(result.maxDrawdown.troughMonth)}. Versements
+                  compris : au début d&apos;un DCA, ils masquent une partie de
+                  la baisse.
+                </p>
+              )}
             </div>
           </div>
         </div>
