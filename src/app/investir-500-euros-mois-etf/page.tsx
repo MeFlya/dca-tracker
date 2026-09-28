@@ -6,6 +6,8 @@ import Link from "next/link";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { EtapeSuivante } from "@/components/ui/EtapeSuivante";
 import { RenvoiProduit } from "@/components/products/RenvoiProduit";
+import { CeQuAuraitDonne } from "@/components/backtest/CeQuAuraitDonne";
+import { SerieMontants } from "@/components/money/SerieMontants";
 
 const TITLE =
   "Investir 500 €/mois en ETF : combien après 10, 20, 30 ans ?";
@@ -488,6 +490,9 @@ export default function Investir500Page() {
         l&apos;année 1 vaut bien plus à terme qu&apos;un euro versé à
         l&apos;année 6 — même avec le même horizon final.
       </p>
+
+      <CeQuAuraitDonne monthlyAmount={500} />
+      <SerieMontants courant={500} />
 
       {/* FAQ */}
       <h2 className="text-xl font-bold text-gray-900 mb-4">Questions fréquentes</h2>

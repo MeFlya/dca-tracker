@@ -37,7 +37,7 @@ export interface SimulatorOutput {
 }
 
 // Scenario spread around the user's base return assumption
-const SCENARIO_DELTA = 2; // ±2 percentage points
+export const SCENARIO_DELTA = 2; // ±2 percentage points — exporté pour que les textes le lisent au lieu de le recopier
 
 function monthlyRate(annualPct: number): number {
   return Math.pow(1 + annualPct / 100, 1 / 12) - 1;

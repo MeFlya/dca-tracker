@@ -17,7 +17,7 @@ const TITLE = "DCA Tracker — Simulateur DCA ETF gratuit + suivi mensuel";
 // ≤ 150 caractères (Google tronque à ~150-160, les previews sociales à ~125 —
 // l'essentiel du message doit tenir dans les ~125 premiers).
 const DESCRIPTION =
-  "Simulez votre DCA en ETF (3 scénarios, intérêts composés), backtestez le MSCI World depuis 2009 et suivez votre plan mois après mois. Gratuit, sans inscription.";
+  "Simulez votre DCA en ETF (3 scénarios, intérêts composés), backtestez le MSCI World depuis 2008 et suivez votre plan mois après mois. Gratuit, sans inscription.";
 
 export const metadata: Metadata = {
   title: TITLE,

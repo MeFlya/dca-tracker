@@ -2,8 +2,51 @@ import type { Metadata } from "next";
 import { SimulatorPageClient } from "./SimulatorPageClient";
 import { getUserSubscription, isPremium } from "@/lib/subscription";
 import { JsonLd } from "@/components/ui/JsonLd";
-import { runSimulation, formatEur } from "@/lib/simulator";
+import Link from "next/link";
+import { runSimulation, formatEur, SCENARIO_DELTA } from "@/lib/simulator";
 import { paramsFromSearch } from "@/lib/simulation-params";
+import { ArticleByline } from "@/components/ui/ArticleByline";
+
+// ─── FAQ : ce que les concurrents placés devant ont, et que cette page n'avait pas ─
+//
+// Search Console au 25/09/2026 : position ~5 sur « simulateur dca » et ses
+// variantes, pour une poignée de clics. Les pages devant elle entourent un outil
+// souvent plus pauvre de texte qui répond aux questions qu'on se pose AVANT de
+// toucher un curseur. Deux requêtes que la page ne contenait nulle part :
+// « investissement programmé » et « calcul dca ».
+//
+// ⚠️ Pas de résultat enrichi à en attendre : Google réserve l'affichage des FAQ
+// aux sites institutionnels depuis 2023. Le JSON-LD reste utile aux moteurs de
+// réponse, et le texte l'est à tout le monde.
+//
+// Aucun chiffre écrit à la main : les valeurs par défaut et l'écart des scénarios
+// sont lus dans le moteur, qui les applique. Aucun conseil non plus — on décrit
+// ce que fait l'outil, jamais ce que le lecteur devrait faire de son argent.
+const DEFAUTS = paramsFromSearch(new URLSearchParams()).input;
+const pct = (v: number) => v.toLocaleString("fr-FR", { maximumFractionDigits: 2 });
+
+const FAQ_SIMULATEUR = [
+  {
+    q: "Comment fonctionne ce simulateur DCA ?",
+    a: `Chaque mois, le montant choisi est investi en début de mois. On retranche les frais annuels du rendement, on convertit ce rendement net en taux mensuel, et on capitalise mois après mois : c'est le calcul des intérêts composés appliqué à un versement régulier. La formule exacte et ses limites sont publiées sur la page Méthodologie.`,
+  },
+  {
+    q: "DCA, investissement programmé : quelle différence ?",
+    a: `Aucune sur le fond. Le DCA (dollar-cost averaging) est la méthode : investir la même somme à intervalles réguliers, quel que soit le cours. L'investissement programmé est la façon de l'automatiser chez un courtier, qui passe l'ordre à date fixe. Le simulateur calcule le résultat de cette méthode ; il ne dépend pas du courtier choisi.`,
+  },
+  {
+    q: "Quel rendement annuel retenir pour un ETF ?",
+    a: `Le simulateur part par défaut de ${pct(DEFAUTS.annualReturnPct)} % par an. C'est une hypothèse de travail, pas une moyenne garantie : les marchés ont connu des décennies bien moins bonnes. C'est pourquoi le résultat est toujours encadré par deux scénarios, à ${SCENARIO_DELTA} points de rendement en dessous et au-dessus. Si une hypothèse vous paraît trop optimiste, baissez-la : le calcul suit.`,
+  },
+  {
+    q: "Le calcul tient-il compte des frais, de l'inflation et des impôts ?",
+    a: `Des frais, oui : le taux saisi (${pct(DEFAUTS.annualFeesPct)} % par défaut) est retranché chaque année du rendement. De l'inflation, sur option : cochez-la pour afficher la valeur finale en euros d'aujourd'hui. Des impôts, non : ils dépendent de l'enveloppe. Le calculateur fiscal PEA/CTO fait ce calcul séparément.`,
+  },
+  {
+    q: "Pourquoi mon résultat réel sera-t-il différent ?",
+    a: `Parce qu'un vrai marché ne progresse pas à rendement constant. L'ordre des bonnes et des mauvaises années change le résultat d'un investissement régulier, même à rendement moyen identique. Le backtest rejoue la même méthode sur les vrais cours du MSCI World en euros, krach de 2008 compris : c'est la contre-épreuve de cette projection.`,
+  },
+];
 
 // ─── Titre : 44 caractères, et c'est le point ───────────────────────────────
 //
@@ -156,6 +199,69 @@ export default async function SimulateurPage({ searchParams }: Props) {
 
       {/* Interactive simulator — hydrates with serverComputedOutput as initial state */}
       <SimulatorPageClient initialOutput={initialOutput} isPremium={premium} />
+
+      {/* ── Questions fréquentes — rendues côté serveur, sous l'outil ─────────── */}
+      <section aria-labelledby="faq-simulateur" className="max-w-3xl mt-16">
+        <h2 id="faq-simulateur" className="text-2xl font-bold text-gray-900 mb-2">
+          Questions fréquentes sur le simulateur DCA
+        </h2>
+        <div className="mb-6">
+          <ArticleByline
+            publishedAt="2026-04-18"
+            updatedAt="2026-09-28"
+            readingMinutes={4}
+            url="/simulateur"
+            headline={TITLE}
+            description={DESCRIPTION}
+          />
+        </div>
+        <div className="space-y-3">
+          {FAQ_SIMULATEUR.map(({ q, a }) => (
+            <details
+              key={q}
+              className="group rounded-xl border border-gray-100 bg-white p-4 open:bg-gray-50/50"
+            >
+              <summary className="cursor-pointer list-none flex items-center justify-between gap-3">
+                <h3 className="text-sm font-semibold text-gray-900">{q}</h3>
+                <span className="text-gray-500 group-open:rotate-180 transition-transform" aria-hidden>
+                  ▾
+                </span>
+              </summary>
+              <p className="mt-3 text-sm text-gray-600 leading-relaxed">{a}</p>
+            </details>
+          ))}
+        </div>
+        <p className="text-sm text-gray-500 mt-6 leading-relaxed">
+          Pour aller plus loin :{" "}
+          <Link href="/methodologie" className="text-primary-700 font-medium hover:underline">
+            la méthodologie et ses formules
+          </Link>{" "}
+          ·{" "}
+          <Link href="/calculateur-fiscal-pea-cto" className="text-primary-700 font-medium hover:underline">
+            le calculateur fiscal PEA/CTO
+          </Link>{" "}
+          ·{" "}
+          <Link href="/backtest" className="text-primary-700 font-medium hover:underline">
+            le backtest sur les vrais cours
+          </Link>{" "}
+          ·{" "}
+          <Link href="/strategie-dca" className="text-primary-700 font-medium hover:underline">
+            la stratégie DCA expliquée
+          </Link>
+        </p>
+      </section>
+
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: FAQ_SIMULATEUR.map(({ q, a }) => ({
+            "@type": "Question",
+            name: q,
+            acceptedAnswer: { "@type": "Answer", text: a },
+          })),
+        }}
+      />
 
       <JsonLd
         data={{

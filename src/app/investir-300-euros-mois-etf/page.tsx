@@ -5,6 +5,8 @@ import Link from "next/link";
 import { EmailCapture } from "@/components/ui/EmailCapture";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { EtapeSuivante } from "@/components/ui/EtapeSuivante";
+import { CeQuAuraitDonne } from "@/components/backtest/CeQuAuraitDonne";
+import { SerieMontants } from "@/components/money/SerieMontants";
 
 const TITLE =
   "Investir 300 €/mois en ETF : combien après 10, 20, 30 ans ?";
@@ -560,6 +562,9 @@ export default function Investir300EurosMoisPage() {
       </section>
 
       {/* ── FAQ ───────────────────────────────────────────────────────────── */}
+      <CeQuAuraitDonne monthlyAmount={300} />
+      <SerieMontants courant={300} />
+
       <section className="mb-14">
         <h2 className="text-2xl font-bold text-gray-900 mb-6">
           Questions fréquentes

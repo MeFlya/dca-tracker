@@ -14,7 +14,20 @@ import { EtapeSuivante } from "@/components/ui/EtapeSuivante";
 // est « DCA ou tout investir d'un coup ? », et la littérature disponible est
 // américaine et en dollars. La page a déjà la section #dca-vs-lump-sum pour y
 // répondre.
-const TITLE = "DCA ou tout investir d'un coup ? Ce que disent les chiffres";
+// ─── LA MESURE DU 29 JUILLET EST LUE : LE TITRE A ÉCHOUÉ ─────────────────────
+//
+// Du 29/07 au 27/09 (60 jours, fenêtre fixée d'avance), le titre « DCA ou tout
+// investir d'un coup ? Ce que disent les chiffres » a fait passer la position
+// moyenne de la page de 11,8 à 37,5, pour un volume d'impressions quasi
+// inchangé (328 → 326) et des clics tombés de 4 à 1. Il réduisait un
+// explicatif général — définition, exemple, chiffres, démarrage, erreurs — à
+// la seule question du versement unique, et retirait « stratégie DCA » d'une
+// page qui s'appelle /strategie-dca.
+//
+// Le titre revient à ce que la page EST, en tête la requête qu'elle porte.
+// Facteur confondant à garder en tête pour la prochaine lecture : la section
+// Vanguard a été réécrite le même 29/07 (c7f26f8).
+const TITLE = "Stratégie DCA : définition, méthode et limites en ETF";
 // ⚠️ Cette meta a été fausse deux fois de suite. Elle a promis un backtest
 // MSCI World en euros (inexistant), puis « ce que dit l'étude Vanguard » —
 // alors que Vanguard n'apparaît QUE dans le bloc de sources en bas de page :
@@ -35,7 +48,7 @@ const TITLE = "DCA ou tout investir d'un coup ? Ce que disent les chiffres";
 // ⚠️ Le TITRE ne bouge pas : il a été modifié dans le lot SEO et le compteur de
 // 60 jours court dessus. Le changer maintenant rendrait la mesure illisible.
 const DESCRIPTION =
-  "Tout d'un coup l'emporte 2 fois sur 3, sauf dans les pires scénarios. Et si vous épargnez chaque mois, la question ne se pose pas : voici pourquoi.";
+  "Investir la même somme à intervalles réguliers : définition, exemple chiffré, ce que disent les études face au versement unique, et 4 erreurs à éviter.";
 
 export const metadata: Metadata = {
   title: TITLE,

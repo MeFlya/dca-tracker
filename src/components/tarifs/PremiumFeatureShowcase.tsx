@@ -273,7 +273,7 @@ export function PremiumFeatureShowcase() {
           mockup={<BacktestMockup />}
           title="Backtest historique"
           badge="Nouveau"
-          desc="Ce qu'aurait VRAIMENT donné votre DCA sur les données réelles du MSCI World depuis 2009 — COVID et 2022 inclus. TRI calculé, pire creux affiché. Pas une projection théorique : du réel."
+          desc="Ce qu'aurait VRAIMENT donné votre DCA sur les données réelles du MSCI World depuis 2008 — krach de 2008, COVID et 2022 inclus. TRI calculé, pire creux affiché. Pas une projection théorique : du réel."
         />
         <FeatureCard
           mockup={<FiscalMockup />}

@@ -296,13 +296,19 @@ export function GuidesMenu({ mobile = false, onNavigate }: Props) {
         />
       </button>
 
-      {open && (
-        // Conteneur positionné avec un padding-top (pt-2) TRANSPARENT qui sert
-        // de "pont" hoverable entre le trigger et la carte visuelle. Sans ce
-        // pont (ex: avec mt-2), la souris traverse un gap vide de 8px → elle
-        // sort du wrapper → onMouseLeave ferme le menu avant qu'elle n'atteigne
-        // les items. Le pont garde la souris "dans" la zone hoverable.
+      {/* ⚠️ TOUJOURS DANS LE DOM, masqué par `hidden` quand il est fermé.
+          Il n'était rendu qu'à l'ouverture (`{open && …}`) : les 17 liens du
+          méga-menu n'existaient donc dans le HTML servi d'AUCUNE des 80 pages,
+          et /etf-nasdaq n'avait plus un seul lien entrant sur tout le site.
+          Google ne survole pas les menus : ce qu'il ne trouve pas dans le HTML,
+          il ne le découvre pas par ce chemin. */}
+      {/* Conteneur positionné avec un padding-top (pt-2) TRANSPARENT qui sert
+          de "pont" hoverable entre le trigger et la carte visuelle. Sans ce
+          pont (ex: avec mt-2), la souris traverse un gap vide de 8px → elle
+          sort du wrapper → onMouseLeave ferme le menu avant qu'elle n'atteigne
+          les items. Le pont garde la souris "dans" la zone hoverable. */}
         <div
+          hidden={!open}
           ref={menuRef}
           className="absolute left-1/2 -translate-x-1/2 top-full pt-2 w-[min(900px,calc(100vw-2rem))]"
         >
@@ -361,7 +367,7 @@ export function GuidesMenu({ mobile = false, onNavigate }: Props) {
             </div>
           </div>
         </div>
-      )}
+
     </div>
   );
 }

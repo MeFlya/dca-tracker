@@ -10,6 +10,7 @@ import type { SimulatorMode } from "@/components/simulator/SimulatorForm";
 import { SimulatorHero } from "@/components/simulator/SimulatorHero";
 import { SimulatorResults } from "@/components/simulator/SimulatorResults";
 import { ScenarioComparison } from "@/components/simulator/ScenarioComparison";
+import { TableauAnnuel } from "@/components/simulator/TableauAnnuel";
 
 // Monte Carlo en import dynamique (ssr: false) — il embarque recharts et ne
 // sert qu'après hydratation. Avec PortfolioChart/GainsDonutChart (dans
@@ -286,6 +287,10 @@ export function SimulatorPageClient({ initialOutput, isPremium }: Props) {
         {/* Detailed results */}
         <SimulatorResults output={output} />
 
+        {/* Le détail année par année — gratuit, comme chez tous les concurrents
+            placés devant sur « simulateur dca ». */}
+        <TableauAnnuel output={output} />
+
         {/* Monte Carlo full chart */}
         <MonteCarloChart data={mc} isPremium={isPremium} input={output.input} />
 
@@ -303,7 +308,7 @@ export function SimulatorPageClient({ initialOutput, isPremium }: Props) {
             </p>
             <p className="text-xs text-gray-600 leading-relaxed">
               Le backtest rejoue votre DCA sur les vraies données MSCI World
-              depuis 2009 — creux compris — avec TRI et pire perte traversée.
+              depuis 2008 — krach compris — avec TRI et pire perte traversée.
             </p>
           </div>
           <Link

@@ -441,7 +441,7 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
       },
       {
         q: "Où voir le drawdown réel de mon scénario ?",
-        a: "Notre backtest calcule le drawdown maximum réellement traversé pour votre montant et votre période, sur les données MSCI World depuis 2009 — avec les dates exactes du pic et du creux.",
+        a: "Notre backtest calcule le drawdown maximum réellement traversé pour votre montant et votre période, sur les données MSCI World depuis 2008 — avec les dates exactes du pic et du creux.",
       },
     ],
     related: [
