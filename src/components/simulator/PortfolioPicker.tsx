@@ -352,7 +352,8 @@ function AddEtfDropdown({
                   </span>
                 </div>
                 <p className="text-[11px] text-gray-500 leading-snug truncate">
-                  {etf.displaySymbol} · {etf.peaEligible ? "PEA" : "CTO"}
+                  {etf.displaySymbol} ·{" "}
+                  {etf.peaEligible ? "PEA" : etf.sansDicUE ? "sans DIC (hors UE)" : "CTO"}
                 </p>
               </button>
             ))}

@@ -41,12 +41,25 @@ export async function generateMetadata({
   // EUR (court terme) »), et c'est lui qui faisait dépasser 60 caractères sur
   // C3M, AEEM et PCEU. Le millésime est porté par la meta description.
   const title = `ETF ${etf.displaySymbol} (${etf.indexLabel}) : frais et avis`;
+  // Description refaite le 28/09/2026. L'ancienne (197 à 240 caractères, donc
+  // tronquée par Google sur les 19 fiches) posait « Faut-il l'acheter en
+  // 2026 ? » — une promesse de conseil que le site ne peut pas tenir sans
+  // statut CIF — et disait « réservé au CTO » pour SPY et QQQ, qu'un
+  // particulier de l'UE ne peut pas acheter du tout (pas de DIC, voir
+  // sansDicUE). Gabarit court, sans le nom complet (jusqu'à 60 caractères) :
+  // le ticker et l'indice suffisent à reconnaître le fonds.
+  const ter = etf.ter.toLocaleString("fr-FR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 4,
+  });
+  const enveloppe = etf.sansDicUE
+    ? "sans DIC, inaccessible aux particuliers de l'UE"
+    : etf.peaEligible
+      ? "éligible PEA"
+      : "hors PEA";
   const description =
-    `${etf.displaySymbol} — ${etf.name} : TER ${etf.ter.toString().replace(".", ",")} %, ` +
-    `${etf.peaEligible ? "éligible PEA" : "réservé au CTO ou à l'assurance-vie"}, ` +
-    `${etf.distributionPolicy.toLowerCase()}. ` +
-    `Faut-il l'acheter en 2026 ? Points forts, limites, alternatives comparées — ` +
-    `et simulation DCA avec les frais réels.`;
+    `${etf.displaySymbol} (${etf.indexLabel}) : ${ter} % de frais, ${enveloppe}, ` +
+    `${etf.distributionPolicy.toLowerCase()}. ISIN, limites, équivalents et DCA simulé avec ses frais.`;
 
   return {
     title,
@@ -62,7 +75,7 @@ export async function generateMetadata({
     twitter: {
       card: "summary_large_image",
       title,
-      description: `${etf.displaySymbol} · TER ${etf.ter} % · ${etf.replicationMethod} · ${etf.distributionPolicy}${etf.isin ? ` · ${etf.isin}` : ""}. Simulateur DCA intégré.`,
+      description,
     },
   };
 }

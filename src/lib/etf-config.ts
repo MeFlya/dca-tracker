@@ -24,6 +24,16 @@ export interface ETFConfig {
   distributionPolicy: "Capitalisant" | "Distribuant";
   isin?: string;
   peaEligible: boolean;     // Whether the ETF can be held in a French PEA
+  /**
+   * Fonds domicilié aux États-Unis, sans document d'informations clés (DIC).
+   * Le règlement européen PRIIPs impose ce document pour vendre un produit à
+   * un particulier ; l'émetteur américain ne le publie pas, et les courtiers
+   * de l'UE refusent donc l'achat à la clientèle non professionnelle.
+   * Jusqu'au 28/09/2026 le site présentait SPY et QQQ comme des ETF « à loger
+   * en compte-titres » : un lecteur qui suivait la fiche se heurtait au refus
+   * de son courtier.
+   */
+  sansDicUE?: true;
   region: ETFRegion;
 }
 
@@ -205,14 +215,17 @@ export const ETF_LIST: ETFConfig[] = [
     indexLabel: "S&P 500",
     name: "SPDR S&P 500 ETF Trust",
     // Hors table de vérité du 28/09/2026 : TER et ISIN non recoupés.
+    // « L'ETF le plus échangé au monde » retiré le 28/09/2026 : la fiche
+    // détaillée l'avait déjà retiré faute de pouvoir le recouper.
     description:
-      "L'ETF le plus échangé au monde. Référence absolue pour l'exposition aux actions US — mais distribuant, libellé en USD et non éligible PEA. Plutôt utilisé comme référence ou sur CTO.",
+      "Le plus ancien ETF sur le S&P 500 (1993), celui dont on cite la performance. Fonds américain sans DIC : en principe inaccessible à un particulier de l'UE. Équivalents UCITS : CSPX ou VUSA en compte-titres, PSP5, SPEA ou ESE dans un PEA.",
     category: "Actions USA (S&P 500)",
     ter: 0.0945,
     replicationMethod: "Physique complet",
     distributionPolicy: "Distribuant",
     isin: "US78462F1030",
     peaEligible: false,
+    sansDicUE: true,
     region: "usa",
   },
   {
@@ -285,13 +298,14 @@ export const ETF_LIST: ETFConfig[] = [
     // 0,20 % à 0,18 % le 22/12/2025.
     name: "Invesco QQQ Trust, Series 1",
     description:
-      "La version américaine historique du Nasdaq-100. Très liquide, 0,18 % de frais, mais distribuant, libellé en USD et non éligible PEA. Référence de performance tech aux États-Unis ; pour le Nasdaq-100 dans un PEA : PUST.",
+      "La version américaine historique du Nasdaq-100, à 0,18 % de frais, distribuant et libellé en USD. Fonds américain sans DIC : en principe inaccessible à un particulier de l'UE. Équivalents UCITS : CNDX ou ANX en compte-titres, PUST dans un PEA.",
     category: "Actions Tech USA (Nasdaq-100)",
     ter: 0.18,
     replicationMethod: "Physique complet",
     distributionPolicy: "Distribuant",
     isin: "US46090E1038",
     peaEligible: false,
+    sansDicUE: true,
     region: "usa",
   },
 

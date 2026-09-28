@@ -310,6 +310,10 @@ function EtfRow({
               <span className="text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 px-1.5 py-0.5 rounded">
                 PEA
               </span>
+            ) : item.etf.sansDicUE ? (
+              <span className="text-[10px] font-semibold bg-red-50 text-red-700 border border-red-200 px-1.5 py-0.5 rounded">
+                Sans DIC — inaccessible aux particuliers de l&apos;UE
+              </span>
             ) : (
               <span className="text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200 px-1.5 py-0.5 rounded">
                 CTO uniquement

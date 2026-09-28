@@ -88,7 +88,11 @@ const ETF_CTO: EtfLigne[] = [
   { symbol: "IWDA", name: "iShares Core MSCI World",            ter: "0,20 %", note: "Réplication physique — non éligible PEA. Équivalents PEA : WPEA, DCAM" },
   { symbol: "VWCE", name: "Vanguard FTSE All-World",            ter: "0,14 %", note: "Pays développés et émergents — non éligible PEA" },
   { symbol: "CSPX", name: "iShares Core S&P 500",               ter: "0,07 %", note: "S&P 500 — non éligible PEA" },
-  { symbol: "QQQ",  name: "Invesco QQQ Trust, Series 1",        ter: "0,18 %", note: "Nasdaq-100, fonds de droit américain — non éligible PEA" },
+  // QQQ remplacé par CNDX le 28/09/2026 : fonds américain sans DIC, le QQQ
+  // ne s'achète pas en compte-titres chez un courtier de l'UE (règlement
+  // PRIIPs). Le lister ici comme « ETF de CTO » envoyait le lecteur vers un
+  // ordre refusé.
+  { symbol: "CNDX", name: "iShares NASDAQ 100 (USD, Acc)",      ter: "0,30 %", note: "Nasdaq-100 — non éligible PEA. Le QQQ américain, sans DIC, est inaccessible aux particuliers de l'UE. Équivalent PEA : PUST" },
 ];
 
 /** Vrai quand l'ETF a une fiche /etf/[symbole] — sinon le lien serait une 404. */
@@ -362,7 +366,7 @@ export default function PEAouCTOPage() {
             <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-3">Choisissez le CTO si…</p>
             <ul className="space-y-2.5">
               {[
-                "Vous voulez des ETF non éligibles au PEA (VWCE, IWDA, QQQ…)",
+                "Vous voulez des ETF non éligibles au PEA (VWCE, IWDA, CSPX…)",
                 "Vous avez déjà atteint le plafond PEA de 150 000 €",
                 "Vous avez besoin de flexibilité totale sur les retraits",
                 "Vous compensez des moins-values avec des plus-values",
@@ -402,7 +406,7 @@ export default function PEAouCTOPage() {
             </li>
             <li className="flex gap-3 text-sm text-gray-700">
               <span className="shrink-0 w-6 h-6 rounded-full bg-primary-600 text-white text-xs flex items-center justify-center font-bold">2</span>
-              <span>Si vous voulez des ETF non éligibles au PEA (VWCE, IWDA, QQQ…) ou si vous avez dépassé 150 000 €, <strong>ajoutez un CTO</strong> en complément.</span>
+              <span>Si vous voulez des ETF non éligibles au PEA (VWCE, IWDA, CSPX…) ou si vous avez dépassé 150 000 €, <strong>ajoutez un CTO</strong> en complément.</span>
             </li>
             <li className="flex gap-3 text-sm text-gray-700">
               <span className="shrink-0 w-6 h-6 rounded-full bg-gray-400 text-white text-xs flex items-center justify-center font-bold">3</span>

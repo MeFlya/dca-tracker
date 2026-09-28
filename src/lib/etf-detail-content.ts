@@ -183,7 +183,9 @@ Vanguard, le gestionnaire, est fondé sur un modèle coopératif : ses fonds app
 
 Le S&P 500 couvre environ 80 % de la capitalisation boursière américaine. Il est fortement concentré sur la technologie : les dix premières positions (Apple, Microsoft, Nvidia, Amazon, Meta, Alphabet, Tesla, Berkshire Hathaway, JPMorgan, Broadcom) représentent à elles seules plus de 35 % de l'indice.
 
-Contrairement aux ETF UCITS européens, le SPY est un trust américain. Il distribue trimestriellement les dividendes versés par les entreprises du S&P 500, ce qui génère un événement fiscal à chaque distribution pour les investisseurs résidents en France.`,
+Contrairement aux ETF UCITS européens, le SPY est un trust américain. Il distribue trimestriellement les dividendes versés par les entreprises du S&P 500, ce qui génère un événement fiscal à chaque distribution pour les investisseurs résidents en France.
+
+Surtout, un particulier résidant dans l'Union européenne ne peut en principe pas l'acheter. Le règlement européen PRIIPs impose un document d'informations clés (DIC) pour vendre un fonds à un particulier ; State Street ne le publie pas pour le SPY, et les courtiers de l'UE refusent donc l'ordre. Pour le S&P 500, il faut passer par un ETF UCITS : CSPX ou VUSA en compte-titres, PSP5, SPEA ou ESE dans un PEA.`,
     whyChooseIt: [
       "Très liquide — spreads très faibles",
       "Frais bas (TER 0,0945 %)",
@@ -193,11 +195,11 @@ Contrairement aux ETF UCITS européens, le SPY est un trust américain. Il distr
     watchOut: [
       "Exposition 100 % américaine — risque de concentration géographique important en cas de correction durable aux États-Unis",
       "Distribuant : les dividendes sont versés trimestriellement, à déclarer et fiscaliser chaque année en France (flat tax 31,4 %)",
-      "Non éligible PEA — à loger en compte-titres ordinaire. Pour le S&P 500 dans un PEA : PSP5, SPEA ou ESE",
+      "Pas de DIC : en principe inaccessible à un particulier de l'UE, en PEA comme en compte-titres. Équivalents UCITS : CSPX ou VUSA (compte-titres), PSP5, SPEA ou ESE (PEA)",
       "Libellé en USD — exposition au risque de change EUR/USD pour un investisseur européen",
     ],
     suitableFor:
-      "Convient aux investisseurs qui veulent une exposition pure et très liquide aux grandes capitalisations américaines, ou qui utilisent le S&P 500 comme référence de performance. Adapté aux comptes-titres ordinaires.",
+      "Une référence plus qu'un placement pour un particulier en France : c'est le S&P 500 dont on cite la performance. Pour s'y exposer, l'un des équivalents UCITS ci-dessus fait le même travail et s'achète chez un courtier français.",
     suggestedReturn: 8,
   },
 
@@ -456,7 +458,9 @@ Le RS2K capitalise les dividendes (peu nombreux dans le segment small caps de to
 
 Contrairement au S&P 500, le Nasdaq-100 exclut les valeurs financières (banques, assurances) et est délibérément biaisé vers les secteurs à forte croissance : logiciel, semi-conducteurs, e-commerce, streaming, cloud computing, intelligence artificielle. Cette concentration sectorielle explique à la fois ses performances spectaculaires sur certaines périodes et ses corrections brutales sur d'autres.
 
-Le QQQ d'Invesco est un trust américain très échangé. Il distribue des dividendes (faibles, car les entreprises tech en versent peu) et est libellé en USD. Ses frais sont de 0,18 % par an depuis le 22 décembre 2025 (0,20 % auparavant).`,
+Le QQQ d'Invesco est un trust américain très échangé. Il distribue des dividendes (faibles, car les entreprises tech en versent peu) et est libellé en USD. Ses frais sont de 0,18 % par an depuis le 22 décembre 2025 (0,20 % auparavant).
+
+Un particulier résidant dans l'Union européenne ne peut en principe pas l'acheter : le règlement européen PRIIPs impose un document d'informations clés (DIC) qu'Invesco ne publie pas pour ce fonds américain, et les courtiers de l'UE refusent donc l'ordre. Le Nasdaq-100 s'achète par un ETF UCITS : CNDX ou ANX en compte-titres, PUST dans un PEA.`,
     whyChooseIt: [
       "Exposition maximale aux secteurs technologiques américains les plus dynamiques (IA, cloud, semi-conducteurs…)",
       "Performance historique exceptionnelle sur 10–20 ans, bien supérieure aux indices monde",
@@ -466,11 +470,11 @@ Le QQQ d'Invesco est un trust américain très échangé. Il distribue des divid
     watchOut: [
       "Concentration sectorielle extrême (technologie ~60 %) — sensibilité élevée aux rotations sectorielles et aux cycles de taux",
       "Volatilité nettement supérieure au MSCI World : drawdowns historiques importants (-80 % en 2000–2002, -35 % en 2022)",
-      "Non éligible PEA — à loger en compte-titres ordinaire. Pour le Nasdaq-100 dans un PEA : PUST",
+      "Pas de DIC : en principe inaccessible à un particulier de l'UE, en PEA comme en compte-titres. Équivalents UCITS : CNDX ou ANX (compte-titres), PUST (PEA)",
       "Libellé en USD, distribuant — implications fiscales annuelles pour les résidents français",
     ],
     suitableFor:
-      "Pour un investisseur avec un horizon long (15 ans et plus), une forte tolérance à la volatilité et une conviction sur la croissance technologique américaine. Pas comme unique ETF d'un portefeuille — à combiner avec des expositions plus larges.",
+      "Une référence de performance plus qu'un placement pour un particulier en France. Le Nasdaq-100 lui-même se destine à un horizon long (15 ans et plus) et à une forte tolérance à la volatilité, en complément d'une exposition plus large — jamais comme unique ETF.",
     suggestedReturn: 9,
   },
 };
