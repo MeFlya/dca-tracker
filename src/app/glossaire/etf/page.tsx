@@ -155,8 +155,8 @@ export default function ETFGlossaryPage() {
         </p>
         <p>
           <strong>4. Simplicité.</strong> Un versement mensuel automatique sur
-          un ETF large (MSCI World, S&amp;P 500) suffit largement pour 90 % des
-          investisseurs particuliers.
+          un ETF large (MSCI World, S&amp;P 500) suffit largement à la plupart
+          des épargnants.
         </p>
       </div>
 

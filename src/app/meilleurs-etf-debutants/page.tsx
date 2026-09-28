@@ -7,6 +7,7 @@ import { ArticleByline } from "@/components/ui/ArticleByline";
 import { BreadcrumbSchema } from "@/components/ui/BreadcrumbSchema";
 import { SourcesReferences } from "@/components/ui/SourcesReferences";
 import { EtapeSuivante } from "@/components/ui/EtapeSuivante";
+import { formatTer } from "@/lib/utils";
 
 // CTR (audit 07/2026) : le title mettait en avant IWDA/VWCE (non éligibles
 // PEA — hors intent du débutant FR) et contredisait la meta. Title aligné
@@ -376,7 +377,7 @@ export default function MeilleursETFDebutantsPage() {
               <div className="flex flex-wrap gap-3 mb-4">
                 <div className="bg-white/70 rounded-lg px-3 py-1.5 text-center">
                   <p className="text-xs text-gray-500">TER</p>
-                  <p className="text-sm font-bold text-gray-900">{etf.ter} %</p>
+                  <p className="text-sm font-bold text-gray-900">{formatTer(etf.ter)}</p>
                 </div>
                 {etf.replication && (
                   <div className="bg-white/70 rounded-lg px-3 py-1.5 text-center">
@@ -605,7 +606,7 @@ export default function MeilleursETFDebutantsPage() {
                 <p className="text-sm font-semibold text-gray-900 group-hover:text-primary-700 transition-colors truncate">
                   {etf.name}
                 </p>
-                <p className="text-xs text-gray-500">{etf.category} · TER {etf.ter} %</p>
+                <p className="text-xs text-gray-500">{etf.category} · TER {formatTer(etf.ter)}</p>
               </div>
               <div className="shrink-0 flex items-center gap-2">
                 {etf.peaEligible && (

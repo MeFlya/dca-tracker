@@ -21,6 +21,7 @@ import {
   type PortfolioItem,
   type BlendedPortfolio,
 } from "@/lib/portfolio";
+import { formatTer } from "@/lib/utils";
 
 const COLORS = [
   "#1d4ed8",
@@ -348,7 +349,7 @@ function AddEtfDropdown({
                     {etf.indexLabel}
                   </span>
                   <span className="text-[10px] text-gray-500">
-                    TER {etf.ter.toString().replace(".", ",")} %
+                    TER {formatTer(etf.ter)}
                   </span>
                 </div>
                 <p className="text-[11px] text-gray-500 leading-snug truncate">

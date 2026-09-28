@@ -6,7 +6,7 @@ import { ETF_LIST, getETFBySymbol } from "@/lib/etf-config";
 import type { AccountType } from "@/lib/broker-config";
 import { getETFDetailContent } from "@/lib/etf-detail-content";
 import { getMarketDataProvider, isDemo } from "@/lib/market-data";
-import { formatCurrency, formatPercent, formatPercentSansSigne, formatDate } from "@/lib/utils";
+import { formatCurrency, formatPercent, formatPercentSansSigne, formatDate, formatTer } from "@/lib/utils";
 import { DemoBadge, DelayedBadge } from "@/components/ui/Disclaimer";
 import { InvestCTA } from "@/components/ui/InvestCTA";
 import { IssuerLogoMark } from "@/components/ui/IssuerLogoMark";
@@ -154,7 +154,7 @@ export default async function ETFDetailPage({
 
         {/* Key metrics bar */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 pt-5 border-t border-gray-50">
-          <MetricCell label="TER" value={`${etf.ter} %`} highlight />
+          <MetricCell label="TER" value={formatTer(etf.ter)} highlight />
           <MetricCell label="Réplication" value={etf.replicationMethod} />
           <MetricCell label="Distribution" value={etf.distributionPolicy} />
           {etf.isin && <MetricCell label="ISIN" value={etf.isin} mono />}
@@ -218,7 +218,7 @@ export default async function ETFDetailPage({
           </p>
           <p className="text-primary-200 text-sm leading-snug">
             Le simulateur s&apos;ouvre en mode « Mes ETF » avec {etf.displaySymbol}
-            déjà sélectionné. Frais réels ({etf.ter} %) pris en compte.
+            déjà sélectionné. Frais réels ({formatTer(etf.ter)}) pris en compte.
           </p>
         </div>
         <div className="shrink-0 flex flex-col sm:items-end gap-2">

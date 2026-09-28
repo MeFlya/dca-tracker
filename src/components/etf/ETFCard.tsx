@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ETFConfig } from "@/lib/etf-config";
 import { AssetQuote } from "@/lib/market-data/types";
-import { formatCurrency, formatPercent } from "@/lib/utils";
+import { formatCurrency, formatPercent, formatTer } from "@/lib/utils";
 import { DelayedBadge } from "@/components/ui/Disclaimer";
 import { IssuerLogoMark } from "@/components/ui/IssuerLogoMark";
 import { RegionMark } from "@/components/ui/RegionMark";
@@ -113,7 +113,7 @@ export function ETFCard({ etf, quote, error, providerLabel }: ETFCardProps) {
 
       {/* Metadata */}
       <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
-        <MetaRow label="TER" value={`${etf.ter} %`} />
+        <MetaRow label="TER" value={formatTer(etf.ter)} />
         <MetaRow label="Réplication" value={etf.replicationMethod} />
         <MetaRow label="Distribution" value={etf.distributionPolicy} />
         {quote?.exchange && (

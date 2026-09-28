@@ -32,6 +32,22 @@ export function formatPercentSansSigne(value: number, digits = 2): string {
   return `${Math.abs(value).toFixed(digits).replace(".", ",")} %`;
 }
 
+/**
+ * Frais annuels d'un ETF : 0.2 → « 0,20 % », 0.0945 → « 0,0945 % ».
+ *
+ * Deux décimales au moins, comme les émetteurs les publient ; jusqu'à quatre
+ * pour les frais qui en ont (SPY). Avant le 28/09/2026, les fiches ETF,
+ * /comparer-etf et /meilleurs-etf-debutants affichaient « TER 0.2 % » —
+ * point anglais et zéro manquant — sur les mêmes pages que « 0,43 % » pour
+ * une variation de cours.
+ */
+export function formatTer(ter: number): string {
+  return `${ter.toLocaleString("fr-FR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 4,
+  })} %`;
+}
+
 export function formatDate(isoString: string, locale = "fr-FR"): string {
   return new Intl.DateTimeFormat(locale, {
     day: "2-digit",

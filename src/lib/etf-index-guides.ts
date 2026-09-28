@@ -86,7 +86,7 @@ const MSCI_WORLD: IndexGuide = {
     // 28/09/2026 : disait « Trois ETF le répliquent en PEA ». La table en
     // recense quatre (CW8, WPEA, DCAM, et EWLD, part distribuante du fonds de
     // CW8) — et rien ne prouve qu'il n'y en a pas d'autres.
-    "Le MSCI World est l'indice le plus utilisé pour un DCA en ETF : ~1 500 entreprises des 23 pays développés, en un seul fonds. Plusieurs ETF le répliquent en PEA — avec des frais qui font une vraie différence sur le long terme. Voici comment trancher.",
+    "Le MSCI World est l'indice le plus utilisé pour un DCA en ETF : ~1 300 entreprises des 23 pays développés, en un seul fonds. Plusieurs ETF le répliquent en PEA — avec des frais qui font une vraie différence sur le long terme. Voici comment trancher.",
   whatItIs: [
     "Le MSCI World suit environ 1 500 grandes et moyennes entreprises réparties sur 23 pays développés (États-Unis, Japon, Royaume-Uni, France, Allemagne, Suisse, Canada…). Acheter un ETF MSCI World, c'est s'exposer en un seul ordre à l'économie mondiale développée.",
     // 28/09/2026 : ajout de GPEA (table de vérité : FR0014017NX3, MSCI ACWI,

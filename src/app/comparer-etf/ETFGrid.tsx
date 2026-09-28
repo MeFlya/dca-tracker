@@ -5,6 +5,7 @@ import { ETFConfig, ETFRegion } from "@/lib/etf-config";
 import { AssetQuote } from "@/lib/market-data/types";
 import { ETFCard } from "@/components/etf/ETFCard";
 import { RegionMark } from "@/components/ui/RegionMark";
+import { formatTer } from "@/lib/utils";
 
 interface ETFGridProps {
   etfs: ETFConfig[];
@@ -138,7 +139,7 @@ export function ETFGrid({ etfs, quotes, providerLabel }: ETFGridProps) {
                   : "bg-gray-100 text-gray-600 hover:bg-gray-200"
               }`}
             >
-              {v === null ? "Tous" : `${v}%`}
+              {v === null ? "Tous" : formatTer(v)}
             </button>
           ))}
         </div>

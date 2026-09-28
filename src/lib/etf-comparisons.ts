@@ -21,6 +21,11 @@ import { gainsBruts, HYPOTHESES_COMPARATIFS, capitalPour, coutFrais, ecartCapita
  * Exporté et affiché publiquement — cf. commentaire de BROKERS_REVIEWED_ON.
  */
 export const ETF_COMPARISONS_REVIEWED_ON = "2026-09";
+
+// Couverture du MSCI World : « ~1 500 sociétés » corrigé en « ~1 300 » le
+// 28/09/2026 (14 occurrences). Source : fiche MSCI World Index (msci.com,
+// consultée ce jour) — 1 280 constituants, 23 pays développés. Le nombre bouge
+// à chaque revue trimestrielle, d'où l'arrondi.
 // Performance figures are approximate — always verify on live data sources
 // before investment decisions.
 
@@ -118,7 +123,7 @@ const MSCI_WORLD_VS_SP500: ETFComparison = {
     heading: "MSCI World",
     subheading: "Indice des marchés développés",
     type: "Indice",
-    coverage: "~1 500 sociétés sur 23 pays développés",
+    coverage: "~1 300 sociétés sur 23 pays développés",
     // Était « ETF à partir de 0,12 % (EWLD, WPEA) » : EWLD est à 0,38 % et
     // WPEA à 0,20 % (table de vérité ETF, 28/09/2026). Aucun des deux à 0,12 %.
     ter: "WPEA, DCAM : 0,20 % · CW8 : 0,38 %",
@@ -219,7 +224,9 @@ const MSCI_WORLD_VS_SP500: ETFComparison = {
     },
     {
       q: "Un seul ETF suffit-il vraiment pour toute une vie d'investissement ?",
-      a: "Pour 90 % des investisseurs particuliers, oui. Un ETF MSCI World (ou un S&P 500) maintenu 20-30 ans dans un PEA bat statistiquement la grande majorité des portefeuilles diversifiés sur-optimisés. La complexité ajoute plus de risques d'erreurs que d'amélioration de performance.",
+      // « Pour 90 % des investisseurs » et « bat statistiquement la grande
+      // majorité des portefeuilles » retirés le 28/09/2026 : aucune source.
+      a: "Pour la plupart des épargnants, oui. Un ETF MSCI World maintenu 20 ou 30 ans dans un PEA fait déjà l'essentiel : ~1 300 entreprises de 23 pays, des frais bas, rien à arbitrer. Chaque ligne ajoutée apporte surtout des occasions de se tromper — doublons, rééquilibrages oubliés, paris sectoriels.",
     },
   ],
 
@@ -244,7 +251,7 @@ const CW8_VS_ESE: ETFComparison = {
     heading: "CW8",
     subheading: "Amundi MSCI World Swap UCITS ETF EUR Acc — ISIN LU1681043599",
     type: "ETF",
-    coverage: "MSCI World — ~1 500 sociétés développées",
+    coverage: "MSCI World — ~1 300 sociétés développées",
     issuer: "Amundi ETF",
     ter: "0,38 %/an",
     replication: "Synthétique (swap)",
@@ -301,7 +308,7 @@ const CW8_VS_ESE: ETFComparison = {
         // « La position unique la plus diversifiée disponible en PEA » : faux
         // depuis GPEA (MSCI ACWI, émergents inclus, éligible PEA) — table de
         // vérité ETF, 28/09/2026. Et WPEA/DCAM font le même MSCI World moins cher.
-        "Entre les deux, CW8 est de loin le plus diversifié : ~1 500 sociétés dans 23 pays, contre 500 sociétés américaines. Si vous cherchez la simplicité maximale et ne voulez plus toucher à votre portefeuille pendant 20-30 ans, c'est un choix solide — sachant que WPEA et DCAM répliquent le même MSCI World à 0,20 % au lieu de 0,38 %.",
+        "Entre les deux, CW8 est de loin le plus diversifié : ~1 300 sociétés dans 23 pays, contre 500 sociétés américaines. Si vous cherchez la simplicité maximale et ne voulez plus toucher à votre portefeuille pendant 20-30 ans, c'est un choix solide — sachant que WPEA et DCAM répliquent le même MSCI World à 0,20 % au lieu de 0,38 %.",
     },
     {
       profile: "Vous êtes sensible aux frais cumulés",
@@ -387,7 +394,7 @@ const VWCE_VS_CW8: ETFComparison = {
     heading: "CW8",
     subheading: "Amundi MSCI World Swap UCITS ETF EUR Acc — ISIN LU1681043599",
     type: "ETF",
-    coverage: "MSCI World — ~1 500 sociétés développées uniquement",
+    coverage: "MSCI World — ~1 300 sociétés développées uniquement",
     issuer: "Amundi",
     ter: "0,38 %/an",
     replication: "Synthétique",
@@ -404,7 +411,7 @@ const VWCE_VS_CW8: ETFComparison = {
     "Si vous investissez via un PEA, CW8 est le seul des deux qui y entre — VWCE n'y est pas éligible (et WPEA ou DCAM y répliquent le même MSCI World à 0,20 %). Sur un CTO, VWCE bat CW8 sur la diversification (émergents inclus) et sur le TER (0,14 % contre 0,38 %). Un schéma simple : le PEA d'abord avec un MSCI World éligible, puis VWCE sur un CTO en complément.",
 
   intro:
-    "VWCE et CW8 sont tous deux des ETF 'monde' populaires, mais ils sont très différents : VWCE couvre marchés développés ET émergents (~3 700 sociétés), CW8 couvre uniquement les marchés développés (~1 500 sociétés). Et VWCE n'est pas éligible PEA. Le choix dépend donc avant tout de l'enveloppe fiscale.",
+    "VWCE et CW8 sont tous deux des ETF 'monde' populaires, mais ils sont très différents : VWCE couvre marchés développés ET émergents (~3 700 sociétés), CW8 couvre uniquement les marchés développés (~1 300 sociétés). Et VWCE n'est pas éligible PEA. Le choix dépend donc avant tout de l'enveloppe fiscale.",
 
   keyDifferences: [
     { criterion: "Indice", leftValue: "FTSE All-World", rightValue: "MSCI World" },
@@ -507,7 +514,7 @@ const CW8_VS_WPEA: ETFComparison = {
     heading: "CW8",
     subheading: "Amundi MSCI World Swap UCITS ETF EUR Acc — ISIN LU1681043599",
     type: "ETF",
-    coverage: "MSCI World — ~1 500 sociétés des 23 pays développés",
+    coverage: "MSCI World — ~1 300 sociétés des 23 pays développés",
     issuer: "Amundi ETF",
     ter: "0,38 %/an",
     replication: "Synthétique (swap)",
@@ -522,7 +529,7 @@ const CW8_VS_WPEA: ETFComparison = {
     heading: "WPEA",
     subheading: "iShares MSCI World Swap PEA UCITS ETF EUR (Acc) — ISIN IE0002XZSHO1",
     type: "ETF",
-    coverage: "MSCI World — ~1 500 sociétés des 23 pays développés",
+    coverage: "MSCI World — ~1 300 sociétés des 23 pays développés",
     issuer: "iShares (BlackRock)",
     ter: "0,20 %/an",
     replication: "Synthétique (swap)",
@@ -588,7 +595,7 @@ const CW8_VS_WPEA: ETFComparison = {
   faq: [
     {
       q: "WPEA est-il vraiment équivalent à CW8 ?",
-      a: "Oui, sur l'exposition : même indice MSCI World, même couverture (1 500 sociétés, 23 pays développés), même politique capitalisante, même éligibilité PEA via réplication synthétique. La seule vraie différence est le TER (0,20 % vs 0,38 %) et l'émetteur (iShares vs Amundi). En termes de risque sous-jacent, ils sont substituables.",
+      a: "Oui, sur l'exposition : même indice MSCI World, même couverture (~1 300 sociétés, 23 pays développés), même politique capitalisante, même éligibilité PEA via réplication synthétique. La seule vraie différence est le TER (0,20 % vs 0,38 %) et l'émetteur (iShares vs Amundi). En termes de risque sous-jacent, ils sont substituables.",
     },
     {
       q: "Pourquoi WPEA est-il moins cher que CW8 ?",
@@ -662,7 +669,7 @@ const WPEA_VS_DCAM: ETFComparison = {
     heading: "WPEA",
     subheading: "iShares MSCI World Swap PEA UCITS ETF EUR (Acc) — ISIN IE0002XZSHO1",
     type: "ETF",
-    coverage: "MSCI World — ~1 500 sociétés des 23 pays développés",
+    coverage: "MSCI World — ~1 300 sociétés des 23 pays développés",
     issuer: "iShares (BlackRock)",
     ter: "0,20 %/an",
     replication: "Synthétique (swap)",
@@ -677,7 +684,7 @@ const WPEA_VS_DCAM: ETFComparison = {
     heading: "DCAM",
     subheading: "Amundi PEA Monde (MSCI World) UCITS ETF Acc — ISIN FR001400U5Q4",
     type: "ETF",
-    coverage: "MSCI World — ~1 500 sociétés des 23 pays développés",
+    coverage: "MSCI World — ~1 300 sociétés des 23 pays développés",
     issuer: "Amundi",
     ter: "0,20 %/an",
     replication: "Synthétique (swap)",
@@ -777,7 +784,7 @@ const IWDA_VS_CW8: ETFComparison = {
     heading: "IWDA",
     subheading: "iShares Core MSCI World UCITS ETF USD (Acc) — ISIN IE00B4L5Y983",
     type: "ETF",
-    coverage: "MSCI World — ~1 500 sociétés des 23 pays développés",
+    coverage: "MSCI World — ~1 300 sociétés des 23 pays développés",
     issuer: "iShares (BlackRock)",
     ter: "0,20 %/an",
     replication: "Physique optimisée",
@@ -794,7 +801,7 @@ const IWDA_VS_CW8: ETFComparison = {
     heading: "CW8",
     subheading: "Amundi MSCI World Swap UCITS ETF EUR Acc — ISIN LU1681043599",
     type: "ETF",
-    coverage: "MSCI World — ~1 500 sociétés des 23 pays développés",
+    coverage: "MSCI World — ~1 300 sociétés des 23 pays développés",
     issuer: "Amundi",
     ter: "0,38 %/an",
     replication: "Synthétique (swap)",
@@ -1038,7 +1045,7 @@ const VWCE_VS_WPEA: ETFComparison = {
     heading: "WPEA",
     subheading: "iShares MSCI World Swap PEA UCITS ETF EUR (Acc) — ISIN IE0002XZSHO1",
     type: "ETF",
-    coverage: "MSCI World — ~1 500 sociétés des 23 pays développés (pas d'émergents)",
+    coverage: "MSCI World — ~1 300 sociétés des 23 pays développés (pas d'émergents)",
     issuer: "iShares (BlackRock)",
     ter: "0,20 %/an",
     replication: "Synthétique (swap)",
@@ -1056,7 +1063,7 @@ const VWCE_VS_WPEA: ETFComparison = {
     "VWCE, c'est tout le marché mondial, émergents compris, en un seul fonds Vanguard. WPEA est le MSCI World optimisé pour le PEA français. Le débat « faut-il les émergents ? » est légitime — mais pour un investisseur français, il est presque toujours tranché par un facteur que les comparatifs européens ignorent : l'enveloppe fiscale.",
 
   keyDifferences: [
-    { criterion: "Indice répliqué", leftValue: "FTSE All-World (~3 700 sociétés)", rightValue: "MSCI World (~1 500 sociétés)" },
+    { criterion: "Indice répliqué", leftValue: "FTSE All-World (~3 700 sociétés)", rightValue: "MSCI World (~1 300 sociétés)" },
     { criterion: "Marchés émergents", leftValue: "Oui (~10 % de l'indice)", rightValue: "Non" },
     { criterion: "TER", leftValue: "0,14 %/an", rightValue: "0,20 %/an" },
     { criterion: `Écart de frais — 20 ans à ${HYPOTHESES_COMPARATIFS.monthlyAmount} €/mois`, leftValue: `≈ ${ecartCapital(0.2, 0.14)} € de capital final en plus`, rightValue: "Référence" },

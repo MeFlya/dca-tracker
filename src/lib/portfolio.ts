@@ -198,7 +198,7 @@ export const PORTFOLIO_PRESETS: PortfolioPreset[] = [
     id: "world-100",
     name: "MSCI World seul (100 %)",
     description:
-      "Le portefeuille le plus simple : un seul ETF mondial. Diversifié sur ~1 500 entreprises, 23 pays développés.",
+      "Le portefeuille le plus simple : un seul ETF mondial. Diversifié sur ~1 300 entreprises, 23 pays développés.",
     allocation: [{ displaySymbol: "CW8", weight: 100 }],
   },
   // Corrigé le 28/09/2026 : les deux préréglages « émergents » utilisaient

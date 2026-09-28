@@ -1,5 +1,6 @@
 import { renderOgTemplate } from "@/lib/og-template";
 import { getETFBySymbol } from "@/lib/etf-config";
+import { formatTer } from "@/lib/utils";
 
 export const runtime = "edge";
 export const size = { width: 1200, height: 630 };
@@ -52,7 +53,7 @@ export default async function Image({ params }: Props) {
     eyebrow: `ETF · ${etf.indexLabel}`,
     title: etf.displaySymbol,
     subtitle: etf.name,
-    accent: { label: "TER", value: `${etf.ter} %` },
+    accent: { label: "TER", value: formatTer(etf.ter) },
     footerLeft: etf.isin
       ? `${etf.replicationMethod} · ${etf.distributionPolicy} · ${etf.isin}`
       : `${etf.replicationMethod} · ${etf.distributionPolicy}`,
