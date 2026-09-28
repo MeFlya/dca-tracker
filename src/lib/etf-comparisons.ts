@@ -637,7 +637,7 @@ const WPEA_VS_DCAM: ETFComparison = {
       profile: "DCA de petits montants (50-200 €/mois)",
       winner: "both",
       explanation:
-        "Les deux parts cotent sous 10 € : un versement de 100 € s'investit presque entièrement chaque mois, avec l'un comme avec l'autre. Prenez celui que votre courtier facture le moins cher à l'ordre.",
+        "Les deux parts cotent sous 10 € : même un petit versement mensuel s'investit presque entièrement, avec l'un comme avec l'autre. Prenez celui que votre courtier facture le moins cher à l'ordre.",
     },
     {
       profile: "Courtier avec achat fractionné (Trade Republic…)",
@@ -673,7 +673,7 @@ const WPEA_VS_DCAM: ETFComparison = {
     },
     {
       q: "Le prix de part change-t-il quelque chose entre les deux ?",
-      a: "Non. Les deux parts cotent sous 10 €, si bien qu'un versement de 100 € s'investit presque intégralement chaque mois dans l'un comme dans l'autre. Et le prix de part n'a aucun effet sur la performance : c'est seulement une question de granularité d'achat.",
+      a: "Non. Les deux parts cotent sous 10 €, si bien que même un petit versement mensuel s'investit presque intégralement dans l'un comme dans l'autre. Et le prix de part n'a aucun effet sur la performance : c'est seulement une question de granularité d'achat.",
     },
     {
       q: "Quels sont les ISIN à vérifier avant de passer l'ordre ?",
