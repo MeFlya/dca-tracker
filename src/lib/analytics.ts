@@ -146,15 +146,33 @@ export function track(event: AnalyticsEvent): void {
     console.debug(`[analytics] ${event.name}`, mergedProps);
   }
 
+  // ⚠️ CORRECTION DU 28/09/2026 — ce qui était écrit ici était FAUX.
+  //
+  // Le commentaire précédent affirmait que le plan Hobby incluait les
+  // événements personnalisés. Le tableau de bord Vercel dit le contraire :
+  // « No custom events — Upgrade to a Pro team to access this feature ».
+  // Pendant cinq semaines, ces appels sont donc partis vers Vercel pour n'être
+  // enregistrés nulle part — la même panne silencieuse que celle de Plausible,
+  // que ce fichier prétendait justement réparer.
+  //
+  // Les pages vues, elles, sont bien mesurées par <Analytics /> : c'est ce qui
+  // fournit visiteurs, pages et sources. Le tunnel fin (clics sur les CTA,
+  // démarrages d'essai) ne l'est pas, et ne le sera qu'avec un plan Pro.
+  //
+  // Plutôt que d'envoyer des requêtes qui ne servent à rien depuis le
+  // navigateur de chaque visiteur, on n'envoie pas. Passer le drapeau à `true`
+  // suffit le jour où le plan le permet — tous les appels track() du site sont
+  // déjà en place.
+  if (!EVENEMENTS_PERSONNALISES_ACTIFS) return;
+
   // Les événements qui ne font que doubler une page vue ne partent pas.
-  // Le plan Hobby inclut 2 500 événements par mois, et une page vue en
-  // consomme un : envoyer « visit_home » à chaque arrivée sur l'accueil
-  // paierait deux fois la même information, et le quota s'épuiserait en plein
-  // mois — c'est-à-dire qu'on perdrait la mesure sans être prévenu.
   if (EVENEMENTS_REDONDANTS.has(event.name)) return;
 
   vercelTrack(event.name, primitivesSeules(mergedProps));
 }
+
+/** Vercel ne stocke les événements personnalisés qu'à partir du plan Pro. */
+const EVENEMENTS_PERSONNALISES_ACTIFS = false;
 
 /** Doublons purs d'une page vue, que Vercel compte déjà. */
 const EVENEMENTS_REDONDANTS = new Set<AnalyticsEvent["name"]>([

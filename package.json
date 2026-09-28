@@ -13,7 +13,8 @@
     "postbuild": "node scripts/check-seo-lengths.mjs && node scripts/check-montants-calcules.mjs",
     "seo:check": "node scripts/check-seo-lengths.mjs --report",
     "montants:check": "node scripts/check-montants-calcules.mjs",
-    "montants:accept": "node scripts/check-montants-calcules.mjs --accept"
+    "montants:accept": "node scripts/check-montants-calcules.mjs --accept",
+    "seo:indexnow": "node scripts/indexnow.mjs"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.2.3",
