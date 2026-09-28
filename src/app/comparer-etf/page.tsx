@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { ETF_LIST } from "@/lib/etf-config";
-import { getMarketDataProvider, isDemo } from "@/lib/market-data";
+import { getMarketDataProvider, isDemo, libelleFournisseur } from "@/lib/market-data";
 import { DemoBadge } from "@/components/ui/Disclaimer";
 import { ETFGrid } from "./ETFGrid";
 import { ComparisonDisclosure } from "@/components/ui/ComparisonDisclosure";
@@ -32,20 +32,13 @@ export const metadata: Metadata = {
 // Aligned with the cache TTL — re-render the SSR page every 60 min
 export const revalidate = 3600;
 
-// Provider name → human-readable label for the source line under each price
-const PROVIDER_LABELS: Record<string, string> = {
-  YahooFinance: "Yahoo Finance",
-  TwelveData: "Twelve Data",
-  AlphaVantage: "Alpha Vantage",
-  Mock: "Mode démo",
-};
 
 export default async function ComparerETFPage() {
   const provider = getMarketDataProvider();
   const symbols = ETF_LIST.map((e) => e.symbol);
   const batch = await provider.getQuotes(symbols);
   const demo = isDemo();
-  const providerLabel = PROVIDER_LABELS[provider.name] ?? provider.name;
+  const providerLabel = libelleFournisseur(provider.name);
 
   const quotes = Object.fromEntries(
     Object.entries(batch.results).map(([symbol, result]) => [

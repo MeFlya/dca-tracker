@@ -6,6 +6,21 @@ import { MockProvider } from "./mock-provider";
 
 export * from "./types";
 
+/**
+ * Nom affiché d'un fournisseur (« YahooFinance » → « Yahoo Finance »). Une
+ * seule table : la fiche ETF affichait « Source : YahooFinance. » pendant que
+ * /comparer-etf affichait « Yahoo Finance » (relevé le 28/09/2026).
+ */
+const LIBELLES_FOURNISSEURS: Record<string, string> = {
+  YahooFinance: "Yahoo Finance",
+  TwelveData: "Twelve Data",
+  AlphaVantage: "Alpha Vantage",
+  Mock: "Mode démo",
+};
+export function libelleFournisseur(nom: string): string {
+  return LIBELLES_FOURNISSEURS[nom] ?? nom;
+}
+
 // Factory — reads environment variables and returns the right provider.
 // Add new providers here without changing any caller code.
 //

@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { ETF_LIST, getETFBySymbol } from "@/lib/etf-config";
 import type { AccountType } from "@/lib/broker-config";
 import { getETFDetailContent } from "@/lib/etf-detail-content";
-import { getMarketDataProvider, isDemo } from "@/lib/market-data";
+import { getMarketDataProvider, isDemo, libelleFournisseur } from "@/lib/market-data";
 import { formatCurrency, formatPercent, formatPercentSansSigne, formatDate, formatTer } from "@/lib/utils";
 import { DemoBadge, DelayedBadge } from "@/components/ui/Disclaimer";
 import { InvestCTA } from "@/components/ui/InvestCTA";
@@ -268,7 +268,7 @@ export default async function ETFDetailPage({
           <p className="mt-3 text-[11px] text-gray-500">
             {demo
               ? "Mode démo — données illustratives, pas des cours réels."
-              : "Données différées (fin de journée). Source : " + provider.name + "."}
+              : "Données différées (fin de journée). Source : " + libelleFournisseur(provider.name) + "."}
           </p>
         </div>
       )}
