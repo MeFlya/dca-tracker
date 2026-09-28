@@ -397,8 +397,12 @@ export default function SimulateurRetraitePage() {
         </div>
       </div>
 
-      {/* CTA */}
-      <div className="rounded-2xl border border-primary-100 bg-primary-50/40 p-6 sm:p-8 mb-12">
+      {/* CTA.
+          data-nosearch sur ce bloc, « Articles liés » et l'avertissement de
+          fin (recherche interne, 28/09/2026) : sans titre h2/h3 à eux, ils se
+          collaient au passage qui les précède — la dernière question de FAQ
+          répondait alors à « PEA ou CTO » ou à « conseil en investissement ». */}
+      <div data-nosearch="" className="rounded-2xl border border-primary-100 bg-primary-50/40 p-6 sm:p-8 mb-12">
         <p className="text-base font-bold text-gray-900 mb-2">
           Simulez votre propre projection
         </p>
@@ -434,7 +438,7 @@ export default function SimulateurRetraitePage() {
       </div>
 
       {/* Related */}
-      <div className="pt-8 border-t border-gray-100">
+      <div data-nosearch="" className="pt-8 border-t border-gray-100">
         <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-4">
           Articles liés
         </p>
@@ -460,7 +464,7 @@ export default function SimulateurRetraitePage() {
 
       {/* Disclaimer outil (E-E-A-T YMYL) — pattern "outil" : transparence sur
           la méthode + limites, plutôt qu'une byline d'article. */}
-      <div className="mt-10 rounded-2xl border border-gray-200 bg-gray-50 p-5">
+      <div data-nosearch="" className="mt-10 rounded-2xl border border-gray-200 bg-gray-50 p-5">
         <p className="text-xs text-gray-600 leading-relaxed">
           <strong>Outil pédagogique</strong> — les projections supposent un
           rendement constant et ne tiennent pas compte de la volatilité réelle

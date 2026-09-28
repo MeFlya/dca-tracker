@@ -71,15 +71,20 @@ export function ETFCard({ etf, quote, error, providerLabel }: ETFCardProps) {
         </div>
       </div>
 
-      {/* Price block */}
+      {/* Price block.
+          data-nosearch sur CHAQUE branche (recherche interne, 28/09/2026) :
+          cours, variation, « Mis à jour il y a N min », mais aussi « Cours
+          indisponible » sont l'état du moment du build. L'index ne change
+          qu'au déploiement suivant, la page se revalide toutes les heures :
+          un extrait afficherait un cours périmé, sans date. */}
       {hideQuoteSection ? (
-        <div className="text-xs text-gray-500 italic">
+        <div data-nosearch="" className="text-xs text-gray-500 italic">
           Cours non disponible
         </div>
       ) : error ? (
         // État erreur — container neutre slate, icône rouge pour signaler
         // sans fond saturé (cohérent avec la règle des ConversionBlocks).
-        <div className="flex items-center gap-2 text-xs text-gray-600 bg-slate-50 border border-slate-200/70 rounded-lg px-3 py-2">
+        <div data-nosearch="" className="flex items-center gap-2 text-xs text-gray-600 bg-slate-50 border border-slate-200/70 rounded-lg px-3 py-2">
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="text-red-500 shrink-0" aria-hidden>
             <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.4" />
             <path d="M8 5v3.5M8 11.5v.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -87,7 +92,7 @@ export function ETFCard({ etf, quote, error, providerLabel }: ETFCardProps) {
           Cours indisponible
         </div>
       ) : quote ? (
-        <div className="flex flex-col gap-1">
+        <div data-nosearch="" className="flex flex-col gap-1">
           <div className="flex items-baseline gap-3">
             <span className="text-2xl font-bold text-gray-900 tabular-nums">
               {formatCurrency(quote.price, quote.currency)}
@@ -108,7 +113,7 @@ export function ETFCard({ etf, quote, error, providerLabel }: ETFCardProps) {
           )}
         </div>
       ) : (
-        <div className="h-8 bg-gray-100 rounded-lg animate-pulse w-32" />
+        <div data-nosearch="" className="h-8 bg-gray-100 rounded-lg animate-pulse w-32" />
       )}
 
       {/* Metadata */}
@@ -127,8 +132,9 @@ export function ETFCard({ etf, quote, error, providerLabel }: ETFCardProps) {
         {etf.description}
       </p>
 
-      {/* CTAs */}
-      <div className="flex gap-2 mt-auto">
+      {/* CTAs — data-nosearch : « Simuler → Voir le détail », répété sur
+          chaque carte, n'est pas un contenu à trouver. */}
+      <div data-nosearch="" className="flex gap-2 mt-auto">
         <Link
           href={`/simulateur?monthly=200&years=20&return=7&fees=${etf.ter}`}
           className="btn-primary text-xs px-3 py-2 flex-1 justify-center"

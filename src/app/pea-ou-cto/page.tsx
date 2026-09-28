@@ -429,7 +429,10 @@ export default function PEAouCTOPage() {
       </section>
 
       {/* ── CTA simulateur ─────────────────────────────────────────────── */}
-      <div className="rounded-2xl bg-gradient-to-br from-primary-600 to-primary-800 p-7 mb-14 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
+      {/* data-nosearch (recherche interne, 28/09/2026) : un appel à l'action
+          n'est pas un contenu ; sans titre à lui, il se collait au passage
+          « Notre recommandation ». */}
+      <div data-nosearch="" className="rounded-2xl bg-gradient-to-br from-primary-600 to-primary-800 p-7 mb-14 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
         <div>
           <p className="text-white font-semibold text-lg mb-1">
             Simulez votre DCA sur le MSCI World
@@ -455,12 +458,29 @@ export default function PEAouCTOPage() {
         <h2 className="text-2xl font-bold text-gray-900 mb-6">
           Questions fréquentes
         </h2>
+        {/* <details>/<summary> comme les autres guides (strategie-dca,
+            meilleurs-etf-debutants, guides d'indice) — 28/09/2026. Les
+            questions étaient des <p> : la recherche interne rangeait les
+            quatre sous un seul passage « Questions fréquentes », et un lien
+            vers « retrait avant 5 ans » ouvrait la FAQ en haut, sur une autre
+            question. Chaque <summary> est désormais un passage avec sa propre
+            ancre, que <AncresTitres /> ouvre et fait défiler. */}
         <div className="space-y-4">
           {FAQ.map((item) => (
-            <div key={item.q} className="rounded-xl border border-gray-100 p-5">
-              <p className="font-semibold text-gray-900 text-sm mb-2">{item.q}</p>
-              <p className="text-sm text-gray-600 leading-relaxed">{item.a}</p>
-            </div>
+            <details
+              key={item.q}
+              className="group rounded-2xl border border-gray-100 bg-white overflow-hidden"
+            >
+              <summary className="flex items-center justify-between gap-4 px-5 py-4 cursor-pointer font-semibold text-gray-900 text-sm hover:bg-gray-50 transition-colors list-none">
+                {item.q}
+                <span aria-hidden className="shrink-0 text-gray-500 group-open:rotate-180 transition-transform">
+                  ▾
+                </span>
+              </summary>
+              <div className="px-5 pb-4 pt-1 text-sm text-gray-600 leading-relaxed border-t border-gray-50">
+                {item.a}
+              </div>
+            </details>
           ))}
         </div>
       </section>

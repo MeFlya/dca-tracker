@@ -332,8 +332,39 @@
   transform: none;
 }
 
+/* ── Liens vers un passage (recherche interne, <AncresTitres />) ──────────
+   Le titre visé ne doit pas finir sous l'en-tête collant (h-16), et il est
+   brièvement surligné pour que l'œil le trouve.
+   `main [id]` en plus des titres (constat n° 44, 28/09/2026) : une ancre
+   portée par un conteneur (<section id="dca-vs-lump-sum">, <div id="premium">)
+   alignait le haut du conteneur sous l'en-tête. Cette règle remplace de fait
+   les scroll-mt-20 posés à la main (5 rem → 5,5 rem). */
+main :is(h2, h3, summary),
+main [id] {
+  scroll-margin-top: 5.5rem;
+}
+/* Contour seul, pas de fond : un fond clair rendait illisibles les titres
+   blancs sur fond sombre (/tarifs), et un border-radius écrasait celui des
+   cartes de FAQ (rounded-2xl). La classe est retirée à la fin de
+   l'animation (AncresTitres). */
+.cible-ancre {
+  animation: cible-ancre 2.4s ease-out;
+}
+@keyframes cible-ancre {
+  0%,
+  40% {
+    outline: 3px solid rgb(251 191 36 / 0.9);
+    outline-offset: 4px;
+  }
+  100% {
+    outline: 3px solid rgb(251 191 36 / 0);
+    outline-offset: 4px;
+  }
+}
+
 /* Respect reduced-motion */
 @media (prefers-reduced-motion: reduce) {
+  .cible-ancre,
   .animate-fade-in,
   .animate-slide-up,
   .animate-badge-pop,

@@ -85,8 +85,11 @@ export function ETFGrid({ etfs, quotes, providerLabel }: ETFGridProps) {
 
   return (
     <div>
-      {/* Filter bar */}
-      <div className="flex flex-wrap items-center gap-3 mb-8">
+      {/* Filter bar.
+          data-nosearch sur les deux barres (recherche interne, 28/09/2026) :
+          leurs libellés (« PEA uniquement TER ≤ 19 ETF s Trier : ») et le
+          compteur du moment du build entraient dans le passage indexé. */}
+      <div data-nosearch="" className="flex flex-wrap items-center gap-3 mb-8">
         {/* Region chips */}
         <div className="flex flex-wrap gap-1.5">
           {REGIONS.map((r) => (
@@ -151,7 +154,7 @@ export function ETFGrid({ etfs, quotes, providerLabel }: ETFGridProps) {
       </div>
 
       {/* Sort bar — positioned below filters, subtle */}
-      <div className="flex flex-wrap items-center gap-2 mb-6 text-sm">
+      <div data-nosearch="" className="flex flex-wrap items-center gap-2 mb-6 text-sm">
         <span className="text-gray-500">Trier&nbsp;:</span>
         {SORT_MODES.map((s) => (
           <button

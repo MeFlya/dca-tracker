@@ -242,8 +242,14 @@ export function BrokerPage({ broker }: { broker: BrokerData }) {
         ))}
       </div>
 
-      {/* CTA block */}
-      <div className="rounded-2xl border border-primary-100 bg-primary-50/40 p-6 text-center mb-10">
+      {/* CTA block.
+          data-nosearch sur ce bloc, « Site officiel », les deux blocs de liens
+          et la mention légale (recherche interne, 28/09/2026) : sans titre
+          h2/h3 à eux, ils se collaient à la dernière question de FAQ.
+          « ouvrir pea trade republic » menait à la FAQ « montant minimum »
+          par « Quelle enveloppe ouvrir chez ce courtier », « investir en
+          bourse » à celle de Boursorama par « Investir comporte un risque ». */}
+      <div data-nosearch="" className="rounded-2xl border border-primary-100 bg-primary-50/40 p-6 text-center mb-10">
         <p className="text-base font-bold text-gray-900 mb-2">
           Simulez votre DCA avant de choisir
         </p>
@@ -260,7 +266,7 @@ export function BrokerPage({ broker }: { broker: BrokerData }) {
       </div>
 
       {/* External link */}
-      <div className="rounded-xl border border-gray-100 bg-white p-4 mb-10">
+      <div data-nosearch="" className="rounded-xl border border-gray-100 bg-white p-4 mb-10">
         <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
           Site officiel
         </p>
@@ -288,7 +294,7 @@ export function BrokerPage({ broker }: { broker: BrokerData }) {
       <InvestCTA className="mb-10" />
 
       {/* Other brokers */}
-      <div className="pt-8 border-t border-gray-100">
+      <div data-nosearch="" className="pt-8 border-t border-gray-100">
         <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-4">
           Comparer avec d&apos;autres courtiers
         </p>
@@ -312,7 +318,7 @@ export function BrokerPage({ broker }: { broker: BrokerData }) {
       {/* Guides — la fiche courtier irrigue les guides éducatifs (avant ce
           bloc, seule la navigation vers les autres courtiers existait :
           cul-de-sac vers le reste du site). */}
-      <div className="mt-8 pt-8 border-t border-gray-100">
+      <div data-nosearch="" className="mt-8 pt-8 border-t border-gray-100">
         <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-4">
           Préparer votre DCA chez {broker.name}
         </p>
@@ -333,7 +339,7 @@ export function BrokerPage({ broker }: { broker: BrokerData }) {
 
       {/* Legal — la mention d'affiliation est dérivée de BROKER_CONFIG, jamais
           écrite en dur : voir <AffiliationNotice />. */}
-      <p className="mt-10 text-[11px] text-gray-500 leading-relaxed">
+      <p data-nosearch="" className="mt-10 text-[11px] text-gray-500 leading-relaxed">
         Cet article est fourni à titre informatif et ne constitue pas un conseil
         en investissement personnalisé.{" "}
         <AffiliationNotice broker={{ slug: broker.slug, name: broker.name }} />{" "}

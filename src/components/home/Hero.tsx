@@ -55,8 +55,10 @@ export function Hero() {
               scénarios de marché, zéro jargon.
             </p>
 
-            {/* CTAs */}
-            <div className="flex flex-col sm:flex-row gap-3 mb-10">
+            {/* CTAs.
+                data-nosearch (recherche interne, 28/09/2026) : des libellés de
+                bouton ne sont pas un contenu à trouver. */}
+            <div data-nosearch="" className="flex flex-col sm:flex-row gap-3 mb-10">
               <Link
                 href="/simulateur"
                 className="btn-primary group text-base px-6 py-3"

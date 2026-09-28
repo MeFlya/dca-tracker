@@ -199,9 +199,15 @@ export default async function ETFDetailPage({
               itemColor="text-amber-700"
             />
             <div className="card flex flex-col gap-3 border-blue-100 bg-blue-50">
-              <p className="text-xs font-semibold text-blue-700 uppercase tracking-wider">
+              {/* <h3>, pas <p> (28/09/2026) : la recherche interne découpe les
+                  pages à chaque h2/h3. En <p>, les trois cartes étaient rangées
+                  sous « Ce qu'il suit » et coupées à 1 600 caractères — sur
+                  CW8, tout « Points d'attention » disparaissait de l'index.
+                  Même apparence : les utilitaires écrasent la base h3
+                  (taille, graisse, tracking-tight). */}
+              <h3 className="text-xs font-semibold text-blue-700 uppercase tracking-wider">
                 À qui il convient
-              </p>
+              </h3>
               <p className="text-sm text-blue-800 leading-relaxed">
                 {detail.suitableFor}
               </p>
@@ -211,13 +217,19 @@ export default async function ETFDetailPage({
       )}
 
       {/* ── DCA CTA band ───────────────────────────────────────────────── */}
-      <div className="rounded-2xl bg-gradient-to-br from-primary-600 to-primary-800 p-7 mb-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
+      {/* data-nosearch (recherche interne, 28/09/2026) : un appel à l'action
+          n'est pas un contenu. Sans lui, « Simuler un DCA sur CW8… ou en
+          valeurs directes » se collait au passage « À qui il convient ». */}
+      <div data-nosearch="" className="rounded-2xl bg-gradient-to-br from-primary-600 to-primary-800 p-7 mb-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
         <div>
           <p className="text-white font-semibold text-lg mb-1">
             Simuler un DCA sur {etf.displaySymbol}
           </p>
+          {/* {" "} explicite : en JSX, le retour à la ligne après
+              l'expression ne produit aucune espace — le HTML affichait
+              « avec CW8déjà sélectionné » sur les 19 fiches. */}
           <p className="text-primary-200 text-sm leading-snug">
-            Le simulateur s&apos;ouvre en mode « Mes ETF » avec {etf.displaySymbol}
+            Le simulateur s&apos;ouvre en mode « Mes ETF » avec {etf.displaySymbol}{" "}
             déjà sélectionné. Frais réels ({formatTer(etf.ter)}) pris en compte.
           </p>
         </div>
@@ -239,7 +251,7 @@ export default async function ETFDetailPage({
 
       {/* ── Données de marché ──────────────────────────────────────────── */}
       {quote && (
-        <div className="card mb-10 bg-gray-50 border-gray-100">
+        <div data-nosearch="" className="card mb-10 bg-gray-50 border-gray-100">
           <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
             Données de marché
           </p>
@@ -262,7 +274,11 @@ export default async function ETFDetailPage({
       )}
 
       {/* ── Autres ETF ─────────────────────────────────────────────────── */}
-      <section data-reveal aria-labelledby="autres-etf-heading" className="mb-10">
+      {/* data-nosearch (recherche interne, 28/09/2026) : cette liste nomme
+          les 18 autres fonds. Indexée, elle faisait remonter les 19 fiches
+          sur toute recherche par nom d'indice ou d'émetteur (« Russell
+          2000 » : places 2 à 10, toutes vers ce bloc, sans le terme). */}
+      <section data-nosearch="" data-reveal aria-labelledby="autres-etf-heading" className="mb-10">
         <h2
           id="autres-etf-heading"
           className="text-base font-semibold text-gray-700 mb-4"
@@ -297,7 +313,11 @@ export default async function ETFDetailPage({
       <InvestCTA accountType={etfAccountType} className="mb-8" />
 
       {/* ── Legal ──────────────────────────────────────────────────────── */}
-      <footer className="p-4 rounded-xl bg-amber-50 border border-amber-200">
+      {/* data-nosearch, comme <Disclaimer /> : la liste ci-dessus exclue, ce
+          texte n'aurait plus de titre au-dessus de lui et se collerait au
+          dernier passage de contenu — « CGP » ou « conseiller financier »
+          renverraient alors les 19 fiches. */}
+      <footer data-nosearch="" className="p-4 rounded-xl bg-amber-50 border border-amber-200">
         <p className="text-xs text-amber-800 leading-relaxed">
           <strong>Avertissement :</strong> Les informations présentées sur cette
           page sont à caractère éducatif et informatif. Elles ne constituent pas
@@ -325,8 +345,11 @@ function PriceBlock({
   error: string | null;
 }) {
   if (error) {
+    // data-nosearch comme le cours lui-même : l'état « indisponible » du
+    // moment du build n'a pas à rester dans l'index jusqu'au déploiement
+    // suivant.
     return (
-      <div className="text-xs text-red-500 bg-red-50 border border-red-100 rounded-lg px-3 py-2 self-start">
+      <div data-nosearch="" className="text-xs text-red-500 bg-red-50 border border-red-100 rounded-lg px-3 py-2 self-start">
         Cours indisponible
       </div>
     );
@@ -335,7 +358,7 @@ function PriceBlock({
 
   const positive = quote.changePercent >= 0;
   return (
-    <div className="text-right shrink-0">
+    <div data-nosearch="" className="text-right shrink-0">
       <p className="text-2xl font-bold text-gray-900 tabular-nums">
         {formatCurrency(quote.price, quote.currency)}
       </p>
@@ -422,9 +445,10 @@ function InsightCard({
 }) {
   return (
     <div className={cn("rounded-2xl border p-5 flex flex-col gap-3", borderColor, bgColor)}>
-      <p className={cn("text-xs font-semibold uppercase tracking-wider", iconColor)}>
+      {/* <h3> : voir « À qui il convient » plus haut (recherche interne). */}
+      <h3 className={cn("text-xs font-semibold uppercase tracking-wider", iconColor)}>
         {title}
-      </p>
+      </h3>
       <ul className="space-y-2">
         {items.map((item, i) => (
           <li key={i} className="flex items-start gap-2 text-sm text-gray-700">

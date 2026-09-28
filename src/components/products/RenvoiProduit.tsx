@@ -36,7 +36,7 @@ export function RenvoiProduit({ contexte }: { contexte: string }) {
   if (!produit) return null;
 
   return (
-    <aside className="mt-12 border-l-2 border-primary-200 pl-5 py-1">
+    <aside data-nosearch="" className="mt-12 border-l-2 border-primary-200 pl-5 py-1">
       <p className="text-[15px] text-gray-600 leading-relaxed">
         {contexte}{" "}
         <Link

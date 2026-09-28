@@ -25,6 +25,11 @@ yarn-error.log*
 # .enc chiffrés sont commités, cf. scripts/encrypt-product-assets.mjs)
 private-assets/raw/
 
+# Index de la recherche interne : reconstruit à chaque build (postbuild,
+# scripts/build-search-index.mjs). Commité, il se périmerait au premier
+# contenu modifié.
+public/search-index.json
+
 # Misc
 .DS_Store
 *.pem

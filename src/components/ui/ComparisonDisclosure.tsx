@@ -38,7 +38,7 @@ export function ComparisonDisclosure({ kind, className }: Props) {
   const { criterion, count, countLabel } = getComparisonSurface(kind);
 
   return (
-    <aside
+    <aside data-nosearch=""
       className={cn(
         "rounded-xl border border-gray-200 bg-gray-50/80 px-4 py-3 text-sm text-gray-600 leading-relaxed",
         className

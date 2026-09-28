@@ -348,8 +348,10 @@ export default function TarifsPage() {
         {/* Teaser produits one-shot — POSITIONNEMENT DÉLIBÉRÉ en toute fin de
             page : capte les "non" à l'abonnement au moment où ils repartent,
             sans distraire les hésitants du funnel Premium au-dessus.
-            Ne JAMAIS remonter ce bloc au niveau des cartes de prix. */}
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 mt-16">
+            Ne JAMAIS remonter ce bloc au niveau des cartes de prix.
+            data-nosearch (recherche interne, 28/09/2026) : sans titre h2/h3,
+            cet encart se collait à la dernière question de FAQ (« TVA »). */}
+        <div data-nosearch="" className="max-w-3xl mx-auto px-4 sm:px-6 mt-16">
           <div className="rounded-2xl border border-gray-200 bg-gray-50 p-6 text-center">
             <p className="text-sm font-bold text-gray-900 mb-1.5">
               Pas prêt pour un abonnement ?

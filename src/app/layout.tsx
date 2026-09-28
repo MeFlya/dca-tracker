@@ -9,6 +9,7 @@ import { AmbientBackground } from "@/components/ui/AmbientBackground";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { clerkAppearance } from "@/lib/clerk-appearance";
 import { Analytics } from "@vercel/analytics/next";
+import { AncresTitres } from "@/components/search/AncresTitres";
 import { AnalyticsContextProvider } from "@/components/analytics/AnalyticsContext";
 
 // Hardcoded — never trust NEXT_PUBLIC_SITE_URL for canonical/metadataBase
@@ -187,6 +188,7 @@ export default function RootLayout({
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
+        <AncresTitres />
         </ClerkProvider>
         <Analytics />
       </body>

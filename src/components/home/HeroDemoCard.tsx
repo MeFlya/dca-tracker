@@ -102,8 +102,11 @@ export function HeroDemoCard() {
   // Clé composite — sert à re-monter les valeurs animées à chaque toggle.
   const k = `${monthly}-${years}`;
 
+  // data-nosearch (recherche interne, 28/09/2026) : maquette de démonstration.
+  // Ses chiffres (« Investis 48 000 € Projetés 97 800 € ») n'ont pas à sortir
+  // comme réponse à une recherche.
   return (
-    <div className="relative w-full max-w-sm">
+    <div data-nosearch="" className="relative w-full max-w-sm">
       {/* Halo lumineux derrière la card */}
       <div
         className="absolute -inset-3 rounded-3xl bg-gradient-to-br from-primary-400/30 via-primary-300/10 to-sky-300/20 blur-2xl opacity-80 pointer-events-none"

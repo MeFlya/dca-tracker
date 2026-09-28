@@ -149,7 +149,21 @@ export class TwelveDataProvider implements IMarketDataProvider {
     url.searchParams.set("timezone", "UTC");
 
     try {
-      const res = await fetch(url.toString(), { cache: "no-store" });
+      // revalidate: 300, pas cache: "no-store" (28/09/2026). Pendant la
+      // génération statique, un fetch « no-store » rend la route dynamique
+      // (Next 15 la marque avant de lever l'erreur : le catch ci-dessous n'y
+      // change rien). /etf/[symbol], /donnees-marche et /comparer-etf
+      // n'avaient alors plus de HTML pré-rendu, et le script de l'index de
+      // recherche (postbuild) faisait échouer chaque déploiement. Ces pages
+      // sont déjà en ISR (300 s ; 3 600 s pour /comparer-etf, que ce fetch
+      // ramène à 300 s) : même règle qu'alpha-vantage-provider.
+      // Réponse d'erreur servie en HTTP 200 (enveloppe status: "error") :
+      // gardée 5 min comme un cours, puis redemandée.
+      // ⚠️ Au build, /comparer-etf et /donnees-marche enchaînent ~17 appels à
+      // travers le throttle : au rythme du plan gratuit (8 s), la page dépasse
+      // les 60 s que Next accorde à sa génération. Réactiver ce fournisseur
+      // suppose le plan payant et TWELVE_DATA_INTERVAL_MS abaissé (≈ 1100).
+      const res = await fetch(url.toString(), { next: { revalidate: 300 } });
 
       // Rate limited — return stale cache if any, never fall back to mock
       if (res.status === 429) {

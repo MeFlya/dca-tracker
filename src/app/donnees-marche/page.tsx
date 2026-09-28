@@ -119,8 +119,10 @@ export default async function DonneesArchePage() {
         </ul>
       </div>
 
-      {/* Legal */}
-      <p className="mt-6 text-xs text-gray-500 text-center">
+      {/* Legal — data-nosearch (recherche interne, 28/09/2026) : mention
+          légale, pas un contenu ; sans elle, « Pas de conseil en
+          investissement » se collait au passage « À propos des données ». */}
+      <p data-nosearch="" className="mt-6 text-xs text-gray-500 text-center">
         Données indicatives uniquement. Pas de conseil en investissement. Les
         cours réels peuvent différer.
       </p>

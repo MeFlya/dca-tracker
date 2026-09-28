@@ -305,8 +305,12 @@ export function ETFComparisonPage({ comparison }: { comparison: ETFComparison })
           gratuit le 29/07.
           Formulation neutre à dessein : on annonce un paramètre de calcul, pas
           un conseil d'achat — nommer un instrument comme recommandation
-          relèverait du statut de conseiller en investissements financiers. */}
-      <div className="rounded-2xl border border-primary-100 bg-primary-50/40 p-6 text-center mb-10">
+          relèverait du statut de conseiller en investissements financiers.
+          data-nosearch sur ce bloc, « Autres comparatifs » et la mention
+          légale (recherche interne, 28/09/2026) : sans titre h2/h3 à eux, ils
+          se collaient à la dernière question de FAQ — « ESE vs PSP5 » ouvrait
+          alors « Et en assurance-vie ? » sur cinq autres comparatifs. */}
+      <div data-nosearch="" className="rounded-2xl border border-primary-100 bg-primary-50/40 p-6 text-center mb-10">
         <p className="text-base font-bold text-gray-900 mb-2">
           {terBas != null
             ? "Passez du comparatif à votre plan"
@@ -342,7 +346,7 @@ export function ETFComparisonPage({ comparison }: { comparison: ETFComparison })
       </div>
 
       {/* Other comparisons */}
-      <div className="pt-8 border-t border-gray-100">
+      <div data-nosearch="" className="pt-8 border-t border-gray-100">
         <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-4">
           Autres comparatifs
         </p>
@@ -380,7 +384,7 @@ export function ETFComparisonPage({ comparison }: { comparison: ETFComparison })
       </div>
 
       {/* Legal */}
-      <p className="mt-10 text-[11px] text-gray-500 leading-relaxed">
+      <p data-nosearch="" className="mt-10 text-[11px] text-gray-500 leading-relaxed">
         Cet article est fourni à titre informatif et ne constitue pas un conseil
         en investissement personnalisé. Les performances historiques ne préjugent
         pas des performances futures. TER et caractéristiques sont indicatifs et

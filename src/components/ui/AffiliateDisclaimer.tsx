@@ -25,7 +25,7 @@ export function AffiliateDisclaimer({
 }: Props) {
   if (variant === "inline") {
     return (
-      <p
+      <p data-nosearch=""
         className={cn(
           "text-[11px] text-gray-500 leading-snug flex items-start gap-1.5",
           className
@@ -38,7 +38,7 @@ export function AffiliateDisclaimer({
   }
 
   return (
-    <div
+    <div data-nosearch=""
       className={cn(
         "rounded-lg bg-amber-50 border border-amber-200 px-3.5 py-2.5 flex items-start gap-2 text-xs text-amber-900",
         className

@@ -69,7 +69,7 @@ export function EmailCapture({
 
   if (variant === "section") {
     return (
-      <section
+      <section data-nosearch=""
         aria-label="Recevoir la cheat sheet 5 ETF Premium pour PEA"
         className={cn("py-16 sm:py-20 border-y border-gray-100 bg-gradient-to-b from-white to-primary-50/30", className)}
       >
@@ -121,7 +121,7 @@ export function EmailCapture({
 
   // ── Card variant ─────────────────────────────────────────────────────────
   return (
-    <div
+    <div data-nosearch=""
       className={cn(
         "rounded-2xl border border-primary-100 bg-gradient-to-br from-primary-50/60 to-blue-50/30 p-6",
         className

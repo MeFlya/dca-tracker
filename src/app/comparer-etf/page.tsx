@@ -86,8 +86,11 @@ export default async function ComparerETFPage() {
         {/* Filterable grid */}
         <ETFGrid etfs={ETF_LIST} quotes={quotes} providerLabel={demo ? undefined : providerLabel} />
 
-        {/* Disclaimer — amber-50 conservé (disclaimer fintech officiel) */}
-        <div className="mt-10 p-4 rounded-xl bg-amber-50 border border-amber-200">
+        {/* Disclaimer — amber-50 conservé (disclaimer fintech officiel).
+            data-nosearch (recherche interne, 28/09/2026) : mention légale, et
+            l'heure des cours qu'elle cite est celle du build — l'index ne
+            change qu'au déploiement suivant, la page toutes les heures. */}
+        <div data-nosearch="" className="mt-10 p-4 rounded-xl bg-amber-50 border border-amber-200">
           <p className="text-xs text-amber-800 leading-relaxed">
             <strong>Information :</strong> Les cours affichés sont{" "}
             {demo ? "illustratifs (mode démo)" : "différés (fin de journée)"} et

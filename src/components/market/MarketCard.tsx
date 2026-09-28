@@ -11,10 +11,16 @@ interface MarketCardProps {
   error?: string | null;
 }
 
+// ─── Recherche interne (28/09/2026) ─────────────────────────────────────────
+// Cours, variation, devise, horodatage et carte d'erreur portent data-nosearch :
+// ce sont les valeurs du moment du build. L'index ne change qu'au déploiement
+// suivant, la page se revalide toutes les 5 minutes — un extrait afficherait
+// « 438,72 € ▲ 0,49 % … Mis à jour : 28 sept. » des semaines plus tard.
+// Le ticker, l'indice et l'émetteur restent indexés : ils servent la recherche.
 export function MarketCard({ quote, error }: MarketCardProps) {
   if (error) {
     return (
-      <div className="card border-red-100 bg-red-50 flex flex-col gap-2">
+      <div data-nosearch="" className="card border-red-100 bg-red-50 flex flex-col gap-2">
         <p className="text-sm font-semibold text-red-700">{quote.symbol}</p>
         <p className="text-xs text-red-500">Données indisponibles : {error}</p>
       </div>
@@ -57,7 +63,7 @@ export function MarketCard({ quote, error }: MarketCardProps) {
       </p>
 
       {/* Price + change */}
-      <div className="flex items-baseline gap-3 mb-4">
+      <div data-nosearch="" className="flex items-baseline gap-3 mb-4">
         <span className="text-2xl font-bold text-gray-900 tabular-nums">
           {formatCurrency(quote.price, quote.currency)}
         </span>
@@ -73,7 +79,7 @@ export function MarketCard({ quote, error }: MarketCardProps) {
       </div>
 
       {/* Change absolute */}
-      <div className="flex justify-between text-xs text-gray-500">
+      <div data-nosearch="" className="flex justify-between text-xs text-gray-500">
         <span>
           Variation :{" "}
           <span
@@ -90,7 +96,7 @@ export function MarketCard({ quote, error }: MarketCardProps) {
       </div>
 
       {/* Timestamp */}
-      <p className="mt-3 text-xs text-gray-500 border-t border-gray-50 pt-3">
+      <p data-nosearch="" className="mt-3 text-xs text-gray-500 border-t border-gray-50 pt-3">
         Mis à jour : {formatDate(quote.lastUpdated)}
       </p>
     </div>

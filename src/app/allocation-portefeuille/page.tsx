@@ -223,7 +223,7 @@ export default function AllocationPortefeuillePage() {
           </div>
 
           {/* Internal linking */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div data-nosearch="" className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Link
               href="/simulateur"
               className="group rounded-2xl border border-slate-200/70 bg-white p-5 hover:border-primary-200 transition-colors"

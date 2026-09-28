@@ -91,9 +91,15 @@ const nextConfig: NextConfig = {
       {
         // Only set index/follow on the canonical domain.
         // Requests to *.vercel.app are redirected by middleware before reaching here.
-        source: "/(.*)",
+        // Sauf la page de résultats de recherche et l'index qu'elle charge :
+        // des pages de résultats indexées seraient du contenu dupliqué.
+        source: "/((?!recherche|search-index\\.json).*)",
         has: [{ type: "host", value: "dcatracker.fr" }],
         headers: [{ key: "X-Robots-Tag", value: "index, follow" }],
+      },
+      {
+        source: "/(recherche|search-index\\.json)",
+        headers: [{ key: "X-Robots-Tag", value: "noindex, follow" }],
       },
     ];
   },

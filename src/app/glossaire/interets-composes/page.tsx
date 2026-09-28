@@ -183,8 +183,12 @@ export default function CompoundInterestGlossaryPage() {
         ))}
       </div>
 
-      {/* CTA */}
-      <div className="rounded-2xl border border-primary-100 bg-primary-50/40 p-6 text-center mb-10">
+      {/* CTA.
+          data-nosearch sur ce bloc et « Articles liés » (recherche interne,
+          28/09/2026) : sans titre h2/h3 à eux, ils se collaient à la dernière
+          question de FAQ, qui répondait alors aux requêtes « simulateur » ou
+          « PEA ou CTO ». */}
+      <div data-nosearch="" className="rounded-2xl border border-primary-100 bg-primary-50/40 p-6 text-center mb-10">
         <p className="text-base font-bold text-gray-900 mb-2">
           Simulez l&apos;effet des intérêts composés sur votre DCA
         </p>
@@ -201,7 +205,7 @@ export default function CompoundInterestGlossaryPage() {
       </div>
 
       {/* Related */}
-      <div className="pt-8 border-t border-gray-100">
+      <div data-nosearch="" className="pt-8 border-t border-gray-100">
         <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-4">
           Articles liés
         </p>

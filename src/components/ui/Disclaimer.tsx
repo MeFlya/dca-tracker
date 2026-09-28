@@ -7,7 +7,7 @@ interface DisclaimerProps {
 
 export function Disclaimer({ className, variant = "warning" }: DisclaimerProps) {
   return (
-    <div
+    <div data-nosearch=""
       // data-nosnippet : ce texte légal ne doit jamais servir d'extrait Google
       // à la place des meta descriptions.
       data-nosnippet
@@ -33,7 +33,7 @@ export function Disclaimer({ className, variant = "warning" }: DisclaimerProps) 
 
 export function DemoBadge({ className }: { className?: string }) {
   return (
-    <span className={cn("demo-badge", className)}>
+    <span data-nosearch="" className={cn("demo-badge", className)}>
       <span className="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse" />
       Mode démo — données illustratives
     </span>
@@ -43,6 +43,7 @@ export function DemoBadge({ className }: { className?: string }) {
 export function DelayedBadge({ className }: { className?: string }) {
   return (
     <span
+      data-nosearch=""
       className={cn(
         "inline-flex items-center gap-1 px-2 py-0.5 rounded bg-gray-100 text-gray-500 text-xs",
         className

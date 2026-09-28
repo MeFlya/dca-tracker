@@ -75,7 +75,9 @@ export default function HomePage() {
       <div data-reveal><EmailCapture source="homepage" /></div>
 
       {/* CTA band — gradient + subtle grid + aurora sweep for visual depth. */}
-      <section data-reveal className="relative overflow-hidden py-20 bg-gradient-to-br from-primary-700 via-primary-600 to-primary-700">
+      {/* Bandeau d'appel final : hors de la recherche interne (data-nosearch),
+          il se collait au dernier passage de l'accueil. */}
+      <section data-nosearch="" data-reveal className="relative overflow-hidden py-20 bg-gradient-to-br from-primary-700 via-primary-600 to-primary-700">
         {/* Ambient grid (matches Hero for visual rhyme) */}
         <div
           className="absolute inset-0 opacity-[0.05] pointer-events-none"

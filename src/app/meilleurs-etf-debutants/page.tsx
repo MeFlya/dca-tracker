@@ -583,7 +583,12 @@ export default function MeilleursETFDebutantsPage() {
       </section>
 
       {/* ── All ETFs list ─────────────────────────────────────────────────── */}
-      <section className="mb-14">
+      {/* data-nosearch (recherche interne, 28/09/2026) : liste de liens vers
+          les 19 fiches, à 84 % faite de noms de fonds. Indexée, elle sortait
+          sur toute recherche par nom de fonds (« iShares Core MSCI World »),
+          devant les pages qui en parlent vraiment. Le titre suivant est le h2
+          de la FAQ : rien d'autre ne change de passage. */}
+      <section data-nosearch="" className="mb-14">
         <h2 className="text-2xl font-bold text-gray-900 mb-4">
           Tous les ETF disponibles sur DCA Tracker
         </h2>

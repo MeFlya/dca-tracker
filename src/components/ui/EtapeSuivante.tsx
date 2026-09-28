@@ -63,7 +63,7 @@ export function EtapeSuivante({
   if (fraisPct != null) params.set("fees", String(fraisPct));
 
   return (
-    <div
+    <div data-nosearch=""
       className={`rounded-2xl border border-primary-100 bg-primary-50/40 p-6 mb-10 ${className ?? ""}`}
     >
       <p className="text-base font-bold text-gray-900 mb-2">{titre}</p>

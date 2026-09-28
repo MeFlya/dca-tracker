@@ -19,9 +19,27 @@ export default function NotFound() {
         Cette page n&apos;existe pas
       </h1>
       <p className="text-gray-500 mb-8 leading-relaxed">
-        Le lien est peut-être erroné ou la page a été déplacée. Voici par où
-        continuer.
+        Le lien est peut-être erroné ou la page a été déplacée. Cherchez ce
+        qu&apos;elle devait contenir, ou repartez d&apos;un outil.
       </p>
+      {/* Formulaire GET simple : fonctionne sans JavaScript, mène à /recherche. */}
+      <form
+        role="search"
+        action="/recherche"
+        className="mb-6 flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2 text-left shadow-sm focus-within:border-primary-300 focus-within:ring-2 focus-within:ring-primary-100"
+      >
+        <input
+          name="q"
+          type="search"
+          maxLength={150}
+          placeholder="ETF, frais, PEA, courtier…"
+          aria-label="Rechercher sur le site"
+          className="min-w-0 flex-1 bg-transparent py-1 text-base text-gray-900 outline-none placeholder:text-gray-400"
+        />
+        <button type="submit" className="btn-primary px-4 py-2 text-xs">
+          Rechercher
+        </button>
+      </form>
       <div className="flex flex-col sm:flex-row gap-3 justify-center">
         <Link href="/simulateur" className="btn-primary">
           Lancer une simulation

@@ -86,8 +86,10 @@ export function ArticleByline({
     <>
       <JsonLd data={articleSchema} />
 
-      {/* Bandeau visible — discret mais identifiable */}
+      {/* Bandeau visible — discret mais identifiable. Hors de la recherche
+          interne : « Par Maël… Mis à jour le… » en tête de chaque extrait. */}
       <div
+        data-nosearch=""
         className={cn(
           "flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-gray-500 mb-8",
           className

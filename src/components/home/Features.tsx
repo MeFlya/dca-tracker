@@ -90,8 +90,10 @@ export function Features() {
                 {f.description}
               </p>
 
-              {/* CTA */}
-              <span className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-primary-600 group-hover:text-primary-700 transition-colors">
+              {/* CTA — data-nosearch (recherche interne, 28/09/2026) : le
+                  libellé du lien n'est pas un contenu à trouver ; le titre et
+                  la description de la carte restent indexés. */}
+              <span data-nosearch="" className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-primary-600 group-hover:text-primary-700 transition-colors">
                 {f.cta}
                 <ArrowRight />
               </span>
@@ -115,7 +117,7 @@ export function Features() {
               {SECONDARY_FEATURE.description}
             </p>
           </div>
-          <span className="shrink-0 inline-flex items-center gap-1.5 text-sm font-semibold text-primary-600 group-hover:text-primary-700 transition-colors">
+          <span data-nosearch="" className="shrink-0 inline-flex items-center gap-1.5 text-sm font-semibold text-primary-600 group-hover:text-primary-700 transition-colors">
             {SECONDARY_FEATURE.cta}
             <ArrowRight />
           </span>

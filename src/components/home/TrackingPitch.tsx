@@ -81,8 +81,11 @@ export function TrackingPitch() {
         {/* Visual: mockup-ish card on left, bullets on right */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center mb-12">
           {/* Left: visual mockup — pops bright against the dark section.
-              Halo underneath for extra emphasis. */}
-          <div className="relative">
+              Halo underneath for extra emphasis.
+              data-nosearch (recherche interne, 28/09/2026) : maquette de
+              démonstration — « Votre portefeuille 1 380 € En avance de
+              +133 € » n'est le portefeuille de personne. */}
+          <div data-nosearch="" className="relative">
             <div
               className="absolute -inset-3 rounded-3xl bg-gradient-to-br from-primary-500/30 via-indigo-400/20 to-sky-400/20 blur-2xl pointer-events-none"
               aria-hidden
@@ -156,8 +159,8 @@ export function TrackingPitch() {
           </div>
         </div>
 
-        {/* CTA — glass-morphic on dark */}
-        <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-6 sm:p-8 text-center">
+        {/* CTA — glass-morphic on dark. data-nosearch : appel à l'action. */}
+        <div data-nosearch="" className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-6 sm:p-8 text-center">
           <div className="flex items-center justify-center gap-2 mb-3">
             <span className="inline-flex items-center text-[10px] font-bold bg-primary-500 text-white px-2 py-0.5 rounded uppercase tracking-wide">
               Premium

@@ -188,8 +188,13 @@ export default function ComparatifHubPage() {
 
       {/* Backlinks vers les guides — le hub courtiers doit irriguer le reste
           du site (avant ce bloc, la page était un cul-de-sac : aucun lien
-          sortant vers les guides éducatifs). */}
-      <div className="mb-10 pt-8 border-t border-gray-100">
+          sortant vers les guides éducatifs).
+          data-nosearch sur ce bloc, l'encart simulateur et la mention légale
+          (recherche interne, 28/09/2026) : sans titre h2/h3 à eux, ils se
+          collaient au passage « Comment choisir » — « PEA ou CTO ? »,
+          « Investir comporte un risque » y répondaient à des requêtes sans
+          rapport. */}
+      <div data-nosearch="" className="mb-10 pt-8 border-t border-gray-100">
         <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-4">
           Avant de choisir un courtier
         </p>
@@ -209,7 +214,7 @@ export default function ComparatifHubPage() {
       </div>
 
       {/* CTA */}
-      <div className="rounded-2xl border border-primary-100 bg-primary-50/40 p-6 text-center">
+      <div data-nosearch="" className="rounded-2xl border border-primary-100 bg-primary-50/40 p-6 text-center">
         <p className="text-base font-bold text-gray-900 mb-2">
           Simulez votre DCA avant d&apos;ouvrir un compte
         </p>
@@ -229,7 +234,7 @@ export default function ComparatifHubPage() {
       <InvestCTA className="mt-10" />
 
       {/* Legal — mention d'affiliation dérivée de BROKER_CONFIG. */}
-      <p className="mt-10 text-[11px] text-gray-500 leading-relaxed text-center">
+      <p data-nosearch="" className="mt-10 text-[11px] text-gray-500 leading-relaxed text-center">
         Ce comparatif est fourni à titre informatif et ne constitue pas un
         conseil en investissement personnalisé. <AffiliationNotice />{" "}
         Investir comporte un risque de perte en capital. Tarifs et conditions à

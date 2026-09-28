@@ -70,8 +70,9 @@ export function HowItWorks() {
           ))}
         </div>
 
-        {/* CTA */}
-        <div className="text-center mt-12">
+        {/* CTA — data-nosearch (recherche interne, 28/09/2026) : un appel à
+            l'action n'est pas un contenu à trouver. */}
+        <div data-nosearch="" className="text-center mt-12">
           <Link
             href="/simulateur"
             className="btn-primary text-base px-6 py-3 inline-block btn-lift"

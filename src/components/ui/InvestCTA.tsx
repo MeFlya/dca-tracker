@@ -30,7 +30,7 @@ export function InvestCTA({ accountType, className }: InvestCTAProps) {
   if (partners.length === 0) return null;
 
   return (
-    <div
+    <div data-nosearch=""
       className={cn(
         "rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-6",
         className

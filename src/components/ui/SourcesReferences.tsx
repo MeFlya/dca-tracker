@@ -43,7 +43,7 @@ export function SourcesReferences({
   if (sources.length === 0) return null;
 
   return (
-    <section
+    <section data-nosearch=""
       className="mt-12 rounded-2xl border border-gray-200 bg-gray-50/60 p-6"
       aria-labelledby="sources-heading"
     >
