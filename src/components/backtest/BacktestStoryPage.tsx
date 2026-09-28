@@ -18,7 +18,7 @@ import {
   type BacktestSeriesPoint,
 } from "@/lib/backtest";
 import { DataAnomalyNotice } from "@/components/backtest/DataAnomalyNotice";
-import type { ComputedStory } from "@/lib/backtest-stories";
+import { storyUpdatedAt, type ComputedStory } from "@/lib/backtest-stories";
 
 const CANONICAL_ORIGIN = "https://dcatracker.fr";
 
@@ -132,7 +132,7 @@ export function BacktestStoryPage({ story }: { story: ComputedStory }) {
 
       <ArticleByline
         publishedAt="2026-06-10"
-        updatedAt="2026-06-10"
+        updatedAt={storyUpdatedAt()}
         readingMinutes={5}
         url={url}
         headline={def.h1}

@@ -4,41 +4,67 @@ import { BROKER_LIST } from "@/lib/brokers";
 import { ETF_COMPARISON_LIST } from "@/lib/etf-comparisons";
 import { GLOSSARY_TERM_LIST } from "@/lib/glossary-terms";
 import { PRODUCT_LIST } from "@/lib/products";
+import { INDEX_GUIDES } from "@/lib/etf-index-guides";
+import { BACKTEST_STORY_LIST, storyUpdatedAt } from "@/lib/backtest-stories";
+import { getDatasetMeta } from "@/lib/backtest";
 
 export const dynamic = "force-static";
 
 // ─── Dates de dernière révision de contenu (YYYY-MM-DD) ───────────────────────
 //
 // IMPORTANT : ces dates reflètent la dernière modification RÉELLE du contenu
-// d'une page — pas la date de déploiement. À bumper manuellement quand on
-// modifie vraiment le contenu d'une catégorie. C'est ce qui rend le <lastmod>
+// d'une page — pas la date de déploiement. C'est ce qui rend le <lastmod>
 // fiable pour Google : avant, on mettait `new Date()` partout → toutes les
 // URLs apparaissaient "modifiées" à chaque build, ce qui pousse Google à
 // ignorer le signal lastmod (jugé non fiable).
-// ⚠️ Recalées le 22/08/2026 : elles annonçaient mai et juin alors qu'une
-// douzaine de pages avaient été modifiées début août. Le sitemap disait donc à
-// Google que rien n'avait bougé, au moment précis où on avait besoin qu'il
-// repasse. Une date de révision est une affirmation factuelle : ne bumper que
-// ce qui a réellement changé, et le vérifier avec
-// `git log -1 --format=%ad --date=short -- <fichiers de la catégorie>`.
+//
+// ⚠️ Recalées le 28/09/2026, pour la deuxième fois. Le 28/09, une soixantaine
+// de pages ont été corrigées (fonds non éligibles présentés comme éligibles
+// au PEA, ISIN et frais faux) ; le sitemap annonçait encore le 3 ou le 5 août
+// pour chacune d'elles. Google recrawle d'abord ce qu'on lui dit avoir changé :
+// c'est quand une correction est urgente que la date compte le plus.
+//
+// Le recalage a été fait page par page, à partir du dernier commit touchant la
+// page OU un module qu'elle importe (hors navigation, analytics, utilitaires
+// de mise en forme). Il a aussi RECULÉ des dates : la catégorie « evergreen »
+// déclarait le 3 août pour le glossaire, /communaute ou /glossaire/dca, qui
+// n'avaient pas bougé depuis avril-juin.
+//
+// Pour ne plus dépendre d'un bump manuel, les collections qui portent leur
+// propre date (courtiers, comparatifs, guides d'indice, termes du glossaire)
+// la fournissent directement — c'est la même que celle affichée dans la
+// byline et déclarée en dateModified. Les pages dont les chiffres sont
+// recalculés sur la série de cours réelle prennent aussi la date de
+// rafraîchissement de la série (cron mensuel) : leurs montants changent.
+//
+// Pour vérifier une date :
+// `git log -1 --format=%ad --date=short -- <page> <modules qu'elle importe>`.
 const REV = {
-  // taux fiscaux 2026 appliqués par produit (18,6 % titres, 17,2 % maintenu ailleurs)
-  ymyl: "2026-08-03",
-  // série backtest étendue à janvier 2008, verdicts retirés des pages qui ne les démontrent pas
-  newFeature: "2026-08-05",
-  // titre du simulateur raccourci, « Ressources » en navigation, prix unifiés
-  tools: "2026-08-22",
-  // bloc de fin menant à la sauvegarde de plan sur les pages « investir X €/mois »
-  longtail: "2026-08-03",
-  // inchangées depuis juin — recalées sur leur dernière modification réelle
-  legal: "2026-06-11",
-  // dates réelles par courtier, FAQ ouvertes et ancrées
-  evergreen: "2026-08-03",
-  // inchangées depuis juillet — recalées sur leur dernière modification réelle
-  market: "2026-07-29",
-  // entrée de changelog sur la régression de série du 2 août
+  // table de vérité ETF (24 fonds vérifiés par deux familles de sources),
+  // cheat sheet corrigée, frais par défaut du simulateur alignés sur le moteur,
+  // « ce qu'auraient donné » sur les vrais cours, tableau année par année
+  etf: "2026-09-28",
+  // taux fiscaux 2026
+  methodologie: "2026-08-03",
+  // capture du Dashboard corrigée, prix unifiés
+  produits: "2026-08-22",
+  // Vercel Web Analytics remplace Plausible (mention dans la page)
+  analytics: "2026-08-23",
+  // entrée de changelog sur la régression de série du 2 août ; partenariats
   affiliation: "2026-08-04",
+  cgv: "2026-06-11",
+  glossaireHub: "2026-06-10",
+  glossaireDca: "2026-05-09",
+  // /glossaire/interets-composes et /communaute
+  inchangeesDepuisAvril: "2026-04-24",
 } as const;
+
+/** La plus récente de plusieurs dates YYYY-MM-DD (l'ordre lexical suffit). */
+const plusRecente = (...dates: string[]) => dates.reduce((a, b) => (b > a ? b : a));
+
+// Les chiffres de ces pages sont recalculés sur la série publiée : chaque
+// rafraîchissement mensuel change leurs montants.
+const SERIE = getDatasetMeta().fetchedAt;
 
 type PageEntry = {
   url: string;
@@ -51,75 +77,84 @@ export async function GET(): Promise<NextResponse> {
   const base = "https://dcatracker.fr";
 
   const pages: PageEntry[] = [
-    { url: base,                               changeFreq: "weekly",  priority: 1.0,  lastmod: REV.tools },
-    { url: `${base}/simulateur`,               changeFreq: "weekly",  priority: 0.9,  lastmod: REV.tools },
-    { url: `${base}/backtest`,                 changeFreq: "monthly", priority: 0.85, lastmod: REV.newFeature },
-    { url: `${base}/backtest-covid-2020`,      changeFreq: "monthly", priority: 0.8,  lastmod: REV.ymyl },
-    { url: `${base}/backtest-2022-inflation`,  changeFreq: "monthly", priority: 0.8,  lastmod: REV.ymyl },
-    { url: `${base}/backtest-depuis-2010`,     changeFreq: "monthly", priority: 0.8,  lastmod: REV.ymyl },
-    { url: `${base}/investir-100-euros-mois-etf`, changeFreq: "monthly", priority: 0.9, lastmod: REV.longtail },
-    { url: `${base}/investir-200-euros-mois-etf`, changeFreq: "monthly", priority: 0.9, lastmod: REV.longtail },
-    { url: `${base}/investir-300-euros-mois-etf`, changeFreq: "monthly", priority: 0.9, lastmod: REV.longtail },
-    { url: `${base}/investir-500-euros-mois-etf`, changeFreq: "monthly", priority: 0.9, lastmod: REV.longtail },
-    { url: `${base}/meilleurs-etf-debutants`,  changeFreq: "monthly", priority: 0.9,  lastmod: REV.ymyl },
-    { url: `${base}/etf-msci-world`,           changeFreq: "monthly", priority: 0.9,  lastmod: REV.newFeature },
-    { url: `${base}/etf-sp500`,                changeFreq: "monthly", priority: 0.9,  lastmod: REV.newFeature },
-    { url: `${base}/etf-nasdaq`,               changeFreq: "monthly", priority: 0.85, lastmod: REV.newFeature },
-    { url: `${base}/strategie-dca`,            changeFreq: "monthly", priority: 0.9,  lastmod: REV.ymyl },
-    { url: `${base}/interets-composes`,        changeFreq: "monthly", priority: 0.85, lastmod: REV.ymyl },
-    { url: `${base}/pea-ou-cto`,               changeFreq: "monthly", priority: 0.85, lastmod: REV.ymyl },
-    { url: `${base}/guide-5-etf-pea-premium`,  changeFreq: "monthly", priority: 0.9,  lastmod: REV.ymyl },
-    { url: `${base}/calculateur-fiscal-pea-cto`, changeFreq: "monthly", priority: 0.9, lastmod: REV.longtail },
-    { url: `${base}/allocation-portefeuille`,  changeFreq: "monthly", priority: 0.85, lastmod: REV.longtail },
-    { url: `${base}/investir-en-etf`,          changeFreq: "monthly", priority: 0.85, lastmod: REV.longtail },
-    { url: `${base}/comparer-etf`,             changeFreq: "weekly",  priority: 0.8,  lastmod: REV.market },
-    { url: `${base}/donnees-marche`,           changeFreq: "daily",   priority: 0.6,  lastmod: REV.market },
-    { url: `${base}/tarifs`,                   changeFreq: "monthly", priority: 0.8,  lastmod: REV.tools },
-    { url: `${base}/produits`,                 changeFreq: "monthly", priority: 0.8,  lastmod: REV.ymyl },
+    { url: base,                               changeFreq: "weekly",  priority: 1.0,  lastmod: REV.etf },
+    { url: `${base}/simulateur`,               changeFreq: "weekly",  priority: 0.9,  lastmod: REV.etf },
+    { url: `${base}/backtest`,                 changeFreq: "monthly", priority: 0.85, lastmod: plusRecente(REV.etf, SERIE) },
+    ...BACKTEST_STORY_LIST.map((s) => ({
+      url: `${base}/${s.slug}`,
+      changeFreq: "monthly",
+      priority: 0.8,
+      lastmod: storyUpdatedAt(),
+    })),
+    ...[100, 200, 300, 500].map((m) => ({
+      url: `${base}/investir-${m}-euros-mois-etf`,
+      changeFreq: "monthly",
+      priority: 0.9,
+      // bloc « ce qu'auraient donné N €/mois » calculé sur la série publiée
+      lastmod: plusRecente(REV.etf, SERIE),
+    })),
+    { url: `${base}/meilleurs-etf-debutants`,  changeFreq: "monthly", priority: 0.9,  lastmod: REV.etf },
+    ...Object.values(INDEX_GUIDES).map((g) => ({
+      url: `${base}/${g.slug}`,
+      changeFreq: "monthly",
+      priority: g.slug === "etf-nasdaq" ? 0.85 : 0.9,
+      lastmod: g.updatedAt,
+    })),
+    { url: `${base}/strategie-dca`,            changeFreq: "monthly", priority: 0.9,  lastmod: REV.etf },
+    { url: `${base}/interets-composes`,        changeFreq: "monthly", priority: 0.85, lastmod: REV.etf },
+    { url: `${base}/pea-ou-cto`,               changeFreq: "monthly", priority: 0.85, lastmod: REV.etf },
+    { url: `${base}/guide-5-etf-pea-premium`,  changeFreq: "monthly", priority: 0.9,  lastmod: REV.etf },
+    { url: `${base}/calculateur-fiscal-pea-cto`, changeFreq: "monthly", priority: 0.9, lastmod: REV.etf },
+    { url: `${base}/allocation-portefeuille`,  changeFreq: "monthly", priority: 0.85, lastmod: REV.etf },
+    { url: `${base}/investir-en-etf`,          changeFreq: "monthly", priority: 0.85, lastmod: REV.etf },
+    { url: `${base}/comparer-etf`,             changeFreq: "weekly",  priority: 0.8,  lastmod: REV.etf },
+    { url: `${base}/donnees-marche`,           changeFreq: "daily",   priority: 0.6,  lastmod: REV.etf },
+    { url: `${base}/tarifs`,                   changeFreq: "monthly", priority: 0.8,  lastmod: REV.etf },
+    { url: `${base}/produits`,                 changeFreq: "monthly", priority: 0.8,  lastmod: REV.produits },
     ...PRODUCT_LIST.map((p) => ({
       url: `${base}/produits/${p.slug}`,
       changeFreq: "monthly",
       priority: 0.8,
-      lastmod: REV.ymyl,
+      lastmod: REV.produits,
     })),
-    { url: `${base}/a-propos`,                 changeFreq: "monthly", priority: 0.6,  lastmod: REV.affiliation },
-    { url: `${base}/methodologie`,             changeFreq: "monthly", priority: 0.5,  lastmod: REV.ymyl },
+    { url: `${base}/a-propos`,                 changeFreq: "monthly", priority: 0.6,  lastmod: REV.analytics },
+    { url: `${base}/methodologie`,             changeFreq: "monthly", priority: 0.5,  lastmod: REV.methodologie },
     { url: `${base}/transparence`,             changeFreq: "monthly", priority: 0.5,  lastmod: REV.affiliation },
     { url: `${base}/changelog`,                changeFreq: "monthly", priority: 0.4,  lastmod: REV.affiliation },
-    { url: `${base}/mentions-legales`,         changeFreq: "yearly",  priority: 0.3,  lastmod: REV.legal },
-    { url: `${base}/cgv`,                      changeFreq: "yearly",  priority: 0.3,  lastmod: REV.legal },
-    { url: `${base}/confidentialite`,          changeFreq: "yearly",  priority: 0.3,  lastmod: REV.legal },
-    { url: `${base}/simulateur-retraite`,      changeFreq: "monthly", priority: 0.9,  lastmod: REV.longtail },
-    { url: `${base}/communaute`,               changeFreq: "weekly",  priority: 0.6,  lastmod: REV.evergreen },
-    { url: `${base}/glossaire`,                changeFreq: "monthly", priority: 0.7,  lastmod: REV.evergreen },
-    { url: `${base}/glossaire/dca`,            changeFreq: "monthly", priority: 0.8,  lastmod: REV.evergreen },
-    { url: `${base}/glossaire/etf`,            changeFreq: "monthly", priority: 0.8,  lastmod: REV.evergreen },
-    { url: `${base}/glossaire/interets-composes`, changeFreq: "monthly", priority: 0.8, lastmod: REV.evergreen },
+    { url: `${base}/mentions-legales`,         changeFreq: "yearly",  priority: 0.3,  lastmod: REV.analytics },
+    { url: `${base}/cgv`,                      changeFreq: "yearly",  priority: 0.3,  lastmod: REV.cgv },
+    { url: `${base}/confidentialite`,          changeFreq: "yearly",  priority: 0.3,  lastmod: REV.analytics },
+    { url: `${base}/simulateur-retraite`,      changeFreq: "monthly", priority: 0.9,  lastmod: REV.etf },
+    { url: `${base}/communaute`,               changeFreq: "weekly",  priority: 0.6,  lastmod: REV.inchangeesDepuisAvril },
+    { url: `${base}/glossaire`,                changeFreq: "monthly", priority: 0.7,  lastmod: REV.glossaireHub },
+    { url: `${base}/glossaire/dca`,            changeFreq: "monthly", priority: 0.8,  lastmod: REV.glossaireDca },
+    { url: `${base}/glossaire/etf`,            changeFreq: "monthly", priority: 0.8,  lastmod: REV.etf },
+    { url: `${base}/glossaire/interets-composes`, changeFreq: "monthly", priority: 0.8, lastmod: REV.inchangeesDepuisAvril },
     ...GLOSSARY_TERM_LIST.map((t) => ({
       url: `${base}/glossaire/${t.slug}`,
       changeFreq: "monthly",
       priority: 0.7,
-      lastmod: REV.evergreen,
+      lastmod: t.updatedAt,
     })),
-    { url: `${base}/comparatif`,               changeFreq: "monthly", priority: 0.8,  lastmod: REV.evergreen },
+    { url: `${base}/comparatif`,               changeFreq: "monthly", priority: 0.8,  lastmod: plusRecente(...BROKER_LIST.map((b) => b.updatedAt)) },
     ...BROKER_LIST.map((b) => ({
       url: `${base}/comparatif/${b.slug}`,
       changeFreq: "monthly",
       priority: 0.8,
-      lastmod: REV.evergreen,
+      lastmod: b.updatedAt,
     })),
-    { url: `${base}/comparatif-etf`,           changeFreq: "monthly", priority: 0.8,  lastmod: REV.newFeature },
+    { url: `${base}/comparatif-etf`,           changeFreq: "monthly", priority: 0.8,  lastmod: REV.etf },
     ...ETF_COMPARISON_LIST.map((c) => ({
       url: `${base}/comparatif-etf/${c.slug}`,
       changeFreq: "monthly",
       priority: 0.8,
-      lastmod: REV.newFeature,
+      lastmod: c.updatedAt,
     })),
     ...ETF_LIST.map((etf) => ({
       url: `${base}/etf/${etf.displaySymbol}`,
       changeFreq: "weekly",
       priority: 0.7,
-      lastmod: REV.market,
+      lastmod: REV.etf,
     })),
   ];
 

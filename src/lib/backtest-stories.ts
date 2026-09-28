@@ -18,6 +18,7 @@ import {
   getAvailableRange,
   formatEurBacktest,
   formatMonthFr,
+  getDatasetMeta,
   type BacktestResult,
 } from "./backtest";
 
@@ -37,6 +38,22 @@ export type BacktestStoryDef = {
   lesson: (r: BacktestResult) => string;
   faq: (r: BacktestResult) => { q: string; a: string }[];
 };
+
+/**
+ * Date de révision affichée par ces pages (byline, dateModified, sitemap).
+ *
+ * Jusqu'au 28/09/2026 elles affichaient « mis à jour le 10 juin 2026 » en dur,
+ * alors que leurs chiffres avaient changé trois fois depuis : série
+ * reconstruite le 29/07, étendue à 2008 le 04/08, rafraîchie chaque mois. Leur
+ * récit est fixe mais leurs montants courent jusqu'au dernier mois publié : la
+ * date honnête est la plus récente entre la dernière révision du texte et le
+ * dernier rafraîchissement de la série.
+ */
+const TEXTE_REVISE_LE = "2026-08-05";
+export function storyUpdatedAt(): string {
+  const serie = getDatasetMeta().fetchedAt;
+  return serie > TEXTE_REVISE_LE ? serie : TEXTE_REVISE_LE;
+}
 
 const fmtPct = (n: number) => n.toFixed(1).replace(".", ",");
 const fmtIrr = (r: BacktestResult) =>

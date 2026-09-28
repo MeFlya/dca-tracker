@@ -50,6 +50,14 @@ export type GlossaryTerm = {
   related: { href: string; label: string }[];
   /** Catégorie pour le regroupement sur le hub. */
   category: "Enveloppes & fiscalité" | "Frais & mécanique des ETF" | "Stratégie & risque";
+  /**
+   * Dernière modification RÉELLE du contenu du terme (YYYY-MM-DD). Affichée
+   * par la byline, déclarée en dateModified et reprise par le sitemap.
+   * Jusqu'au 28/09/2026, la page écrivait « 10 juin 2026 » pour les douze
+   * termes alors que neuf avaient changé depuis — dont six le jour même, pour
+   * des erreurs de fait. À bumper quand on touche le terme, pas au déploiement.
+   */
+  updatedAt: string;
 };
 
 export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
@@ -57,6 +65,7 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
 
   pea: {
     slug: "pea",
+    updatedAt: "2026-09-28",
     term: "PEA — Plan d'Épargne en Actions",
     shortDef:
       "Enveloppe fiscale française : après 5 ans, les gains ne supportent que 18,6 % de prélèvements sociaux au lieu de 31,4 %.",
@@ -103,6 +112,7 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
 
   cto: {
     slug: "cto",
+    updatedAt: "2026-08-03",
     term: "CTO — Compte-Titres Ordinaire",
     shortDef:
       "Compte d'investissement sans plafond ni restriction d'actifs, mais fiscalisé au PFU de 31,4 % sur les gains.",
@@ -144,6 +154,7 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
 
   pfu: {
     slug: "pfu",
+    updatedAt: "2026-09-28",
     term: "PFU — Prélèvement Forfaitaire Unique (flat tax)",
     shortDef:
       "Imposition forfaitaire de 31,4 % sur les revenus du capital : 12,8 % d'impôt sur le revenu + 18,6 % de prélèvements sociaux.",
@@ -189,6 +200,7 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
 
   ter: {
     slug: "ter",
+    updatedAt: "2026-09-28",
     term: "TER — Total Expense Ratio (frais courants)",
     shortDef:
       "Frais annuels d'un ETF, prélevés automatiquement sur la performance — de 0,07 % à 0,40 % pour les grands indices.",
@@ -232,6 +244,7 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
 
   "replication-physique": {
     slug: "replication-physique",
+    updatedAt: "2026-09-28",
     term: "Réplication physique",
     shortDef:
       "L'ETF détient réellement les titres de l'indice qu'il réplique — pas d'intermédiaire, pas de contrat d'échange.",
@@ -274,6 +287,7 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
 
   "replication-synthetique": {
     slug: "replication-synthetique",
+    updatedAt: "2026-09-28",
     term: "Réplication synthétique (swap)",
     shortDef:
       "L'ETF reproduit la performance de l'indice via un contrat d'échange — c'est ce qui rend le MSCI World ou le S&P 500 éligibles au PEA.",
@@ -317,6 +331,7 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
 
   "capitalisant-distribuant": {
     slug: "capitalisant-distribuant",
+    updatedAt: "2026-06-10",
     term: "Capitalisant vs distribuant",
     shortDef:
       "Un ETF capitalisant réinvestit automatiquement les dividendes ; un distribuant les verse en cash sur votre compte.",
@@ -359,6 +374,7 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
 
   "lump-sum": {
     slug: "lump-sum",
+    updatedAt: "2026-06-10",
     term: "Lump sum (investissement en une fois)",
     shortDef:
       "Investir tout son capital disponible immédiatement, plutôt que de l'étaler dans le temps comme le DCA.",
@@ -399,6 +415,7 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
 
   volatilite: {
     slug: "volatilite",
+    updatedAt: "2026-09-28",
     term: "Volatilité",
     shortDef:
       "L'amplitude des variations d'un actif autour de sa tendance — la mesure standard du « risque » en finance.",
@@ -441,6 +458,7 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
 
   drawdown: {
     slug: "drawdown",
+    updatedAt: "2026-09-28",
     term: "Drawdown (perte maximale)",
     shortDef:
       "La baisse entre un sommet du portefeuille et le creux qui suit — la mesure la plus parlante du risque vécu.",
@@ -481,6 +499,7 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
 
   rebalancing: {
     slug: "rebalancing",
+    updatedAt: "2026-09-28",
     term: "Rebalancing (rééquilibrage)",
     shortDef:
       "Ramener périodiquement son portefeuille à son allocation cible, quand les performances ont déformé les poids.",
@@ -521,6 +540,7 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
 
   tri: {
     slug: "tri",
+    updatedAt: "2026-06-10",
     term: "TRI — Taux de Rendement Interne",
     shortDef:
       "Le rendement annualisé qui tient compte des dates et montants de chaque versement — la vraie mesure de performance d'un DCA.",

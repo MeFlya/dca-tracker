@@ -92,7 +92,7 @@ export default function MethodologiePage() {
 
       <ArticleByline
         publishedAt="2026-04-01"
-        updatedAt="2026-05-25"
+        updatedAt="2026-08-03"
         readingMinutes={6}
         url="/methodologie"
         headline={TITLE}

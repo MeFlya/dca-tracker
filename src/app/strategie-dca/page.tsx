@@ -195,7 +195,7 @@ export default function StrategieDCAPage() {
 
       <ArticleByline
         publishedAt="2026-04-10"
-        updatedAt="2026-05-25"
+        updatedAt="2026-09-28"
         readingMinutes={10}
         url="/strategie-dca"
         headline={TITLE}

@@ -88,7 +88,7 @@ export default async function GlossaryTermPage({ params }: Props) {
 
       <ArticleByline
         publishedAt="2026-06-10"
-        updatedAt="2026-06-10"
+        updatedAt={term.updatedAt}
         readingMinutes={3}
         url={url}
         headline={term.term}
