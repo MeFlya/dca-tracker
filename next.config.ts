@@ -50,9 +50,23 @@ const nextConfig: NextConfig = {
       // Les anciens tickers ont été remplacés par les nouveaux tickers
       // officiels chez Amundi. On redirige les URLs historiques pour
       // préserver bookmarks + backlinks + SEO.
-      { source: "/etf/EWLD",  destination: "/etf/IWDA", permanent: true },
+      //
+      // Corrigé le 28/09/2026 d'après la table de vérité ETF :
+      //  · /etf/PAEEM → /etf/AEEM SUPPRIMÉE. PAEEM (FR0013412020) est l'ETF
+      //    émergents ÉLIGIBLE PEA d'Amundi ; AEEM (LU1681045370) est un autre
+      //    fonds, NON éligible. La redirection envoyait le lecteur qui cherchait
+      //    l'émergents PEA vers un fonds que son PEA refuse. /etf/PAEEM est
+      //    désormais une vraie fiche.
+      //  · /etf/EWLD pointait vers IWDA (iShares, physique, non éligible PEA).
+      //    EWLD est un fonds AMUNDI : la part distribuante du fonds de CW8,
+      //    éligible PEA. Redirigé vers /etf/CW8, la même stratégie en part
+      //    capitalisante.
+      //  · /etf/SP5 → /etf/500 conservée : la fiche 500 dit désormais qu'il
+      //    n'est pas éligible PEA et renvoie vers PSP5, SPEA et ESE.
+      //  · /etf/LYYA et /etf/OBLI conservées : la table ne dit rien de ces
+      //    anciens tickers, les fiches cibles (JPNK, C3M) sont corrigées.
+      { source: "/etf/EWLD",  destination: "/etf/CW8",  permanent: true },
       { source: "/etf/SP5",   destination: "/etf/500",  permanent: true },
-      { source: "/etf/PAEEM", destination: "/etf/AEEM", permanent: true },
       { source: "/etf/LYYA",  destination: "/etf/JPNK", permanent: true },
       { source: "/etf/OBLI",  destination: "/etf/C3M",  permanent: true },
       // SMAE supprimé (ISIN pointait sur un doublon Russell 2000). On

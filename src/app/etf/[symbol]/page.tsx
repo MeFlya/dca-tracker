@@ -6,7 +6,7 @@ import { ETF_LIST, getETFBySymbol } from "@/lib/etf-config";
 import type { AccountType } from "@/lib/broker-config";
 import { getETFDetailContent } from "@/lib/etf-detail-content";
 import { getMarketDataProvider, isDemo } from "@/lib/market-data";
-import { formatCurrency, formatPercent, formatDate } from "@/lib/utils";
+import { formatCurrency, formatPercent, formatPercentSansSigne, formatDate } from "@/lib/utils";
 import { DemoBadge, DelayedBadge } from "@/components/ui/Disclaimer";
 import { InvestCTA } from "@/components/ui/InvestCTA";
 import { IssuerLogoMark } from "@/components/ui/IssuerLogoMark";
@@ -332,7 +332,7 @@ function PriceBlock({
           positive ? "text-gain-dark" : "text-loss-dark"
         )}
       >
-        {positive ? "▲" : "▼"} {formatPercent(Math.abs(quote.changePercent))}
+        {positive ? "▲" : "▼"} {formatPercentSansSigne(quote.changePercent)}
         <span className="text-gray-500 font-normal ml-1 text-xs">
           ({positive ? "+" : ""}{formatCurrency(quote.change, quote.currency)})
         </span>

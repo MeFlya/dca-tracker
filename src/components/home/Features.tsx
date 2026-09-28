@@ -17,7 +17,11 @@ const PRIMARY_FEATURES = [
     iconBg: "bg-blue-50",
     title: "Comparez les principaux ETF",
     description:
-      "CW8, EWLD, VWCE, SP5, ANX, PAEEM et plus — TER réels, méthode de réplication, éligibilité PEA, derniers cours indicatifs. Chaque ETF détaillé avec son profil et ses points d'attention.",
+      // Corrigé le 28/09/2026 : « SP5 » n'est le mnémonique d'aucun ETF de la
+      // table de vérité ETF, et EWLD comme PAEEM n'ont pas de fiche dans le
+      // comparateur vers lequel pointe cette carte. La liste ne cite plus que
+      // des ETF que /comparer-etf affiche réellement.
+      "CW8, IWDA, VWCE, CSPX, PCEU, RS2K et plus — TER réels, méthode de réplication, éligibilité PEA, derniers cours indicatifs. Chaque ETF détaillé avec son profil et ses points d'attention.",
     cta: "Comparer les ETF",
     href: "/comparer-etf",
   },

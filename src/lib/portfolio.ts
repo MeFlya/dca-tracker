@@ -24,9 +24,16 @@
  * - S&P 500 historical real returns ≈ 9-10 %/an, more volatile.
  * - MSCI Emerging Markets long-term ≈ 7-9 %/an, much higher volatility.
  * - Eurostoxx 50 long-term ≈ 5-7 %/an, lower than US.
- * - Topix Japan ≈ 4-6 %/an (post-1990 lost decades, recovering).
+ * - Japan (TOPIX-like broad market) ≈ 4-6 %/an (post-1990 lost decades,
+ *   recovering). Note 28/09/2026 : l'ETF Japon du catalogue (JPNK) suit le
+ *   JPX-Nikkei 400, pas le TOPIX (table de vérité ETF) ; le chiffre reste un
+ *   ordre de grandeur pour le marché japonais large.
  * - MSCI Small Cap World ≈ 8-9 %/an, premium small-cap historique.
  * - Bloomberg Aggregate Bond ≈ 2-4 %/an, low volatility.
+ *   Note 28/09/2026 : la seule ligne « obligations » du catalogue est C3M, un
+ *   fonds QUASI MONÉTAIRE (bons du Trésor zone euro à moins de 6 mois, table
+ *   de vérité ETF), pas un fonds d'obligations longues. Le proxy « Aggregate
+ *   Bond » ne lui correspond donc pas exactement.
  *
  * These numbers are CONSERVATIVE versions of the historical averages.
  * Update if the source benchmarks shift materially.
@@ -191,38 +198,51 @@ export const PORTFOLIO_PRESETS: PortfolioPreset[] = [
     id: "world-100",
     name: "MSCI World seul (100 %)",
     description:
-      "Le portefeuille le plus simple : un seul ETF mondial. Diversifié sur ~1 500 entreprises, 23 pays développés. Le point d'entrée recommandé pour la majorité des DCA débutants.",
+      "Le portefeuille le plus simple : un seul ETF mondial. Diversifié sur ~1 500 entreprises, 23 pays développés.",
     allocation: [{ displaySymbol: "CW8", weight: 100 }],
   },
+  // Corrigé le 28/09/2026 : les deux préréglages « émergents » utilisaient
+  // AEEM, qui n'est PAS éligible PEA (reporting Amundi du 31/08/2026 :
+  // « Compte-titres, Assurance-vie »). Remplacé par PAEEM, l'équivalent
+  // éligible PEA d'après la table de vérité ETF — le site est centré sur le PEA.
   {
     id: "world-em-80-20",
     name: "Monde + émergents (80/20)",
     description:
-      "Allocation classique pour ajouter de la croissance émergente sans trop de volatilité. 80 % MSCI World, 20 % marchés émergents.",
+      "Allocation classique pour ajouter de la croissance émergente sans trop de volatilité. 80 % MSCI World, 20 % marchés émergents — les deux éligibles PEA.",
     allocation: [
       { displaySymbol: "CW8", weight: 80 },
-      { displaySymbol: "AEEM", weight: 20 },
+      { displaySymbol: "PAEEM", weight: 20 },
     ],
   },
+  // Description corrigée le 28/09/2026 : les « 10 % obligations » sont C3M,
+  // un fonds quasi monétaire (bons du Trésor zone euro à moins de 6 mois,
+  // table de vérité ETF), non éligible PEA — pas des obligations longues.
   {
     id: "world-em-bond-70-20-10",
     name: "Diversifié 70/20/10",
     description:
-      "Trois piliers : 70 % monde développé, 20 % émergents, 10 % obligations. La répartition la plus équilibrée pour les profils prudents en DCA long-terme.",
+      "Trois piliers : 70 % monde développé, 20 % émergents, 10 % en fonds quasi monétaire (C3M : bons du Trésor de la zone euro à moins de 6 mois). C'est une poche de liquidités peu volatile, pas des obligations longues. C3M n'est pas éligible PEA : ce portefeuille demande un compte-titres ou une assurance-vie à côté.",
     allocation: [
       { displaySymbol: "CW8", weight: 70 },
-      { displaySymbol: "AEEM", weight: 20 },
+      { displaySymbol: "PAEEM", weight: 20 },
       { displaySymbol: "C3M", weight: 10 },
     ],
   },
+  // Corrigé le 28/09/2026 : ce préréglage pointait sur IUSN, retiré du
+  // catalogue le 08/05/2026. Le préréglage se chargeait donc avec CW8 seul à
+  // 90 % — un portefeuille qui ne faisait pas 100 %. Remplacé par RS2K, la
+  // seule ligne petites capitalisations du catalogue (Russell 2000, éligible
+  // PEA d'après la table de vérité) ; la description dit désormais ce qu'il
+  // contient réellement : des small caps AMÉRICAINES, pas mondiales.
   {
     id: "world-smallcap-90-10",
-    name: "Monde + small caps (90/10)",
+    name: "Monde + small caps US (90/10)",
     description:
-      "Le tilt small-cap historique : 90 % MSCI World pour la base, 10 % small caps mondiales pour capter le premium small-cap (excès de rendement long-terme observé empiriquement).",
+      "Un tilt vers les petites entreprises : 90 % MSCI World pour la base, 10 % petites capitalisations américaines (Russell 2000) pour capter le premium small-cap observé sur le long terme — sans garantie qu'il se reproduise. Les deux éligibles PEA.",
     allocation: [
       { displaySymbol: "CW8", weight: 90 },
-      { displaySymbol: "IUSN", weight: 10 },
+      { displaySymbol: "RS2K", weight: 10 },
     ],
   },
 ];

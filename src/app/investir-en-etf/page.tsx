@@ -3,6 +3,8 @@ import { ArticleByline } from "@/components/ui/ArticleByline";
 import { SourcesReferences } from "@/components/ui/SourcesReferences";
 import Link from "next/link";
 import { EmailCapture } from "@/components/ui/EmailCapture";
+import { runSimulation } from "@/lib/simulator";
+import { ETF_LIST, TER_REFERENCE_SIMULATEUR } from "@/lib/etf-config";
 
 const TITLE = "Comment investir en ETF chaque mois — Guide DCA débutants";
 const DESCRIPTION =
@@ -26,6 +28,39 @@ export const metadata: Metadata = {
   },
 };
 
+// ─── Corrigé le 28/09/2026 (table de vérité ETF) ─────────────────────────────
+// · La liste « 3 ETF MSCI World les plus utilisés en France » mettait VWCE
+//   (FTSE All-World, pas MSCI World) à 0,22 % (TER actuel : 0,14 %) ; le
+//   classement « les plus utilisés » n'est pas vérifiable. Elle est remplacée
+//   par les ETF monde du catalogue, TER et statut PEA lus dans ETF_LIST.
+// · « CW8 + EWLD + VWCE » : EWLD est la part distribuante du fonds de CW8
+//   (Amundi), VWCE suit un autre indice. Exemple remplacé par trois lignes
+//   qui suivent réellement le même indice : CW8, WPEA, DCAM.
+// · Lien « CW8, EWLD, VWCE, SP5, ANX » : EWLD et SP5 ne sont pas au comparateur,
+//   ANX n'est pas éligible PEA.
+// · Tableau « 100/200/500 €/mois » : montants écrits à la main, sans frais.
+//   Ils sortent maintenant du moteur, au TER du simulateur (CW8).
+
+/** Les ETF monde affichés à l'étape 02, lus dans le catalogue (nom, TER, PEA). */
+const ETF_MONDE = ["WPEA", "DCAM", "CW8", "IWDA", "VWCE"]
+  .map((s) => ETF_LIST.find((e) => e.displaySymbol === s))
+  .filter((e): e is NonNullable<typeof e> => e !== undefined);
+
+function pct(v: number): string {
+  return `${v.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} %`;
+}
+
+/** Capital projeté à 20 ans, 7 %/an avant frais, TER du simulateur, arrondi à la centaine. */
+function capital20ans(mensuel: number): string {
+  const v = runSimulation({
+    monthlyAmount: mensuel,
+    durationYears: 20,
+    annualReturnPct: 7,
+    annualFeesPct: TER_REFERENCE_SIMULATEUR,
+  }).base.finalValue;
+  return `${String(Math.round(v / 100) * 100).replace(/\B(?=(\d{3})+(?!\d))/g, " ")} €`;
+}
+
 const STEPS = [
   {
     num: "01",
@@ -39,9 +74,9 @@ const STEPS = [
           d&apos;entreprises à la fois.
         </p>
         <p className="text-sm text-gray-600 leading-relaxed">
-          L&apos;ETF MSCI World, par exemple, vous expose à plus de 1 500
-          entreprises dans 23 pays développés — en un seul achat, avec des frais
-          de gestion annuels souvent inférieurs à 0,40 %.
+          Un ETF MSCI World, par exemple, vous expose aux grandes et moyennes
+          entreprises des pays développés — en un seul achat. Dans notre
+          sélection, ses frais de gestion annuels vont de 0,20 % à 0,38 %.
         </p>
       </>
     ),
@@ -52,18 +87,20 @@ const STEPS = [
     content: (
       <>
         <p className="text-sm text-gray-600 leading-relaxed mb-3">
-          Pour débuter avec une stratégie DCA, la recommandation la plus courante
-          est un <strong>ETF MSCI World ou FTSE All-World</strong> : diversification
-          mondiale maximale, TER faible, liquidité élevée.
+          Pour une stratégie DCA, le support le plus simple est un{" "}
+          <strong>ETF monde (MSCI World ou FTSE All-World)</strong> : une seule
+          ligne, des centaines d&apos;entreprises, des frais bas. Attention à
+          l&apos;enveloppe : tous ne sont pas éligibles au PEA.
         </p>
         <div className="rounded-xl bg-gray-50 border border-gray-100 p-4 text-sm space-y-2">
-          <p className="font-semibold text-gray-800">Les 3 ETF MSCI World les plus utilisés en France :</p>
+          <p className="font-semibold text-gray-800">Les ETF monde de notre sélection :</p>
           <div className="grid grid-cols-1 gap-2">
-            {[
-              { symbol: "CW8", name: "Amundi MSCI World", ter: "0,38 %", pea: true },
-              { symbol: "IWDA", name: "iShares Core MSCI World", ter: "0,20 %", pea: false },
-              { symbol: "VWCE", name: "Vanguard FTSE All-World", ter: "0,22 %", pea: false },
-            ].map((etf) => (
+            {ETF_MONDE.map((e) => ({
+              symbol: e.displaySymbol,
+              name: e.name,
+              ter: pct(e.ter),
+              pea: e.peaEligible,
+            })).map((etf) => (
               <Link
                 key={etf.symbol}
                 href={`/etf/${etf.symbol}`}
@@ -80,8 +117,9 @@ const STEPS = [
           </div>
         </div>
         <p className="text-sm text-gray-500 mt-3">
-          Pour un premier investissement, un seul de ces ETF suffit.
-          La sur-diversification avec plusieurs ETF similaires est une erreur courante.
+          WPEA, DCAM et CW8 suivent le même indice : seuls les frais les
+          séparent. IWDA et VWCE se logent en compte-titres. Un seul de ces ETF
+          suffit ; en cumuler plusieurs revient à acheter deux fois la même chose.
         </p>
       </>
     ),
@@ -99,7 +137,7 @@ const STEPS = [
         </p>
         <div className="rounded-xl bg-primary-50 border border-primary-100 p-4 text-sm">
           <p className="font-semibold text-primary-800 mb-1">
-            Pour la majorité des débutants : commencez par le PEA.
+            Le PEA, l&apos;enveloppe la plus légère fiscalement pour un DCA long.
           </p>
           <p className="text-primary-700">
             Après 5 ans, vos gains ne sont taxés qu&apos;à 18,6 % (prélèvements
@@ -143,9 +181,9 @@ const STEPS = [
           <p className="font-semibold text-gray-700 mb-2">L&apos;effet des intérêts composés dans le temps :</p>
           <div className="space-y-1.5">
             {[
-              { monthly: "100 €", years: 20, result: "51 000 €" },
-              { monthly: "200 €", years: 20, result: "102 000 €" },
-              { monthly: "500 €", years: 20, result: "255 000 €" },
+              { monthly: "100 €", years: 20, result: capital20ans(100) },
+              { monthly: "200 €", years: 20, result: capital20ans(200) },
+              { monthly: "500 €", years: 20, result: capital20ans(500) },
             ].map((row) => (
               <div key={row.monthly} className="flex justify-between text-gray-600">
                 <span>{row.monthly}/mois pendant {row.years} ans à 7 %/an</span>
@@ -153,7 +191,7 @@ const STEPS = [
               </div>
             ))}
           </div>
-          <p className="mt-2 text-xs text-gray-500">Projections hypothétiques, rendement brut 7 %/an constant. TER non déduit.</p>
+          <p className="mt-2 text-xs text-gray-500">Projections hypothétiques, calculées par notre simulateur : 7 %/an constant avant frais, moins {pct(TER_REFERENCE_SIMULATEUR)} de frais annuels (TER de CW8). Avant impôt et inflation.</p>
         </div>
         <Link
           href="/simulateur"
@@ -190,7 +228,7 @@ const STEPS = [
 const MISTAKES = [
   {
     title: "Diversifier avec trop d'ETF",
-    body: "CW8 + EWLD + VWCE, c'est la même chose en triple. Un seul ETF MSCI World suffit pour un portefeuille diversifié à l'échelle mondiale.",
+    body: "CW8 + WPEA + DCAM, c'est trois fois le même indice, le MSCI World. Un seul ETF monde suffit pour un portefeuille diversifié à l'échelle mondiale.",
   },
   {
     title: "Essayer de timer le marché",
@@ -231,7 +269,7 @@ export default function InvestirEnETFPage() {
 
       <ArticleByline
         publishedAt="2026-04-18"
-        updatedAt="2026-06-10"
+        updatedAt="2026-09-28"
         readingMinutes={7}
         url="/investir-en-etf"
         headline={TITLE}
@@ -297,7 +335,7 @@ export default function InvestirEnETFPage() {
             { href: "/meilleurs-etf-debutants", label: "Meilleurs ETF pour débutants",              sub: "Notre sélection commentée avec critères de choix" },
             { href: "/interets-composes",       label: "Les intérêts composés",                     sub: "Visualiser la puissance du temps sur votre portefeuille" },
             { href: "/pea-ou-cto",              label: "PEA ou CTO : le comparatif complet",        sub: "Quelle enveloppe fiscale choisir ?" },
-            { href: "/comparer-etf",            label: "Comparer les ETF",                          sub: "CW8, EWLD, VWCE, SP5, ANX côte à côte" },
+            { href: "/comparer-etf",            label: "Comparer les ETF",                          sub: "CW8, WPEA, DCAM, VWCE, PSP5 côte à côte" },
             { href: "/simulateur",              label: "Simulateur DCA",                            sub: "Projetez vos versements mensuels" },
           ].map((link) => (
             <Link
@@ -334,7 +372,7 @@ export default function InvestirEnETFPage() {
             label: "MSCI World Index — performance historique",
             url: "https://www.msci.com/indexes/index/990100",
             publisher: "MSCI Inc.",
-            note: "Base des hypothèses de rendement utilisées dans les simulations (~7 %/an net réel).",
+            note: "Indice de référence des ETF monde cités. Les 7 %/an des simulations sont une hypothèse, avant frais et avant inflation — pas une performance mesurée ni garantie.",
           },
           {
             label: "Espace épargnants — comprendre les ETF",

@@ -7,15 +7,129 @@ import { JsonLd } from "@/components/ui/JsonLd";
 import { EtapeSuivante } from "@/components/ui/EtapeSuivante";
 import { CeQuAuraitDonne } from "@/components/backtest/CeQuAuraitDonne";
 import { SerieMontants } from "@/components/money/SerieMontants";
+import { runSimulation } from "@/lib/simulator";
+import { TER_REFERENCE_SIMULATEUR } from "@/lib/etf-config";
+import { PFU_RATE, SOCIAL_CHARGES_RATE } from "@/lib/fiscal/pea-cto";
+import {
+  ecartFiscal,
+  ecartFiscalEnviron,
+  impotCTO,
+  impotPEA,
+  netApresCTO,
+  netApresPEA,
+} from "@/lib/impot-affiche";
 
 const TITLE =
   // Le format « = X € en 20 ans » verrouillait sur un seul horizon alors que
   // les requêtes réelles portent aussi sur 10 et 30 ans, que la page couvre.
   // Le chiffre passe dans la meta, qui a la place de le porter.
   "Investir 100 €/mois en ETF : combien après 10, 20, 30 ans ?";
-const DESCRIPTION =
-  "100 €/mois en ETF, c'est 52 100 € en 20 ans dont 28 100 € de gains. Voyez aussi 10 et 30 ans, l'impact des frais, et la fiscalité PEA vs CTO.";
 const CANONICAL = "/investir-100-euros-mois-etf";
+
+// ─── Projection : calculée par le moteur, jamais écrite ───────────────────────
+//
+// Corrigé le 28/09/2026. Tous les montants de cette page (hero, meta, tableaux,
+// FAQ, bloc fiscal) étaient écrits à la main, calculés avec un TER de 0,20 %
+// ou 0,12 % selon l'endroit, alors que le lien « Simuler » de la même page
+// ouvrait le simulateur à 0,20 % et que l'ETF de référence du site, CW8, coûte
+// 0,38 %/an (table de vérité du 28/09/2026). Le lecteur qui cliquait tombait
+// sur un autre chiffre que celui de la page. Désormais : UN seul TER,
+// TER_REFERENCE_SIMULATEUR, pour la page ET le lien, et chaque montant sort de
+// runSimulation.
+
+const MENSUEL = 100;
+const RENDEMENT = 7; // %/an avant frais — l'hypothèse centrale du simulateur
+const TER = TER_REFERENCE_SIMULATEUR;
+const HORIZON_MAX = 30;
+
+/** Une seule simulation sur 30 ans : les points à 10, 20 ans sont les mêmes
+ *  que ceux d'une simulation plus courte (même trajectoire mois par mois). */
+const SIM = runSimulation({
+  monthlyAmount: MENSUEL,
+  durationYears: HORIZON_MAX,
+  annualReturnPct: RENDEMENT,
+  annualFeesPct: TER,
+});
+
+const LIEN_SIMULATEUR = `/simulateur?monthly=${MENSUEL}&years=20&return=${RENDEMENT}&fees=${TER}`;
+
+/** 48877 → « 48 877 ». Séparateur de milliers en espace, comme le reste du site. */
+function nombre(v: number): string {
+  return String(Math.round(v)).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+}
+
+/**
+ * Arrondi d'affichage d'une valeur projetée : à la centaine au-dessus de
+ * 10 000 €, à la dizaine en dessous. Une projection ne se donne pas à l'euro,
+ * mais la première année ne doit pas s'arrondir à zéro gain.
+ */
+function arrondi(v: number): number {
+  const pas = Math.abs(v) >= 10_000 ? 100 : 10;
+  return Math.round(v / pas) * pas;
+}
+
+/** Arrondi « environ » pour les écarts cités dans la prose. */
+function environ(v: number): number {
+  const pas = Math.abs(v) >= 1000 ? 100 : 10;
+  return Math.round(v / pas) * pas;
+}
+
+/** 0.38 → « 0,38 % ». */
+function pctTer(ter: number): string {
+  return `${ter.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} %`;
+}
+
+/** 0.186 → « 18,6 ». Le taux est lu dans fiscal/pea-cto.ts, jamais recopié. */
+function taux(t: number): string {
+  return (Math.round(t * 1000) / 10).toLocaleString("fr-FR");
+}
+
+type Scenario = typeof SIM.base;
+
+/**
+ * Point d'une trajectoire à une année donnée. Le gain est la différence des
+ * deux nombres AFFICHÉS : « versé + gain = capital » reste vrai à l'écran.
+ */
+function point(s: Scenario, annee: number) {
+  const d = s.monthlyData.find((m) => m.year === annee);
+  if (!d) throw new Error(`Pas de point à ${annee} ans`);
+  const final = arrondi(d.portfolioValue);
+  return {
+    invested: d.invested,
+    final,
+    gain: final - d.invested,
+    pct: Math.round(((d.portfolioValue - d.invested) / d.invested) * 100),
+  };
+}
+
+const P5 = point(SIM.base, 5);
+const P15 = point(SIM.base, 15);
+const P20 = point(SIM.base, 20);
+const P30 = point(SIM.base, 30);
+
+/** Gains de marché produits entre la 20e et la 30e année. */
+const GAIN_DECENNIE_20_30 = P30.gain - P20.gain;
+
+/** Capital final à 20 ans pour un TER donné, mêmes hypothèses que la page. */
+function capital20(ter: number): number {
+  return runSimulation({
+    monthlyAmount: MENSUEL,
+    durationYears: 20,
+    annualReturnPct: RENDEMENT,
+    annualFeesPct: ter,
+  }).base.finalValue;
+}
+
+// TER de WPEA et DCAM : 0,20 %/an (table de vérité du 28/09/2026, émetteurs
+// et justETF). Ces deux lignes ne sont pas dans le catalogue etf-config.
+const TER_WPEA_DCAM = 0.2;
+
+const DESCRIPTION =
+  // Corrigé le 28/09/2026 : l'ancienne meta donnait la réponse entière dans
+  // l'extrait Google (« 52 100 € en 20 ans dont 28 100 € de gains », calculés
+  // à 0,20 % de frais) et ne laissait aucune raison de cliquer. Le chiffre
+  // vient du moteur ; la promesse est le bloc sur les vrais cours depuis 2008.
+  `${MENSUEL} €/mois en ETF : ≈ ${nombre(P20.final)} € en 20 ans à ${RENDEMENT} %/an avant frais. Et ce que le même effort aurait vraiment donné depuis 2008, krach compris.`;
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -39,61 +153,77 @@ export const metadata: Metadata = {
 const SCENARIOS = [
   {
     label: "Pessimiste",
-    rate: "5 %/an",
-    years10: { final: "15 500 €", gain: "3 500 €", pct: "+29 %" },
-    years20: { final: "41 300 €", gain: "17 300 €", pct: "+72 %" },
-    years30: { final: "83 700 €", gain: "47 700 €", pct: "+133 %" },
+    sim: SIM.conservative,
     color: "text-orange-600",
     bg: "bg-orange-50 border-orange-100",
   },
   {
     label: "Réaliste",
-    rate: "7 %/an",
-    years10: { final: "17 300 €", gain: "5 300 €", pct: "+44 %" },
-    years20: { final: "52 100 €", gain: "28 100 €", pct: "+117 %" },
-    years30: { final: "122 100 €", gain: "86 100 €", pct: "+239 %" },
+    sim: SIM.base,
     color: "text-primary-700",
     bg: "bg-primary-50 border-primary-100",
     highlight: true,
   },
   {
     label: "Optimiste",
-    rate: "9 %/an",
-    years10: { final: "19 400 €", gain: "7 400 €", pct: "+62 %" },
-    years20: { final: "66 800 €", gain: "42 800 €", pct: "+178 %" },
-    years30: { final: "182 300 €", gain: "146 300 €", pct: "+406 %" },
+    sim: SIM.optimistic,
     color: "text-emerald-700",
     bg: "bg-emerald-50 border-emerald-100",
   },
 ];
 
-const YEARLY = [
-  { year: 1,  invested: "1 200 €",  final: "1 250 €",  gain: "50 €",    gainPct: "+4 %" },
-  { year: 3,  invested: "3 600 €",  final: "3 940 €",  gain: "340 €",   gainPct: "+9 %" },
-  { year: 5,  invested: "6 000 €",  final: "7 160 €",  gain: "1 160 €", gainPct: "+19 %" },
-  { year: 10, invested: "12 000 €", final: "17 300 €", gain: "5 300 €", gainPct: "+44 %" },
-  { year: 15, invested: "18 000 €", final: "31 700 €", gain: "13 700 €", gainPct: "+76 %" },
-  { year: 20, invested: "24 000 €", final: "52 100 €", gain: "28 100 €", gainPct: "+117 %" },
-  { year: 25, invested: "30 000 €", final: "81 100 €", gain: "51 100 €", gainPct: "+170 %" },
-  { year: 30, invested: "36 000 €", final: "122 100 €", gain: "86 100 €", gainPct: "+239 %" },
-];
+const YEARLY = [1, 3, 5, 10, 15, 20, 25, 30].map((year) => ({
+  year,
+  ...point(SIM.base, year),
+}));
+
+// Corrigé le 28/09/2026 : la ligne de référence était « ETF indiciel (CW8,
+// EWLD) — 0,12 % ». Faux deux fois d'après la table de vérité : CW8 et EWLD
+// coûtent 0,38 %/an, et EWLD est émis par Amundi (part distribuante du fonds
+// de CW8), pas par iShares. Les libellés « fonds actif classique » et
+// « assurance-vie générique » attribuaient un niveau de frais à des catégories
+// entières sans source : ils deviennent de simples niveaux de frais.
+const FRAIS = [
+  { type: "WPEA, DCAM (MSCI World, PEA)", ter: TER_WPEA_DCAM },
+  { type: "CW8 (MSCI World, PEA)", ter: TER },
+  { type: "Fonds à 0,50 %/an de frais", ter: 0.5 },
+  { type: "Fonds à 1 %/an de frais", ter: 1 },
+].map((r) => {
+  const final = capital20(r.ter);
+  return {
+    ...r,
+    final: arrondi(final),
+    cout: environ(capital20(0) - final),
+  };
+});
+
+const ECART_BAS_HAUT = environ(capital20(TER_WPEA_DCAM) - capital20(1));
+const ECART_WPEA_CW8 = environ(capital20(TER_WPEA_DCAM) - capital20(TER));
 
 const FAQ = [
   {
     q: "100€ par mois, est-ce vraiment suffisant pour investir ?",
-    a: "Oui, sans hésiter. Il n'y a pas de minimum absolu pour démarrer une stratégie DCA. 100€/mois investi régulièrement pendant 20 ans à 7% de rendement donne plus de 52 000€ — dont 28 000€ générés par les marchés sans effort supplémentaire de votre part. L'essentiel est la régularité, pas le montant.",
+    a: `Oui. Il n'y a pas de minimum pour démarrer une stratégie DCA. ${MENSUEL} €/mois pendant 20 ans, à ${RENDEMENT} %/an avant ${pctTer(TER)} de frais, donnent environ ${nombre(P20.final)} € — dont ${nombre(P20.gain)} € produits par les marchés, pour ${nombre(P20.invested)} € versés. Ce qui compte, c'est la régularité, pas le montant.`,
   },
   {
+    // Corrigé le 28/09/2026 : la réponse présentait « l'EWLD (iShares MSCI
+    // World) » et des frais « ≈ 0,12 à 0,20 % ». D'après la table de vérité,
+    // EWLD est un fonds Amundi, CW8 et EWLD coûtent 0,38 %/an ; les MSCI World
+    // PEA à 0,20 % sont WPEA et DCAM. Le nombre d'entreprises, absent de la
+    // table, est retiré.
     q: "Quel ETF choisir pour investir 100€ par mois ?",
-    a: "Un seul ETF suffit pour commencer : le CW8 (Amundi MSCI World) ou l'EWLD (iShares MSCI World) sont des références pour les investisseurs français. Ils répliquent 1 500 à 1 600 entreprises mondiales, ont des frais très bas (TER ≈ 0,12 à 0,20%/an) et sont éligibles au PEA.",
+    a: `Un seul ETF MSCI World suffit pour démarrer. Parmi les lignes éligibles au PEA qui suivent cet indice : WPEA (iShares, ${pctTer(TER_WPEA_DCAM)}/an), DCAM (Amundi, ${pctTer(TER_WPEA_DCAM)}/an) et CW8 (Amundi, ${pctTer(TER)}/an). Même indice, deux niveaux de frais : sur 20 ans à ${MENSUEL} €/mois, l'écart entre ${pctTer(TER_WPEA_DCAM)} et ${pctTer(TER)} vaut environ ${nombre(ECART_WPEA_CW8)} €. Les parts de WPEA et DCAM valent moins de 10 €, ce qui permet de placer la quasi-totalité de ${MENSUEL} € chaque mois.`,
   },
   {
+    // Corrigé le 28/09/2026 : 17,2 % et « 3 500 à 5 000 € » (calculés sur
+    // l'ancien taux et un gain faux) → taux 2026 de fiscal/pea-cto.ts et
+    // écart calculé par impot-affiche.ts.
     q: "PEA ou CTO pour investir 100€ par mois ?",
-    a: "Le PEA est presque toujours préférable pour les résidents français. Après 5 ans d'ouverture, les retraits sont exonérés d'impôt sur les plus-values (seuls les prélèvements sociaux à 17,2% s'appliquent). Sur 20 ans avec 28 100€ de gains, cette différence fiscale représente environ 3 500 à 5 000€ économisés versus un CTO.",
+    a: `Après 5 ans, les gains d'un PEA ne supportent que les prélèvements sociaux (${taux(SOCIAL_CHARGES_RATE)} %) ; ceux d'un CTO, le PFU (${taux(PFU_RATE)} %). Sur les ${nombre(P20.gain)} € de gains de la projection à 20 ans, l'écart est d'environ ${ecartFiscalEnviron(P20.gain)} €. Condition : un ETF éligible au PEA — pour le MSCI World, par exemple WPEA, DCAM ou CW8 ; IWDA et VWCE n'y entrent pas.`,
   },
   {
     q: "Quand verra-t-on vraiment les effets des intérêts composés ?",
-    a: "Les premières années semblent peu spectaculaires : à 5 ans, vous avez investi 6 000€ et vous avez 7 160€ (+19%). Mais l'accélération est exponentielle : à 20 ans, vous avez investi 24 000€ et vous avez 52 100€ (+117%). La dernière décennie (année 20 à 30) génère à elle seule 70 000€ de gains — plus que les deux premières réunies.",
+    a: `Les premières années semblent peu spectaculaires : à 5 ans, ${nombre(P5.invested)} € versés valent environ ${nombre(P5.final)} € (+${P5.pct} %). À 20 ans, ${nombre(P20.invested)} € versés valent environ ${nombre(P20.final)} € (+${P20.pct} %). Entre la 20e et la 30e année, les marchés produisent à eux seuls environ ${nombre(GAIN_DECENNIE_20_30)} € de gains — ${GAIN_DECENNIE_20_30 > P20.gain ? "plus que sur les vingt premières années réunies" : "presque autant que sur les vingt premières années"}.`,
   },
   {
     q: "Que se passe-t-il si je saute un mois ?",
@@ -137,14 +267,23 @@ export default function Investir100EurosMoisPage() {
       <p className="text-lg text-gray-500 mb-12 leading-relaxed">
         100€ par mois vous semble peu ? Les chiffres disent le contraire.
         Grâce aux intérêts composés, ce montant modeste devient{" "}
-        <strong className="text-gray-700">plus de 52 000€ en 20 ans</strong>{" "}
-        — dont 28 000€ générés par les marchés, pas par votre effort.
-        Voici la simulation complète.
+        <strong className="text-gray-700">
+          environ {nombre(P20.final)} € en 20 ans
+        </strong>{" "}
+        — dont {nombre(P20.gain)} € générés par les marchés, pas par votre
+        effort. Voici la simulation complète, puis{" "}
+        <a
+          href="#ce-qu-aurait-donne"
+          className="underline hover:text-gray-700 transition-colors"
+        >
+          ce que le même effort aurait réellement donné depuis 2008
+        </a>
+        , krach compris.
       </p>
 
       <ArticleByline
         publishedAt="2026-04-19"
-        updatedAt="2026-06-10"
+        updatedAt="2026-09-28"
         readingMinutes={8}
         url="/investir-100-euros-mois-etf"
         headline={TITLE}
@@ -162,9 +301,12 @@ export default function Investir100EurosMoisPage() {
         </p>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
           {[
-            { label: "Versement mensuel", value: "100 €" },
-            { label: "ETF de référence", value: "MSCI World" },
-            { label: "Frais TER", value: "0,20 %/an" },
+            { label: "Versement mensuel", value: `${MENSUEL} €` },
+            { label: "ETF de référence", value: "CW8 (MSCI World)" },
+            // Corrigé le 28/09/2026 : « 0,20 %/an » alors que les chiffres
+            // étaient calculés à un autre TER. C'est désormais celui de CW8,
+            // lu dans le catalogue, et le même que le lien vers le simulateur.
+            { label: "Frais TER", value: `${pctTer(TER)}/an` },
             { label: "Capital initial", value: "0 €" },
           ].map(({ label, value }) => (
             <div
@@ -180,13 +322,25 @@ export default function Investir100EurosMoisPage() {
           <p className="text-sm font-semibold text-primary-800 mb-1">
             Sur le rendement annuel
           </p>
+          {/* Corrigé le 28/09/2026 : « Le MSCI World a rendu en moyenne 7 à
+              8 %/an sur les 30 dernières années » — affirmation que la table
+              de vérité ne permet pas de vérifier, retirée. Le rendement est
+              présenté pour ce qu'il est : une hypothèse, confrontée plus bas
+              aux vrais cours. */}
           <p className="text-sm text-primary-700 leading-relaxed">
-            Le MSCI World a rendu en moyenne{" "}
-            <strong>7 à 8%/an</strong> sur les 30 dernières années,
-            dividendes réinvestis. Nous simulons 3 scénarios (5%, 7%, 9%)
-            pour couvrir les marchés atones, normaux et favorables.
-            Ce ne sont pas des promesses — les performances passées ne
-            garantissent pas l&apos;avenir.
+            <strong>{RENDEMENT} %/an avant frais</strong> est une hypothèse de
+            travail, pas une moyenne garantie. Nous simulons 3 scénarios (
+            {SIM.conservative.annualReturnPct} %, {SIM.base.annualReturnPct} %,{" "}
+            {SIM.optimistic.annualReturnPct} %) pour couvrir les marchés atones,
+            normaux et favorables. Ce ne sont pas des promesses : pour voir ce
+            qu&apos;a donné la réalité, avec ses krachs, le bloc{" "}
+            <a
+              href="#ce-qu-aurait-donne"
+              className="underline hover:text-primary-800 transition-colors"
+            >
+              « ce qu&apos;auraient réellement donné {MENSUEL} €/mois »
+            </a>{" "}
+            rejoue les vrais cours depuis 2008.
           </p>
         </div>
       </section>
@@ -197,8 +351,9 @@ export default function Investir100EurosMoisPage() {
           Résultats : 3 scénarios sur 10, 20 et 30 ans
         </h2>
         <p className="text-gray-600 leading-relaxed mb-6">
-          Capital investi = 100€ × 12 mois × nombre d&apos;années. Le reste
-          est généré par les marchés.
+          Capital investi = {MENSUEL} € × 12 mois × nombre d&apos;années. Le
+          reste est généré par les marchés, après {pctTer(TER)}/an de frais
+          (TER de CW8).
         </p>
 
         <div className="space-y-4">
@@ -219,32 +374,29 @@ export default function Investir100EurosMoisPage() {
                   )}
                 </div>
                 <span className="text-sm text-gray-500 font-medium">
-                  {s.rate}
+                  {s.sim.annualReturnPct} %/an
                 </span>
               </div>
               <div className="grid grid-cols-3 gap-3">
-                {(
-                  [
-                    { label: "10 ans", data: s.years10, invested: "12 000 €" },
-                    { label: "20 ans", data: s.years20, invested: "24 000 €" },
-                    { label: "30 ans", data: s.years30, invested: "36 000 €" },
-                  ] as const
-                ).map(({ label, data, invested }) => (
-                  <div key={label} className="bg-white/70 rounded-xl p-3 text-center">
-                    <p className="text-xs text-gray-500 mb-1 font-medium">
-                      {label}
-                    </p>
-                    <p className={`text-lg font-bold tabular-nums ${s.color}`}>
-                      {data.final}
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      investi : {invested}
-                    </p>
-                    <p className="text-xs font-semibold text-gray-600 mt-0.5">
-                      {data.pct}
-                    </p>
-                  </div>
-                ))}
+                {[10, 20, 30].map((annee) => {
+                  const data = point(s.sim, annee);
+                  return (
+                    <div key={annee} className="bg-white/70 rounded-xl p-3 text-center">
+                      <p className="text-xs text-gray-500 mb-1 font-medium">
+                        {annee} ans
+                      </p>
+                      <p className={`text-lg font-bold tabular-nums ${s.color}`}>
+                        {nombre(data.final)} €
+                      </p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        investi : {nombre(data.invested)} €
+                      </p>
+                      <p className="text-xs font-semibold text-gray-600 mt-0.5">
+                        +{data.pct} %
+                      </p>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           ))}
@@ -254,7 +406,7 @@ export default function Investir100EurosMoisPage() {
       {/* ── Section 3 : Progression année par année ───────────────────────── */}
       <section className="mb-14">
         <h2 className="text-2xl font-bold text-gray-900 mb-4">
-          La progression année par année (scénario 7%)
+          La progression année par année (scénario {RENDEMENT} %)
         </h2>
         <p className="text-gray-600 leading-relaxed mb-6">
           Les premières années semblent lentes. Puis la courbe s&apos;emballe.
@@ -291,16 +443,16 @@ export default function Investir100EurosMoisPage() {
                     {row.year} an{row.year > 1 ? "s" : ""}
                   </td>
                   <td className="px-4 py-3 text-right text-gray-600 border-b border-gray-50">
-                    {row.invested}
+                    {nombre(row.invested)} €
                   </td>
                   <td className="px-4 py-3 text-right font-semibold text-gray-900 border-b border-gray-50">
-                    {row.final}
+                    {nombre(row.final)} €
                   </td>
                   <td className="px-4 py-3 text-right text-emerald-600 font-medium border-b border-gray-50">
-                    {row.gain}
+                    {nombre(row.gain)} €
                   </td>
                   <td className="px-4 py-3 text-right text-emerald-600 font-semibold border-b border-gray-50">
-                    {row.gainPct}
+                    +{row.pct} %
                   </td>
                 </tr>
               ))}
@@ -313,9 +465,10 @@ export default function Investir100EurosMoisPage() {
           </p>
           <p className="text-sm text-gray-600 leading-relaxed">
             De l&apos;année 1 à l&apos;année 20, les marchés génèrent{" "}
-            <strong>28 100€</strong> de gains. De l&apos;année 20 à
-            l&apos;année 30, ils en génèrent <strong>70 000€</strong>{" "}
-            supplémentaires — pour le même versement mensuel. Plus la base de
+            <strong>{nombre(P20.gain)} €</strong> de gains. De l&apos;année 20
+            à l&apos;année 30, ils en génèrent{" "}
+            <strong>{nombre(GAIN_DECENNIE_20_30)} €</strong> supplémentaires —
+            pour le même versement mensuel. Plus la base de
             capital est grande, plus les intérêts composés s&apos;accélèrent.
           </p>
         </div>
@@ -337,22 +490,28 @@ export default function Investir100EurosMoisPage() {
               Commencer aujourd&apos;hui
             </p>
             <p className="text-sm text-gray-600 mb-1">
-              100€/mois × <strong>20 ans</strong>
+              {MENSUEL} €/mois × <strong>20 ans</strong>
             </p>
             <p className="text-2xl font-bold text-primary-700 mb-1">
-              52 100 €
+              {nombre(P20.final)} €
             </p>
-            <p className="text-xs text-gray-500">dont 24 000€ investis</p>
+            <p className="text-xs text-gray-500">
+              dont {nombre(P20.invested)} € investis
+            </p>
           </div>
           <div className="rounded-2xl border border-gray-100 bg-gray-50 p-5">
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
               Attendre 5 ans
             </p>
             <p className="text-sm text-gray-600 mb-1">
-              100€/mois × <strong>15 ans</strong>
+              {MENSUEL} €/mois × <strong>15 ans</strong>
             </p>
-            <p className="text-2xl font-bold text-gray-700 mb-1">31 700 €</p>
-            <p className="text-xs text-gray-500">dont 18 000€ investis</p>
+            <p className="text-2xl font-bold text-gray-700 mb-1">
+              {nombre(P15.final)} €
+            </p>
+            <p className="text-xs text-gray-500">
+              dont {nombre(P15.invested)} € investis
+            </p>
           </div>
         </div>
         <div className="rounded-2xl border border-amber-100 bg-amber-50 p-5">
@@ -360,11 +519,12 @@ export default function Investir100EurosMoisPage() {
             Le bilan de 5 ans d&apos;attente
           </p>
           <p className="text-sm text-amber-700 leading-relaxed">
-            En attendant 5 ans, vous perdez <strong>20 400€</strong> de
-            capital final. Pourtant, vous n&apos;aurez épargné que 6 000€ de
-            moins. Les 14 400€ restants sont des gains manqués — de
-            l&apos;argent que les marchés auraient généré pour vous, et que
-            vous n&apos;aurez pas.
+            En attendant 5 ans, le capital final baisse de{" "}
+            <strong>{nombre(P20.final - P15.final)} €</strong>. Pourtant,
+            seuls {nombre(P20.invested - P15.invested)} € ont été épargnés en
+            moins. Les {nombre(P20.gain - P15.gain)} € restants sont des gains
+            manqués — de l&apos;argent que les marchés auraient généré, et qui
+            ne sera pas là.
           </p>
         </div>
       </section>
@@ -372,7 +532,7 @@ export default function Investir100EurosMoisPage() {
       {/* ── Section 5 : Impact des frais ──────────────────────────────────── */}
       <section className="mb-14">
         <h2 className="text-2xl font-bold text-gray-900 mb-4">
-          L&apos;impact des frais : 0,12% vs 1% sur 20 ans
+          L&apos;impact des frais : {pctTer(TER_WPEA_DCAM)} vs 1 % sur 20 ans
         </h2>
         <p className="text-gray-600 leading-relaxed mb-6">
           Les frais de gestion (TER) sont prélevés chaque année sur
@@ -393,17 +553,12 @@ export default function Investir100EurosMoisPage() {
                   Capital final (20 ans)
                 </th>
                 <th className="text-right px-4 py-3 font-semibold text-gray-500 border-b border-gray-100">
-                  Coût des frais
+                  Coût des frais (vs 0 %)
                 </th>
               </tr>
             </thead>
             <tbody>
-              {[
-                { type: "ETF indiciel (CW8, EWLD)", ter: "0,12 %", final: "51 900 €", cost: "— (référence)" },
-                { type: "ETF indiciel (standard)", ter: "0,20 %", final: "51 600 €", cost: "300 €" },
-                { type: "Fonds actif classique",   ter: "0,50 %", final: "49 600 €", cost: "2 300 €" },
-                { type: "Assurance-vie générique", ter: "1,00 %", final: "46 200 €", cost: "5 700 €" },
-              ].map((row, i) => (
+              {FRAIS.map((row, i) => (
                 <tr
                   key={row.type}
                   className={i === 0 ? "bg-primary-50" : i % 2 === 0 ? "bg-white" : "bg-gray-50/50"}
@@ -412,13 +567,13 @@ export default function Investir100EurosMoisPage() {
                     {row.type}
                   </td>
                   <td className="px-4 py-3 text-right text-gray-700 border-b border-gray-50">
-                    {row.ter}
+                    {pctTer(row.ter)}
                   </td>
                   <td className="px-4 py-3 text-right font-semibold text-gray-900 border-b border-gray-50">
-                    {row.final}
+                    {nombre(row.final)} €
                   </td>
                   <td className={`px-4 py-3 text-right font-semibold border-b border-gray-50 ${i === 0 ? "text-primary-600" : "text-orange-500"}`}>
-                    {row.cost}
+                    −{nombre(row.cout)} €
                   </td>
                 </tr>
               ))}
@@ -426,9 +581,12 @@ export default function Investir100EurosMoisPage() {
           </table>
         </div>
         <p className="text-sm text-gray-500 mt-3 leading-relaxed">
-          Les ETF indiciels à bas coûts ne sont pas juste une préférence
-          théorique — ils valent concrètement 2 300 à 5 700€ supplémentaires
-          sur 20 ans pour un versement de 100€/mois.
+          Entre un ETF à {pctTer(TER_WPEA_DCAM)} et un fonds à 1 %, l&apos;écart
+          atteint environ {nombre(ECART_BAS_HAUT)} € sur 20 ans pour{" "}
+          {MENSUEL} €/mois. Et entre WPEA ou DCAM et CW8 — le même indice —,
+          environ {nombre(ECART_WPEA_CW8)} €. Les simulations de cette page
+          sont faites au TER de CW8, le plus élevé des trois : elles ne
+          flattent pas le résultat.
         </p>
       </section>
 
@@ -443,7 +601,7 @@ export default function Investir100EurosMoisPage() {
           La simulation se met à jour en temps réel.
         </p>
         <Link
-          href="/simulateur?monthly=100&years=20&return=7&fees=0.2"
+          href={LIEN_SIMULATEUR}
           className="btn-secondary text-sm px-6 py-2.5 inline-flex"
         >
           Ouvrir le simulateur avec 100€/mois →
@@ -460,7 +618,7 @@ export default function Investir100EurosMoisPage() {
         </h2>
         <p className="text-gray-600 leading-relaxed mb-6">
           L&apos;enveloppe fiscale change significativement le résultat net
-          après impôts. Sur 20 ans avec 100€/mois à 7% :
+          après impôts. Sur 20 ans avec {MENSUEL} €/mois à {RENDEMENT} %/an :
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div className="rounded-2xl border border-primary-100 bg-primary-50 p-5">
@@ -468,19 +626,31 @@ export default function Investir100EurosMoisPage() {
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-gray-500">Capital final</span>
-                <span className="font-bold text-gray-900">52 100 €</span>
+                <span className="font-bold text-gray-900">
+                  {nombre(P20.final)} €
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500">Gains à la sortie (après 5 ans)</span>
-                <span className="font-medium text-gray-700">28 100 €</span>
+                <span className="font-medium text-gray-700">
+                  {nombre(P20.gain)} €
+                </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">Imposition (prélèv. sociaux 17,2%)</span>
-                <span className="font-medium text-orange-600">− 4 833 €</span>
+                {/* Corrigé le 28/09/2026 : 17,2 % → taux 2026 de
+                    fiscal/pea-cto.ts, montant calculé par impot-affiche.ts. */}
+                <span className="text-gray-500">
+                  Imposition (prélèv. sociaux {taux(SOCIAL_CHARGES_RATE)} %)
+                </span>
+                <span className="font-medium text-orange-600">
+                  − {impotPEA(P20.gain)} €
+                </span>
               </div>
               <div className="flex justify-between border-t border-primary-100 pt-2">
                 <span className="font-semibold text-primary-700">Net en poche</span>
-                <span className="font-bold text-primary-700">47 267 €</span>
+                <span className="font-bold text-primary-700">
+                  {netApresPEA(P20.final, P20.gain)} €
+                </span>
               </div>
             </div>
           </div>
@@ -489,32 +659,49 @@ export default function Investir100EurosMoisPage() {
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-gray-500">Capital final</span>
-                <span className="font-bold text-gray-900">52 100 €</span>
+                <span className="font-bold text-gray-900">
+                  {nombre(P20.final)} €
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500">Gains imposables</span>
-                <span className="font-medium text-gray-700">28 100 €</span>
+                <span className="font-medium text-gray-700">
+                  {nombre(P20.gain)} €
+                </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">Imposition (PFU 30%)</span>
-                <span className="font-medium text-orange-600">− 8 430 €</span>
+                {/* Corrigé le 28/09/2026 : PFU 30 % → taux 2026. */}
+                <span className="text-gray-500">
+                  Imposition (PFU {taux(PFU_RATE)} %)
+                </span>
+                <span className="font-medium text-orange-600">
+                  − {impotCTO(P20.gain)} €
+                </span>
               </div>
               <div className="flex justify-between border-t border-gray-200 pt-2">
                 <span className="font-semibold text-gray-700">Net en poche</span>
-                <span className="font-bold text-gray-700">43 670 €</span>
+                <span className="font-bold text-gray-700">
+                  {netApresCTO(P20.final, P20.gain)} €
+                </span>
               </div>
             </div>
           </div>
         </div>
         <div className="rounded-2xl border border-gray-100 bg-gray-50 p-5">
           <p className="text-sm font-semibold text-gray-900 mb-1">
-            Avantage PEA : +3 597 € sur 20 ans
+            Avantage PEA : +{ecartFiscal(P20.gain)} € sur 20 ans
           </p>
+          {/* Corrigé le 28/09/2026 : le texte donnait une consigne (« ouvrez
+              un PEA dès maintenant — même sans y mettre d'argent ») que le
+              site n'a pas à donner, sur un point de délai non sourcé. Il
+              décrit désormais d'où vient l'écart et sa condition. */}
           <p className="text-sm text-gray-600 leading-relaxed">
-            Pour 100€/mois, ouvrez un PEA dès maintenant — même sans y
-            mettre d&apos;argent. Le délai des 5 ans avant de bénéficier
-            de la fiscalité avantageuse commence à l&apos;ouverture, pas
-            au premier versement.
+            L&apos;écart vient des seuls taux : {taux(PFU_RATE)} % −{" "}
+            {taux(SOCIAL_CHARGES_RATE)} % = {taux(PFU_RATE - SOCIAL_CHARGES_RATE)}{" "}
+            points sur chaque euro de gain. Il suppose un PEA détenu plus de 5
+            ans et un ETF éligible (par exemple WPEA, DCAM ou CW8 pour le MSCI
+            World) : une
+            sortie avant 5 ans est imposée au PFU, comme un CTO.
           </p>
         </div>
         <p className="text-xs text-gray-500 mt-3">
@@ -618,7 +805,9 @@ export default function Investir100EurosMoisPage() {
             label: "MSCI World Index — performance historique",
             url: "https://www.msci.com/indexes/index/990100",
             publisher: "MSCI Inc.",
-            note: "Base des hypothèses de rendement utilisées dans les simulations (~7 %/an net réel).",
+            // Corrigé le 28/09/2026 : « ~7 %/an net réel » — la simulation
+            // applique 7 %/an AVANT frais et avant inflation, pas un net réel.
+            note: "Indice suivi par les ETF cités. Les 7 %/an des simulations sont une hypothèse, avant frais et avant inflation.",
           },
           {
             label: "Espace épargnants — comprendre les ETF",

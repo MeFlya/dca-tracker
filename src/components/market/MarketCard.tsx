@@ -1,6 +1,6 @@
 import { AssetQuote } from "@/lib/market-data/types";
 import { ETF_LIST } from "@/lib/etf-config";
-import { formatCurrency, formatPercent, formatDate } from "@/lib/utils";
+import { formatCurrency, formatPercentSansSigne, formatDate } from "@/lib/utils";
 import { DelayedBadge } from "@/components/ui/Disclaimer";
 import { IssuerLogoMark, issuerLabelFromName } from "@/components/ui/IssuerLogoMark";
 import { RegionMark } from "@/components/ui/RegionMark";
@@ -68,7 +68,7 @@ export function MarketCard({ quote, error }: MarketCardProps) {
           )}
         >
           <span>{positive ? "▲" : "▼"}</span>
-          {formatPercent(Math.abs(quote.changePercent))}
+          {formatPercentSansSigne(quote.changePercent)}
         </span>
       </div>
 

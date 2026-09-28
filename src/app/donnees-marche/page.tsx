@@ -5,9 +5,11 @@ import { MarketCard } from "@/components/market/MarketCard";
 import { DemoBadge } from "@/components/ui/Disclaimer";
 import { AssetQuote } from "@/lib/market-data/types";
 
-const TITLE = "Cours des ETF — Données de marché CW8, VWCE, EWLD, SPY, QQQ";
+// 28/09/2026 : EWLD citée dans le titre et les descriptions n'est pas au
+// catalogue (ETF_LIST) — la page n'en affiche pas le cours. Remplacé par WPEA.
+const TITLE = "Cours des ETF — Données de marché CW8, WPEA, VWCE, SPY, QQQ";
 const DESCRIPTION =
-  "Consultez les derniers cours disponibles des principaux ETF : CW8, VWCE, EWLD, SPY, QQQ. Données différées (fin de journée). Source et horodatage affichés sur chaque carte.";
+  "Consultez les derniers cours disponibles des principaux ETF : CW8, WPEA, VWCE, SPY, QQQ. Données différées (fin de journée). Source et horodatage affichés sur chaque carte.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -24,7 +26,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: TITLE,
     description:
-      "Cours indicatifs des principaux ETF (CW8, VWCE, EWLD, SPY, QQQ). Données différées, source toujours affichée.",
+      "Cours indicatifs des principaux ETF (CW8, WPEA, VWCE, SPY, QQQ). Données différées, source toujours affichée.",
   },
 };
 

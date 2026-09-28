@@ -23,11 +23,18 @@ const YEARS_OPTIONS = [10, 20, 30] as const;
 type Monthly = (typeof MONTHLY_OPTIONS)[number];
 type Years = (typeof YEARS_OPTIONS)[number];
 
-// Capitalisation mensuelle, taux annuel net, versements en début de période
-// (multiplication par (1 + rm) pour l'effet "annuité due"). Cohérent avec
-// la convention DEMO précédente (200 €/mois × 20 ans × 7 % → ~102 094 €).
+// Capitalisation mensuelle, versements en début de période (multiplication par
+// (1 + rm) pour l'effet « annuité due »).
+//
+// ⚠️ MÊME CONVENTION QUE LE MOTEUR (src/lib/simulator.ts) : rendement brut de
+// 7 % MOINS les frais de référence, puis conversion en taux mensuel. Jusqu'au
+// 28/09/2026, cette carte calculait à 7 % SANS frais (≈ 102 100 € pour
+// 200 €/mois sur 20 ans) et son lien ouvrait le simulateur AVEC les frais de
+// référence (97 753 €). Le visiteur cliquait pour vérifier la promesse et
+// tombait sur un autre chiffre — c'est le moment exact où on le perd.
+const RENDEMENT_BRUT = 7;
 function compute(monthly: number, years: number) {
-  const r = 0.07;
+  const r = (RENDEMENT_BRUT - TER_REFERENCE_SIMULATEUR) / 100;
   const rm = Math.pow(1 + r, 1 / 12) - 1;
   const months = years * 12;
   const factor = ((Math.pow(1 + rm, months) - 1) / rm) * (1 + rm);
@@ -132,7 +139,8 @@ export function HeroDemoCard() {
               key={`label-${k}`}
               className="text-sm font-semibold text-gray-700 leading-snug animate-fade-in"
             >
-              {monthly}&nbsp;€/mois · {years}&nbsp;ans · 7&nbsp;%/an net
+              {monthly}&nbsp;€/mois · {years}&nbsp;ans · {RENDEMENT_BRUT}&nbsp;%/an, frais de{" "}
+              {TER_REFERENCE_SIMULATEUR.toLocaleString("fr-FR")}&nbsp;% déduits
             </p>
           </div>
           <span
@@ -229,7 +237,7 @@ export function HeroDemoCard() {
 
         {/* CTA — passe les params actuels au simulateur */}
         <Link
-          href={`/simulateur?monthly=${monthly}&years=${years}&return=7&fees=${TER_REFERENCE_SIMULATEUR}`}
+          href={`/simulateur?monthly=${monthly}&years=${years}&return=${RENDEMENT_BRUT}&fees=${TER_REFERENCE_SIMULATEUR}`}
           className="group mt-1 flex items-center justify-center gap-1.5 w-full py-2.5 rounded-xl bg-primary-50 hover:bg-primary-100 text-primary-700 text-sm font-semibold transition-colors duration-150"
         >
           Tester avec mes chiffres

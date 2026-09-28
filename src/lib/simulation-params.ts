@@ -2,6 +2,7 @@
 // Intentionally framework-free — no React, no Next.js imports.
 
 import { SimulatorInput } from "./simulator";
+import { TER_REFERENCE_SIMULATEUR } from "./etf-config";
 
 // URL param keys — kept short for readable URLs
 const KEYS = {
@@ -18,7 +19,12 @@ const BOUNDS = {
   monthlyAmount:    { min: 25,  max: 5000, default: 200  },
   durationYears:    { min: 1,   max: 40,   default: 20   },
   annualReturnPct:  { min: 1,   max: 15,   default: 7    },
-  annualFeesPct:    { min: 0,   max: 2,    default: 0.3  },
+  // 28/09/2026 : le défaut était 0,30 %, « un chiffre choisi au jugé » — le TER
+  // d'aucun ETF MSCI World. Toutes les pages qui envoient vers le simulateur
+  // calculent avec TER_REFERENCE_SIMULATEUR (CW8) ; un lien sans paramètre
+  // ouvrait donc un AUTRE résultat (98 647 € au lieu de 97 753 € pour
+  // 200 €/mois sur 20 ans). Une seule source désormais.
+  annualFeesPct:    { min: 0,   max: 2,    default: TER_REFERENCE_SIMULATEUR },
   annualInflationPct: { min: 0, max: 10,   default: 2    },
 } as const;
 

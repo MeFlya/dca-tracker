@@ -24,16 +24,19 @@ const REGIONS: { value: ETFRegion | "tous"; label: string }[] = [
   { value: "obligations", label: "Obligations" },
 ];
 
-// Beginner-friendly sort: MSCI World FR (CW8) → MSCI World IE (EWLD) →
-// S&P 500 eligible PEA (ESE/SP5) → rest by TER ascending.
-// Rationale: this is the ~80% case for a French DCA beginner — diversified,
-// PEA-eligible, low TER. Ordering them first reduces analysis paralysis.
-const BEGINNER_PRIORITY = ["CW8", "IWDA", "500"] as const;
+// Tri par défaut : les MSCI World éligibles PEA, puis un S&P 500 éligible PEA,
+// puis le reste par TER croissant — le cas le plus simple pour un DCA en PEA.
+// Corrigé le 28/09/2026 (table de vérité ETF) : la liste était CW8, IWDA, 500
+// sous l'étiquette « Recommandé débutant ». IWDA n'est pas éligible PEA, le 500
+// (Amundi S&P 500 Swap) non plus, et WPEA/DCAM font le même indice que CW8
+// pour 0,20 % contre 0,38 %. L'étiquette « Recommandé » est retirée : le site
+// décrit et compare, il ne recommande pas (pas de statut CIF).
+const BEGINNER_PRIORITY = ["WPEA", "DCAM", "CW8", "PSP5"] as const;
 
 type SortMode = "recommande" | "ter" | "alpha";
 
 const SORT_MODES: { value: SortMode; label: string }[] = [
-  { value: "recommande", label: "Recommandé débutant" },
+  { value: "recommande", label: "Monde PEA d'abord" },
   { value: "ter", label: "TER croissant" },
   { value: "alpha", label: "Alphabétique" },
 ];

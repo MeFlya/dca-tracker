@@ -5,6 +5,7 @@ import { runSimulation, formatEur } from "@/lib/simulator";
 import type { SimulatorInput } from "@/lib/simulator";
 import { buildUpgradeUrl } from "@/lib/upgrade-link";
 import { PremiumLockedOverlay } from "@/components/ui/PremiumLockedOverlay";
+import { TER_REFERENCE_SIMULATEUR } from "@/lib/etf-config";
 
 // ─── Mini slider row ──────────────────────────────────────────────────────────
 
@@ -111,8 +112,8 @@ function LockedOverlay({ input }: { input?: SimulatorInput }) {
 
 // ─── Public component ─────────────────────────────────────────────────────────
 
-const DEFAULT_A: ScenInput = { monthlyAmount: 200, durationYears: 20, annualReturnPct: 7, annualFeesPct: 0.3 };
-const DEFAULT_B: ScenInput = { monthlyAmount: 400, durationYears: 20, annualReturnPct: 7, annualFeesPct: 0.3 };
+const DEFAULT_A: ScenInput = { monthlyAmount: 200, durationYears: 20, annualReturnPct: 7, annualFeesPct: TER_REFERENCE_SIMULATEUR };
+const DEFAULT_B: ScenInput = { monthlyAmount: 400, durationYears: 20, annualReturnPct: 7, annualFeesPct: TER_REFERENCE_SIMULATEUR };
 
 export function ScenarioComparison({ isPremium, input }: { isPremium: boolean; input?: SimulatorInput }) {
   const [a, setA] = useState<ScenInput>(DEFAULT_A);

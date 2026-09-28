@@ -6,12 +6,31 @@
 // terme = cible long-tail ("définition TER", "qu'est-ce que le PFU"…) +
 // nœud de maillage interne vers les guides et outils du site.
 //
-// Cohérence YMYL : les chiffres (17,2 %, 30 %, 150 000 €, TER…) doivent
+// Cohérence YMYL : les chiffres (18,6 %, 31,4 %, 150 000 €, TER…) doivent
 // rester alignés avec /pea-ou-cto, /etf-msci-world et les comparatifs.
 
-import { impotCTO, impotCTOEnviron, impotPEA, impotPEAEnviron } from "@/lib/impot-affiche";
+import {
+  ecartFiscalEnviron,
+  impotCTO,
+  impotCTOEnviron,
+  impotPEA,
+  impotPEAEnviron,
+} from "@/lib/impot-affiche";
+import { capitalPour, ecartCapital, gainsPour, HYPOTHESES_COMPARATIFS } from "@/lib/ecart-frais";
+import { runSimulation } from "@/lib/simulator";
 
-import { capitalPour, ecartCapital } from "@/lib/ecart-frais";
+// 28/09/2026 : l'exemple PEA posait « ≈ 102 000 € finaux dont ≈ 54 000 € de
+// gains » — le capital SANS AUCUN FRAIS — et un écart fiscal « ≈ 6 900 € »
+// écrit à la main. Tout sort maintenant du moteur, au TER de WPEA/DCAM
+// (0,20 %, table de vérité ETF du 28/09/2026).
+const TER_EXEMPLE_PEA = 0.2;
+const GAIN_EXEMPLE_PEA = (() => {
+  const { finalValue, totalInvested } = runSimulation({
+    ...HYPOTHESES_COMPARATIFS,
+    annualFeesPct: TER_EXEMPLE_PEA,
+  }).base;
+  return finalValue - totalInvested;
+})();
 
 export type GlossaryTerm = {
   slug: string;
@@ -59,11 +78,14 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
       },
     ],
     example:
-      `200 €/mois pendant 20 ans à 7 %/an ≈ 102 000 € finaux dont ≈ 54 000 € de gains. Prélèvements à la sortie : ≈ ${impotPEAEnviron(54000)} € en PEA (18,6 %) contre ≈ ${impotCTOEnviron(54000)} € en CTO (31,4 %) — environ 6 900 € d'écart.`,
+      `200 €/mois pendant 20 ans à 7 %/an, avec 0,20 % de frais annuels ≈ ${capitalPour(TER_EXEMPLE_PEA)} € finaux dont ≈ ${gainsPour(TER_EXEMPLE_PEA)} € de gains. Prélèvements à la sortie : ≈ ${impotPEAEnviron(GAIN_EXEMPLE_PEA)} € en PEA (18,6 %) contre ≈ ${impotCTOEnviron(GAIN_EXEMPLE_PEA)} € en CTO (31,4 %) — environ ${ecartFiscalEnviron(GAIN_EXEMPLE_PEA)} € d'écart.`,
     faq: [
       {
         q: "Quels ETF peut-on loger dans un PEA ?",
-        a: "Les ETF investis à 75 % minimum en actions européennes, ou les ETF synthétiques qui répliquent des indices mondiaux via un swap : MSCI World (CW8, WPEA, DCAM), S&P 500 (ESE, PSP5), Nasdaq-100 (PUST)… Les ETF physiques à dominante américaine (IWDA, VWCE, CSPX) ne sont pas éligibles.",
+        // 28/09/2026 : « les ETF synthétiques qui répliquent des indices
+        // mondiaux » laissait croire qu'un swap suffit — 500, ANX et AEEM sont
+        // des swaps Amundi NON éligibles (table de vérité ETF). SPEA ajouté.
+        a: "Les ETF qui détiennent au moins 75 % d'actions européennes. Pour suivre un indice mondial, ils reçoivent sa performance par un swap tout en détenant des actions européennes : MSCI World (WPEA, DCAM, CW8), S&P 500 (SPEA, PSP5, ESE), Nasdaq-100 (PUST), émergents (PAEEM)… Un swap ne suffit pas : l'Amundi S&P 500 Swap (500), l'Amundi Nasdaq-100 Swap (ANX) et l'Amundi MSCI Emerging Markets Swap (AEEM) ne sont pas éligibles. Les ETF physiques à dominante américaine (IWDA, VWCE, CSPX) non plus.",
       },
       {
         q: "Que se passe-t-il si je retire avant 5 ans ?",
@@ -143,7 +165,7 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
       },
     ],
     example:
-      `54 000 € de gains réalisés en CTO → ${impotCTO(54000)} € de PFU (31,4 %). Les mêmes gains dans un PEA de plus de 5 ans → ${impotPEA(54000)} € de prélèvements sociaux (18,6 %). Écart : ≈ 6 900 €.`,
+      `54 000 € de gains réalisés en CTO → ${impotCTO(54000)} € de PFU (31,4 %). Les mêmes gains dans un PEA de plus de 5 ans → ${impotPEA(54000)} € de prélèvements sociaux (18,6 %). Écart : ≈ ${ecartFiscalEnviron(54000)} €.`,
     faq: [
       {
         q: "Le PFU s'applique-t-il dans un PEA ?",
@@ -175,7 +197,7 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
       `Le TER (frais annuels d'un ETF) en clair : comment il est prélevé, pourquoi 0,18 % d'écart représente ~${ecartCapital(0.38, 0.2)} € sur 20 ans de DCA, et à partir de quel écart il doit guider votre choix. Définition + exemples.`,
     definition: [
       "Le Total Expense Ratio représente les frais courants annuels d'un ETF : gestion, licence de l'indice, frais administratifs. Il s'exprime en pourcentage de l'encours et il est prélevé automatiquement, jour après jour, sur la valeur du fonds — vous ne recevez jamais de facture, la performance affichée est déjà nette de TER.",
-      "Sur les grands indices, les TER s'échelonnent d'environ 0,07 % (S&P 500 physique en CTO) à 0,38 % (CW8). La guerre des frais de 2024-2025 a divisé par deux le coût du MSCI World en PEA : WPEA et DCAM à 0,20 % contre 0,38 % pour le CW8 historique.",
+      "Sur les grands indices, les TER s'échelonnent d'environ 0,07 % (S&P 500 physique en CTO) à 0,38 % (CW8). La guerre des frais de 2024-2025 a presque divisé par deux le coût du MSCI World en PEA : WPEA et DCAM à 0,20 % contre 0,38 % pour le CW8 historique.",
     ],
     inPractice: [
       {
@@ -217,13 +239,15 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
     metaDescription:
       "Un ETF à réplication physique détient réellement les actions de son indice (IWDA, VWCE, CSPX). Avantage : pas de risque de contrepartie. Limite : inéligible au PEA pour les indices mondiaux. Définition claire.",
     definition: [
-      "Un ETF à réplication physique achète et détient réellement les titres de l'indice qu'il suit : un MSCI World physique comme IWDA possède les ~1 500 actions de l'indice (réplication « totale » ou « optimisée » s'il se contente d'un échantillon représentatif). La performance vient directement de la détention des titres.",
+      "Un ETF à réplication physique achète et détient réellement les titres de l'indice qu'il suit : un MSCI World physique comme IWDA possède les actions de l'indice (réplication « totale » ou « optimisée » s'il se contente d'un échantillon représentatif). La performance vient directement de la détention des titres.",
       "C'est l'approche la plus intuitive et la plus transparente — mais elle a une conséquence fiscale française : un ETF qui détient majoritairement des actions américaines ou mondiales ne respecte pas les règles d'éligibilité du PEA. IWDA, VWCE ou CSPX sont donc réservés au compte-titres ou à l'assurance-vie.",
     ],
     inPractice: [
       {
         title: "Le choix par défaut en CTO",
-        text: "Une fois le PEA plafonné (ou pour les non-résidents), les ETF physiques à bas frais — IWDA (0,20 %), VWCE (0,22 %), CSPX (0,07 %) — sont les références mondiales.",
+        // 28/09/2026 : VWCE à 0,22 % → 0,14 % (table de vérité ETF) ;
+        // « les références mondiales » (classement invérifiable) retiré.
+        text: "Une fois le PEA plafonné (ou pour les non-résidents), les ETF physiques à bas frais prennent le relais en compte-titres : IWDA (0,20 %), VWCE (0,14 %), CSPX (0,07 %).",
       },
       {
         title: "Ne pas en faire un dogme",
@@ -258,12 +282,15 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
       "Un ETF synthétique réplique son indice via un swap : il détient des actions européennes et échange leur performance contre celle de l'indice. C'est le mécanisme qui met le MSCI World dans le PEA. Risques encadrés UCITS expliqués.",
     definition: [
       "Un ETF à réplication synthétique ne détient pas les titres de son indice : il possède un panier de substitution (typiquement des actions européennes) et conclut avec une banque un contrat d'échange — le swap — qui troque la performance de ce panier contre celle de l'indice visé. Résultat : la performance du MSCI World ou du S&P 500, avec un portefeuille juridiquement composé d'actions européennes.",
-      "C'est précisément cette structure qui rend les indices mondiaux éligibles au PEA : CW8, WPEA, DCAM (MSCI World), ESE, PSP5 (S&P 500) ou PUST (Nasdaq-100) sont tous synthétiques. Sans le swap, pas de S&P 500 dans un PEA.",
+      // 28/09/2026 : « tous synthétiques » pour DCAM, ESE, PSP5, PUST n'est pas
+      // établi par la table de vérité ETF, et un swap ne rend pas éligible à
+      // lui seul (500, ANX, AEEM sont des swaps NON éligibles).
+      "C'est cette structure qui permet de loger un indice mondial dans un PEA : CW8, WPEA (MSCI World) et SPEA (S&P 500) sont des ETF à swap, leur nom l'indique. Mais le swap ne suffit pas : l'Amundi S&P 500 Swap (500), l'Amundi Nasdaq-100 Swap (ANX) et l'Amundi MSCI Emerging Markets Swap (AEEM) ne sont pas éligibles au PEA. Le statut se vérifie ETF par ETF.",
     ],
     inPractice: [
       {
         title: "Le passage obligé du PEA mondial",
-        text: "Si vous voulez du MSCI World, du S&P 500 ou du Nasdaq dans votre PEA, la question « physique ou synthétique » ne se pose pas : seul le synthétique est éligible. L'avantage fiscal compense très largement le risque résiduel du swap.",
+        text: "Si vous voulez du MSCI World, du S&P 500 ou du Nasdaq dans votre PEA, la question « physique ou synthétique » ne se pose pas : les ETF éligibles sur ces indices sont synthétiques — ils détiennent des actions européennes et échangent leur performance contre celle de l'indice. L'inverse n'est pas vrai : un ETF synthétique n'est pas éligible pour autant. L'avantage fiscal compense très largement le risque résiduel du swap.",
       },
       {
         title: "Un risque réel mais borné",
@@ -283,7 +310,7 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
     related: [
       { href: "/glossaire/replication-physique", label: "La réplication physique" },
       { href: "/etf-msci-world", label: "Les MSCI World synthétiques du PEA" },
-      { href: "/etf-sp500", label: "Le S&P 500 en PEA (ESE, PSP5)" },
+      { href: "/etf-sp500", label: "Le S&P 500 en PEA (SPEA, PSP5, ESE)" },
     ],
     category: "Frais & mécanique des ETF",
   },
@@ -397,7 +424,7 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
     faq: [
       {
         q: "Quelle est la volatilité d'un ETF MSCI World ?",
-        a: "Historiquement autour de 15 % par an (un peu moins que le S&P 500 seul, nettement moins qu'un Nasdaq-100 à ~20-25 %). La diversification sur ~1 500 entreprises et 23 pays lisse les chocs individuels sans supprimer le risque de marché global.",
+        a: "Historiquement autour de 15 % par an (un peu moins que le S&P 500 seul, nettement moins qu'un Nasdaq-100 à ~20-25 %). La diversification sur l'ensemble des pays développés lisse les chocs individuels sans supprimer le risque de marché global.",
       },
       {
         q: "Comment réduire la volatilité d'un portefeuille DCA ?",
@@ -477,7 +504,7 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
     faq: [
       {
         q: "Faut-il rééquilibrer un portefeuille composé d'un seul ETF ?",
-        a: "Non — c'est l'un des arguments de la simplicité : un ETF MSCI World seul se rééquilibre en interne (l'indice ajuste lui-même les poids des 1 500 entreprises). Le rebalancing ne concerne que les portefeuilles multi-lignes (World + émergents, actions + obligations…).",
+        a: "Non — c'est l'un des arguments de la simplicité : un ETF MSCI World seul se rééquilibre en interne (l'indice ajuste lui-même les poids de ses entreprises). Le rebalancing ne concerne que les portefeuilles multi-lignes (World + émergents, actions + obligations…).",
       },
       {
         q: "Le rééquilibrage déclenche-t-il des impôts ?",

@@ -23,17 +23,36 @@ export interface EmailProviderResult {
 interface ETFShortRow {
   rank: number;
   symbol: string;
+  isin: string;
   index: string;
   ter: string;
   role: string;
 }
 
+// ─── LA CHEAT SHEET, CORRIGÉE LE 28/09/2026 ──────────────────────────────────
+//
+// Cet email partait à chaque inscrit avec cinq « ETF éligibles PEA » dont trois
+// ne l'étaient pas : 500 (LU1681048804), ANX (LU1681038243) et AEEM
+// (LU1681045370) — le reporting Amundi du 31/08/2026 les classe « Compte-titres,
+// Assurance-vie ». PCEU y était un « STOXX Europe 600 » à 0,07 % : c'est un
+// MSCI Europe à 0,15 %. Source : table de vérité ETF du 28/09/2026 (documents
+// des émetteurs recoupés avec justETF, Boursorama et Euronext).
+//
+// L'ISIN est ajouté : un lecteur recopie un email pour passer un ordre, et le
+// nom ne suffit pas à identifier le fonds (Amundi a un S&P 500 PEA et un S&P
+// 500 non PEA).
+//
+// ⚠️ MIROIR de ETFS dans src/app/guide-5-etf-pea-premium/page.tsx : symbole,
+// ISIN, TER et rôle IDENTIQUES, même indice (la page le détaille). La page ne
+// peut pas être importée ici (un page.tsx Next n'exporte que ses champs
+// réservés), d'où la copie — toute modification d'un côté se reporte de
+// l'autre.
 const ETFS: ETFShortRow[] = [
-  { rank: 1, symbol: "CW8",  index: "MSCI World",          ter: "0,38 %", role: "Cœur de portefeuille" },
-  { rank: 2, symbol: "500",  index: "S&P 500",             ter: "0,15 %", role: "Surpondération US"    },
-  { rank: 3, symbol: "PCEU", index: "STOXX Europe 600",    ter: "0,07 %", role: "Diversification Europe" },
-  { rank: 4, symbol: "ANX",  index: "Nasdaq 100",          ter: "0,23 %", role: "Boost croissance"     },
-  { rank: 5, symbol: "AEEM", index: "Marchés émergents",   ter: "0,20 %", role: "Satellite émergents"  },
+  { rank: 1, symbol: "WPEA",  isin: "IE0002XZSHO1", index: "MSCI World",                              ter: "0,20 %", role: "Cœur de portefeuille"   },
+  { rank: 2, symbol: "SPEA",  isin: "IE000DQLYVB9", index: "S&P 500",                                 ter: "0,10 %", role: "Surpondération US"      },
+  { rank: 3, symbol: "PCEU",  isin: "FR0013412038", index: "MSCI Europe",                             ter: "0,15 %", role: "Diversification Europe" },
+  { rank: 4, symbol: "PUST",  isin: "FR0011871110", index: "Nasdaq-100",                              ter: "0,30 %", role: "Boost croissance"       },
+  { rank: 5, symbol: "PAEEM", isin: "FR0013412020", index: "MSCI Emerging Markets (ESG Transition)", ter: "0,30 %", role: "Satellite émergents"    },
 ];
 
 function buildHtml(source: string): string {
@@ -44,8 +63,8 @@ function buildHtml(source: string): string {
             <span style="display:inline-flex;width:24px;height:24px;align-items:center;justify-content:center;background:#2563eb;color:#fff;border-radius:50%;font-size:12px;font-weight:700;line-height:24px;text-align:center">${e.rank}</span>
           </td>
           <td style="padding:14px 16px;border-bottom:1px solid #f1f5f9;vertical-align:top">
-            <p style="margin:0 0 4px 0;font-size:15px;font-weight:700;color:#0f172a;font-family:'SFMono-Regular',Menlo,Consolas,monospace">${e.symbol}</p>
-            <p style="margin:0;font-size:13px;color:#475569;line-height:1.5">${e.index}</p>
+            <p style="margin:0 0 4px 0;font-size:15px;font-weight:700;color:#0f172a;font-family:'SFMono-Regular',Menlo,Consolas,monospace">${e.symbol} <span style="font-size:12px;font-weight:400;color:#94a3b8">${e.isin}</span></p>
+            <p style="margin:0;font-size:13px;color:#475569;line-height:1.5">${e.index.replace(/&/g, "&amp;")}</p>
             <p style="margin:4px 0 0 0;font-size:12px;color:#94a3b8">${e.role} · TER ${e.ter}</p>
           </td>
         </tr>`
@@ -61,7 +80,7 @@ function buildHtml(source: string): string {
 <body style="margin:0;padding:0;background:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
 
   <div style="display:none;max-height:0;overflow:hidden;font-size:1px;line-height:1px;color:#f8fafc">
-    Votre s&eacute;lection de 5 ETF &eacute;ligibles PEA pour 2026.&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;
+    WPEA, SPEA, PCEU, PUST, PAEEM&nbsp;: 5 ETF &eacute;ligibles PEA v&eacute;rifi&eacute;s.&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;
   </div>
 
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;padding:40px 16px">
@@ -86,11 +105,11 @@ function buildHtml(source: string): string {
                 5 ETF Premium pour PEA
               </h1>
               <p style="margin:0 0 24px 0;font-size:15px;color:#475569;line-height:1.7">
-                Voici la s&eacute;lection courte que vous avez demand&eacute;e&nbsp;:
-                5 ETF &eacute;ligibles PEA fr&eacute;quemment retenus par les
-                investisseurs long terme. Chacun est filtr&eacute; sur 4&nbsp;crit&egrave;res&nbsp;:
-                <strong>&eacute;ligibilit&eacute; PEA</strong>, <strong>TER bas</strong>,
-                <strong>encours &eacute;lev&eacute;s</strong>, <strong>capitalisant</strong>.
+                Voici la s&eacute;lection que vous avez demand&eacute;e&nbsp;:
+                5 ETF &eacute;ligibles au PEA, un par brique &mdash; monde, &Eacute;tats-Unis,
+                Europe, technologie, &eacute;mergents &mdash; retenus sur 4&nbsp;crit&egrave;res&nbsp;:
+                <strong>&eacute;ligibilit&eacute; v&eacute;rifi&eacute;e</strong>, <strong>frais</strong>,
+                <strong>encours</strong>, <strong>capitalisation</strong>.
               </p>
             </td>
           </tr>
@@ -112,9 +131,11 @@ function buildHtml(source: string): string {
                       Comment les combiner&nbsp;?
                     </p>
                     <p style="margin:0;font-size:14px;color:#1e3a8a;line-height:1.6">
-                      Le guide complet pr&eacute;sente <strong>3 mod&egrave;les d&rsquo;allocation</strong>
-                      pr&ecirc;ts &agrave; l&rsquo;emploi (Simple, &Eacute;quilibr&eacute;, Croissance) et les
-                      points d&rsquo;attention sp&eacute;cifiques &agrave; chaque ETF.
+                      Le guide complet pr&eacute;sente <strong>3 exemples d&rsquo;allocation</strong>
+                      (Simple, &Eacute;quilibr&eacute;, Croissance), les alternatives &agrave; frais
+                      &eacute;gaux ou proches (DCAM, PSP5) et les points d&rsquo;attention
+                      sp&eacute;cifiques &agrave; chaque ETF. Au moment de passer un ordre,
+                      c&rsquo;est l&rsquo;ISIN, pas le nom, qui identifie le fonds.
                     </p>
                   </td>
                 </tr>
@@ -172,17 +193,17 @@ function buildHtml(source: string): string {
 
 function buildText(source: string): string {
   const rows = ETFS.map(
-    (e) => `${e.rank}. ${e.symbol} — ${e.index} (TER ${e.ter}) — ${e.role}`
+    (e) => `${e.rank}. ${e.symbol} (ISIN ${e.isin}) — ${e.index} (TER ${e.ter}) — ${e.role}`
   ).join("\n");
 
   return `Votre cheat sheet : 5 ETF Premium pour PEA en 2026
 
-Filtrés sur 4 critères : éligibilité PEA, TER bas, encours élevés, capitalisant.
+5 ETF éligibles au PEA, un par brique — monde, États-Unis, Europe, technologie, émergents — retenus sur 4 critères : éligibilité vérifiée, frais, encours, capitalisation.
 
 ${rows}
 
 Comment les combiner ?
-Le guide complet présente 3 modèles d'allocation prêts à l'emploi (Simple, Équilibré, Croissance) et les points d'attention spécifiques à chaque ETF.
+Le guide complet présente 3 exemples d'allocation (Simple, Équilibré, Croissance), les alternatives à frais égaux ou proches (DCAM, PSP5) et les points d'attention spécifiques à chaque ETF. Au moment de passer un ordre, c'est l'ISIN, pas le nom, qui identifie le fonds.
 
 → Lire le guide complet : ${GUIDE_URL}
 

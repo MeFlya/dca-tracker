@@ -134,3 +134,20 @@ export function gainsPour(terPct: number, hyp = HYPOTHESES_COMPARATIFS): string 
   }).base;
   return formaterEuros(arrondirEnviron(finalValue - totalInvested));
 }
+
+/**
+ * Gains en NOMBRE, pour les calculs d'impôt — mêmes hypothèses que gainsPour.
+ *
+ * Ajouté le 28/09/2026 : plusieurs comparatifs calculaient l'écart fiscal sur
+ * un gain de 54 000 € écrit à la main, alors que la même phrase affichait les
+ * gains calculés par le moteur (≈ 56 200 € avant frais). Deux chiffres pour la
+ * même chose, dans la même phrase. L'impôt se calcule désormais sur le gain que
+ * la page affiche, au TER de l'ETF concerné.
+ */
+export function gainsBruts(terPct: number, hyp = HYPOTHESES_COMPARATIFS): number {
+  const { finalValue, totalInvested } = runSimulation({
+    ...hyp,
+    annualFeesPct: terPct,
+  }).base;
+  return finalValue - totalInvested;
+}

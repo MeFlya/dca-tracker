@@ -9,6 +9,7 @@ import {
   formatFiscalEur,
   PEA_DEPOSIT_CAP_EUR,
 } from "@/lib/fiscal/pea-cto";
+import { TER_REFERENCE_SIMULATEUR } from "@/lib/etf-config";
 
 // ─── Defaults ────────────────────────────────────────────────────────────────
 
@@ -16,7 +17,7 @@ const DEFAULTS = {
   monthlyAmount: 200,
   durationYears: 20,
   annualReturnPct: 7,
-  annualFeesPct: 0.3,
+  annualFeesPct: TER_REFERENCE_SIMULATEUR, // même référence que le simulateur (28/09/2026)
 };
 
 // ─── Component ──────────────────────────────────────────────────────────────
@@ -103,10 +104,12 @@ export function CalculatorClient() {
           max={15}
           step={0.1}
           unit="%"
-          hint="Avant frais. Le MSCI World a affiché ~7-8 %/an sur 30 ans."
+          hint="Avant frais. Une hypothèse, pas une performance garantie."
           onChange={setAnnualReturnPct}
         />
 
+        {/* 28/09/2026 : VWCE 0,22 % → 0,14 % ; SPY retiré (absent de la table de
+            vérité ETF) ; WPEA et DCAM ajoutés. */}
         <SliderInput
           label="Frais annuels (TER)"
           value={annualFeesPct}
@@ -114,7 +117,7 @@ export function CalculatorClient() {
           max={2}
           step={0.01}
           unit="%"
-          hint="CW8 : 0,38 %. VWCE : 0,22 %. SPY : 0,09 %."
+          hint="WPEA, DCAM : 0,20 %. CW8 : 0,38 %. VWCE : 0,14 %."
           onChange={setAnnualFeesPct}
         />
 

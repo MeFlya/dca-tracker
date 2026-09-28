@@ -56,7 +56,7 @@ export type BrokerData = {
 const TRADE_REPUBLIC: BrokerData = {
   slug: "trade-republic",
   publishedAt: "2026-04-19",
-  updatedAt: "2026-06-10",
+  updatedAt: "2026-09-28",
   name: "Trade Republic",
   shortName: "Trade Republic",
   tagline: "Courtier allemand, 0 € sur l'épargne programmée",
@@ -124,7 +124,10 @@ const TRADE_REPUBLIC: BrokerData = {
     },
     {
       q: "Quel est le meilleur ETF à acheter chez Trade Republic pour un DCA ?",
-      a: "Pour un PEA : un ETF MSCI World comme WPEA ou DCAM (TER 0,20 %) — ou CW8, la référence historique (0,38 %, plus liquide). Pour le S&P 500 en PEA : ESE (0,15 %). Pour un CTO : VWCE (Vanguard FTSE All-World, émergents inclus) ou VUSA (Vanguard S&P 500). L'épargne programmée Trade Republic à 0 € de frais d'ordre rend le DCA mensuel particulièrement efficace sur ces ETF — vérifiez la disponibilité de chacun dans le catalogue.",
+      // 28/09/2026 (table de vérité ETF) : TER d'ESE 0,15 → 0,14 % ; ajout de
+      // PSP5 et SPEA, moins chers ; « CW8 plus liquide » retiré faute de
+      // source ; TER de VWCE (0,14 %) précisé ; VUSA est distribuant.
+      a: "Pour un PEA : un ETF MSCI World comme WPEA ou DCAM (TER 0,20 %) — ou CW8, la référence historique (0,38 %). Pour le S&P 500 en PEA : SPEA (0,10 %), PSP5 (0,12 %) ou ESE (0,14 %). Pour un CTO : VWCE (Vanguard FTSE All-World, émergents inclus, 0,14 %) ou VUSA (Vanguard S&P 500, distribuant, 0,07 %). L'épargne programmée Trade Republic à 0 € de frais d'ordre rend le DCA mensuel particulièrement efficace sur ces ETF — vérifiez la disponibilité de chacun dans le catalogue.",
     },
     {
       q: "Y a-t-il un montant minimum d'investissement mensuel ?",
@@ -136,7 +139,7 @@ const TRADE_REPUBLIC: BrokerData = {
 const BOURSORAMA: BrokerData = {
   slug: "boursorama-bourse",
   publishedAt: "2026-04-19",
-  updatedAt: "2026-07-29",
+  updatedAt: "2026-09-28",
   name: "Boursorama Bourse",
   shortName: "Boursorama",
   tagline: "Banque en ligne française + courtier bourse intégré",
@@ -196,7 +199,12 @@ const BOURSORAMA: BrokerData = {
   faq: [
     {
       q: "Peut-on loger un ETF MSCI World sur le PEA Boursorama ?",
-      a: "Oui, le PEA Boursorama accepte tous les ETF éligibles PEA, incluant CW8 (Amundi MSCI World), ESE (Amundi S&P 500 synthétique), WPEA (iShares Core MSCI World), etc. L'inventaire est mis à jour régulièrement en fonction de la réglementation.",
+      // 28/09/2026 (table de vérité ETF) : ESE est un ETF BNP Paribas Easy, pas
+      // Amundi ; « iShares Core MSCI World » est IWDA, NON éligible PEA — le nom
+      // exact de WPEA est « iShares MSCI World Swap PEA ». Un lecteur qui
+      // cherchait « iShares Core MSCI World » dans son PEA tombait sur le mauvais
+      // fonds.
+      a: "Oui, le PEA Boursorama accepte tous les ETF éligibles PEA, incluant CW8 (Amundi MSCI World Swap), WPEA (iShares MSCI World Swap PEA), DCAM (Amundi PEA Monde) ou, pour le S&P 500, ESE (BNP Paribas Easy S&P 500, synthétique), etc. L'inventaire est mis à jour régulièrement en fonction de la réglementation.",
     },
     {
       q: "L'assurance-vie Boursorama peut-elle remplacer le PEA pour un DCA ?",

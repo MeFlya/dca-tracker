@@ -68,7 +68,7 @@ const COLUMNS: MenuColumn[] = [
         desc: "CW8, WPEA, DCAM — lequel choisir",
         badge: { text: "Top", tone: "new" },
       },
-      { href: "/etf-sp500", label: "ETF S&P 500", desc: "ESE, PSP5 en PEA" },
+      { href: "/etf-sp500", label: "ETF S&P 500", desc: "SPEA, PSP5, ESE en PEA" },
       { href: "/etf-nasdaq", label: "ETF Nasdaq 100", desc: "PUST en PEA" },
       { href: "/meilleurs-etf-debutants", label: "Meilleurs ETF débutants", desc: "La sélection commentée" },
       { href: "/comparatif-etf", label: "Comparatifs ETF", desc: "CW8 vs WPEA, etc." },

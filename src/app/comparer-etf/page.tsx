@@ -6,7 +6,9 @@ import { ETFGrid } from "./ETFGrid";
 import { ComparisonDisclosure } from "@/components/ui/ComparisonDisclosure";
 
 const ETF_COUNT = ETF_LIST.length;
-const TITLE = "Comparer les ETF — CW8, VWCE, IWDA, ANX, AEEM et plus";
+// 28/09/2026 : le titre mettait en avant ANX et AEEM, deux ETF NON éligibles
+// PEA (table de vérité ETF), sur un site centré sur le PEA.
+const TITLE = "Comparer les ETF — CW8, WPEA, DCAM, VWCE, PSP5 et plus";
 const DESCRIPTION = `Comparez ${ETF_COUNT} ETF populaires pour investisseurs en France : monde, S&P 500, Nasdaq, émergents, Europe, small cap, obligations. Filtres PEA, région, TER. Cours indicatifs, frais réels et simulation DCA intégrée.`;
 
 export const metadata: Metadata = {

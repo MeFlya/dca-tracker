@@ -7,6 +7,27 @@ import { EducationalHeader } from "@/components/ui/EducationalHeader";
 import { ArticleByline } from "@/components/ui/ArticleByline";
 import { BreadcrumbSchema } from "@/components/ui/BreadcrumbSchema";
 import { SourcesReferences } from "@/components/ui/SourcesReferences";
+import { runSimulation } from "@/lib/simulator";
+
+// ─── Frais : l'écart se calcule, il ne s'écrit pas ────────────────────────────
+// Corrigé le 28/09/2026 (table de vérité ETF) : la page citait « un TER de
+// 0,07 % (PCEU, CSPX) ». PCEU coûte 0,15 % (et suit le MSCI Europe) ; seul
+// CSPX est à 0,07 %. Le « 30 à 50 % du capital final » était une estimation à
+// la main : le moteur donne l'écart réel, pour un DCA de 200 €/mois sur 30 ans.
+const TER_BAS = 0.07; // CSPX — table de vérité du 28/09/2026
+const TER_FONDS_ACTIF = 1.5; // hypothèse d'illustration, pas une donnée de fonds
+function capital30ans(ter: number): number {
+  return runSimulation({
+    monthlyAmount: 200,
+    durationYears: 30,
+    annualReturnPct: 7,
+    annualFeesPct: ter,
+  }).base.finalValue;
+}
+/** Part du capital final perdue en payant 1,5 % au lieu de 0,07 %. */
+const PERTE_FRAIS_PCT = Math.round(
+  (1 - capital30ans(TER_FONDS_ACTIF) / capital30ans(TER_BAS)) * 100,
+);
 
 const TITLE = "Intérêts composés : formule, exemples chiffrés et simulateur";
 const DESCRIPTION =
@@ -125,7 +146,7 @@ export default function InteretsComposesPage() {
 
       <ArticleByline
         publishedAt="2026-04-15"
-        updatedAt="2026-05-25"
+        updatedAt="2026-09-28"
         readingMinutes={8}
         url="/interets-composes"
         headline={TITLE}
@@ -335,7 +356,9 @@ export default function InteretsComposesPage() {
           {[
             {
               title: "ETF capitalisants : dividendes automatiquement réinvestis",
-              body: "Un ETF capitalisant (comme le CW8, EWLD ou VWCE) réinvestit les dividendes sans intervention de votre part. Pas de virement, pas de décision, pas de friction fiscale annuelle. Les dividendes achètent de nouvelles parts, qui génèrent de futurs dividendes — le cycle de composition est parfait.",
+              // 28/09/2026 : EWLD citait ici comme capitalisant — c'est la part
+              // DISTRIBUANTE du fonds de CW8 (table de vérité). Remplacé par WPEA.
+              body: "Un ETF capitalisant (comme le CW8, WPEA ou VWCE) réinvestit les dividendes sans intervention de votre part. Pas de virement, pas de décision, pas de friction fiscale annuelle. Les dividendes achètent de nouvelles parts, qui génèrent de futurs dividendes — le cycle de composition est parfait.",
             },
             {
               title: "PEA : zéro friction fiscale pendant la période de composition",
@@ -343,11 +366,11 @@ export default function InteretsComposesPage() {
             },
             {
               title: "Frais bas : chaque centime de frais est un centime qui ne compose pas",
-              body: "Un TER de 0,07 % (PCEU, CSPX) vs 1,5 % (fonds actif) représente 1,43 % de rendement supplémentaire par an qui compose à votre avantage. Sur 30 ans à 7 % brut, la différence de frais peut représenter 30 à 50 % du capital final.",
+              body: `Un TER de 0,07 % (CSPX) contre 1,5 % de frais annuels représente 1,43 point de rendement par an qui compose en votre faveur. Pour 200 €/mois pendant 30 ans à 7 % brut, payer 1,5 % au lieu de 0,07 % ampute le capital final d'environ ${PERTE_FRAIS_PCT} %.`,
             },
             {
               title: "Diversification : réduit le risque de composition zéro",
-              body: "Un ETF MSCI World investit dans 1 500 entreprises. Si l'une d'elles fait faillite, son impact est négligeable. Un titre individuel peut tomber à zéro, interrompant brutalement la composition. La diversification protège la continuité du mécanisme.",
+              body: "Un ETF MSCI World investit dans des centaines d'entreprises de tous les pays développés. Si l'une d'elles fait faillite, son impact est négligeable. Un titre individuel peut tomber à zéro, interrompant brutalement la composition. La diversification protège la continuité du mécanisme.",
             },
           ].map((item) => (
             <div key={item.title} className="p-4 rounded-xl border border-gray-100 bg-white">
@@ -433,7 +456,7 @@ export default function InteretsComposesPage() {
             label: "MSCI World Index — Factsheet officielle",
             url: "https://www.msci.com/indexes/index/990100",
             publisher: "MSCI Inc.",
-            note: "Performance historique du MSCI World — utilisée pour les hypothèses de rendement (~7 %/an net réel sur 30 ans).",
+            note: "Indice de référence des ETF monde. Les 7 %/an des exemples sont une hypothèse, avant frais et avant inflation — pas une performance mesurée ni garantie.",
           },
           {
             label: "Indice des prix à la consommation (IPC)",

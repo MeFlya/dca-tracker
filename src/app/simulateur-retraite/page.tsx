@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import { TER_REFERENCE_SIMULATEUR } from "@/lib/etf-config";
+import { runSimulation } from "@/lib/simulator";
+import { paramsFromSearch } from "@/lib/simulation-params";
 import Link from "next/link";
 import { JsonLd } from "@/components/ui/JsonLd";
 
 const TITLE = "Simulateur retraite : combien investir par mois ?";
 const DESCRIPTION =
-  "Calculez le capital nécessaire à votre retraite avec un DCA en ETF : règle des 4 %, tableaux selon l'âge de départ, versement mensuel à tenir.";
+  "Combien investir par mois pour sa retraite en ETF : tableaux par âge de départ, règle des 4 % et la rente en euros d'aujourd'hui, pas en euros futurs.";
 const CANONICAL = "/simulateur-retraite";
 
 export const metadata: Metadata = {
@@ -23,58 +25,95 @@ export const metadata: Metadata = {
 };
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
+//
+// ⚠️ RÉÉCRIT LE 28/09/2026 — deux défauts qui se cumulaient.
+//
+// 1. Toutes les projections étaient écrites à la main, à 7 % par an SANS frais,
+//    alors que le reste du site calcule à 7 % MOINS les frais de référence (ceux
+//    de CW8) — et que le bouton « Simuler » de cette même page ouvrait le
+//    simulateur AVEC ces frais. Le même effort donnait un chiffre ici et un autre
+//    un clic plus loin.
+// 2. La FAQ affirmait que ces chiffres étaient « nets d'inflation », donc en
+//    pouvoir d'achat d'aujourd'hui. C'est faux : ce sont des euros FUTURS. Sur
+//    40 ans à 2 % d'inflation, un euro de 2066 vaut moins de la moitié d'un euro
+//    d'aujourd'hui. Une page qui dit à un lecteur de 25 ans « vous aurez 2 500 €
+//    de rente » sans ajouter « soit ~1 100 € d'aujourd'hui » lui vend un chiffre
+//    qu'il ne touchera pas.
+//
+// Tout est désormais calculé par le moteur du simulateur, et chaque rente est
+// donnée aussi en euros d'aujourd'hui, avec l'inflation par défaut du simulateur
+// (la même formule que /methodologie : valeur / (1 + inflation)^années).
+const RENDEMENT_BRUT = 7;
+const INFLATION_PCT = paramsFromSearch(new URLSearchParams()).input.annualInflationPct ?? 2;
+const TAUX_RETRAIT = 0.04; // règle des 4 %
 
-// Computed at 7%/an net, classic DCA monthly compounding
+/** Capital projeté par le moteur, même convention que tout le site. */
+function capitalProjete(mensuel: number, annees: number): number {
+  return runSimulation({
+    monthlyAmount: mensuel,
+    durationYears: annees,
+    annualReturnPct: RENDEMENT_BRUT,
+    annualFeesPct: TER_REFERENCE_SIMULATEUR,
+  }).base.finalValue;
+}
+/** Ramène un montant futur en euros d'aujourd'hui. */
+function enEurosDAujourdhui(montant: number, annees: number): number {
+  return montant / Math.pow(1 + INFLATION_PCT / 100, annees);
+}
+/** Rente mensuelle d'un capital par la règle des 4 %. */
+const renteMensuelle = (capital: number) => (capital * TAUX_RETRAIT) / 12;
+/**
+ * Versement mensuel nécessaire pour atteindre un capital. Sans capital de
+ * départ, le résultat du moteur est proportionnel au versement : une règle de
+ * trois sur le résultat pour 1 € suffit, sans recherche itérative.
+ */
+function versementPour(capitalVise: number, annees: number): number {
+  return capitalVise / capitalProjete(1, annees);
+}
+/** Année (depuis le début) où le capital franchit un seuil, lue dans le moteur. */
+function anneesPourAtteindre(mensuel: number, capitalVise: number, max = 60): number | null {
+  const pts = runSimulation({
+    monthlyAmount: mensuel,
+    durationYears: max,
+    annualReturnPct: RENDEMENT_BRUT,
+    annualFeesPct: TER_REFERENCE_SIMULATEUR,
+  }).base.monthlyData;
+  const p = pts.find((x) => x.portfolioValue >= capitalVise);
+  return p ? p.year : null;
+}
+
+const eur = (v: number, pas = 100) =>
+  (Math.round(v / pas) * pas).toLocaleString("fr-FR", { maximumFractionDigits: 0 }) + " €";
+
+function ligne(mensuel: number, annees: number) {
+  const capital = capitalProjete(mensuel, annees);
+  const rente = renteMensuelle(capital);
+  return {
+    monthly: mensuel,
+    capital: eur(capital, 1000),
+    rente: `${eur(rente, 10)}/mois`,
+    renteAujourdhui: `${eur(enEurosDAujourdhui(rente, annees), 10)}/mois`,
+  };
+}
+
 const AGE_START_SCENARIOS = [
-  {
-    startAge: 25,
-    retireAge: 65,
-    years: 40,
-    rows: [
-      { monthly: 100, capital: "263 000 €", rente: "880 €/mois" },
-      { monthly: 200, capital: "527 000 €", rente: "1 760 €/mois" },
-      { monthly: 300, capital: "790 000 €", rente: "2 630 €/mois" },
-      { monthly: 500, capital: "1 316 000 €", rente: "4 390 €/mois" },
-      { monthly: 1000, capital: "2 633 000 €", rente: "8 780 €/mois" },
-    ],
-  },
-  {
-    startAge: 35,
-    retireAge: 65,
-    years: 30,
-    rows: [
-      { monthly: 100, capital: "122 000 €", rente: "410 €/mois" },
-      { monthly: 200, capital: "244 000 €", rente: "815 €/mois" },
-      { monthly: 300, capital: "366 000 €", rente: "1 220 €/mois" },
-      { monthly: 500, capital: "610 000 €", rente: "2 035 €/mois" },
-      { monthly: 1000, capital: "1 221 000 €", rente: "4 070 €/mois" },
-    ],
-  },
-  {
-    startAge: 45,
-    retireAge: 65,
-    years: 20,
-    rows: [
-      { monthly: 100, capital: "52 100 €", rente: "175 €/mois" },
-      { monthly: 200, capital: "104 200 €", rente: "345 €/mois" },
-      { monthly: 300, capital: "156 300 €", rente: "520 €/mois" },
-      { monthly: 500, capital: "260 500 €", rente: "870 €/mois" },
-      { monthly: 1000, capital: "521 000 €", rente: "1 740 €/mois" },
-    ],
-  },
-  {
-    startAge: 55,
-    retireAge: 67,
-    years: 12,
-    rows: [
-      { monthly: 100, capital: "18 100 €", rente: "60 €/mois" },
-      { monthly: 200, capital: "36 200 €", rente: "120 €/mois" },
-      { monthly: 500, capital: "90 500 €", rente: "300 €/mois" },
-      { monthly: 1000, capital: "181 000 €", rente: "605 €/mois" },
-      { monthly: 2000, capital: "362 000 €", rente: "1 210 €/mois" },
-    ],
-  },
-];
+  { startAge: 25, retireAge: 65, years: 40, montants: [100, 200, 300, 500, 1000] },
+  { startAge: 35, retireAge: 65, years: 30, montants: [100, 200, 300, 500, 1000] },
+  { startAge: 45, retireAge: 65, years: 20, montants: [100, 200, 300, 500, 1000] },
+  { startAge: 55, retireAge: 67, years: 12, montants: [100, 200, 500, 1000, 2000] },
+].map((sc) => ({ ...sc, rows: sc.montants.map((m) => ligne(m, sc.years)) }));
+
+// Les repères utilisés dans le texte de la page, calculés une fois.
+const RENTE_CIBLE = 2500;
+const CAPITAL_CIBLE = (RENTE_CIBLE * 12) / TAUX_RETRAIT;
+const VERSEMENT_25_ANS = versementPour(CAPITAL_CIBLE, 40);
+const VERSEMENT_35_ANS = versementPour(CAPITAL_CIBLE, 30);
+const RENTE_CIBLE_AUJOURDHUI_40 = enEurosDAujourdhui(RENTE_CIBLE, 40);
+const EFFORT_300_30_ANS = capitalProjete(300, 30);
+const EFFORT_300_40_ANS = capitalProjete(300, 40);
+const EFFORT_300_45_A_65 = capitalProjete(300, 20);
+const AGE_SEUIL_300 = anneesPourAtteindre(300, CAPITAL_CIBLE);
+const AGE_SEUIL_500 = anneesPourAtteindre(500, CAPITAL_CIBLE);
 
 // Capital needed for a target monthly income via the 4% rule
 const RENTE_TABLE = [
@@ -93,11 +132,11 @@ const FAQ = [
   },
   {
     q: "Est-ce que 300 €/mois suffisent pour ma retraite ?",
-    a: "Cela dépend de votre âge de départ. En commençant à 25 ans, 300 €/mois sur 40 ans donnent environ 790 000 € au total — une rente mensuelle de ~2 630 € en plus de votre retraite de base. En commençant à 45 ans, le même effort donne ~156 000 € (rente 520 €/mois) : plus un complément qu'un revenu principal. Le levier temps est énorme.",
+    a: `Cela dépend de votre âge de départ. En commençant à 25 ans, 300 €/mois pendant 40 ans donnent environ ${eur(EFFORT_300_40_ANS, 1000)} — une rente de ${eur(renteMensuelle(EFFORT_300_40_ANS), 10)}/mois par la règle des 4 %, soit ${eur(enEurosDAujourdhui(renteMensuelle(EFFORT_300_40_ANS), 40), 10)}/mois en euros d'aujourd'hui. En commençant à 45 ans, le même effort donne ${eur(EFFORT_300_45_A_65, 1000)} : un complément, pas un revenu principal. Le levier, c'est le temps.`,
   },
   {
     q: "Combien faut-il pour être 'libre financièrement' en France ?",
-    a: "La règle des 4 % appliquée à un capital de 750 000 € donne 2 500 €/mois — proche du revenu médian français. C'est le seuil FIRE (Financial Independence, Retire Early) souvent cité. À 300 €/mois investis dès 25 ans, vous atteignez ce seuil vers 63 ans. À 500 €/mois dès 25 ans, vers 56 ans. Le chiffre 'coûte' varie selon votre train de vie réel.",
+    a: `La règle des 4 % appliquée à un capital de ${eur(CAPITAL_CIBLE, 1000)} donne ${eur(RENTE_CIBLE, 10)}/mois : c'est le seuil souvent cité par le mouvement FIRE. À 300 €/mois investis dès 25 ans, on l'atteint${AGE_SEUIL_300 ? ` vers ${25 + AGE_SEUIL_300} ans` : " au-delà de 60 ans d'effort"} ; à 500 €/mois, ${AGE_SEUIL_500 ? `vers ${25 + AGE_SEUIL_500} ans` : "au-delà de 60 ans d'effort"}. Mais ce seuil est exprimé en euros de l'époque : dans 40 ans, ${eur(RENTE_CIBLE, 10)}/mois auront le pouvoir d'achat d'environ ${eur(RENTE_CIBLE_AUJOURDHUI_40, 10)} aujourd'hui, à ${INFLATION_PCT} % d'inflation par an.`,
   },
   {
     q: "La règle des 4 % est-elle toujours valable aujourd'hui ?",
@@ -109,7 +148,7 @@ const FAQ = [
   },
   {
     q: "L'inflation est-elle prise en compte dans ces simulations ?",
-    a: "Les rendements annoncés (7 %/an net) sont déjà 'nets d'inflation' sur la performance historique des ETF MSCI World — environ 10 %/an bruts moins 2-3 % d'inflation moyenne. Les chiffres de rente futurs sont donc exprimés en pouvoir d'achat d'aujourd'hui. Vérifiez dans le simulateur si vous voulez être plus prudent avec un rendement net de 5-6 %.",
+    a: `Oui, et c'est la colonne à regarder. Les capitaux et les rentes de cette page sont calculés en euros de l'époque où vous les toucherez : ce sont des euros FUTURS. La colonne « en euros d'aujourd'hui » les ramène au pouvoir d'achat actuel, avec ${INFLATION_PCT} % d'inflation par an — la même hypothèse que le simulateur. Sur 40 ans, cela divise un montant par plus de deux. Les projections supposent ${RENDEMENT_BRUT} % de rendement par an avant frais, dont on retranche ${TER_REFERENCE_SIMULATEUR.toLocaleString("fr-FR")} % de frais : c'est une hypothèse de travail, pas une promesse.`,
   },
   {
     q: "Le PEA est-il plafonné — comment faire si je dépasse 150 000 € ?",
@@ -162,9 +201,10 @@ export default function SimulateurRetraitePage() {
       </h1>
       <p className="text-lg text-gray-500 leading-relaxed mb-8">
         Combien investir par mois pour avoir 2 000 € de rente à la retraite ?
-        Cette page vous donne les chiffres concrets selon votre âge de départ,
-        avec des tableaux basés sur la performance historique des ETF mondiaux
-        et la règle des 4 % pour estimer votre future rente.
+        Cette page vous donne les chiffres concrets selon votre âge de départ —
+        en euros de l&apos;époque ET en euros d&apos;aujourd&apos;hui, parce que
+        c&apos;est le second qui dit ce que vous pourrez vraiment acheter — avec
+        la règle des 4 % pour estimer la rente.
       </p>
 
       {/* Flagship block */}
@@ -176,13 +216,16 @@ export default function SimulateurRetraitePage() {
           2 500 €/mois
         </p>
         <p className="text-sm text-primary-100 leading-relaxed mb-4">
-          C&apos;est la rente que génère un capital de 750 000 €
+          C&apos;est la rente que génère un capital de {eur(CAPITAL_CIBLE, 1000)}{" "}
           via la règle des 4 %. Pour l&apos;atteindre à 65 ans, il faut environ
-          <strong> 300 €/mois </strong> dès 25 ans, ou
-          <strong> 650 €/mois </strong> si vous démarrez à 35 ans.
+          <strong> {eur(VERSEMENT_25_ANS, 10)}/mois </strong> dès 25 ans, ou
+          <strong> {eur(VERSEMENT_35_ANS, 10)}/mois </strong> si vous démarrez à 35 ans.
+          Attention : ce sont des euros de {new Date().getFullYear() + 40}. En pouvoir d&apos;achat
+          d&apos;aujourd&apos;hui, cette rente vaudrait environ{" "}
+          <strong>{eur(RENTE_CIBLE_AUJOURDHUI_40, 10)}/mois</strong>.
         </p>
         <Link
-          href={`/simulateur?monthly=300&years=40&return=7&fees=${TER_REFERENCE_SIMULATEUR}`}
+          href={`/simulateur?monthly=300&years=40&return=${RENDEMENT_BRUT}&fees=${TER_REFERENCE_SIMULATEUR}&inflationOn=1`}
           className="btn-white-primary btn-lift"
         >
           Simuler ma propre retraite →
@@ -268,6 +311,7 @@ export default function SimulateurRetraitePage() {
                     <th className="text-left font-semibold py-1">Versement mensuel</th>
                     <th className="text-right font-semibold py-1">Capital à la retraite</th>
                     <th className="text-right font-semibold py-1">Rente possible (4 %)</th>
+                    <th className="text-right font-semibold py-1">En € d&apos;aujourd&apos;hui</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
@@ -281,6 +325,9 @@ export default function SimulateurRetraitePage() {
                       </td>
                       <td className="py-1.5 text-right text-primary-700 font-semibold tabular-nums">
                         {r.rente}
+                      </td>
+                      <td className="py-1.5 text-right text-gray-500 tabular-nums">
+                        {r.renteAujourdhui}
                       </td>
                     </tr>
                   ))}
@@ -296,9 +343,11 @@ export default function SimulateurRetraitePage() {
         Commencer 10 ans plus tôt change tout
       </h2>
       <p className="text-gray-700 leading-relaxed mb-4">
-        Exemple concret : 300 €/mois à 7 %/an pendant 30 ans donnent environ{" "}
-        <strong>366 000 €</strong>. Les mêmes 300 €/mois pendant 40 ans
-        donnent <strong>790 000 €</strong>. Dix ans de plus = 2 fois plus.
+        Exemple concret : 300 €/mois pendant 30 ans donnent environ{" "}
+        <strong>{eur(EFFORT_300_30_ANS, 1000)}</strong>. Les mêmes 300 €/mois
+        pendant 40 ans donnent <strong>{eur(EFFORT_300_40_ANS, 1000)}</strong>.
+        Dix ans de plus, et le capital est multiplié par{" "}
+        {(EFFORT_300_40_ANS / EFFORT_300_30_ANS).toLocaleString("fr-FR", { maximumFractionDigits: 1 })}.
       </p>
       <p className="text-gray-700 leading-relaxed mb-12">
         Ce n&apos;est pas magique — c&apos;est mathématique. Les intérêts

@@ -18,18 +18,26 @@ export const metadata: Metadata = {
   },
 };
 
+// Corrigé le 28/09/2026 (table de vérité ETF) :
+// · tableau « ETF populaires » : ESE 0,15 % → 0,14 % ; VWCE 0,22 % → 0,14 % ;
+//   AEEM présenté éligible PEA — il ne l'est PAS, l'équivalent PEA est PAEEM ;
+// · CW8 était décrit comme « détenant » les sociétés du MSCI World : c'est un
+//   ETF synthétique (swap), il ne les détient pas ;
+// · FAQ PEA : « un ETF synthétique est éligible » (faux : 500, ANX, AEEM sont
+//   des swaps non éligibles) et « VWCE, ETF US » (VWCE est irlandais) ;
+// · « ~1 500 sociétés, 23 pays » : absent de la table, retiré.
 const FAQ = [
   {
     q: "Quelle est la différence entre un ETF et un fonds classique ?",
-    a: "Un ETF se négocie en bourse comme une action, à toute heure de la journée. Un fonds classique (OPCVM) se traite à la valeur de clôture journalière, via votre banque. Surtout, les ETF ont des frais de gestion beaucoup plus bas : 0,1 à 0,3 %/an pour un ETF indiciel, contre 1,5 à 2,5 %/an pour un fonds actif traditionnel.",
+    a: "Un ETF se négocie en bourse comme une action, à toute heure de la journée. Un fonds classique (OPCVM) se traite à la valeur de clôture journalière, via votre banque. Surtout, les ETF ont des frais de gestion beaucoup plus bas : de 0,07 à 0,38 %/an pour les ETF indiciels de notre sélection, contre 1,5 à 2,5 %/an pour un fonds actif traditionnel.",
   },
   {
     q: "Les ETF sont-ils risqués ?",
-    a: "Un ETF porte le même risque que son indice sous-jacent. Un ETF MSCI World est exposé aux ~1 500 plus grandes sociétés mondiales — le risque est diversifié géographiquement et sectoriellement. Un ETF sur un seul pays ou secteur est plus concentré donc plus volatil. Comme tout investissement en actions, la valeur peut baisser à court terme.",
+    a: "Un ETF porte le même risque que son indice sous-jacent. Un ETF MSCI World est exposé aux grandes et moyennes sociétés des pays développés — le risque est diversifié géographiquement et sectoriellement. Un ETF sur un seul pays ou secteur est plus concentré donc plus volatil. Comme tout investissement en actions, la valeur peut baisser à court terme.",
   },
   {
     q: "Peut-on loger des ETF dans un PEA ?",
-    a: "Seuls les ETF éligibles PEA peuvent être logés dedans — c'est-à-dire les ETF dont au moins 75 % des actifs sont européens, ou les ETF synthétiques qui répliquent des indices non-européens via swap. Exemples éligibles : CW8 (MSCI World), ESE (S&P 500 synthétique). Les ETF US classiques (VWCE, VTI) ne sont pas éligibles.",
+    a: "Seuls les ETF éligibles PEA peuvent y être logés. Pour suivre un indice non européen, ils détiennent un panier d'actions européennes et reçoivent la performance de l'indice par un contrat d'échange (swap). Mais un swap ne rend pas éligible à lui seul : l'Amundi S&P 500 Swap (500), l'Amundi Nasdaq-100 Swap (ANX) et l'Amundi MSCI Emerging Markets Swap (AEEM) ne le sont pas. Exemples éligibles : WPEA, DCAM, CW8 (MSCI World), SPEA, PSP5, ESE (S&P 500), PUST (Nasdaq-100), PAEEM (émergents). Non éligibles : VWCE, IWDA, CSPX, à loger en compte-titres. Le statut se vérifie sur le document d'information clé (DIC) de l'ETF.",
   },
   {
     q: "Combien d'ETF faut-il détenir ?",
@@ -104,20 +112,20 @@ export default function ETFGlossaryPage() {
       </h2>
       <p className="text-gray-700 leading-relaxed mb-4">
         Prenons l&apos;exemple de l&apos;ETF <strong>CW8</strong> (Amundi MSCI
-        World), qui suit l&apos;indice MSCI World :
+        World Swap), qui suit l&apos;indice MSCI World :
       </p>
       <ul className="space-y-2 mb-6">
         <li className="flex items-start gap-2 text-gray-700">
           <span className="text-primary-600 font-bold">·</span>
-          <span>Il détient des actions des ~1 500 plus grandes entreprises mondiales (Apple, Microsoft, Nestlé, LVMH, etc.).</span>
+          <span>L&apos;indice regroupe les grandes et moyennes entreprises des pays développés.</span>
         </li>
         <li className="flex items-start gap-2 text-gray-700">
           <span className="text-primary-600 font-bold">·</span>
-          <span>Quand vous achetez une part de CW8, vous possédez une fraction de chacune de ces 1 500 entreprises.</span>
+          <span>CW8 est synthétique : il détient un panier d&apos;actions et un contrat d&apos;échange (swap) lui verse la performance du MSCI World. Votre part suit l&apos;indice sans que le fonds détienne chacune de ses sociétés. Un ETF physique, comme IWDA, les détient directement.</span>
         </li>
         <li className="flex items-start gap-2 text-gray-700">
           <span className="text-primary-600 font-bold">·</span>
-          <span>Les frais annuels (TER) sont de 0,38 % — contre 1,5 à 2,5 %/an pour un fonds actif classique.</span>
+          <span>Les frais annuels (TER) sont de 0,38 %. WPEA et DCAM suivent le même indice pour 0,20 %.</span>
         </li>
         <li className="flex items-start gap-2 text-gray-700">
           <span className="text-primary-600 font-bold">·</span>
@@ -137,7 +145,7 @@ export default function ETFGlossaryPage() {
         </p>
         <p>
           <strong>2. Diversification instantanée.</strong> Un seul ETF MSCI
-          World = exposition à 1 500 sociétés sur 23 pays développés. Pas besoin
+          World = exposition aux grandes et moyennes sociétés de tous les pays développés. Pas besoin
           de piocher les bonnes actions.
         </p>
         <p>
@@ -154,7 +162,7 @@ export default function ETFGlossaryPage() {
 
       {/* Section: example ETFs */}
       <h2 className="text-xl font-bold text-gray-900 mt-10 mb-4">
-        ETF populaires pour un investisseur français
+        Quelques ETF de notre sélection
       </h2>
       <div className="overflow-x-auto mb-8 rounded-xl border border-gray-100">
         <table className="w-full text-sm">
@@ -167,10 +175,12 @@ export default function ETFGlossaryPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
+            <tr><td className="px-3 py-2 font-mono">WPEA</td><td className="px-3 py-2">MSCI World</td><td className="px-3 py-2 tabular-nums">0,20 %</td><td className="px-3 py-2">✓</td></tr>
             <tr><td className="px-3 py-2 font-mono">CW8</td><td className="px-3 py-2">MSCI World</td><td className="px-3 py-2 tabular-nums">0,38 %</td><td className="px-3 py-2">✓</td></tr>
-            <tr><td className="px-3 py-2 font-mono">ESE</td><td className="px-3 py-2">S&amp;P 500</td><td className="px-3 py-2 tabular-nums">0,15 %</td><td className="px-3 py-2">✓</td></tr>
-            <tr><td className="px-3 py-2 font-mono">VWCE</td><td className="px-3 py-2">FTSE All-World</td><td className="px-3 py-2 tabular-nums">0,22 %</td><td className="px-3 py-2">✗</td></tr>
-            <tr><td className="px-3 py-2 font-mono">AEEM</td><td className="px-3 py-2">MSCI Emerging Markets</td><td className="px-3 py-2 tabular-nums">0,20 %</td><td className="px-3 py-2">✓</td></tr>
+            <tr><td className="px-3 py-2 font-mono">ESE</td><td className="px-3 py-2">S&amp;P 500</td><td className="px-3 py-2 tabular-nums">0,14 %</td><td className="px-3 py-2">✓</td></tr>
+            <tr><td className="px-3 py-2 font-mono">VWCE</td><td className="px-3 py-2">FTSE All-World</td><td className="px-3 py-2 tabular-nums">0,14 %</td><td className="px-3 py-2">✗</td></tr>
+            <tr><td className="px-3 py-2 font-mono">PAEEM</td><td className="px-3 py-2">MSCI Emerging Markets (variante ESG Transition)</td><td className="px-3 py-2 tabular-nums">0,30 %</td><td className="px-3 py-2">✓</td></tr>
+            <tr><td className="px-3 py-2 font-mono">AEEM</td><td className="px-3 py-2">MSCI Emerging Markets</td><td className="px-3 py-2 tabular-nums">0,20 %</td><td className="px-3 py-2">✗</td></tr>
           </tbody>
         </table>
       </div>

@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Zap, Target } from "lucide-react";
 import { SimulatorInput } from "@/lib/simulator";
-import { ETF_LIST, type ETFConfig } from "@/lib/etf-config";
+import { ETF_LIST, TER_REFERENCE_SIMULATEUR, type ETFConfig } from "@/lib/etf-config";
 import { SliderInput } from "@/components/ui/SliderInput";
 import {
   PortfolioPicker,
@@ -37,7 +37,7 @@ const DEFAULTS: SimulatorInput = {
   monthlyAmount: 200,
   durationYears: 20,
   annualReturnPct: 7,
-  annualFeesPct: 0.3,
+  annualFeesPct: TER_REFERENCE_SIMULATEUR, // même source que les liens — voir simulation-params.ts
   annualInflationPct: undefined,
 };
 
@@ -261,6 +261,8 @@ export function SimulatorForm({
               onChange={set("annualReturnPct")}
             />
 
+            {/* 28/09/2026 : VWCE 0,22 % → 0,14 % ; SPY retiré (absent de la table de
+                vérité ETF) ; WPEA et DCAM ajoutés. */}
             <SliderInput
               label="Frais annuels (TER)"
               value={values.annualFeesPct}
@@ -268,7 +270,7 @@ export function SimulatorForm({
               max={2}
               step={0.01}
               unit="%"
-              hint="Frais de gestion de votre ETF. CW8 : 0,38 %. VWCE : 0,22 %. SPY : 0,09 %."
+              hint="Frais de gestion de votre ETF. WPEA, DCAM : 0,20 %. CW8 : 0,38 %. VWCE : 0,14 %."
               onChange={set("annualFeesPct")}
             />
           </>

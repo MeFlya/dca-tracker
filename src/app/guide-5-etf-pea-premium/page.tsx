@@ -3,10 +3,13 @@ import Link from "next/link";
 import { ArticleByline } from "@/components/ui/ArticleByline";
 import { BreadcrumbSchema } from "@/components/ui/BreadcrumbSchema";
 import { SourcesReferences } from "@/components/ui/SourcesReferences";
+import { ecartCapital, HYPOTHESES_COMPARATIFS } from "@/lib/ecart-frais";
 
 const TITLE = "5 ETF Premium pour PEA : la cheat sheet 2026";
+// Description réécrite le 28/09/2026 : « souvent retenus par les investisseurs
+// long terme » était une affirmation de popularité que rien ne mesurait.
 const DESCRIPTION =
-  "Cheat sheet 2026 : 5 ETF éligibles PEA souvent retenus par les investisseurs long terme — critères de sélection, TER, indice répliqué, points d'attention.";
+  "Cheat sheet 2026 : 5 ETF éligibles PEA vérifiés (WPEA, SPEA, PCEU, PUST, PAEEM) — ISIN, TER, indice répliqué, points d'attention.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -33,71 +36,89 @@ interface ETFRow {
   name: string;
   index: string;
   ter: string;
-  replication: string;
   why: string;
   watchOut: string;
   role: string;
 }
 
+// ─── LA SÉLECTION, REFAITE LE 28/09/2026 ─────────────────────────────────────
+//
+// Ce qui était faux, d'après la table de vérité ETF du 28/09/2026 (documents
+// des émetteurs recoupés avec justETF, Boursorama et Euronext) :
+//   · 500 (LU1681048804), ANX (LU1681038243) et AEEM (LU1681045370) étaient
+//     présentés comme éligibles PEA. Aucun ne l'est — le reporting Amundi du
+//     31/08/2026 indique « Compte-titres, Assurance-vie ». Trois lignes sur
+//     cinq d'une page intitulée « ETF pour PEA ».
+//   · PCEU était décrit comme « Amundi STOXX Europe 600 », LU1681049328,
+//     0,07 %. C'est l'Amundi PEA MSCI Europe, FR0013412038, 0,15 %.
+//   · CW8 occupait la brique monde alors que WPEA et DCAM répliquent le même
+//     indice à 0,20 % contre 0,38 % — contraire au critère « TER bas » que la
+//     page annonce elle-même.
+//   · « Seule option PEA pour le Nasdaq-100 » : faux deux fois (ANX n'est pas
+//     PEA, et PUST n'est pas la seule ligne Nasdaq-100 éligible).
+//   · « 20-31,4 % » : coquille d'un remplacement global 30 % → 31,4 %.
+//
+// Les chiffres de composition d'indice (« ~70 % US », « >50 % tech »,
+// « ~75 % Asie »…) ont été retirés : la table ne permet pas de les vérifier.
+//
+// ⚠️ L'email envoyé à chaque inscrit (src/lib/email-provider.ts, ETFS) reprend
+// cette sélection : symbole, ISIN, TER et rôle doivent y être IDENTIQUES, et
+// l'indice le même (en version courte). Toute modification ici se reporte
+// là-bas.
 const ETFS: ETFRow[] = [
   {
     rank: 1,
-    symbol: "CW8",
-    isin: "LU1681043599",
-    name: "Amundi MSCI World UCITS ETF",
-    index: "MSCI World — ~1 500 grandes capitalisations des pays développés (US, Europe, Japon…)",
-    ter: "0,38 %",
-    replication: "Synthétique (swap)",
-    why: "Le standard pour démarrer un PEA. Une seule ligne suffit pour répliquer la quasi-totalité du marché développé. AUM massif, liquidité élevée, le couteau suisse de l'investisseur long terme.",
-    watchOut: "Pas d'exposition aux marchés émergents (~10 % du PIB mondial). À compléter avec AEEM si vous voulez la couverture totale.",
+    symbol: "WPEA",
+    isin: "IE0002XZSHO1",
+    name: "iShares MSCI World Swap PEA UCITS ETF EUR (Acc)",
+    index: "MSCI World — grandes et moyennes capitalisations des pays développés",
+    ter: "0,20 %",
+    why: "Le MSCI World éligible PEA le moins cher de notre sélection : 0,20 %, à égalité avec DCAM. Entre les deux, WPEA a le plus gros encours (environ 2,1 milliards d'euros fin août 2026, contre 1,4 pour DCAM) — c'est ce critère qui le place ici. Face à CW8 (0,38 %), même indice pour presque deux fois moins de frais.",
+    watchOut: "Aucun pays émergent : le MSCI World ne couvre que les pays développés, d'où PAEEM en n° 5. Fonds récent, lancé le 26/03/2024. DCAM (Amundi PEA Monde, FR001400U5Q4) est l'équivalent direct, au même TER de 0,20 %.",
     role: "Cœur de portefeuille",
   },
   {
     rank: 2,
-    symbol: "500",
-    isin: "LU1681048804",
-    name: "Amundi S&P 500 UCITS ETF",
-    index: "S&P 500 — les 500 plus grandes capitalisations américaines",
-    ter: "0,15 %",
-    replication: "Synthétique (swap)",
-    why: "Le seul moyen logiquement viable d'avoir le S&P 500 dans un PEA, avec un TER agressif (0,15 %). Concentré sur le marché actions le plus performant historiquement.",
-    watchOut: "Concentration géographique 100 % US. Recouvrement partiel avec CW8 (~70 % de MSCI World est en valeurs US). Évitez de cumuler les deux à 50/50.",
+    symbol: "SPEA",
+    isin: "IE000DQLYVB9",
+    name: "iShares S&P 500 Swap PEA UCITS ETF EUR (Acc)",
+    index: "S&P 500 — 500 grandes entreprises américaines",
+    ter: "0,10 %",
+    why: "Le S&P 500 éligible PEA le moins cher de notre sélection : 0,10 %. PSP5 (Amundi PEA S&P 500, FR0011871128) fait le même travail à 0,12 %. Piège à connaître : l'Amundi S&P 500 Swap (mnémonique 500) n'est PAS éligible au PEA.",
+    watchOut: "Encours non vérifié : notre table ne départage pas SPEA et PSP5 sur ce critère, et SPEA est récent (lancé le 29/05/2025). Les actions américaines sont déjà présentes dans WPEA : ajouter SPEA revient à surpondérer les mêmes sociétés, pas à diversifier.",
     role: "Surpondération US",
   },
   {
     rank: 3,
     symbol: "PCEU",
-    isin: "LU1681049328",
-    name: "Amundi STOXX Europe 600 UCITS ETF",
-    index: "STOXX Europe 600 — 600 grandes capitalisations européennes (ASML, LVMH, Nestlé, Novo Nordisk…)",
-    ter: "0,07 %",
-    replication: "Synthétique (swap)",
-    why: "Le TER le plus bas de notre sélection PEA (0,07 %). Permet de surpondérer l'Europe sans exposition au taux de change USD/EUR — utile si vous trouvez le marché US trop cher.",
-    watchOut: "Performance historique inférieure au S&P 500. À utiliser comme satellite, pas comme cœur de portefeuille.",
+    isin: "FR0013412038",
+    name: "Amundi PEA MSCI Europe UCITS ETF Acc",
+    index: "MSCI Europe — grandes et moyennes capitalisations des pays développés européens",
+    ter: "0,15 %",
+    why: "La brique Europe de la sélection : l'indice MSCI Europe pour 0,15 % de frais. Elle sert à donner à l'Europe plus de poids qu'elle n'en a dans le MSCI World.",
+    watchOut: "Encours non vérifié dans notre table. L'Europe est déjà présente dans WPEA : PCEU ne remplace pas le cœur monde, elle en déplace le centre de gravité.",
     role: "Diversification Europe",
   },
   {
     rank: 4,
-    symbol: "ANX",
-    isin: "LU1681038243",
-    name: "Amundi Nasdaq-100 UCITS ETF",
-    index: "Nasdaq 100 — 100 plus grandes valeurs tech américaines (Apple, Microsoft, Nvidia, Amazon…)",
-    ter: "0,23 %",
-    replication: "Synthétique (swap)",
-    why: "Seule option PEA pour s'exposer au Nasdaq-100. Capture la croissance tech US — moteur principal de la performance de la décennie 2010-2020.",
-    watchOut: "Volatilité élevée et concentration sectorielle (>50 % tech). Sensible aux taux d'intérêt. Ne dépassez pas 20-31,4 % du portefeuille.",
+    symbol: "PUST",
+    isin: "FR0011871110",
+    name: "Amundi PEA Nasdaq-100 UCITS ETF Acc",
+    index: "Nasdaq-100 — les 100 plus grandes sociétés non financières cotées au Nasdaq, très orienté technologie",
+    ter: "0,30 %",
+    why: "Le Nasdaq-100 dans un PEA pour 0,30 %, avec un encours d'environ 1,17 milliard d'euros fin août 2026. L'Amundi Nasdaq-100 Swap (ANX), moins cher, n'est PAS éligible au PEA. PUST n'est pas la seule ligne Nasdaq-100 éligible (il existe par exemple PNAS) : c'est celle dont nous avons vérifié les données.",
+    watchOut: "Une ligne concentrée, surtout sur la technologie : au-delà de 20 à 30 % du portefeuille, c'est elle qui dicte les variations de l'ensemble. Une bonne partie de ses sociétés figure déjà dans WPEA et SPEA : l'ajouter concentre, ça ne diversifie pas.",
     role: "Boost croissance",
   },
   {
     rank: 5,
-    symbol: "AEEM",
-    isin: "LU1681045370",
-    name: "Amundi MSCI Emerging Markets UCITS ETF",
-    index: "MSCI Emerging Markets — Chine, Inde, Taïwan, Corée du Sud, Brésil…",
-    ter: "0,20 %",
-    replication: "Synthétique (swap)",
-    why: "Diversification géographique vers les marchés émergents, accessible en PEA grâce au swap. Complète CW8 pour une couverture proche de l'indice MSCI ACWI.",
-    watchOut: "Volatilité plus élevée que les développés. Forte concentration Asie (~75 %). Performance décevante depuis 2010 — pari long terme.",
+    symbol: "PAEEM",
+    isin: "FR0013412020",
+    name: "Amundi PEA Emergent (MSCI Emerging) ESG Transition UCITS ETF Acc",
+    index: "MSCI Emerging Markets, variante ESG Transition — grandes et moyennes capitalisations des pays émergents",
+    ter: "0,30 %",
+    why: "Les pays émergents, absents du MSCI World, dans un PEA. L'Amundi MSCI Emerging Markets Swap (AEEM), à 0,20 %, n'est PAS éligible au PEA : PAEEM est l'ETF émergents éligible d'Amundi.",
+    watchOut: "Il ne réplique pas l'indice émergents standard mais sa variante ESG Transition : composition et performance s'en écartent, dans un sens ou dans l'autre. Encours non vérifié dans notre table. GPEA (Amundi PEA Global, MSCI ACWI, 0,30 %) réunit développés et émergents en une ligne, mais le fonds n'existe que depuis le 06/07/2026.",
     role: "Satellite émergents",
   },
 ];
@@ -105,43 +126,49 @@ const ETFS: ETFRow[] = [
 const SELECTION_CRITERIA = [
   {
     title: "Éligible PEA",
-    detail: "Coté en Europe et conforme au quota d'investissement européen (souvent obtenu via réplication synthétique pour les indices US/monde).",
+    // Réécrit le 28/09/2026 : « coté en Europe » n'a jamais été le critère, et
+    // la réplication synthétique ne suffit pas — 500, ANX et AEEM sont des
+    // swaps et ne sont pas éligibles.
+    detail: "Vérifié sur la documentation de l'émetteur, puis recoupé sur justETF, Boursorama et Euronext. Le nom ne suffit pas : chez Amundi, les versions « Swap » du S&P 500, du Nasdaq-100 et des émergents ne sont pas éligibles, leurs versions « PEA » le sont.",
   },
   {
     title: "TER bas",
-    detail: "Frais courants annuels inférieurs à 0,40 %. Sur 30 ans, 0,2 % de frais en moins, c'est ~6 % de capital final en plus.",
+    detail: `Frais courants annuels inférieurs à 0,40 %, et le moins cher quand deux ETF répliquent le même indice. Entre 0,38 % (CW8) et 0,20 % (WPEA), l'écart atteint environ ${ecartCapital(0.38, 0.2)} € sur ${HYPOTHESES_COMPARATIFS.durationYears} ans à ${HYPOTHESES_COMPARATIFS.monthlyAmount} €/mois et ${HYPOTHESES_COMPARATIFS.annualReturnPct} %/an.`,
   },
   {
-    title: "AUM élevé",
-    detail: "Encours sous gestion supérieurs à 500 M€. Réduit le risque de fermeture du fonds et garantit une bonne liquidité.",
+    title: "Encours",
+    // Le seuil « supérieurs à 500 M€ » a été retiré le 28/09/2026 : la table de
+    // vérité ne donne l'encours que de WPEA, DCAM et PUST. Affirmer que les
+    // cinq le dépassent aurait été deviner.
+    detail: "Un gros encours réduit le risque de fermeture du fonds. Quand deux ETF se valent sur les frais, le plus gros encours l'emporte. Nous n'avons vérifié l'encours que de trois lignes (WPEA, DCAM, PUST) : pour les autres, la fiche le dit au lieu de l'inventer.",
   },
   {
     title: "Capitalisant",
-    detail: "Les dividendes sont automatiquement réinvestis dans le fonds — fiscalement plus simple en PEA et évite les frottements.",
+    detail: "Les dividendes sont réinvestis dans le fonds : rien à réinvestir à la main. Les cinq ETF retenus sont des parts capitalisantes (Acc).",
   },
 ];
 
 const ALLOCATION_EXAMPLES = [
   {
     profile: "Simple — 1 ETF",
-    description: "Pour ceux qui ne veulent pas se prendre la tête.",
-    rows: [{ etf: "CW8 (MSCI World)", weight: "100 %" }],
+    description: "Une seule ligne : le monde développé.",
+    rows: [{ etf: "WPEA (MSCI World)", weight: "100 %" }],
   },
   {
     profile: "Équilibré — 2 ETF",
-    description: "Couvre développés + émergents en gardant la simplicité.",
+    description: "Ajoute les pays émergents, absents du MSCI World.",
     rows: [
-      { etf: "CW8 (MSCI World)", weight: "85 %" },
-      { etf: "AEEM (Émergents)", weight: "15 %" },
+      { etf: "WPEA (MSCI World)", weight: "85 %" },
+      { etf: "PAEEM (Émergents)", weight: "15 %" },
     ],
   },
   {
     profile: "Croissance — 3 ETF",
-    description: "Cœur monde + boost US tech, profil offensif.",
+    description: "Cœur monde plus une part de Nasdaq-100 : plus concentré, plus volatil.",
     rows: [
-      { etf: "CW8 (MSCI World)", weight: "60 %" },
-      { etf: "ANX (Nasdaq 100)", weight: "25 %" },
-      { etf: "AEEM (Émergents)", weight: "15 %" },
+      { etf: "WPEA (MSCI World)", weight: "60 %" },
+      { etf: "PUST (Nasdaq-100)", weight: "25 %" },
+      { etf: "PAEEM (Émergents)", weight: "15 %" },
     ],
   },
 ];
@@ -172,9 +199,10 @@ export default function GuideCinqETFPEAPremiumPage() {
           5 ETF Premium pour PEA en 2026
         </h1>
         <p className="mt-5 text-lg text-gray-600 leading-relaxed">
-          Une sélection courte de 5 ETF éligibles PEA fréquemment retenus
-          par les investisseurs long terme — avec leurs critères, TER, indice
-          répliqué et limites concrètes. Pour une vue d&apos;ensemble plus
+          Cinq ETF éligibles au PEA, un par brique — monde, États-Unis,
+          Europe, technologie, émergents — retenus sur quatre critères :
+          éligibilité vérifiée, frais, encours, capitalisation. Avec leur ISIN,
+          leur indice et leurs limites concrètes. Pour une vue d&apos;ensemble plus
           large des face-à-face possibles, voyez d&apos;abord nos{" "}
           <Link href="/comparatif-etf" className="text-primary-700 font-medium hover:underline">
             comparatifs ETF
@@ -188,12 +216,35 @@ export default function GuideCinqETFPEAPremiumPage() {
 
       <ArticleByline
         publishedAt="2026-04-29"
-        updatedAt="2026-05-25"
+        updatedAt="2026-09-28"
         readingMinutes={6}
         url="/guide-5-etf-pea-premium"
         headline={TITLE}
         description={DESCRIPTION}
       />
+
+      {/* Erratum du 28/09/2026 — la page et l'email de la cheat sheet ont
+          diffusé trois ETF non éligibles PEA. Un lecteur qui a recopié
+          l'ancienne liste doit pouvoir le savoir en arrivant ici. */}
+      <aside
+        aria-label="Correction du 28 septembre 2026"
+        className="mb-12 rounded-2xl border border-amber-200 bg-amber-50 p-5"
+      >
+        <p className="text-sm font-semibold text-amber-900 mb-1">
+          Correction du 28 septembre 2026
+        </p>
+        <p className="text-sm text-amber-900 leading-relaxed">
+          La version précédente de cette fiche, et l&apos;email envoyé aux
+          inscrits, présentaient comme éligibles au PEA trois ETF qui ne le
+          sont pas : l&apos;Amundi S&amp;P 500 Swap (500), l&apos;Amundi
+          Nasdaq-100 Swap (ANX) et l&apos;Amundi MSCI Emerging Markets Swap
+          (AEEM). La ligne Europe (PCEU) portait un nom, un indice, un ISIN et
+          des frais faux. Les cinq ETF ci-dessous ont été vérifiés un par un
+          auprès des émetteurs, puis recoupés sur justETF, Boursorama et
+          Euronext. Au moment de passer un ordre, c&apos;est l&apos;ISIN, pas
+          le nom, qui identifie le fonds.
+        </p>
+      </aside>
 
       {/* Selection criteria */}
       <section aria-labelledby="criteres" className="mb-12 rounded-2xl border border-gray-200 bg-white p-6 sm:p-8">
@@ -266,8 +317,13 @@ export default function GuideCinqETFPEAPremiumPage() {
                 <dd className="font-semibold text-gray-900 mt-0.5">{etf.ter}</dd>
               </div>
               <div>
-                <dt className="text-xs font-medium text-gray-500 uppercase tracking-wider">Réplication</dt>
-                <dd className="text-gray-900 mt-0.5">{etf.replication}</dd>
+                {/* « Réplication » remplacé le 28/09/2026 : la table de vérité
+                    ne la documente pas pour PCEU, PUST et PAEEM, et
+                    l'afficher pour les uns et pas les autres aurait laissé
+                    croire à une donnée manquante par oubli. L'éligibilité,
+                    elle, est vérifiée pour les cinq. */}
+                <dt className="text-xs font-medium text-gray-500 uppercase tracking-wider">PEA</dt>
+                <dd className="text-gray-900 mt-0.5">Éligible</dd>
               </div>
               <div>
                 <dt className="text-xs font-medium text-gray-500 uppercase tracking-wider">Distribution</dt>
@@ -302,16 +358,17 @@ export default function GuideCinqETFPEAPremiumPage() {
           3 façons concrètes de combiner ces ETF
         </h2>
         <p className="text-sm text-gray-500 mb-3">
-          Du plus simple au plus diversifié — choisissez selon votre profil.
+          Du plus simple au plus concentré. Des exemples de combinaison, pas
+          des recommandations. Dans chacun, DCAM peut remplacer WPEA : même
+          indice, même TER.
         </p>
         <p className="text-sm text-gray-600 leading-relaxed mb-6">
-          Si vous hésitez encore entre les deux MSCI World les plus utilisés en
-          PEA aujourd&apos;hui, notre comparatif{" "}
+          Si vous détenez déjà CW8 (0,38 %), notre comparatif{" "}
           <Link href="/comparatif-etf/cw8-vs-wpea" className="text-primary-700 font-medium hover:underline">
             CW8 vs WPEA
           </Link>
-          {" "}chiffre l&apos;impact du TER sur 20 ans et donne un verdict
-          opérationnel selon votre situation.
+          {" "}chiffre ce que coûte l&apos;écart de frais sur 20 ans et dit
+          dans quels cas garder la ligne existante.
         </p>
 
         <div className="space-y-4">
@@ -378,24 +435,31 @@ export default function GuideCinqETFPEAPremiumPage() {
             label: "Catalogue ETF Amundi — éligibles PEA",
             url: "https://www.amundietf.fr/fr/particuliers",
             publisher: "Amundi ETF",
-            note: "Factsheets officielles : CW8 (MSCI World), PE500 (S&P 500), AEEM (MSCI Emerging Markets).",
+            note: "Documents officiels de PCEU, PUST, PAEEM, ainsi que DCAM et PSP5 cités en alternative. Vérifiés le 28/09/2026.",
           },
           {
-            label: "BNP Paribas Easy — ETF éligibles PEA",
-            url: "https://www.bnpparibas-am.fr/particulier/",
-            publisher: "BNP Paribas Asset Management",
+            label: "iShares — ETF « Swap PEA »",
+            url: "https://www.ishares.com",
+            publisher: "BlackRock — iShares",
+            note: "Documents officiels de WPEA et SPEA. Vérifiés le 28/09/2026.",
+          },
+          {
+            label: "justETF — fiches ETF",
+            url: "https://www.justetf.com/fr/",
+            publisher: "justETF",
+            note: "Source de recoupement : ISIN, TER et éligibilité PEA, comparés aux documents des émetteurs.",
           },
           {
             label: "Plan d'Épargne en Actions — règles d'éligibilité",
             url: "https://www.service-public.fr/particuliers/vosdroits/F2385",
             publisher: "service-public.fr",
-            note: "Conditions pour qu'un ETF soit éligible au PEA (75 % d'actions UE ou réplication synthétique conforme).",
+            note: "Conditions pour qu'un fonds soit éligible au PEA : au moins 75 % d'actions de sociétés européennes, y compris pour un ETF synthétique.",
           },
           {
             label: "Comprendre les ETF synthétiques (swap)",
             url: "https://www.amf-france.org/fr/espace-epargnants/comprendre-les-produits-financiers/produits-collectifs/fonds-indiciels-cotes-etf",
             publisher: "Autorité des marchés financiers (AMF)",
-            note: "Le mécanisme de swap qui permet aux ETF World/EM d'être PEA-compatibles.",
+            note: "Le mécanisme de swap, qui permet à un ETF de détenir des actions européennes tout en répliquant un indice monde ou américain. Un swap ne rend pas éligible à lui seul : 500, ANX et AEEM sont des swaps non éligibles.",
           },
         ]}
       />

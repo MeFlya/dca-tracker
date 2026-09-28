@@ -111,7 +111,7 @@ export function IndexGuidePage({ guide }: { guide: IndexGuide }) {
                       <span className="text-base font-bold text-gray-900">{t.ticker}</span>
                       {t.recommended && (
                         <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide text-primary-700 bg-primary-100 border border-primary-200 px-1.5 py-0.5 rounded">
-                          <Check size={10} strokeWidth={3} /> Recommandé
+                          <Check size={10} strokeWidth={3} /> Notre choix
                         </span>
                       )}
                     </div>
@@ -143,7 +143,7 @@ export function IndexGuidePage({ guide }: { guide: IndexGuide }) {
         </div>
 
         <p className="text-xs text-gray-400 mt-4 leading-relaxed">
-          Données indicatives revues en juin 2026. Les TER et encours évoluent —
+          Données revues le 28 septembre 2026 sur les documents des émetteurs, justETF et Boursorama. Les TER et encours évoluent —
           vérifiez toujours le Document d&apos;Informations Clés (DIC) de
           l&apos;émetteur avant d&apos;investir.
         </p>

@@ -45,11 +45,14 @@ const FAQ = [
   },
   {
     q: "Les ETF World comme CW8 ou VWCE sont-ils éligibles au PEA ?",
-    a: "Oui pour les ETF synthétiques qui répliquent un indice mondial via des swaps avec des actions européennes. CW8 (Amundi MSCI World) est éligible PEA grâce à sa réplication synthétique. VWCE (Vanguard FTSE All-World) en revanche n'est PAS éligible PEA car en réplication physique sur des actions hors UE — il doit être logé en CTO. Pour le PEA, choisissez des ETF explicitement marqués \"éligibles PEA\".",
+    // 28/09/2026 (table de vérité ETF) : « Oui pour les ETF synthétiques »
+    // laissait croire qu'un swap suffit — 500, ANX et AEEM sont des swaps
+    // Amundi NON éligibles. WPEA et DCAM (0,20 %) ajoutés à côté de CW8.
+    a: "CW8 (Amundi MSCI World Swap, 0,38 %) oui, comme WPEA et DCAM (0,20 %), qui suivent le même indice : ils détiennent des actions européennes et reçoivent la performance du MSCI World par un swap. Mais un swap ne rend pas éligible à lui seul : l'Amundi S&P 500 Swap (500), l'Amundi Nasdaq-100 Swap (ANX) et l'Amundi MSCI Emerging Markets Swap (AEEM) ne le sont pas. VWCE (Vanguard FTSE All-World) n'est PAS éligible PEA : réplication physique sur des actions majoritairement hors UE, il se loge en CTO. Le statut PEA se vérifie ETF par ETF, sur son document d'information clé.",
   },
   {
     q: "Cette simulation tient-elle compte des dividendes ?",
-    a: "Notre calculateur modélise les ETF accumulants (CW8, VWCE, IWDA), majoritaires dans les stratégies DCA long-terme. Les dividendes y sont automatiquement réinvestis dans le fonds — vous ne les recevez pas en cash, donc aucun événement fiscal pendant la durée de détention. Pour des ETF distribuants (qui versent des dividendes en cash), la fiscalité serait différente : sur CTO, les dividendes seraient taxés annuellement à 31,4 % PFU. Sur PEA, ils restent exonérés tant qu'ils ne sont pas retirés.",
+    a: "Notre calculateur modélise les ETF capitalisants (CW8, VWCE, IWDA). Les dividendes y sont automatiquement réinvestis dans le fonds — vous ne les recevez pas en cash, donc aucun événement fiscal pendant la durée de détention. Pour des ETF distribuants (qui versent des dividendes en cash), la fiscalité serait différente : sur CTO, les dividendes seraient taxés annuellement à 31,4 % PFU. Sur PEA, ils restent exonérés tant qu'ils ne sont pas retirés.",
   },
 ];
 

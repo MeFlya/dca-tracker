@@ -1,16 +1,26 @@
 // ETF vs ETF comparison data for /comparatif-etf/*.
 // Static educational content. TER CW8/WPEA/DCAM re-vérifiés via fiches
 // émetteurs lors de la création des pages indice.
+//
+// 28/09/2026 — tous les duels relus contre la table de vérité ETF (émetteurs
+// d'un côté, justETF/Boursorama/Euronext de l'autre). Corrigé : ISIN et nom de
+// WPEA (IE0006WW1TQ4 était un Xtrackers ex-USA hors PEA), ISIN de PSP5 (celui
+// de PE500), ESE attribué à Amundi (c'est BNP Paribas), TER d'ESE 0,15 → 0,14 %,
+// TER de VWCE 0,22 → 0,14 %, AEEM présenté comme éligible PEA (il ne l'est
+// pas : c'est PAEEM), PSP5 dit « le moins cher » (SPEA est à 0,10 %), et les
+// encours/liquidités/classements qu'aucune source n'étaye.
 
 import { ecartFiscalEnviron, impotCTOEnviron, impotPEAEnviron } from "@/lib/impot-affiche";
 
-import { capitalPour, coutFrais, ecartCapital, gainsPour } from "@/lib/ecart-frais";
+// HYPOTHESES_COMPARATIFS : le versement mensuel des phrases ajoutées le
+// 28/09/2026 est lu à la même source que le calcul, pas recopié à la main.
+import { gainsBruts, HYPOTHESES_COMPARATIFS, capitalPour, coutFrais, ecartCapital, gainsPour } from "@/lib/ecart-frais";
 
 /**
  * Mois de dernière revérification des TER et caractéristiques, format YYYY-MM.
  * Exporté et affiché publiquement — cf. commentaire de BROKERS_REVIEWED_ON.
  */
-export const ETF_COMPARISONS_REVIEWED_ON = "2026-06";
+export const ETF_COMPARISONS_REVIEWED_ON = "2026-09";
 // Performance figures are approximate — always verify on live data sources
 // before investment decisions.
 
@@ -33,9 +43,9 @@ export type ETFSide = {
  * TER d'un côté en nombre, ou null s'il n'est pas exploitable.
  *
  * Volontairement STRICT : n'accepte que la forme exacte « 0,20 %/an ». Les
- * pages qui opposent deux INDICES écrivent « ETF à partir de 0,12 % (EWLD,
- * WPEA) » — une fourchette, pas le TER d'un produit. Une regex permissive du
- * type /(\d+,\d+)\s*%/ en tirerait 0,12 et préremplirait un simulateur avec le
+ * pages qui opposent deux INDICES écrivent « WPEA, DCAM : 0,20 % · CW8 :
+ * 0,38 % » — plusieurs produits, pas le TER d'un seul. Une regex permissive du
+ * type /(\d+,\d+)\s*%/ en tirerait 0,20 et préremplirait un simulateur avec le
  * TER d'un ETF que la page ne compare pas. Ici, un format inattendu renvoie
  * null et l'appelant retombe sur un comportement générique — jamais sur un
  * chiffre deviné.
@@ -98,7 +108,7 @@ export type ETFComparison = {
 const MSCI_WORLD_VS_SP500: ETFComparison = {
   slug: "msci-world-vs-sp500",
   publishedAt: "2026-04-19",
-  updatedAt: "2026-07-29",
+  updatedAt: "2026-09-28",
   title: "MSCI World vs S&P 500 : quel indice pour votre DCA ?",
   metaTitle: "MSCI World ou S&P 500 : lequel pour un DCA en ETF ?",
   metaDescription:
@@ -109,7 +119,9 @@ const MSCI_WORLD_VS_SP500: ETFComparison = {
     subheading: "Indice des marchés développés",
     type: "Indice",
     coverage: "~1 500 sociétés sur 23 pays développés",
-    ter: "ETF à partir de 0,12 % (EWLD, WPEA)",
+    // Était « ETF à partir de 0,12 % (EWLD, WPEA) » : EWLD est à 0,38 % et
+    // WPEA à 0,20 % (table de vérité ETF, 28/09/2026). Aucun des deux à 0,12 %.
+    ter: "WPEA, DCAM : 0,20 % · CW8 : 0,38 %",
     peaEligible: "Oui",
     strongPoint: "Diversification mondiale automatique",
     weakPoint: "Pas d'exposition aux marchés émergents",
@@ -120,8 +132,10 @@ const MSCI_WORLD_VS_SP500: ETFComparison = {
     subheading: "Indice des 500 plus grandes capitalisations américaines",
     type: "Indice",
     coverage: "500 plus grandes sociétés cotées aux États-Unis",
-    ter: "ETF à partir de 0,07 % (CSPX, VUSA)",
-    peaEligible: "Oui (via ETF synthétiques comme ESE)",
+    // « À partir de 0,07 % » citait CSPX et VUSA, tous deux HORS PEA, sur une
+    // page dont la question est le PEA. On donne les deux enveloppes (28/09/2026).
+    ter: "PEA : SPEA 0,10 %, PSP5 0,12 % · CTO : CSPX 0,07 %",
+    peaEligible: "Oui (via ETF synthétiques : PSP5, SPEA, ESE)",
     strongPoint: "Frais plus bas · performance historique forte",
     weakPoint: "Concentration sur un seul pays",
   },
@@ -136,8 +150,12 @@ const MSCI_WORLD_VS_SP500: ETFComparison = {
     { criterion: "Nombre de sociétés", leftValue: "~1 500", rightValue: "500" },
     { criterion: "Couverture géographique", leftValue: "23 pays développés", rightValue: "États-Unis uniquement" },
     { criterion: "Poids des États-Unis", leftValue: "~70 %", rightValue: "100 %" },
-    { criterion: "TER typique", leftValue: "0,12 à 0,40 %", rightValue: "0,07 à 0,20 %" },
-    { criterion: "Éligibilité PEA", leftValue: "Oui (ex : CW8, WPEA)", rightValue: "Oui (via synthétique ESE)" },
+    // Fourchettes recalées sur les ETF de la table de vérité (28/09/2026) :
+    // MSCI World de 0,20 % (WPEA, DCAM, IWDA) à 0,38 % (CW8, EWLD) — l'ancien
+    // « 0,12 % » ne correspondait à aucun ETF cité ; S&P 500 de 0,07 % (CSPX,
+    // VUSA) à 0,15 % (Amundi S&P 500, hors PEA).
+    { criterion: "TER typique", leftValue: "0,20 à 0,38 %", rightValue: "0,07 à 0,15 %" },
+    { criterion: "Éligibilité PEA", leftValue: "Oui (ex : WPEA, DCAM, CW8)", rightValue: "Oui (ex : PSP5, SPEA, ESE)" },
     { criterion: "Performance 10 ans", leftValue: "~9-11 %/an brut", rightValue: "~11-13 %/an brut" },
     { criterion: "Volatilité", leftValue: "Légèrement inférieure (diversification)", rightValue: "Légèrement supérieure (concentration)" },
   ],
@@ -159,13 +177,18 @@ const MSCI_WORLD_VS_SP500: ETFComparison = {
       profile: "Budget très serré (sensibilité TER)",
       winner: "right",
       explanation:
-        "Les ETF S&P 500 ont historiquement des TER plus bas (0,07 %–0,15 %) que les MSCI World (0,12 %–0,40 %). Sur 30 ans, 0,2 % de frais en moins peut représenter 5-7 % de capital final en plus.",
+        // Les fourchettes étaient fausses (« 0,12 %–0,40 % » côté MSCI World) et
+        // « 5-7 % de capital final » était une estimation à la main, non tirée
+        // du moteur. Corrigé le 28/09/2026 : TER de la table, écart calculé.
+        `Dans un PEA, les ETF S&P 500 les moins chers de notre sélection coûtent moins que les MSCI World : SPEA à 0,10 % et PSP5 à 0,12 %, contre 0,20 % pour WPEA et DCAM (le PE500, variante « Screened », est à 0,25 %). Ce 0,10 point d'écart vaut environ ${ecartCapital(0.2, 0.1)} € de capital final sur 20 ans à ${HYPOTHESES_COMPARATIFS.monthlyAmount} €/mois et 7 %/an.`,
     },
     {
       profile: "Peur de la concentration géographique",
       winner: "left",
       explanation:
-        "Le MSCI World reste très exposé aux US (~70 %), mais intègre aussi Japon, Royaume-Uni, France, Allemagne, Suisse, Canada, Australie. Ajouter un ETF émergents (AEEM) en complément est souvent la stratégie de diversification finale.",
+        // Citait AEEM, qui n'est PAS éligible au PEA (reporting Amundi 31/08/2026).
+        // L'équivalent PEA est PAEEM — table de vérité ETF, 28/09/2026.
+        "Le MSCI World reste très exposé aux US (~70 %), mais intègre aussi Japon, Royaume-Uni, France, Allemagne, Suisse, Canada, Australie. Ajouter un ETF émergents en complément est souvent la stratégie de diversification finale — PAEEM dans un PEA ; AEEM, lui, n'y est pas éligible.",
     },
   ],
 
@@ -179,11 +202,20 @@ const MSCI_WORLD_VS_SP500: ETFComparison = {
     },
     {
       q: "Quel est le meilleur ETF MSCI World éligible PEA ?",
-      a: "CW8 (Amundi MSCI World) est le plus connu — TER 0,38 %, encours important, bonne liquidité. WPEA (iShares Core MSCI World) est plus récent avec un TER plus bas (0,20 %). EWLD (Amundi MSCI World UCITS II) propose également un TER compétitif. Le meilleur dépend de votre courtier — CW8 est disponible partout.",
+      // Réponse réécrite le 28/09/2026 (table de vérité ETF). Faux : le nom de
+      // WPEA (« iShares Core MSCI World » est IWDA, hors PEA) ; EWLD « à TER
+      // compétitif » alors qu'il est à 0,38 %, comme CW8 dont il est la part
+      // distribuante. Retirés faute de source : « le plus connu », « encours
+      // important », « disponible partout ».
+      a: "Dans notre sélection, deux ETF sont les moins chers : WPEA (iShares MSCI World Swap PEA, lancé en 2024) et DCAM (Amundi PEA Monde, lancé en 2025), tous deux à 0,20 % de TER. CW8 (Amundi MSCI World Swap), la ligne historique, coûte 0,38 %. EWLD est la part distribuante du même fonds que CW8, au même TER de 0,38 %. Les quatre répliquent le MSCI World ; à indice identique, le TER et les frais d'ordre de votre courtier font la différence.",
     },
     {
       q: "Peut-on avoir un ETF S&P 500 dans un PEA ?",
-      a: "Oui, via des ETF synthétiques qui répliquent le S&P 500 avec un swap. Les plus connus : ESE (Amundi S&P 500) à 0,15 % de TER, PE500 (BNP Paribas S&P 500) à 0,15 %. Les ETF S&P 500 physiques cotés en USD (CSPX, VUSA) ne sont pas éligibles PEA — ils sont pour CTO uniquement.",
+      // Faux jusqu'au 28/09/2026 (table de vérité ETF) : ESE est édité par BNP
+      // Paribas, pas Amundi, et son TER est de 0,14 % ; PE500 est un Amundi (pas
+      // BNP Paribas), à 0,25 %, et il réplique un S&P 500 filtré ESG, pas le
+      // S&P 500. « Les plus connus » : classement sans source, retiré.
+      a: "Oui, via des ETF synthétiques qui répliquent le S&P 500 avec un swap. Dans notre sélection : SPEA (iShares) à 0,10 % de TER, PSP5 (Amundi) à 0,12 % et ESE (BNP Paribas Easy) à 0,14 %. PE500 (Amundi) est aussi éligible, mais il suit une version filtrée ESG du S&P 500 et coûte 0,25 %. Les ETF S&P 500 physiques libellés en USD (CSPX, VUSA) ne sont pas éligibles PEA : ils se logent en compte-titres.",
     },
     {
       q: "Un seul ETF suffit-il vraiment pour toute une vie d'investissement ?",
@@ -199,15 +231,18 @@ const MSCI_WORLD_VS_SP500: ETFComparison = {
 const CW8_VS_ESE: ETFComparison = {
   slug: "cw8-vs-ese",
   publishedAt: "2026-04-19",
-  updatedAt: "2026-04-19",
+  updatedAt: "2026-09-28",
   title: "CW8 vs ESE : quel ETF pour votre PEA ?",
-  metaTitle: "CW8 ou ESE : comparatif des deux ETF PEA les plus populaires",
+  // 28/09/2026 — le titre et la meta affirmaient « les deux ETF PEA les plus
+  // populaires / les plus utilisés en France » (classement sans source) et
+  // attribuaient ESE à Amundi : il est édité par BNP Paribas (table de vérité).
+  metaTitle: "CW8 ou ESE : MSCI World ou S&P 500 dans votre PEA ?",
   metaDescription:
-    "CW8 (Amundi MSCI World) ou ESE (Amundi S&P 500) ? Comparatif détaillé des deux ETF PEA les plus utilisés en France : TER, couverture, diversification, performance.",
+    "CW8 (Amundi MSCI World) ou ESE (BNP Paribas S&P 500) ? Deux ETF PEA comparés : TER 0,38 % contre 0,14 %, couverture, diversification, performance.",
 
   left: {
     heading: "CW8",
-    subheading: "Amundi MSCI World UCITS ETF — ISIN LU1681043599",
+    subheading: "Amundi MSCI World Swap UCITS ETF EUR Acc — ISIN LU1681043599",
     type: "ETF",
     coverage: "MSCI World — ~1 500 sociétés développées",
     issuer: "Amundi ETF",
@@ -226,7 +261,7 @@ const CW8_VS_ESE: ETFComparison = {
     type: "ETF",
     coverage: "S&P 500 — 500 plus grandes capitalisations américaines",
     issuer: "BNP Paribas Easy",
-    ter: "0,15 %/an",
+    ter: "0,14 %/an", // était 0,15 % — 0,14 % d'après la table de vérité ETF (28/09/2026)
     replication: "Synthétique (swap)",
     distribution: "Capitalisant",
     currency: "EUR",
@@ -236,20 +271,26 @@ const CW8_VS_ESE: ETFComparison = {
   },
 
   verdict:
-    "ESE est moins cher (TER 0,15 % vs 0,38 %) et concentré sur les États-Unis. CW8 est plus diversifié mondialement mais plus cher. Sur 20 ans, l'écart de TER représente environ 5-7 % de capital final. Les deux sont capitalisants et éligibles PEA.",
+    // « Environ 5-7 % de capital final » était une estimation à la main : le
+    // moteur donne un écart de l'ordre de 3 %. Remplacé par le montant calculé
+    // (28/09/2026), avec le TER d'ESE corrigé.
+    `ESE est moins cher (TER 0,14 % vs 0,38 %) et concentré sur les États-Unis. CW8 est plus diversifié mondialement mais plus cher. Sur 20 ans à ${HYPOTHESES_COMPARATIFS.monthlyAmount} €/mois et 7 %/an, l'écart de TER représente environ ${ecartCapital(0.38, 0.14)} € de capital final. Les deux sont capitalisants et éligibles PEA.`,
 
   intro:
-    "CW8 et ESE sont les deux ETF PEA les plus utilisés par les investisseurs français. Tous deux édités par Amundi, tous deux capitalisants, tous deux synthétiques. La différence tient à ce qu'ils répliquent : le monde développé (CW8) ou uniquement les États-Unis (ESE). Leur niveau de TER diffère aussi significativement.",
+    // « Tous deux édités par Amundi » : faux, ESE est un ETF BNP Paribas Easy.
+    // « Les plus utilisés » : classement sans source. Corrigé le 28/09/2026.
+    "CW8 et ESE sont deux ETF éligibles au PEA. L'un est édité par Amundi (CW8), l'autre par BNP Paribas (ESE) ; tous deux sont capitalisants et synthétiques. La différence tient à ce qu'ils répliquent : le monde développé (CW8) ou uniquement les États-Unis (ESE). Leur niveau de TER diffère aussi nettement.",
 
   keyDifferences: [
     { criterion: "Indice sous-jacent", leftValue: "MSCI World", rightValue: "S&P 500" },
-    { criterion: "TER", leftValue: "0,38 %/an", rightValue: "0,15 %/an" },
+    { criterion: "TER", leftValue: "0,38 %/an", rightValue: "0,14 %/an" },
+    { criterion: "Émetteur", leftValue: "Amundi", rightValue: "BNP Paribas" },
     { criterion: "Nombre de lignes", leftValue: "~1 500", rightValue: "500" },
     { criterion: "Couverture géographique", leftValue: "23 pays développés", rightValue: "États-Unis" },
     { criterion: "Éligibilité PEA", leftValue: "Oui", rightValue: "Oui" },
     { criterion: "Politique de revenus", leftValue: "Capitalisant", rightValue: "Capitalisant" },
     { criterion: "Réplication", leftValue: "Synthétique", rightValue: "Synthétique" },
-    { criterion: "Impact TER sur 20 ans (200 €/mois, 7 %)", leftValue: `${coutFrais(0.38)} €`, rightValue: `${coutFrais(0.15)} €` },
+    { criterion: "Impact TER sur 20 ans (200 €/mois, 7 %)", leftValue: `${coutFrais(0.38)} €`, rightValue: `${coutFrais(0.14)} €` },
   ],
 
   useCases: [
@@ -257,35 +298,45 @@ const CW8_VS_ESE: ETFComparison = {
       profile: "Vous voulez un seul ETF pour toute votre vie",
       winner: "left",
       explanation:
-        "CW8 est la position unique la plus diversifiée disponible en PEA. Si vous cherchez la simplicité maximale et ne voulez plus toucher à votre portefeuille pendant 20-30 ans, c'est un choix solide malgré le TER supérieur.",
+        // « La position unique la plus diversifiée disponible en PEA » : faux
+        // depuis GPEA (MSCI ACWI, émergents inclus, éligible PEA) — table de
+        // vérité ETF, 28/09/2026. Et WPEA/DCAM font le même MSCI World moins cher.
+        "Entre les deux, CW8 est de loin le plus diversifié : ~1 500 sociétés dans 23 pays, contre 500 sociétés américaines. Si vous cherchez la simplicité maximale et ne voulez plus toucher à votre portefeuille pendant 20-30 ans, c'est un choix solide — sachant que WPEA et DCAM répliquent le même MSCI World à 0,20 % au lieu de 0,38 %.",
     },
     {
       profile: "Vous êtes sensible aux frais cumulés",
       winner: "right",
       explanation:
-        `Sur 20 ans à 200 €/mois, 0,23 % de TER en moins représente environ ${ecartCapital(0.38, 0.15)} € de capital final en plus. Si vous êtes à l'aise avec la concentration US (~70 % du CW8 de toute façon), ESE peut être la meilleure option coûts/performance.`,
+        `Sur 20 ans à 200 €/mois, 0,24 % de TER en moins représente environ ${ecartCapital(0.38, 0.14)} € de capital final en plus. Si vous êtes à l'aise avec la concentration US (~70 % du CW8 de toute façon), ESE est le moins cher des deux. Dans un PEA, PSP5 (0,12 %) et SPEA (0,10 %) répliquent le même S&P 500 pour encore moins.`,
     },
     {
       profile: "Vous voulez combiner les deux",
       winner: "both",
       explanation:
-        "Une approche courante : ESE comme cœur (70 %) + un ETF émergents ou Europe pour diversifier (30 %). Le mix doublé ESE + AEEM revient à un 'MSCI World + émergents' à moindre coût que CW8 seul. Demande en revanche de rééquilibrer manuellement.",
+        // Deux erreurs corrigées le 28/09/2026 : AEEM n'est PAS éligible au PEA
+        // (l'équivalent PEA est PAEEM, table de vérité ETF) ; et un mix S&P 500 +
+        // émergents n'est pas un « MSCI World + émergents » — il manque l'Europe
+        // et le Japon.
+        "Une approche courante : ESE comme cœur (70 %) + un ETF Europe (PCEU, 0,15 %) ou émergents (PAEEM, 0,30 %) pour diversifier (30 %), tous éligibles PEA. Les frais moyens restent sous les 0,38 % de CW8, mais ce mix n'est pas un MSCI World : ESE + PAEEM laisse de côté l'Europe et le Japon, ESE + PCEU notamment le Japon. Et il faut rééquilibrer à la main.",
     },
     {
       profile: "Vous débutez et n'avez pas d'avis tranché",
       winner: "left",
       explanation:
-        "Commencer avec CW8 est plus prudent : la diversification intrinsèque réduit le risque d'avoir fait 'le mauvais choix'. Vous pouvez toujours ajuster dans 2-3 ans si vous voulez. Le TER supplémentaire est le prix de la tranquillité d'esprit.",
+        "Entre les deux, CW8 est le pari le plus large : la diversification intrinsèque réduit le risque d'avoir fait 'le mauvais choix'. Vous pouvez toujours ajuster dans 2-3 ans si vous voulez. Le TER supplémentaire est le prix de la tranquillité d'esprit — un prix que WPEA et DCAM (même MSCI World, 0,20 %) ne font pas payer.",
     },
   ],
 
   analysis:
-    "La question CW8 vs ESE se résume souvent à ça : êtes-vous OK avec l'hypothèse implicite du MSCI World (les US resteront dominants sans être absolument tout) ou voulez-vous parier clairement sur l'Amérique ? ESE est clairement un pari géographique. CW8 est un panier plus 'neutre'. Notons que de nouveaux ETF MSCI World sont apparus récemment avec des TER bien plus bas que CW8 — notamment WPEA (iShares Core MSCI World UCITS ETF, TER 0,20 %) qui est également éligible PEA. Si vous ouvrez votre PEA aujourd'hui, WPEA peut être une meilleure option que CW8 sur le plan des frais. CW8 reste pertinent pour les investisseurs déjà positionnés qui ne veulent pas disperser leur encours sur plusieurs lignes.",
+    "La question CW8 vs ESE se résume souvent à ça : êtes-vous OK avec l'hypothèse implicite du MSCI World (les US resteront dominants sans être absolument tout) ou voulez-vous parier clairement sur l'Amérique ? ESE est clairement un pari géographique. CW8 est un panier plus 'neutre'. Notons que de nouveaux ETF MSCI World éligibles PEA sont apparus avec des TER bien plus bas que CW8 : WPEA (iShares MSCI World Swap PEA UCITS ETF, lancé en 2024) et DCAM (Amundi PEA Monde, lancé en 2025), tous deux à 0,20 %. Si vous ouvrez votre PEA aujourd'hui, ils coûtent moins cher que CW8 pour la même exposition. CW8 reste pertinent pour les investisseurs déjà positionnés qui ne veulent pas disperser leur encours sur plusieurs lignes.",
 
   faq: [
     {
       q: "WPEA est-il meilleur que CW8 ?",
-      a: "WPEA (iShares Core MSCI World PEA) a un TER de 0,20 % contre 0,38 % pour CW8, tout en répliquant le même indice. Si vous ouvrez votre position aujourd'hui, WPEA est probablement le meilleur choix pour un MSCI World en PEA. CW8 reste historiquement la référence et a plus d'encours, mais le TER est son point faible.",
+      // Nom de WPEA faux (« iShares Core MSCI World » est IWDA, hors PEA) et
+      // « a plus d'encours » sans source sur l'encours de CW8. Corrigé le
+      // 28/09/2026 d'après la table de vérité ETF.
+      a: "WPEA (iShares MSCI World Swap PEA UCITS ETF EUR (Acc), ISIN IE0002XZSHO1) a un TER de 0,20 % contre 0,38 % pour CW8, tout en répliquant le même indice. Pour une nouvelle position, il coûte donc presque deux fois moins cher en frais annuels — tout comme DCAM, au même TER. CW8 reste la référence historique, mais son TER est son point faible.",
     },
     {
       q: "Les ETF synthétiques sont-ils risqués ?",
@@ -309,7 +360,7 @@ const CW8_VS_ESE: ETFComparison = {
 const VWCE_VS_CW8: ETFComparison = {
   slug: "vwce-vs-cw8",
   publishedAt: "2026-04-19",
-  updatedAt: "2026-04-19",
+  updatedAt: "2026-09-28",
   title: "VWCE vs CW8 : FTSE All-World ou MSCI World ?",
   metaTitle: "VWCE ou CW8 : quel ETF mondial choisir selon votre compte",
   metaDescription:
@@ -317,11 +368,13 @@ const VWCE_VS_CW8: ETFComparison = {
 
   left: {
     heading: "VWCE",
-    subheading: "Vanguard FTSE All-World UCITS ETF — ISIN IE00BK5BQT80",
+    subheading: "Vanguard FTSE All-World UCITS ETF (USD) Accumulating — ISIN IE00BK5BQT80",
     type: "ETF",
     coverage: "FTSE All-World — ~3 700 sociétés (développés + émergents)",
     issuer: "Vanguard",
-    ter: "0,22 %/an",
+    // Était 0,22 % : périmé. 0,14 % d'après la table de vérité ETF (28/09/2026).
+    // VWCE est donc NETTEMENT moins cher que CW8 — tout le texte a été relu.
+    ter: "0,14 %/an",
     replication: "Physique (échantillonnée)",
     distribution: "Capitalisant",
     currency: "USD",
@@ -332,7 +385,7 @@ const VWCE_VS_CW8: ETFComparison = {
 
   right: {
     heading: "CW8",
-    subheading: "Amundi MSCI World UCITS ETF — ISIN LU1681043599",
+    subheading: "Amundi MSCI World Swap UCITS ETF EUR Acc — ISIN LU1681043599",
     type: "ETF",
     coverage: "MSCI World — ~1 500 sociétés développées uniquement",
     issuer: "Amundi",
@@ -342,11 +395,13 @@ const VWCE_VS_CW8: ETFComparison = {
     currency: "EUR",
     peaEligible: "Oui",
     strongPoint: "Éligible PEA · bon véhicule fiscal en France",
-    weakPoint: "Pas de marchés émergents · TER plus élevé",
+    weakPoint: "Pas de marchés émergents · TER plus de deux fois supérieur (0,38 % vs 0,14 %)",
   },
 
   verdict:
-    "Si vous investissez via un PEA, CW8 est le choix par défaut — VWCE n'y est pas éligible. Sur un CTO, VWCE bat CW8 sur la diversification (émergents inclus) et le TER. En pratique, la plupart des investisseurs français optimisent le PEA avec CW8 (ou WPEA) en priorité, et utilisent VWCE sur un CTO en complément.",
+    // « La plupart des investisseurs français… » : affirmation sans source,
+    // retirée le 28/09/2026. Le TER de VWCE (0,14 %) est désormais chiffré.
+    "Si vous investissez via un PEA, CW8 est le seul des deux qui y entre — VWCE n'y est pas éligible (et WPEA ou DCAM y répliquent le même MSCI World à 0,20 %). Sur un CTO, VWCE bat CW8 sur la diversification (émergents inclus) et sur le TER (0,14 % contre 0,38 %). Un schéma simple : le PEA d'abord avec un MSCI World éligible, puis VWCE sur un CTO en complément.",
 
   intro:
     "VWCE et CW8 sont tous deux des ETF 'monde' populaires, mais ils sont très différents : VWCE couvre marchés développés ET émergents (~3 700 sociétés), CW8 couvre uniquement les marchés développés (~1 500 sociétés). Et VWCE n'est pas éligible PEA. Le choix dépend donc avant tout de l'enveloppe fiscale.",
@@ -354,7 +409,7 @@ const VWCE_VS_CW8: ETFComparison = {
   keyDifferences: [
     { criterion: "Indice", leftValue: "FTSE All-World", rightValue: "MSCI World" },
     { criterion: "Marchés émergents", leftValue: "Oui (~10-12 %)", rightValue: "Non" },
-    { criterion: "TER", leftValue: "0,22 %/an", rightValue: "0,38 %/an" },
+    { criterion: "TER", leftValue: "0,14 %/an", rightValue: "0,38 %/an" },
     { criterion: "Éligibilité PEA", leftValue: "Non (CTO uniquement)", rightValue: "Oui" },
     { criterion: "Réplication", leftValue: "Physique échantillonnée", rightValue: "Synthétique" },
     { criterion: "Émetteur", leftValue: "Vanguard (réputation excellente)", rightValue: "Amundi" },
@@ -367,13 +422,15 @@ const VWCE_VS_CW8: ETFComparison = {
       profile: "Vous débutez avec un PEA uniquement",
       winner: "right",
       explanation:
-        "CW8 est votre seule option réaliste entre les deux — VWCE n'est pas éligible PEA. Vous perdez l'exposition émergents, mais vous gagnez le bénéfice fiscal du PEA (18,6 % vs 31,4 % à la sortie). Sur 20 ans, l'avantage fiscal surpasse largement l'avantage de diversification.",
+        // Avec le TER de VWCE corrigé (0,14 %), CW8 perd AUSSI sur les frais :
+        // la phrase le dit désormais, chiffres du moteur à l'appui (28/09/2026).
+        `CW8 est votre seule option réaliste entre les deux — VWCE n'est pas éligible PEA. Vous perdez l'exposition émergents et vous payez plus de frais (0,38 % contre 0,14 %, soit environ ${ecartCapital(0.38, 0.14)} € sur 20 ans à ${HYPOTHESES_COMPARATIFS.monthlyAmount} €/mois), mais vous gagnez le bénéfice fiscal du PEA (18,6 % vs 31,4 % à la sortie), qui pèse environ ${ecartFiscalEnviron(gainsBruts(0.38))} € sur la même période. L'avantage fiscal l'emporte.`,
     },
     {
       profile: "Vous investissez sur un CTO",
       winner: "left",
       explanation:
-        "Sur un CTO, VWCE est généralement préférable : TER plus bas (0,22 % vs 0,38 %), diversification plus large (émergents inclus), et Vanguard a une réputation solide en tant qu'émetteur. Le fait qu'il soit en USD n'est pas un problème — le risque de change est plutôt un bénéfice diversifiant.",
+        "Sur un CTO, VWCE est généralement préférable : TER bien plus bas (0,14 % vs 0,38 %), diversification plus large (émergents inclus), et Vanguard a une réputation solide en tant qu'émetteur. Le fait qu'il soit en USD n'est pas un problème — le risque de change est plutôt un bénéfice diversifiant.",
     },
     {
       profile: "Vous combinez PEA + CTO",
@@ -385,7 +442,10 @@ const VWCE_VS_CW8: ETFComparison = {
       profile: "Vous voulez la diversification maximale possible",
       winner: "left",
       explanation:
-        "Parmi les ETF 'monde' largement disponibles, VWCE est le plus diversifié : ~3 700 sociétés, 49 pays, développés + émergents, en un seul ticker. Difficile de faire mieux sans empiler plusieurs ETF.",
+        // « Le plus diversifié des ETF monde » : classement sans source, et le
+        // PEA a désormais son ETF monde entier, GPEA (table de vérité ETF,
+        // 28/09/2026). Réécrit sans superlatif.
+        "Des deux, VWCE est le plus diversifié : ~3 700 sociétés, 49 pays, développés + émergents, en un seul ticker. Dans un PEA, l'équivalent le plus proche est GPEA (Amundi PEA Global, indice MSCI ACWI, émergents inclus, 0,30 %), créé en juillet 2026.",
     },
   ],
 
@@ -399,7 +459,7 @@ const VWCE_VS_CW8: ETFComparison = {
     },
     {
       q: "Pourquoi VWCE n'est-il pas éligible PEA ?",
-      a: "L'éligibilité PEA nécessite soit que l'ETF soit domicilié en Europe ET ait 75 % d'actifs européens, soit qu'il soit synthétique (swap avec une contrepartie qui apporte la performance d'un indice non-européen). VWCE est physique et investit réellement dans des actions majoritairement non-européennes (notamment US), donc ne remplit pas le critère. CW8 contourne ce problème avec un swap synthétique.",
+      a: "Un ETF est éligible au PEA s'il détient au moins 75 % d'actions de sociétés européennes. VWCE est physique et détient réellement des actions majoritairement non européennes (notamment américaines) : il ne remplit pas le critère. CW8 le remplit autrement : il détient un panier d'actions européennes et échange sa performance, par un swap, contre celle du MSCI World. Mais être synthétique ne suffit pas — les ETF S&P 500, Nasdaq-100 et émergents « Swap » d'Amundi (500, ANX, AEEM) le sont aussi, et ne sont pas éligibles.",
     },
     {
       q: "Faut-il avoir peur du risque de change avec VWCE ?",
@@ -416,13 +476,20 @@ const VWCE_VS_CW8: ETFComparison = {
 
 // ─── CW8 vs WPEA ──────────────────────────────────────────────────────────────
 // Requête GSC captée : 15 impressions/mois, 0 clic. Capter ce trafic latent.
-// WPEA = iShares Core MSCI World UCITS ETF (PEA), arrivé fin 2024 — alternative
-// récente au CW8 historique d'Amundi, avec un TER deux fois plus bas.
+// WPEA = iShares MSCI World Swap PEA UCITS ETF EUR (Acc), ISIN IE0002XZSHO1,
+// lancé le 26/03/2024 et coté à Paris le 03/04/2024 — alternative récente au
+// CW8 historique d'Amundi, avec un TER presque deux fois plus bas.
+//
+// ⚠️ CORRIGÉ LE 28/09/2026 (table de vérité ETF) : la fiche donnait à WPEA
+// l'ISIN IE0006WW1TQ4 — celui d'un Xtrackers MSCI World ex USA, NON éligible
+// au PEA —, le nom « iShares Core MSCI World » (c'est IWDA, hors PEA) et un
+// lancement « fin 2024 » (c'est mars 2024). Retirés faute de source : encours
+// et liquidité de CW8, « leader mondial », « présent chez tous les courtiers ».
 
 const CW8_VS_WPEA: ETFComparison = {
   slug: "cw8-vs-wpea",
   publishedAt: "2026-05-25",
-  updatedAt: "2026-07-29",
+  updatedAt: "2026-09-28",
   title: "CW8 vs WPEA : quel ETF MSCI World pour votre PEA ?",
   // Le titre portait « (vs DCAM) » pour couvrir la SERP 3-way (audit 07/2026).
   // Retiré : le CTR mesuré était de 0,5 %, DCAM a sa propre page, et la
@@ -438,7 +505,7 @@ const CW8_VS_WPEA: ETFComparison = {
 
   left: {
     heading: "CW8",
-    subheading: "Amundi MSCI World UCITS ETF — ISIN LU1681043599",
+    subheading: "Amundi MSCI World Swap UCITS ETF EUR Acc — ISIN LU1681043599",
     type: "ETF",
     coverage: "MSCI World — ~1 500 sociétés des 23 pays développés",
     issuer: "Amundi ETF",
@@ -447,13 +514,13 @@ const CW8_VS_WPEA: ETFComparison = {
     distribution: "Capitalisant",
     currency: "EUR",
     peaEligible: "Oui",
-    strongPoint: "Référence historique du MSCI World en PEA · gros encours · liquidité maximale",
-    weakPoint: "TER élevé (0,38 %) — le plus cher des ETF MSCI World PEA en 2026",
+    strongPoint: "Référence historique du MSCI World en PEA · la ligne la plus ancienne des trois (face à WPEA et DCAM)",
+    weakPoint: "TER de 0,38 % — près du double de WPEA et DCAM (0,20 %)",
   },
 
   right: {
     heading: "WPEA",
-    subheading: "iShares Core MSCI World UCITS ETF (PEA) — ISIN IE0006WW1TQ4",
+    subheading: "iShares MSCI World Swap PEA UCITS ETF EUR (Acc) — ISIN IE0002XZSHO1",
     type: "ETF",
     coverage: "MSCI World — ~1 500 sociétés des 23 pays développés",
     issuer: "iShares (BlackRock)",
@@ -462,22 +529,23 @@ const CW8_VS_WPEA: ETFComparison = {
     distribution: "Capitalisant",
     currency: "EUR",
     peaEligible: "Oui",
-    strongPoint: "TER deux fois inférieur au CW8 · iShares = leader mondial ETF",
-    weakPoint: "ETF récent (lancé fin 2024) — encours et liquidité encore inférieurs au CW8",
+    strongPoint: "TER presque deux fois inférieur au CW8 · ≈ 2,1 Md€ d'encours fin août 2026",
+    weakPoint: "ETF récent (lancé en mars 2024) — historique plus court que CW8",
   },
 
   verdict:
-    `WPEA gagne sur les frais (0,20 % vs 0,38 %) pour la même exposition MSCI World et la même éligibilité PEA. Sur 20 ans à 200 €/mois et 7 %/an net, ces 0,18 % de TER en moins représentent environ ${ecartCapital(0.38, 0.2)} € de capital final supplémentaire. CW8 garde l'avantage de l'antériorité (gros encours, liquidité, présence chez tous les courtiers). Pour une ouverture de position en 2026, WPEA est probablement le meilleur choix.`,
+    `WPEA gagne sur les frais (0,20 % vs 0,38 %) pour la même exposition MSCI World et la même éligibilité PEA. Sur 20 ans à 200 €/mois et 7 %/an net, ces 0,18 % de TER en moins représentent environ ${ecartCapital(0.38, 0.2)} € de capital final supplémentaire. CW8 garde l'avantage de l'antériorité. Pour une ouverture de position en 2026, WPEA — comme DCAM, au même TER — coûte moins cher que CW8 pour une exposition identique.`,
 
   intro:
-    "Pendant des années, CW8 (Amundi MSCI World) a été l'ETF de référence pour s'exposer au monde développé dans un PEA français. Fin 2024, iShares a sorti WPEA — un MSCI World PEA-éligible à un TER deux fois plus bas. Deux ETF qui répliquent le même indice, avec des frais qui changent significativement la performance à long terme. Voici comment trancher.",
+    "Pendant des années, CW8 (Amundi MSCI World) a été l'ETF de référence pour s'exposer au monde développé dans un PEA français. En mars 2024, iShares a lancé WPEA — un MSCI World éligible au PEA, coté à Paris depuis avril 2024, à un TER presque deux fois plus bas. Deux ETF qui répliquent le même indice, avec des frais qui changent significativement la performance à long terme. Voici comment trancher.",
 
   keyDifferences: [
     { criterion: "Indice répliqué", leftValue: "MSCI World", rightValue: "MSCI World (identique)" },
     { criterion: "Émetteur", leftValue: "Amundi", rightValue: "iShares (BlackRock)" },
     { criterion: "TER", leftValue: "0,38 %/an", rightValue: "0,20 %/an" },
-    { criterion: "Encours (AUM)", leftValue: "Plusieurs Md€ — large", rightValue: "Encours en croissance — ETF récent" },
-    { criterion: "Liquidité", leftValue: "Très élevée — spreads faibles", rightValue: "Bonne mais inférieure au CW8" },
+    // Les lignes « Encours » et « Liquidité » comparaient CW8 et WPEA sans
+    // aucune source pour CW8 ; retirées le 28/09/2026. L'ISIN, lui, est vérifié.
+    { criterion: "ISIN", leftValue: "LU1681043599", rightValue: "IE0002XZSHO1" },
     { criterion: "Éligibilité PEA", leftValue: "Oui", rightValue: "Oui" },
     { criterion: "Réplication", leftValue: "Synthétique", rightValue: "Synthétique" },
     { criterion: "Distribution", leftValue: "Capitalisant", rightValue: "Capitalisant" },
@@ -489,7 +557,7 @@ const CW8_VS_WPEA: ETFComparison = {
       profile: "Vous ouvrez votre PEA en 2026",
       winner: "right",
       explanation:
-        "WPEA est probablement le meilleur choix : même indice, moitié des frais. Sur un horizon 20-30 ans, l'écart de TER se traduit directement en capital final. L'argument 'CW8 a plus de liquidité' compte peu pour un investisseur DCA long terme qui passe des ordres mensuels de quelques centaines d'euros.",
+        "WPEA coûte moins cher pour la même chose : même indice, près de la moitié des frais — DCAM aussi, au même TER. Sur un horizon 20-30 ans, l'écart de TER se traduit directement en capital final. L'argument de la liquidité compte peu pour un investisseur DCA long terme qui passe des ordres mensuels de quelques centaines d'euros.",
     },
     {
       profile: "Vous avez déjà du CW8 dans votre PEA",
@@ -501,18 +569,21 @@ const CW8_VS_WPEA: ETFComparison = {
       profile: "Vous valorisez la simplicité maximale",
       winner: "left",
       explanation:
-        "CW8 reste l'ETF qui se trouve partout, recommandé partout, sans surprise. Si vous voulez zéro friction (disponibilité chez tous les courtiers, ETF que vos proches reconnaissent), CW8 fonctionne. C'est un compromis confort/coût.",
+        // « Se trouve partout, disponible chez tous les courtiers » : aucune
+        // source ; retiré le 28/09/2026. Le cas d'usage reste : c'est le
+        // catalogue du courtier qui tranche.
+        "CW8 est la plus ancienne des lignes MSCI World du PEA citées ici. Si votre courtier ne propose ni WPEA ni DCAM, ou les facture plus cher à l'ordre, CW8 fonctionne : même indice, même éligibilité. C'est un compromis confort/coût.",
     },
     {
       profile: "Vous êtes pure performance",
       winner: "right",
       explanation:
-        "TER plus bas + même indice = surperformance mécanique sur le long terme. iShares est aussi un émetteur de référence (filiale de BlackRock, premier gestionnaire d'actifs mondial). Aucune raison rationnelle de payer 90 % de frais en plus pour exactement la même exposition.",
+        "TER plus bas + même indice = surperformance mécanique sur le long terme. iShares est aussi un émetteur de référence (filiale de BlackRock). Aucune raison rationnelle de payer 90 % de frais en plus pour exactement la même exposition.",
     },
   ],
 
   analysis:
-    "L'arrivée de WPEA en 2024 a cassé un quasi-monopole : pendant des années, CW8 était LA solution MSCI World pour PEA, sans alternative crédible à frais bas. iShares a comblé ce vide en proposant exactement le même indice, à un TER moitié moins cher, via un swap synthétique conforme à l'éligibilité PEA. Pour qui démarre aujourd'hui, le calcul est net : 0,18 % de TER en moins par an, ça représente environ 4 % de capital final en plus sur 20 ans (à hypothèses constantes 7 %/an). Pour qui a déjà construit une position CW8 significative, la question est plus nuancée : vendre génère des frais d'ordre + casse l'historique de la ligne — pas critique en PEA (zéro friction fiscale tant qu'on ne retire pas) mais demande un calcul cas par cas. La règle de pouce : si votre encours CW8 est < 10 000 €, basculer reste avantageux long terme. Au-delà, garder CW8 et alimenter WPEA pour les versements futurs.",
+    `Avant 2024, les ETF MSCI World éligibles au PEA étaient ceux d'Amundi, CW8 et sa part distribuante EWLD, à 0,38 %. iShares a lancé WPEA en 2024 sur exactement le même indice, à 0,20 % — et Amundi a lancé DCAM en mars 2025 au même tarif. Pour qui démarre aujourd'hui, le calcul est net : 0,18 % de TER en moins par an, ça représente environ ${ecartCapital(0.38, 0.2)} € de capital final en plus sur 20 ans (à 7 %/an, aux hypothèses du tableau). Pour qui a déjà construit une position CW8 significative, la question est plus nuancée : vendre génère des frais d'ordre + casse l'historique de la ligne — pas critique en PEA (zéro friction fiscale tant qu'on ne retire pas) mais demande un calcul cas par cas. La règle de pouce : si votre encours CW8 est < 10 000 €, basculer reste avantageux long terme. Au-delà, garder CW8 et alimenter WPEA pour les versements futurs.`,
 
   faq: [
     {
@@ -521,11 +592,14 @@ const CW8_VS_WPEA: ETFComparison = {
     },
     {
       q: "Pourquoi WPEA est-il moins cher que CW8 ?",
-      a: "iShares (BlackRock) est le plus gros gestionnaire d'ETF au monde et bénéficie d'économies d'échelle massives. Le marché ETF français étant longtemps verrouillé par Amundi sur le segment PEA, l'arrivée d'iShares en 2024 a dû s'accompagner d'un prix agressif pour gagner des parts. Avantage pour les investisseurs particuliers.",
+      // « Le plus gros gestionnaire d'ETF au monde » : classement sans source,
+      // retiré le 28/09/2026.
+      a: "Parce qu'il est arrivé face à des concurrents installés : iShares l'a lancé en 2024 à 0,20 %, contre 0,38 % pour les ETF MSCI World éligibles PEA d'Amundi (CW8, EWLD). Amundi a ensuite lancé DCAM, en mars 2025, au même TER de 0,20 %. Avantage pour les investisseurs particuliers.",
     },
     {
       q: "WPEA est-il disponible chez tous les courtiers ?",
-      a: "WPEA est disponible chez la plupart des courtiers français modernes (Trade Republic, Bourse Direct, Boursorama, Fortuneo). À vérifier chez votre courtier avant d'ouvrir la position — certaines banques traditionnelles tardent à référencer les ETF récents. Si non disponible, demandez-le au service client : la pression utilisateur fait souvent débloquer.",
+      // La liste de courtiers n'avait pas de source ; retirée le 28/09/2026.
+      a: "WPEA est coté sur Euronext Paris depuis avril 2024, mais sa présence dépend du catalogue de chaque courtier. À vérifier avant d'ouvrir la position — certaines banques traditionnelles tardent à référencer les ETF récents —, en contrôlant l'ISIN dans l'écran d'ordre : IE0002XZSHO1. Si non disponible, demandez-le au service client : la pression utilisateur fait souvent débloquer.",
     },
     {
       q: "Le risque de contrepartie est-il identique entre CW8 et WPEA ?",
@@ -618,7 +692,7 @@ const WPEA_VS_DCAM: ETFComparison = {
     "Égalité sur tout ce qui fait la performance : même indice MSCI World, même TER de 0,20 %, même réplication synthétique, même éligibilité PEA — et deux parts sous 10 €, donc aucune différence de souplesse pour un petit versement mensuel. Ce qui les sépare est secondaire : WPEA a un an d'historique de plus et un encours plus gros (≈ 2,1 Md€ contre ≈ 1,4 Md€ fin août 2026). Le vrai départage est chez votre courtier : prenez celui qu'il propose avec les frais d'ordre les plus bas, et gardez-le.",
 
   intro:
-    "C'est le duel le plus récent du PEA : iShares a lancé WPEA en 2024 pour casser le quasi-monopole d'Amundi sur le MSCI World en PEA, et Amundi a répondu en mars 2025 avec DCAM — même indice, même 0,20 %. Pour l'investisseur, c'est une excellente nouvelle : la concurrence a divisé les frais par près de deux par rapport au CW8 historique (0,38 %). Reste à choisir entre deux jumeaux.",
+    "C'est le duel le plus récent du PEA : iShares a lancé WPEA en 2024, face aux ETF MSCI World d'Amundi facturés 0,38 %, et Amundi a lancé DCAM en mars 2025 — même indice, même 0,20 %. Pour l'investisseur, c'est une excellente nouvelle : la concurrence a divisé les frais par près de deux par rapport au CW8 historique (0,38 %). Reste à choisir entre deux jumeaux.",
 
   keyDifferences: [
     { criterion: "Indice répliqué", leftValue: "MSCI World", rightValue: "MSCI World (identique)" },
@@ -660,7 +734,7 @@ const WPEA_VS_DCAM: ETFComparison = {
   ],
 
   analysis:
-    "Ce duel illustre la meilleure dynamique possible pour les épargnants : la concurrence par les frais. Pendant des années, le CW8 d'Amundi (0,38 %) était l'option par défaut faute d'alternative. L'arrivée de WPEA à 0,20 % a forcé Amundi à répondre avec DCAM au même tarif. Sur la performance, n'attendez aucune différence significative : même indice, même mécanisme de swap encadré par UCITS, même TER. Les écarts de suivi se joueront au centième de pourcent. La décision est donc logistique : disponibilité et frais d'ordre chez VOTRE courtier. Si vous détenez du CW8 acheté avant 2024, il n'y a pas urgence à vendre (pas de friction fiscale en PEA, mais pas de raison de payer 0,38 % sur vos NOUVEAUX versements non plus — basculez simplement vos achats futurs vers WPEA ou DCAM).",
+    "Ce duel illustre la meilleure dynamique possible pour les épargnants : la concurrence par les frais. Jusqu'en 2024, les ETF MSCI World éligibles PEA étaient facturés 0,38 % (CW8, EWLD). WPEA est arrivé à 0,20 %, puis DCAM au même tarif en 2025. Sur la performance, n'attendez aucune différence significative : même indice, même mécanisme de swap encadré par UCITS, même TER. Les écarts de suivi se joueront au centième de pourcent. La décision est donc logistique : disponibilité et frais d'ordre chez VOTRE courtier. Si vous détenez du CW8 acheté avant 2024, il n'y a pas urgence à vendre (pas de friction fiscale en PEA, mais pas de raison de payer 0,38 % sur vos NOUVEAUX versements non plus — basculez simplement vos achats futurs vers WPEA ou DCAM).",
 
   faq: [
     {
@@ -677,7 +751,7 @@ const WPEA_VS_DCAM: ETFComparison = {
     },
     {
       q: "Quels sont les ISIN à vérifier avant de passer l'ordre ?",
-      a: "WPEA : IE0002XZSHO1 (iShares MSCI World Swap PEA UCITS ETF EUR Acc). DCAM : FR001400U5Q4 (Amundi PEA Monde MSCI World UCITS ETF Acc). Vérifiez toujours l'ISIN dans l'écran d'ordre de votre courtier : un mnémonique proche peut désigner un autre fonds, parfois non éligible au PEA.",
+      a: "WPEA : IE0002XZSHO1 (iShares MSCI World Swap PEA UCITS ETF EUR (Acc)). DCAM : FR001400U5Q4 (Amundi PEA Monde (MSCI World) UCITS ETF Acc). Vérifiez toujours l'ISIN dans l'écran d'ordre de votre courtier : un mnémonique proche peut désigner un autre fonds, parfois non éligible au PEA.",
     },
     {
       q: "Les deux sont-ils éligibles au PEA chez tous les courtiers ?",
@@ -693,15 +767,15 @@ const WPEA_VS_DCAM: ETFComparison = {
 const IWDA_VS_CW8: ETFComparison = {
   slug: "iwda-vs-cw8",
   publishedAt: "2026-06-10",
-  updatedAt: "2026-06-10",
+  updatedAt: "2026-09-28",
   title: "IWDA vs CW8 : physique en CTO ou synthétique en PEA ?",
   metaTitle: "IWDA ou CW8 : CTO ou PEA pour votre MSCI World ?",
   metaDescription:
-    `IWDA (physique, CTO) ou CW8 (synthétique, PEA) ? Même indice MSCI World, mais l'enveloppe change tout : ~${ecartFiscalEnviron(54000)} € d'impôt en moins en PEA sur 20 ans à 200 €/mois. Le vrai match est fiscal — comparatif complet.`,
+    `IWDA (physique, CTO) ou CW8 (synthétique, PEA) ? Même indice MSCI World, mais l'enveloppe change tout : ~${ecartFiscalEnviron(gainsBruts(0.38))} € d'impôt en moins en PEA sur 20 ans à 200 €/mois. Le vrai match est fiscal — comparatif complet.`,
 
   left: {
     heading: "IWDA",
-    subheading: "iShares Core MSCI World UCITS ETF (Acc) — ISIN IE00B4L5Y983",
+    subheading: "iShares Core MSCI World UCITS ETF USD (Acc) — ISIN IE00B4L5Y983",
     type: "ETF",
     coverage: "MSCI World — ~1 500 sociétés des 23 pays développés",
     issuer: "iShares (BlackRock)",
@@ -710,13 +784,15 @@ const IWDA_VS_CW8: ETFComparison = {
     distribution: "Capitalisant",
     currency: "USD (cotation EUR sur Euronext Amsterdam)",
     peaEligible: "Non — CTO ou assurance-vie uniquement",
-    strongPoint: "Réplication physique (détient réellement les actions) · l'un des plus gros ETF d'Europe · TER 0,20 %",
+    // « L'un des plus gros ETF d'Europe » : classement sans source, retiré le
+    // 28/09/2026 (table de vérité ETF).
+    strongPoint: "Réplication physique (détient réellement les actions) · TER 0,20 %",
     weakPoint: "Non éligible PEA → fiscalité CTO (PFU 31,4 %) sur les gains",
   },
 
   right: {
     heading: "CW8",
-    subheading: "Amundi MSCI World UCITS ETF — ISIN LU1681043599",
+    subheading: "Amundi MSCI World Swap UCITS ETF EUR Acc — ISIN LU1681043599",
     type: "ETF",
     coverage: "MSCI World — ~1 500 sociétés des 23 pays développés",
     issuer: "Amundi",
@@ -726,14 +802,16 @@ const IWDA_VS_CW8: ETFComparison = {
     currency: "EUR",
     peaEligible: "Oui",
     strongPoint: "Éligible PEA → 18,6 % de prélèvements après 5 ans au lieu de 31,4 %",
-    weakPoint: "TER le plus élevé des MSCI World (0,38 %) — préférez WPEA/DCAM à 0,20 % pour de nouveaux achats en PEA",
+    // « Le plus élevé des MSCI World » : EWLD est au même 0,38 %, et le marché
+    // entier n'a pas été vérifié. Corrigé le 28/09/2026.
+    weakPoint: "TER de 0,38 % — WPEA et DCAM répliquent le même indice en PEA à 0,20 %",
   },
 
   verdict:
-    `Le match n'est pas « physique vs synthétique » mais « PEA vs CTO » — et le PEA gagne presque toujours. Sur 20 ans à 200 €/mois (≈ ${capitalPour(0)} € avant frais, dont ≈ ${gainsPour(0)} € de gains), la fiscalité PEA (18,6 %) économise environ ${ecartFiscalEnviron(54000)} € d'impôt par rapport au CTO (PFU 31,4 %). Cet écart écrase largement les 0,18 % de TER d'avantage d'IWDA. Si votre PEA n'est pas plein : MSCI World en PEA (et plutôt WPEA ou DCAM à 0,20 % que CW8 pour de nouveaux achats). IWDA se justifie en CTO une fois le PEA plafonné, ou si la réplication physique est une exigence personnelle.`,
+    `Le match n'est pas « physique vs synthétique » mais « PEA vs CTO » — et le PEA gagne presque toujours. Sur 20 ans à 200 €/mois (≈ ${capitalPour(0)} € avant frais, dont ≈ ${gainsPour(0)} € de gains), la fiscalité PEA (18,6 %) économise environ ${ecartFiscalEnviron(gainsBruts(0))} € d'impôt par rapport au CTO (PFU 31,4 %). Cet écart écrase largement les 0,18 % de TER d'avantage d'IWDA. Si votre PEA n'est pas plein : MSCI World en PEA (et plutôt WPEA ou DCAM à 0,20 % que CW8 pour de nouveaux achats). IWDA se justifie en CTO une fois le PEA plafonné, ou si la réplication physique est une exigence personnelle.`,
 
   intro:
-    "IWDA est la référence européenne du MSCI World : réplication physique, encours massif, TER de 0,20 %. CW8 est la référence française en PEA. Beaucoup de débutants comparent leurs TER et concluent qu'IWDA est « meilleur » — en oubliant que l'enveloppe fiscale pèse dix fois plus lourd que les frais dans le résultat final. Voici le vrai calcul.",
+    "IWDA est la référence européenne du MSCI World : réplication physique, TER de 0,20 %. CW8 est la référence française en PEA. Beaucoup de débutants comparent leurs TER et concluent qu'IWDA est « meilleur » — en oubliant que l'enveloppe fiscale pèse plusieurs fois plus lourd que les frais dans le résultat final. Voici le vrai calcul.",
 
   keyDifferences: [
     { criterion: "Indice répliqué", leftValue: "MSCI World", rightValue: "MSCI World (identique)" },
@@ -741,8 +819,10 @@ const IWDA_VS_CW8: ETFComparison = {
     { criterion: "TER", leftValue: "0,20 %/an", rightValue: "0,38 %/an" },
     { criterion: "Éligibilité PEA", leftValue: "Non", rightValue: "Oui" },
     { criterion: "Fiscalité des gains (après 5 ans)", leftValue: "PFU 31,4 % (CTO)", rightValue: "18,6 % (PEA)" },
-    { criterion: "Impact fiscal — 20 ans à 200 €/mois", leftValue: `≈ ${impotCTOEnviron(54000)} € de prélèvements`, rightValue: `≈ ${impotPEAEnviron(54000)} € de prélèvements` },
-    { criterion: "Encours", leftValue: "Énorme — l'un des plus gros d'Europe", rightValue: "Très important (~5-6 Md€)" },
+    { criterion: "Impact fiscal — 20 ans à 200 €/mois", leftValue: `≈ ${impotCTOEnviron(gainsBruts(0.2))} € de prélèvements`, rightValue: `≈ ${impotPEAEnviron(gainsBruts(0.38))} € de prélèvements` },
+    // Ligne « Encours » retirée le 28/09/2026 : ni « l'un des plus gros
+    // d'Europe » ni « ~5-6 Md€ » pour CW8 n'ont de source. L'ISIN est vérifié.
+    { criterion: "ISIN", leftValue: "IE00B4L5Y983", rightValue: "LU1681043599" },
     { criterion: "Risque de contrepartie", leftValue: "Aucun (détention directe)", rightValue: "Encadré à 10 % max (UCITS)" },
   ],
 
@@ -757,7 +837,7 @@ const IWDA_VS_CW8: ETFComparison = {
       profile: "PEA plafonné, on continue d'investir",
       winner: "left",
       explanation:
-        "Une fois les 150 000 € de versements PEA atteints, le CTO devient la suite logique — et IWDA y est le choix de référence : physique, énorme encours, 0,20 %.",
+        "Une fois les 150 000 € de versements PEA atteints, le CTO devient la suite logique — et IWDA y est une option de référence : physique, 0,20 %, même MSCI World.",
     },
     {
       profile: "Exigence de réplication physique",
@@ -774,7 +854,7 @@ const IWDA_VS_CW8: ETFComparison = {
   ],
 
   analysis:
-    `La comparaison IWDA vs CW8 est l'exemple type d'une optimisation au mauvais étage. L'écart de TER (0,18 %) représente environ ${ecartCapital(0.38, 0.2)} € sur 20 ans à 200 €/mois. L'écart d'enveloppe fiscale (18,6 % vs 31,4 % sur ~54 000 € de gains) en représente environ ${ecartFiscalEnviron(54000)} € — et il s'applique APRÈS l'effet des frais. Autrement dit : même le pire ETF MSCI World du PEA bat IWDA en CTO pour un résident fiscal français qui n'a pas plafonné son PEA. La hiérarchie de décision correcte : 1) l'enveloppe (PEA d'abord), 2) les frais à l'intérieur de l'enveloppe (WPEA/DCAM 0,20 % plutôt que CW8 0,38 % pour de nouveaux achats), 3) la réplication, qui est un critère de confort. Le swap des ETF synthétiques est encadré par UCITS (exposition de contrepartie limitée à 10 %, collatéralisée en pratique quotidiennement) — un risque réel mais faible, sans commune mesure avec 13 points de fiscalité.`,
+    `La comparaison IWDA vs CW8 est l'exemple type d'une optimisation au mauvais étage. L'écart de TER (0,18 %) représente environ ${ecartCapital(0.38, 0.2)} € sur 20 ans à 200 €/mois. L'écart d'enveloppe fiscale (18,6 % vs 31,4 % sur ~${gainsPour(0.38)} € de gains) en représente environ ${ecartFiscalEnviron(gainsBruts(0.38))} € — et il s'applique APRÈS l'effet des frais. Autrement dit : même le pire ETF MSCI World du PEA bat IWDA en CTO pour un résident fiscal français qui n'a pas plafonné son PEA. La hiérarchie de décision correcte : 1) l'enveloppe (PEA d'abord), 2) les frais à l'intérieur de l'enveloppe (WPEA/DCAM 0,20 % plutôt que CW8 0,38 % pour de nouveaux achats), 3) la réplication, qui est un critère de confort. Le swap des ETF synthétiques est encadré par UCITS (exposition de contrepartie limitée à 10 %, collatéralisée en pratique quotidiennement) — un risque réel mais faible, sans commune mesure avec 13 points de fiscalité.`,
 
   faq: [
     {
@@ -783,7 +863,7 @@ const IWDA_VS_CW8: ETFComparison = {
     },
     {
       q: "Le TER plus bas d'IWDA ne compense-t-il jamais la fiscalité ?",
-      a: `Sur les hypothèses classiques (20 ans, 200 €/mois, 7 %/an), non : l'économie de TER (~${ecartCapital(0.38, 0.2)} €) reste inférieure au surcoût fiscal du CTO (~${ecartFiscalEnviron(54000)} €). Et ce raisonnement compare IWDA au CW8 (0,38 %) — face à WPEA ou DCAM (0,20 % en PEA), IWDA n'a plus aucun avantage de frais, il ne reste que le débat physique vs synthétique.`,
+      a: `Sur les hypothèses classiques (20 ans, 200 €/mois, 7 %/an), non : l'économie de TER (~${ecartCapital(0.38, 0.2)} €) reste inférieure au surcoût fiscal du CTO (~${ecartFiscalEnviron(gainsBruts(0.38))} €). Et ce raisonnement compare IWDA au CW8 (0,38 %) — face à WPEA ou DCAM (0,20 % en PEA), IWDA n'a plus aucun avantage de frais, il ne reste que le débat physique vs synthétique.`,
     },
     {
       q: "La réplication synthétique est-elle dangereuse ?",
@@ -800,14 +880,20 @@ const IWDA_VS_CW8: ETFComparison = {
 
 // ─── ESE vs PSP5 ──────────────────────────────────────────────────────────────
 
+// ⚠️ CORRIGÉ LE 28/09/2026 (table de vérité ETF). La fiche donnait à PSP5
+// l'ISIN FR0013412285, qui est celui de PE500 (Amundi PEA S&P 500 Screened,
+// filtre ESG, 0,25 %) : un lecteur qui le recopiait achetait un autre fonds.
+// Le vrai : FR0011871128. Aussi faux : TER d'ESE 0,15 % (c'est 0,14 %), PSP5
+// « le TER le plus bas du S&P 500 en PEA » (SPEA est à 0,10 %), et la part
+// « ~30 € », la liquidité et la diffusion d'ESE, qu'aucune source n'étaye.
 const ESE_VS_PSP5: ETFComparison = {
   slug: "ese-vs-psp5",
   publishedAt: "2026-06-10",
-  updatedAt: "2026-06-10",
+  updatedAt: "2026-09-28",
   title: "ESE vs PSP5 : quel ETF S&P 500 pour votre PEA ?",
   metaTitle: "ESE ou PSP5 : quel ETF S&P 500 choisir en PEA en 2026 ?",
   metaDescription:
-    `PSP5 (Amundi) est le moins cher (0,12 %), ESE (BNP Paribas) le plus liquide (0,15 %). Écart réel : ~${ecartCapital(0.15, 0.12)} € sur 20 ans à 200 €/mois — vos frais d'ordre comptent plus. Comparatif des deux S&P 500 éligibles PEA.`,
+    `PSP5 (Amundi, 0,12 %) ou ESE (BNP Paribas, 0,14 %) ? ~${ecartCapital(0.14, 0.12)} € d'écart sur 20 ans à 200 €/mois : vos frais d'ordre comptent plus. Et SPEA fait 0,10 %.`,
 
   left: {
     heading: "ESE",
@@ -815,18 +901,18 @@ const ESE_VS_PSP5: ETFComparison = {
     type: "ETF",
     coverage: "S&P 500 — les 500 plus grandes sociétés cotées américaines",
     issuer: "BNP Paribas Asset Management",
-    ter: "0,15 %/an",
+    ter: "0,14 %/an",
     replication: "Synthétique (swap)",
     distribution: "Capitalisant",
     currency: "EUR",
     peaEligible: "Oui",
-    strongPoint: "Le S&P 500 PEA le plus répandu et le plus liquide · part ~30 € adaptée au DCA",
-    weakPoint: "TER légèrement supérieur à PSP5 (0,15 % vs 0,12 %)",
+    strongPoint: "Émetteur BNP Paribas : une alternative à Amundi et iShares · TER de 0,14 %",
+    weakPoint: "TER légèrement supérieur à PSP5 (0,14 % vs 0,12 %)",
   },
 
   right: {
     heading: "PSP5",
-    subheading: "Amundi PEA S&P 500 UCITS ETF — ISIN FR0013412285",
+    subheading: "Amundi PEA S&P 500 UCITS ETF Acc — ISIN FR0011871128",
     type: "ETF",
     coverage: "S&P 500 — les 500 plus grandes sociétés cotées américaines",
     issuer: "Amundi",
@@ -835,23 +921,24 @@ const ESE_VS_PSP5: ETFComparison = {
     distribution: "Capitalisant",
     currency: "EUR",
     peaEligible: "Oui",
-    strongPoint: "Le TER le plus bas du S&P 500 en PEA (0,12 %)",
-    weakPoint: "Liquidité et disponibilité courtier légèrement inférieures à ESE",
+    strongPoint: "Le TER le plus bas des deux (0,12 %)",
+    weakPoint: "Pas le moins cher du S&P 500 en PEA : SPEA (iShares) fait 0,10 %",
   },
 
   verdict:
-    `PSP5 gagne sur le papier (0,12 % vs 0,15 %) mais l'écart réel est minime : environ ${ecartCapital(0.15, 0.12)} € sur 20 ans à 200 €/mois. À ce niveau, vos frais d'ordre et la disponibilité chez votre courtier pèsent plus lourd que le TER. Règle simple : si votre courtier propose les deux aux mêmes conditions, prenez PSP5 ; sinon, prenez celui qui vous coûte le moins en frais de transaction — probablement ESE, le plus répandu.`,
+    `PSP5 gagne sur le papier (0,12 % vs 0,14 %) mais l'écart réel est minime : environ ${ecartCapital(0.14, 0.12)} € sur 20 ans à 200 €/mois. À ce niveau, vos frais d'ordre et la disponibilité chez votre courtier pèsent plus lourd que le TER. Règle simple : si votre courtier propose les deux aux mêmes conditions, PSP5 est le moins cher ; sinon, c'est celui qui vous coûte le moins en frais de transaction qui l'emporte. Et un troisième S&P 500 éligible PEA, SPEA (iShares), descend à 0,10 %.`,
 
   intro:
-    "Pour s'exposer au S&P 500 dans un PEA, deux ETF synthétiques dominent : ESE (BNP Paribas), la référence historique, et PSP5 (Amundi), l'option la moins chère. Contrairement au match CW8 vs WPEA où l'écart de frais était massif (×2), ici les deux sont déjà très bon marché — le choix se joue sur des détails.",
+    "Pour s'exposer au S&P 500 dans un PEA, ESE (BNP Paribas) et PSP5 (Amundi) sont deux ETF synthétiques à frais bas, à 0,02 point d'écart. Un troisième, SPEA (iShares, lancé en mai 2025), fait encore moins cher à 0,10 %. Contrairement au match CW8 vs WPEA où l'écart de frais était massif (près de ×2), ici tous sont déjà très bon marché — le choix se joue sur des détails.",
 
   keyDifferences: [
     { criterion: "Indice répliqué", leftValue: "S&P 500", rightValue: "S&P 500 (identique)" },
-    { criterion: "TER", leftValue: "0,15 %/an", rightValue: "0,12 %/an" },
+    { criterion: "TER", leftValue: "0,14 %/an", rightValue: "0,12 %/an" },
     { criterion: "Émetteur", leftValue: "BNP Paribas AM", rightValue: "Amundi" },
-    { criterion: "Impact TER — 20 ans à 200 €/mois", leftValue: "Référence", rightValue: `≈ +${ecartCapital(0.15, 0.12)} € de capital final` },
-    { criterion: "Liquidité / spread", leftValue: "Très bonne — le plus traité", rightValue: "Bonne" },
-    { criterion: "Prix de part indicatif", leftValue: "~30 €", rightValue: "~30 €" },
+    { criterion: "Impact TER — 20 ans à 200 €/mois", leftValue: "Référence", rightValue: `≈ +${ecartCapital(0.14, 0.12)} € de capital final` },
+    // « Liquidité / spread » et « Prix de part ~30 € » : aucune source ;
+    // remplacés le 28/09/2026 par l'ISIN, le critère à vérifier avant l'ordre.
+    { criterion: "ISIN", leftValue: "FR0011550185", rightValue: "FR0011871128" },
     { criterion: "Réplication", leftValue: "Synthétique", rightValue: "Synthétique" },
     { criterion: "Éligibilité PEA", leftValue: "Oui", rightValue: "Oui" },
   ],
@@ -861,19 +948,20 @@ const ESE_VS_PSP5: ETFComparison = {
       profile: "Optimisation maximale des frais",
       winner: "right",
       explanation:
-        "PSP5 à 0,12 % est le S&P 500 le moins cher du PEA. Si votre courtier le référence aux mêmes frais d'ordre qu'ESE, il n'y a pas de raison de payer 0,03 % de plus.",
+        "PSP5 à 0,12 % est le moins cher des deux. Si votre courtier le référence aux mêmes frais d'ordre qu'ESE, il n'y a pas de raison de payer 0,02 % de plus — et SPEA (iShares), à 0,10 %, va encore plus loin.",
     },
     {
       profile: "Courtier au catalogue limité",
       winner: "left",
       explanation:
-        "ESE est référencé quasi partout avec de bons volumes. Si PSP5 n'est pas disponible (ou avec des frais d'ordre supérieurs) chez votre courtier, l'écart de TER ne justifie pas de changer de courtier.",
+        "Si PSP5 n'est pas disponible (ou avec des frais d'ordre supérieurs) chez votre courtier et qu'ESE l'est, l'écart de 0,02 point de TER ne justifie pas de changer de courtier.",
     },
     {
       profile: "Gros ordres ponctuels (lump sum)",
-      winner: "left",
+      // Donnait l'avantage à ESE sur une « liquidité supérieure » sans source.
+      winner: "both",
       explanation:
-        "Sur un ordre important, le spread (écart achat/vente) compte : la liquidité supérieure d'ESE peut faire gagner plus que les 0,03 % de TER annuels de PSP5.",
+        "Sur un ordre important, le spread (écart achat/vente) compte plus que 0,02 point de TER annuel. L'écart affiché des deux lignes au moment de l'ordre départage mieux que leur TER, et un ordre à cours limité évite d'acheter au mauvais prix.",
     },
     {
       profile: "DCA mensuel automatisé",
@@ -884,16 +972,20 @@ const ESE_VS_PSP5: ETFComparison = {
   ],
 
   analysis:
-    `Ce match illustre la notion de seuil de pertinence des frais. Passer de 0,38 % à 0,20 % (CW8 → WPEA) économise ~${ecartCapital(0.38, 0.2)} € sur 20 ans : ça vaut une décision. Passer de 0,15 % à 0,12 % en économise ~${ecartCapital(0.15, 0.12)} € : c'est réel, mais du même ordre de grandeur que quelques années de frais d'ordre, un spread défavorable répété, ou un mois de retard à investir. Autrement dit : choisissez vite, investissez tôt — l'erreur coûteuse serait de passer trois mois à hésiter entre deux excellents ETF. Rappel utile : le S&P 500 en PEA passe par la réplication synthétique (les actions américaines ne sont pas éligibles en direct), mécanisme encadré par UCITS. Et si vous hésitez encore entre S&P 500 et MSCI World, c'est une décision plus structurante que ESE vs PSP5 — le World contient déjà ~70 % de S&P 500.`,
+    `Ce match illustre la notion de seuil de pertinence des frais. Passer de 0,38 % à 0,20 % (CW8 → WPEA) économise ~${ecartCapital(0.38, 0.2)} € sur 20 ans : ça vaut une décision. Passer de 0,14 % à 0,12 % en économise ~${ecartCapital(0.14, 0.12)} € : c'est réel, mais du même ordre de grandeur que quelques années de frais d'ordre, un spread défavorable répété, ou un mois de retard à investir. Autrement dit : choisissez vite, investissez tôt — l'erreur coûteuse serait de passer trois mois à hésiter entre deux excellents ETF. Rappel utile : le S&P 500 en PEA passe par la réplication synthétique (les actions américaines ne sont pas éligibles en direct), mécanisme encadré par UCITS. Et si vous hésitez encore entre S&P 500 et MSCI World, c'est une décision plus structurante que ESE vs PSP5 — le World contient déjà ~70 % de S&P 500.`,
 
   faq: [
     {
       q: "ESE ou PSP5 : lequel performe le mieux ?",
-      a: `Même indice, même mécanisme : la différence théorique est l'écart de TER (0,03 %/an en faveur de PSP5), soit ~${ecartCapital(0.15, 0.12)} € sur 20 ans à 200 €/mois. Les écarts de tracking réels peuvent ponctuellement inverser ce classement une année donnée. En pratique : équivalents.`,
+      a: `Même indice, même mécanisme : la différence théorique est l'écart de TER (0,02 %/an en faveur de PSP5), soit ~${ecartCapital(0.14, 0.12)} € sur 20 ans à 200 €/mois. Les écarts de tracking réels peuvent ponctuellement inverser ce classement une année donnée. En pratique : équivalents.`,
     },
     {
       q: "Pourquoi pas un S&P 500 physique comme CSPX ou VUSA ?",
       a: "CSPX (iShares) et VUSA (Vanguard) sont d'excellents ETF S&P 500 physiques à 0,07 % — mais ils ne sont PAS éligibles PEA (actions américaines détenues en direct). Ils se logent en CTO ou assurance-vie. En PEA, la réplication synthétique est le passage obligé pour le S&P 500.",
+    },
+    {
+      q: "Et SPEA, le S&P 500 d'iShares pour le PEA ?",
+      a: `SPEA (iShares S&P 500 Swap PEA UCITS ETF EUR (Acc), ISIN IE000DQLYVB9), lancé le 29 mai 2025, réplique le même S&P 500 à 0,10 % de TER : le moins cher des S&P 500 éligibles PEA de notre sélection. Face à PSP5, l'écart vaut environ ${ecartCapital(0.12, 0.1)} € sur 20 ans aux hypothèses de cette page — le même ordre de grandeur que l'écart ESE/PSP5.`,
     },
     {
       q: "Puis-je détenir ESE et PSP5 en même temps ?",
@@ -910,10 +1002,18 @@ const ESE_VS_PSP5: ETFComparison = {
 
 // ─── VWCE vs WPEA ─────────────────────────────────────────────────────────────
 
+// ⚠️ CORRIGÉ LE 28/09/2026 (table de vérité ETF). Trois faits faux :
+// 1. WPEA portait l'ISIN IE0006WW1TQ4 (un Xtrackers ex USA, hors PEA) et le
+//    nom « iShares Core MSCI World » (c'est IWDA). Vrai : IE0002XZSHO1.
+// 2. TER de VWCE 0,22 % : périmé, c'est 0,14 %. VWCE est donc MOINS cher que
+//    WPEA (0,20 %) — le texte le dit désormais, et montre que l'écart de frais
+//    (calculé) reste loin derrière l'écart fiscal.
+// 3. « WPEA + AEEM » pour répliquer VWCE en PEA : AEEM n'est PAS éligible au
+//    PEA. L'ETF émergents éligible d'Amundi est PAEEM (0,30 %).
 const VWCE_VS_WPEA: ETFComparison = {
   slug: "vwce-vs-wpea",
   publishedAt: "2026-06-10",
-  updatedAt: "2026-06-10",
+  updatedAt: "2026-09-28",
   title: "VWCE vs WPEA : All-World en CTO ou MSCI World en PEA ?",
   metaTitle: "VWCE ou WPEA : All-World ou MSCI World pour votre DCA ?",
   metaDescription:
@@ -921,22 +1021,22 @@ const VWCE_VS_WPEA: ETFComparison = {
 
   left: {
     heading: "VWCE",
-    subheading: "Vanguard FTSE All-World UCITS ETF (Acc) — ISIN IE00BK5BQT80",
+    subheading: "Vanguard FTSE All-World UCITS ETF (USD) Accumulating — ISIN IE00BK5BQT80",
     type: "ETF",
     coverage: "FTSE All-World — ~3 700 sociétés, pays développés ET émergents (49 pays)",
     issuer: "Vanguard",
-    ter: "0,22 %/an",
+    ter: "0,14 %/an",
     replication: "Physique optimisée",
     distribution: "Capitalisant",
     currency: "USD (cotation EUR disponible)",
     peaEligible: "Non — CTO ou assurance-vie uniquement",
-    strongPoint: "La diversification maximale en un seul ETF (développés + émergents) · Vanguard, pionnier du passif",
+    strongPoint: "Développés + émergents en un seul ETF · TER plus bas que WPEA (0,14 % vs 0,20 %)",
     weakPoint: "Non éligible PEA → PFU 31,4 % sur les gains en CTO",
   },
 
   right: {
     heading: "WPEA",
-    subheading: "iShares Core MSCI World UCITS ETF (PEA) — ISIN IE0006WW1TQ4",
+    subheading: "iShares MSCI World Swap PEA UCITS ETF EUR (Acc) — ISIN IE0002XZSHO1",
     type: "ETF",
     coverage: "MSCI World — ~1 500 sociétés des 23 pays développés (pas d'émergents)",
     issuer: "iShares (BlackRock)",
@@ -950,20 +1050,21 @@ const VWCE_VS_WPEA: ETFComparison = {
   },
 
   verdict:
-    `Pour un résident fiscal français avec un PEA non plafonné, WPEA gagne dans la grande majorité des cas : l'avantage fiscal du PEA (18,6 % vs 31,4 % sur les gains, soit ≈ ${ecartFiscalEnviron(54000)} € sur 20 ans à 200 €/mois) dépasse largement le bénéfice attendu des ~10 % d'émergents de VWCE. Et si les émergents vous tiennent à cœur, l'association WPEA + AEEM (émergents PEA) réplique l'exposition All-World… en restant dans le PEA. VWCE redevient le meilleur choix en CTO (PEA plein) ou en assurance-vie.`,
+    `Pour un résident fiscal français avec un PEA non plafonné, WPEA gagne dans la grande majorité des cas : l'avantage fiscal du PEA (18,6 % vs 31,4 % sur les gains, soit ≈ ${ecartFiscalEnviron(gainsBruts(0.2))} € sur 20 ans à 200 €/mois) dépasse largement le bénéfice attendu des ~10 % d'émergents de VWCE — et aussi son avantage de frais (0,14 % contre 0,20 %, ≈ ${ecartCapital(0.2, 0.14)} € sur la même période). Et si les émergents vous tiennent à cœur, l'association WPEA + PAEEM (émergents éligibles PEA) approche l'exposition All-World… en restant dans le PEA. VWCE redevient le meilleur choix en CTO (PEA plein) ou en assurance-vie.`,
 
   intro:
-    "VWCE est l'ETF chouchou des investisseurs européens : tout le marché mondial, émergents compris, en un seul fonds Vanguard. WPEA est le MSCI World optimisé pour le PEA français. Le débat « faut-il les émergents ? » est légitime — mais pour un investisseur français, il est presque toujours tranché par un facteur que les comparatifs européens ignorent : l'enveloppe fiscale.",
+    "VWCE, c'est tout le marché mondial, émergents compris, en un seul fonds Vanguard. WPEA est le MSCI World optimisé pour le PEA français. Le débat « faut-il les émergents ? » est légitime — mais pour un investisseur français, il est presque toujours tranché par un facteur que les comparatifs européens ignorent : l'enveloppe fiscale.",
 
   keyDifferences: [
     { criterion: "Indice répliqué", leftValue: "FTSE All-World (~3 700 sociétés)", rightValue: "MSCI World (~1 500 sociétés)" },
     { criterion: "Marchés émergents", leftValue: "Oui (~10 % de l'indice)", rightValue: "Non" },
-    { criterion: "TER", leftValue: "0,22 %/an", rightValue: "0,20 %/an" },
+    { criterion: "TER", leftValue: "0,14 %/an", rightValue: "0,20 %/an" },
+    { criterion: `Écart de frais — 20 ans à ${HYPOTHESES_COMPARATIFS.monthlyAmount} €/mois`, leftValue: `≈ ${ecartCapital(0.2, 0.14)} € de capital final en plus`, rightValue: "Référence" },
     { criterion: "Réplication", leftValue: "Physique optimisée", rightValue: "Synthétique (swap)" },
     { criterion: "Éligibilité PEA", leftValue: "Non", rightValue: "Oui" },
     { criterion: "Fiscalité des gains (après 5 ans)", leftValue: "PFU 31,4 % (CTO)", rightValue: "18,6 % (PEA)" },
-    { criterion: "Impact fiscal — 20 ans à 200 €/mois", leftValue: `≈ ${impotCTOEnviron(54000)} € de prélèvements`, rightValue: `≈ ${impotPEAEnviron(54000)} € de prélèvements` },
-    { criterion: "Équivalent émergents en PEA", leftValue: "—", rightValue: "Possible via WPEA + AEEM (~90/10)" },
+    { criterion: "Impact fiscal — 20 ans à 200 €/mois", leftValue: `≈ ${impotCTOEnviron(gainsBruts(0.14))} € de prélèvements`, rightValue: `≈ ${impotPEAEnviron(gainsBruts(0.2))} € de prélèvements` },
+    { criterion: "Équivalent émergents en PEA", leftValue: "—", rightValue: "Approché via WPEA + PAEEM (~90/10)" },
   ],
 
   useCases: [
@@ -977,13 +1078,13 @@ const VWCE_VS_WPEA: ETFComparison = {
       profile: "Conviction émergents, PEA disponible",
       winner: "right",
       explanation:
-        "Combinez WPEA (~90 %) + AEEM (Amundi MSCI Emerging Markets, éligible PEA) (~10 %) : vous répliquez l'exposition All-World en conservant la fiscalité PEA. Un ordre de plus par mois, quelques milliers d'euros d'impôt en moins à l'arrivée.",
+        "Combinez WPEA (~90 %) + PAEEM (Amundi PEA Emergent ESG Transition, éligible PEA, 0,30 %) (~10 %) : vous approchez l'exposition All-World en conservant la fiscalité PEA — PAEEM suit une variante « ESG Transition » du MSCI Emerging Markets, pas l'indice standard. Un ordre de plus par mois, quelques milliers d'euros d'impôt en moins à l'arrivée. (AEEM, l'autre ETF émergents d'Amundi, n'est pas éligible au PEA.)",
     },
     {
       profile: "PEA plafonné ou non-résident",
       winner: "left",
       explanation:
-        "Sans l'avantage PEA, VWCE redevient l'option de référence : diversification maximale, réplication physique, émetteur Vanguard, un seul fonds à gérer en CTO.",
+        "Sans l'avantage PEA, VWCE redevient l'option de référence : développés et émergents, réplication physique, TER plus bas que WPEA (0,14 %), un seul fonds à gérer en CTO.",
     },
     {
       profile: "Allergie au synthétique",
@@ -994,20 +1095,23 @@ const VWCE_VS_WPEA: ETFComparison = {
   ],
 
   analysis:
-    `Les comparatifs européens de VWCE ne tiennent jamais compte du PEA — c'est pourtant le facteur décisif pour un investisseur français. Posons les ordres de grandeur sur 20 ans à 200 €/mois et 7 %/an : capital avant frais ≈ ${capitalPour(0)} €, dont ≈ ${gainsPour(0)} € de gains. En PEA (WPEA), prélèvements sociaux de 18,6 % ≈ 10 000 €. En CTO (VWCE), PFU de 31,4 % ≈ 16 956 €. L'écart (~${ecartFiscalEnviron(54000)} €) représente plusieurs fois l'impact espéré des émergents : sur les 30 dernières années, développés et émergents ont alterné les périodes de sur/sous-performance, sans gagnant structurel — et les émergents ne pèsent que ~10 % de l'All-World, diluant leur effet. Conclusion pragmatique : l'enveloppe d'abord, l'indice ensuite. WPEA (ou WPEA + AEEM) en PEA tant qu'il n'est pas plein ; VWCE en CTO au-delà. Les deux stratégies sont excellentes — c'est l'ordre qui compte.`,
+    `Les comparatifs européens de VWCE ne tiennent jamais compte du PEA — c'est pourtant le facteur décisif pour un investisseur français. Posons les ordres de grandeur sur 20 ans à 200 €/mois et 7 %/an : capital avant frais ≈ ${capitalPour(0)} €, dont ≈ ${gainsPour(0)} € de gains. En PEA (WPEA), prélèvements sociaux de 18,6 % ≈ ${impotPEAEnviron(gainsBruts(0))} €. En CTO (VWCE), PFU de 31,4 % ≈ ${impotCTOEnviron(gainsBruts(0))} €. L'écart (~${ecartFiscalEnviron(gainsBruts(0))} €) représente plusieurs fois l'avantage de frais de VWCE (0,14 % contre 0,20 %, ≈ ${ecartCapital(0.2, 0.14)} €) et l'impact espéré des émergents : sur les 30 dernières années, développés et émergents ont alterné les périodes de sur/sous-performance, sans gagnant structurel — et les émergents ne pèsent que ~10 % de l'All-World, diluant leur effet. Conclusion pragmatique : l'enveloppe d'abord, l'indice ensuite. WPEA (ou WPEA + PAEEM) en PEA tant qu'il n'est pas plein ; VWCE en CTO au-delà. Les deux stratégies sont excellentes — c'est l'ordre qui compte.`,
 
   faq: [
     {
       q: "VWCE est-il éligible au PEA ?",
-      a: "Non. VWCE est en réplication physique et détient majoritairement des actions non européennes, ce qui l'exclut du PEA. Il se loge en compte-titres ordinaire ou, selon les contrats, en assurance-vie. En PEA, l'exposition mondiale passe par les ETF synthétiques (WPEA, DCAM, CW8).",
+      a: "Non. VWCE est en réplication physique et détient majoritairement des actions non européennes, ce qui l'exclut du PEA. Il se loge en compte-titres ordinaire ou, selon les contrats, en assurance-vie. En PEA, l'exposition mondiale passe par les ETF synthétiques : WPEA, DCAM, CW8 pour les pays développés, GPEA (MSCI ACWI) pour le monde entier, émergents inclus.",
     },
     {
       q: "Comment répliquer VWCE dans un PEA ?",
-      a: "Avec deux ETF : WPEA (MSCI World, pays développés) pour ~90 % et AEEM (Amundi MSCI Emerging Markets, éligible PEA) pour ~10 %. Cette combinaison approxime l'exposition FTSE All-World de VWCE tout en conservant la fiscalité PEA. Notre outil d'allocation permet de simuler ce portefeuille.",
+      // GPEA ajouté le 28/09/2026 : fonds créé le 06/07/2026, MSCI ACWI,
+      // éligible PEA (table de vérité ETF). « Avec deux ETF » n'était plus
+      // la seule voie.
+      a: "Avec un seul ETF : GPEA (Amundi PEA Global, indice MSCI ACWI, émergents inclus, 0,30 %), lancé en juillet 2026 — donc sans historique. Son indice n'est pas le FTSE All-World de VWCE, mais il couvre lui aussi développés et émergents. Ou avec deux ETF : WPEA (MSCI World, pays développés) pour ~90 % et PAEEM (Amundi PEA Emergent, éligible PEA, 0,30 %) pour ~10 %. Cette combinaison approxime l'exposition FTSE All-World de VWCE tout en conservant la fiscalité PEA — PAEEM suit une variante « ESG Transition » du MSCI Emerging Markets. Attention : AEEM, souvent cité, n'est PAS éligible au PEA. Notre outil d'allocation permet de simuler ce portefeuille.",
     },
     {
       q: "Les émergents ne vont-ils pas surperformer et inverser le calcul ?",
-      a: "C'est possible — mais il faudrait une surperformance massive et durable des émergents pour que ~10 % d'allocation compensent 13 points de fiscalité sur la totalité des gains. Historiquement, développés et émergents alternent les cycles sans gagnant de long terme évident. Et l'option WPEA + AEEM capture ce scénario sans sacrifier le PEA.",
+      a: "C'est possible — mais il faudrait une surperformance massive et durable des émergents pour que ~10 % d'allocation compensent 13 points de fiscalité sur la totalité des gains. Historiquement, développés et émergents alternent les cycles sans gagnant de long terme évident. Et l'option WPEA + PAEEM capture ce scénario sans sacrifier le PEA.",
     },
     {
       q: "J'ai déjà du VWCE en CTO : dois-je vendre pour passer en PEA ?",

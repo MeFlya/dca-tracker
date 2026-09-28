@@ -26,32 +26,42 @@ interface AlphaVantageGlobalQuote {
 }
 
 // Static name mapping — Alpha Vantage doesn't return human-readable names on free tier
+//
+// 28/09/2026 : clés réalignées sur les symboles du catalogue (etf-config.ts)
+// et noms alignés sur la table de vérité ETF. L'ancienne table portait des
+// symboles retirés (EWLD.PA, SP5.PA, OBLI.PA, LYYA.PA, SMAE.PA, IUSN.DE) et
+// des noms faux : « STOXX Europe 600 » pour PCEU (MSCI Europe), « MSCI
+// Russell 2000 » pour RS2K (Russell 2000), « Japan TOPIX » pour JPNK
+// (JPX-Nikkei 400), et le nom de l'AEEM sous PAEEM.PA (deux fonds distincts).
 const SYMBOL_NAMES: Record<string, string> = {
   // MSCI World
-  "CW8.PA": "Amundi MSCI World UCITS ETF",
-  "EWLD.PA": "iShares MSCI World UCITS ETF",
+  "CW8.PA": "Amundi MSCI World Swap UCITS ETF EUR Acc",
+  "WPEA.PA": "iShares MSCI World Swap PEA UCITS ETF EUR (Acc)",
+  "DCAM.PA": "Amundi PEA Monde (MSCI World) UCITS ETF Acc",
+  "IWDA.AS": "iShares Core MSCI World UCITS ETF USD (Acc)",
   // FTSE All-World
-  "VWCE.DE": "Vanguard FTSE All-World UCITS ETF",
+  "VWCE.DE": "Vanguard FTSE All-World UCITS ETF (USD) Accumulating",
   // S&P 500
-  "SP5.PA": "Amundi S&P 500 UCITS ETF",
-  "CSPX.L": "iShares Core S&P 500 UCITS ETF",
+  "500.PA": "Amundi S&P 500 Swap UCITS ETF EUR Acc",
+  "PSP5.PA": "Amundi PEA S&P 500 UCITS ETF Acc",
+  "CSPX.L": "iShares Core S&P 500 UCITS ETF USD (Acc)",
   SPY: "SPDR S&P 500 ETF Trust",
-  "VUSA.AS": "Vanguard S&P 500 UCITS ETF",
+  "VUSA.AS": "Vanguard S&P 500 UCITS ETF (USD) Distributing",
   // Nasdaq-100
-  "ANX.PA": "Amundi Nasdaq-100 UCITS ETF",
-  QQQ: "Invesco Nasdaq-100 ETF",
+  "ANX.PA": "Amundi Nasdaq-100 Swap UCITS ETF EUR Acc",
+  QQQ: "Invesco QQQ Trust, Series 1",
   // Emerging Markets
-  "PAEEM.PA": "Amundi MSCI Emerging Markets UCITS ETF",
+  "PUST.PA": "Amundi PEA Nasdaq-100 UCITS ETF Acc",
+  "PAEEM.PA": "Amundi PEA Emergent (MSCI Emerging) ESG Transition UCITS ETF Acc",
+  "AEEM.PA": "Amundi MSCI Emerging Markets Swap UCITS ETF EUR Acc",
   // Europe
-  "PCEU.PA": "Amundi STOXX Europe 600 UCITS ETF",
+  "PCEU.PA": "Amundi PEA MSCI Europe UCITS ETF Acc",
   // Small Cap
-  "RS2K.PA": "Amundi MSCI Russell 2000 UCITS ETF",
-  "SMAE.PA": "Amundi MSCI Europe Small Cap UCITS ETF",
-  "IUSN.DE": "iShares MSCI World Small Cap UCITS ETF",
+  "RS2K.PA": "Amundi Russell 2000 UCITS ETF EUR Acc",
   // Japan
-  "LYYA.PA": "Amundi Japan TOPIX UCITS ETF",
-  // Bonds
-  "OBLI.PA": "Amundi Euro Government Bond UCITS ETF",
+  "JPNK.PA": "Amundi JPX-Nikkei 400 UCITS ETF EUR Acc",
+  // Quasi-monétaire
+  "C3M.PA": "Amundi Euro Government Bond 0-6 M UCITS ETF Acc",
 };
 
 const EXCHANGE_MAP: Record<string, string> = {

@@ -90,7 +90,10 @@ const STEPS = [
   {
     n: "2",
     title: "Choisir un ETF monde",
-    body: "Un seul ETF suffit pour démarrer. Le CW8 (Amundi MSCI World) ou l'EWLD (iShares MSCI World) couvrent 1 500 entreprises mondiales et sont éligibles PEA.",
+    // Corrigé le 28/09/2026 d'après la table de vérité ETF : EWLD est un ETF
+    // Amundi (part distribuante du fonds de CW8), pas iShares. Les MSCI World
+    // éligibles PEA les moins chers de la table sont WPEA et DCAM (0,20 %).
+    body: "Un seul ETF suffit pour démarrer. WPEA (iShares) et DCAM (Amundi), à 0,20 % de frais, ou CW8 (Amundi), à 0,38 %, répliquent le MSCI World et sont éligibles PEA.",
     href: "/meilleurs-etf-debutants",
     linkLabel: "Voir les meilleurs ETF →",
   },
@@ -142,7 +145,10 @@ const FAQ = [
   },
   {
     q: "Peut-on faire du DCA avec n'importe quel ETF ?",
-    a: "Oui. Le DCA est une méthode d'investissement, pas un produit. Il s'applique à tout ETF coté. En France, les ETF MSCI World éligibles PEA (CW8, EWLD) sont les supports DCA les plus utilisés par les investisseurs particuliers.",
+    // Corrigé le 28/09/2026 : « CW8, EWLD, les supports les plus utilisés »
+    // était un classement que rien ne mesurait, et omettait WPEA et DCAM,
+    // moins chers (table de vérité ETF).
+    a: "Oui. Le DCA est une méthode d'investissement, pas un produit. Il s'applique à tout ETF coté. En France, les supports DCA les plus simples sont les ETF MSCI World éligibles PEA : WPEA et DCAM (0,20 %), CW8 (0,38 %) ou sa part distribuante EWLD.",
   },
   {
     q: "Combien de temps faut-il garder son DCA actif ?",

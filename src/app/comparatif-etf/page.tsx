@@ -9,9 +9,11 @@ import { ComparisonDisclosure } from "@/components/ui/ComparisonDisclosure";
 // Google et le site n'est positionné sur ni l'un ni l'autre. Le titre prend
 // « comparateur » (le plus faible des deux positionnements) et garde les
 // tickers, qui portent la longue traîne ; « comparatifs » reste dans le H1.
-const TITLE = "Comparateur ETF PEA 2026 : CW8, WPEA, DCAM, VWCE";
+// 28/09/2026 : le titre disait « ETF PEA » en listant VWCE, qui n'est PAS
+// éligible au PEA (table de vérité ; la page le dit elle-même plus bas).
+const TITLE = "Comparateur ETF 2026 : CW8, WPEA, DCAM, VWCE (PEA, CTO)";
 const DESCRIPTION =
-  "Tous nos face-à-face d’ETF PEA : CW8, WPEA, DCAM, VWCE, ESE. Choisissez votre duel — TER, éligibilité PEA et coût réel des frais sur 20 ans.";
+  "Tous nos face-à-face d’ETF : CW8, WPEA, DCAM et ESE en PEA, VWCE en compte-titres. TER, éligibilité PEA et coût réel des frais sur 20 ans.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -55,8 +57,8 @@ export default function ComparatifETFHubPage() {
         ou CTO. Analyses complètes avec TER, éligibilité et profils recommandés.
       </p>
       <p className="text-base text-gray-600 leading-relaxed mb-4">
-        Le face-à-face le plus regardé en 2026 reste celui des deux MSCI World
-        éligibles PEA — voyez notre comparatif{" "}
+        Le face-à-face le plus regardé en 2026 reste celui de deux MSCI World
+        éligibles au PEA — voyez notre comparatif{" "}
         <Link href="/comparatif-etf/cw8-vs-wpea" className="text-primary-700 font-medium hover:underline">
           CW8 vs WPEA
         </Link>

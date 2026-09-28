@@ -12,6 +12,7 @@ import {
 import { runSimulation, formatEur } from "@/lib/simulator";
 import type { SimulatorOutput, SimulatorInput, MonthlyDataPoint } from "@/lib/simulator";
 import { buildUpgradeUrl, type FeatureKey } from "@/lib/upgrade-link";
+import { ETF_LIST, TER_REFERENCE_SIMULATEUR } from "@/lib/etf-config";
 
 // ─── Milestone helpers ────────────────────────────────────────────────────────
 
@@ -271,17 +272,41 @@ type ErrorDef = {
   ctaHref?: string; // override (e.g. /upgrade for volatility error)
 };
 
+// ─── Le seuil des frais, lu dans le catalogue ────────────────────────────────
+//
+// Ce bloc disait « Frais ETF trop élevés — Corriger cette erreur » dès 0,21 %,
+// en citant « les meilleurs ETF du marché à 0,1 % ». Trois défauts, relevés par
+// l'audit du 28/09/2026 :
+//  · il se déclenchait avec les réglages PAR DÉFAUT du simulateur (0,30 %) et
+//    avec le TER que le site lui-même met dans ses liens (celui de CW8) : le
+//    site accusait le lecteur d'une erreur qu'il n'avait pas faite ;
+//  · « 0,1 % » n'existe pas pour un MSCI World en PEA : les ETF à ce prix-là
+//    sont d'autres indices, ou hors PEA. Pour un lecteur PEA, c'était trompeur ;
+//  · le mot « erreur » transformait un choix en faute.
+//
+// Désormais : on ne signale des frais que s'ils dépassent le PLUS CHER des ETF
+// MSCI World éligibles PEA du catalogue — au-delà, on paie plus que n'importe
+// quelle solution standard. Et on compare au MOINS CHER. Les deux seuils sont
+// lus dans le catalogue vérifié, jamais recopiés. Aucun instrument n'est nommé
+// (voir la ligne à ne pas franchir, plus bas).
+const TER_PEA_MONDE = ETF_LIST.filter(
+  (e) => e.peaEligible && e.indexLabel === "MSCI World",
+).map((e) => e.ter);
+const TER_PEA_MONDE_MAX = TER_PEA_MONDE.length ? Math.max(...TER_PEA_MONDE) : TER_REFERENCE_SIMULATEUR;
+const TER_PEA_MONDE_MIN = TER_PEA_MONDE.length ? Math.min(...TER_PEA_MONDE) : TER_REFERENCE_SIMULATEUR;
+const pctFr = (v: number) => v.toLocaleString("fr-FR", { maximumFractionDigits: 2 });
+
 function detectErrors(input: SimulatorInput): ErrorDef[] {
   const errors: ErrorDef[] = [];
 
-  if (input.annualFeesPct > 0.2) {
+  if (input.annualFeesPct > TER_PEA_MONDE_MAX) {
     errors.push({
       id: "fees",
       icon: "",
-      title: "Frais ETF trop élevés",
-      desc: `Vos frais sont à ${input.annualFeesPct.toFixed(2).replace(".", ",")}&nbsp;%. Les meilleurs ETF du marché sont à 0,1&nbsp;%. Sur ${input.durationYears} ans, chaque 0,1&nbsp;% compte.`,
-      optimized: { ...input, annualFeesPct: 0.1 },
-      ctaLabel: "Corriger cette erreur",
+      title: "Des frais au-dessus des ETF monde du PEA",
+      desc: `Vos frais sont à ${pctFr(input.annualFeesPct)}&nbsp;%. Les grands ETF MSCI World éligibles au PEA coûtent entre ${pctFr(TER_PEA_MONDE_MIN)}&nbsp;% et ${pctFr(TER_PEA_MONDE_MAX)}&nbsp;% par an. Sur ${input.durationYears} ans, l'écart se capitalise.`,
+      optimized: { ...input, annualFeesPct: TER_PEA_MONDE_MIN },
+      ctaLabel: `Voir le résultat à ${pctFr(TER_PEA_MONDE_MIN)} %`,
     });
   }
 
@@ -366,7 +391,7 @@ function ErrorBlock({ output, isPremium }: { output: SimulatorOutput; isPremium:
     <div className="rounded-2xl border border-slate-200/70 bg-white shadow-card p-5">
       <p className="text-xs font-bold text-red-600 uppercase tracking-wider mb-3 flex items-center gap-1.5">
         <AlertTriangle size={14} />
-        Erreur fréquente détectée
+        Ce qui pèse le plus sur votre résultat
       </p>
 
       <p className="text-base font-bold text-gray-900 mb-1.5">{err.title}</p>
@@ -384,7 +409,7 @@ function ErrorBlock({ output, isPremium }: { output: SimulatorOutput; isPremium:
             </span>
           </p>
           <p className="text-xs text-gray-500 mt-1">
-            C&apos;est ce que cette erreur vous coûte sur {output.input.durationYears} ans.
+            C&apos;est l&apos;écart de valeur finale sur {output.input.durationYears} ans.
           </p>
         </div>
       )}

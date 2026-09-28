@@ -30,7 +30,12 @@ const FAQ = [
   },
   {
     q: "Faut-il intégrer les marchés émergents ?",
-    a: "Le MSCI World seul exclut les pays émergents (Chine, Inde, Brésil, etc.) — soit ~10 % de la capitalisation mondiale. Ajouter 10-20 % d'émergents donne une exposition plus complète au marché global. La volatilité est plus élevée mais les retours long-terme historiques sont comparables (~7-9 %/an). Le FTSE All-World (VWCE) intègre déjà émergents + développés en un seul ETF — alternative pratique au mix CW8 + AEEM.",
+    // Corrigé le 28/09/2026 d'après la table de vérité ETF : le « mix CW8 +
+    // AEEM » était présenté comme une option PEA, or AEEM n'est pas éligible
+    // au PEA (l'équivalent éligible est PAEEM), et VWCE non plus. Le « ~10 % de
+    // la capitalisation mondiale » a été retiré : la table ne permet pas de le
+    // vérifier.
+    a: "Le MSCI World seul exclut les pays émergents (Chine, Inde, Brésil, etc.). Ajouter 10-20 % d'émergents donne une exposition plus complète au marché global. La volatilité est plus élevée mais les retours long-terme historiques sont comparables (~7-9 %/an). En PEA, le mix se fait avec un MSCI World (WPEA ou DCAM à 0,20 %, CW8 à 0,38 %) et PAEEM (0,30 %) — l'Amundi MSCI Emerging Markets Swap (AEEM) n'est PAS éligible au PEA. GPEA (Amundi PEA Global, MSCI ACWI, 0,30 %) réunit les deux en une ligne éligible, mais le fonds n'existe que depuis le 06/07/2026. Hors PEA, le FTSE All-World (VWCE) intègre aussi émergents et développés en un seul ETF.",
   },
   {
     q: "Le portefeuille 70/20/10, c'est quoi exactement ?",
@@ -46,7 +51,11 @@ const FAQ = [
   },
   {
     q: "Quels ETF sont éligibles au PEA ?",
-    a: "Le PEA n'accepte que les ETF investis à au moins 75 % en actions de l'UE. Les ETF synthétiques (réplication par swap) contournent cette règle légalement et permettent d'accéder à des indices mondiaux : CW8 (MSCI World), 500 (S&P 500 d'Amundi), AEEM (Émergents). Les ETF physiques comme VWCE, IWDA, SPY ne sont PAS éligibles PEA — il faut les loger en CTO. Notre comparateur affiche le statut PEA de chaque ETF.",
+    // Corrigé le 28/09/2026 d'après la table de vérité ETF : 500 (S&P 500) et
+    // AEEM (émergents) étaient donnés en exemple d'ETF éligibles PEA. Aucun des
+    // deux ne l'est (reporting Amundi du 31/08/2026 : « Compte-titres,
+    // Assurance-vie »). SPY, absent de la table, remplacé par CSPX.
+    a: "Le PEA n'accepte que les ETF investis à au moins 75 % en actions de l'UE. Les ETF synthétiques (réplication par swap) respectent cette règle en détenant des actions européennes tout en répliquant un indice mondial : WPEA, DCAM ou CW8 (MSCI World), SPEA, PSP5 ou ESE (S&P 500), PUST (Nasdaq-100), PCEU (Europe), PAEEM (émergents). Mais un swap ne rend pas éligible à lui seul : les Amundi S&P 500 Swap (500), Nasdaq-100 Swap (ANX) et MSCI Emerging Markets Swap (AEEM) ne le sont PAS. Les ETF physiques comme VWCE, IWDA, CSPX ne sont pas éligibles non plus — il faut les loger en CTO. Notre comparateur affiche le statut PEA de chaque ETF.",
   },
   {
     q: "Le rendement attendu pondéré : sur quoi est-il basé ?",
@@ -140,16 +149,26 @@ export default function AllocationPortefeuillePage() {
               </p>
               <ul className="space-y-2 list-disc pl-5">
                 <li>
+                  {/* Corrigé le 28/09/2026 (table de vérité ETF) : AEEM était
+                      proposé comme ETF émergents sans préciser qu'il n'est pas
+                      éligible au PEA ; « ~10 % du capital mondial » retiré,
+                      invérifiable. */}
                   <strong>Pas de marchés émergents</strong> (Chine, Inde,
-                  Brésil) : ~10 % du capital mondial absent. Ajouter un ETF
-                  Émergents (AEEM, PAEEM) ou passer au FTSE All-World (VWCE,
-                  qui intègre les deux).
+                  Brésil). Ajouter un ETF Émergents (PAEEM en PEA — AEEM,
+                  lui, n&apos;est pas éligible) ou passer au FTSE All-World
+                  (VWCE, hors PEA, qui intègre les deux).
                 </li>
                 <li>
                   <strong>Sous-pondération des small caps</strong> : le MSCI
-                  World ne contient que des grandes capitalisations. Ajouter
-                  10 % de small caps mondiales (IUSN, RS2K) capte le premium
-                  historique observé sur ce segment.
+                  World ne contient que des grandes et moyennes
+                  capitalisations. Ajouter
+                  10 % de small caps capte le premium historique observé sur
+                  ce segment — par exemple RS2K (Russell 2000, petites
+                  capitalisations américaines, éligible PEA).
+                  {/* Corrigé le 28/09/2026 (table de vérité ETF) : RS2K était
+                      rangé dans les « small caps mondiales » ; il réplique le
+                      Russell 2000, un indice américain. IUSN retiré : absent
+                      de la table, non vérifié. */}
                 </li>
               </ul>
               <p>

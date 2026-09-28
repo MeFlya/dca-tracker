@@ -6,10 +6,14 @@ import { EducationalHeader } from "@/components/ui/EducationalHeader";
 import { ArticleByline } from "@/components/ui/ArticleByline";
 import { BreadcrumbSchema } from "@/components/ui/BreadcrumbSchema";
 import { SourcesReferences } from "@/components/ui/SourcesReferences";
+import { getETFBySymbol } from "@/lib/etf-config";
+import { runSimulation } from "@/lib/simulator";
+import { capitalPour, gainsPour, HYPOTHESES_COMPARATIFS } from "@/lib/ecart-frais";
+import { ecartFiscal, impotCTO, impotPEA } from "@/lib/impot-affiche";
 
 const TITLE = "PEA ou CTO en 2026 : comparatif fiscal complet pour vos ETF";
 const DESCRIPTION =
-  "PEA vs compte-titres ordinaire pour vos ETF : fiscalité (18,6 % vs 31,4 %), plafond (150 000 €), ETF éligibles (CW8, EWLD, AEEM) et recommandation chiffrée selon votre profil.";
+  "PEA ou compte-titres pour vos ETF : fiscalité (18,6 % vs 31,4 %), plafond de 150 000 €, ETF éligibles (WPEA, DCAM, CW8) et l'écart d'impôt sur 20 ans.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -41,21 +45,71 @@ const ROWS = [
   { label: "Idéal pour",            pea: "DCA MSCI World long terme", cto: "ETF US, diversification" },
 ];
 
-const ETF_PEA = [
-  { symbol: "CW8",   name: "Amundi MSCI World",              ter: "0,38 %", note: "Réplication synthétique — le plus populaire en PEA" },
-  { symbol: "IWDA",  name: "iShares Core MSCI World",        ter: "0,20 %", note: "Réplication physique optimisée — sans risque de contrepartie" },
-  { symbol: "500",   name: "Amundi S&P 500",                 ter: "0,15 %", note: "S&P 500 en PEA grâce à la réplication synthétique" },
-  { symbol: "ANX",   name: "Amundi Nasdaq-100",              ter: "0,23 %", note: "Seule option PEA pour s'exposer au Nasdaq-100" },
-  { symbol: "AEEM",  name: "Amundi MSCI Emerging Markets",   ter: "0,20 %", note: "Marchés émergents accessibles en PEA via swap" },
-  { symbol: "PCEU",  name: "Amundi STOXX Europe 600",        ter: "0,07 %", note: "600 grandes capitalisations européennes — frais minimaux" },
+// ─── LISTES REFAITES LE 28/09/2026 ───────────────────────────────────────────
+//
+// Ce qui était faux, d'après la table de vérité ETF du 28/09/2026 (documents
+// des émetteurs recoupés avec justETF, Boursorama et Euronext) :
+//   · Sous « ETF éligibles PEA » figuraient IWDA, 500, ANX et AEEM. Aucun des
+//     quatre n'est éligible (reporting Amundi du 31/08/2026 pour les trois
+//     Amundi : « Compte-titres, Assurance-vie »). Quatre lignes sur six.
+//   · PCEU : « Amundi STOXX Europe 600 » à 0,07 % → Amundi PEA MSCI Europe,
+//     0,15 %.
+//   · « Seule option PEA pour le Nasdaq-100 » (ANX) : ANX n'est pas éligible,
+//     et PUST n'est pas la seule ligne Nasdaq-100 éligible.
+//   · VWCE à 0,22 % → 0,14 %. QQQ à 0,20 % → 0,18 % (baisse du 22/12/2025).
+//   · « CSPX, le moins cher d'Europe » et « CW8, le plus populaire en PEA » :
+//     classements que rien ne vérifie, retirés.
+//   · SPY retiré : absent de la table de vérité, ses frais n'ont pas été
+//     vérifiés.
+// Les trois Amundi non éligibles passent dans la liste hors PEA, avec leur
+// équivalent éligible : c'est exactement le piège où tombait la page.
+
+interface EtfLigne {
+  symbol: string;
+  name: string;
+  ter: string;
+  note: string;
+}
+
+const ETF_PEA: EtfLigne[] = [
+  { symbol: "WPEA",  name: "iShares MSCI World Swap PEA",             ter: "0,20 %", note: "MSCI World — le moins cher de notre sélection sur cet indice, à égalité avec DCAM" },
+  { symbol: "DCAM",  name: "Amundi PEA Monde (MSCI World)",           ter: "0,20 %", note: "MSCI World — même indice et même TER que WPEA, part sous 10 €" },
+  { symbol: "CW8",   name: "Amundi MSCI World Swap",                  ter: "0,38 %", note: "MSCI World en réplication synthétique — même indice que WPEA et DCAM, presque deux fois plus cher. EWLD est sa part distribuante" },
+  { symbol: "SPEA",  name: "iShares S&P 500 Swap PEA",                ter: "0,10 %", note: "S&P 500 — PSP5 (Amundi, 0,12 %) et ESE (BNP Paribas, 0,14 %) sont aussi éligibles" },
+  { symbol: "PUST",  name: "Amundi PEA Nasdaq-100",                   ter: "0,30 %", note: "Nasdaq-100 — pas la seule ligne éligible sur cet indice (PNAS l'est aussi)" },
+  { symbol: "PCEU",  name: "Amundi PEA MSCI Europe",                  ter: "0,15 %", note: "Grandes et moyennes capitalisations des pays développés européens" },
+  { symbol: "PAEEM", name: "Amundi PEA Emergent ESG Transition",      ter: "0,30 %", note: "Pays émergents, dans la variante ESG Transition du MSCI Emerging Markets" },
 ];
 
-const ETF_CTO = [
-  { symbol: "VWCE", name: "Vanguard FTSE All-World",   ter: "0,22 %", note: "Développés + émergents — CTO ou assurance-vie uniquement" },
-  { symbol: "CSPX", name: "iShares Core S&P 500",      ter: "0,07 %", note: "S&P 500 physique, le moins cher d'Europe — CTO uniquement" },
-  { symbol: "SPY",  name: "SPDR S&P 500 ETF Trust",    ter: "0,09 %", note: "Coté à New York — CTO uniquement" },
-  { symbol: "QQQ",  name: "Invesco Nasdaq-100 ETF",    ter: "0,20 %", note: "Coté à New York — CTO uniquement" },
+const ETF_CTO: EtfLigne[] = [
+  { symbol: "500",  name: "Amundi S&P 500 Swap",                ter: "0,15 %", note: "Le piège : Amundi, synthétique, et pourtant non éligible PEA. Équivalents PEA : SPEA, PSP5, ESE" },
+  { symbol: "ANX",  name: "Amundi Nasdaq-100 Swap",             ter: "0,23 %", note: "Non éligible PEA. Équivalent PEA : PUST" },
+  { symbol: "AEEM", name: "Amundi MSCI Emerging Markets Swap",  ter: "0,20 %", note: "Non éligible PEA. Équivalent PEA : PAEEM" },
+  { symbol: "IWDA", name: "iShares Core MSCI World",            ter: "0,20 %", note: "Réplication physique — non éligible PEA. Équivalents PEA : WPEA, DCAM" },
+  { symbol: "VWCE", name: "Vanguard FTSE All-World",            ter: "0,14 %", note: "Pays développés et émergents — non éligible PEA" },
+  { symbol: "CSPX", name: "iShares Core S&P 500",               ter: "0,07 %", note: "S&P 500 — non éligible PEA" },
+  { symbol: "QQQ",  name: "Invesco QQQ Trust, Series 1",        ter: "0,18 %", note: "Nasdaq-100, fonds de droit américain — non éligible PEA" },
 ];
+
+/** Vrai quand l'ETF a une fiche /etf/[symbole] — sinon le lien serait une 404. */
+function aUneFiche(symbol: string): boolean {
+  return getETFBySymbol(symbol) !== undefined;
+}
+
+// ─── Exemple chiffré, CALCULÉ ────────────────────────────────────────────────
+//
+// Les montants de l'exemple (« ~54 000 € », « 10 044 € », « 16 956 € »,
+// « 6 912 € ») et du bandeau simulateur (« 102 000 € ») étaient écrits à la
+// main — et calculés SANS AUCUN FRAIS, alors que la page parle d'ETF. Corrigé le
+// 28/09/2026 : ils sortent du moteur, avec le TER de WPEA et DCAM (0,20 %), le
+// MSCI World éligible PEA le moins cher de la table de vérité. L'impôt est
+// calculé sur le gain ARRONDI affiché, pour que la multiplication écrite dans
+// la phrase reste juste.
+const TER_EXEMPLE = 0.2;
+const GAIN_EXEMPLE =
+  Math.round(
+    runSimulation({ ...HYPOTHESES_COMPARATIFS, annualFeesPct: TER_EXEMPLE }).base.totalGain / 100,
+  ) * 100;
 
 const FAQ = [
   {
@@ -68,7 +122,10 @@ const FAQ = [
   },
   {
     q: "Quels ETF MSCI World sont éligibles au PEA ?",
-    a: "Les ETF cotés sur des marchés européens (Euronext Paris, XETRA…) qui respectent les critères de l'AMF sont éligibles. CW8 (Amundi) et EWLD (iShares) sont les deux références MSCI World les plus utilisées dans un PEA. VWCE (Vanguard FTSE All-World) est également éligible.",
+    // Corrigé le 28/09/2026 d'après la table de vérité ETF : EWLD est un ETF
+    // Amundi (part distribuante du fonds de CW8), pas iShares ; VWCE n'est PAS
+    // éligible au PEA ; « les plus utilisées » n'était mesuré nulle part.
+    a: "Quatre ETF MSCI World éligibles au PEA ont été vérifiés par nos soins : WPEA (iShares, 0,20 %), DCAM (Amundi, 0,20 %), CW8 (Amundi, 0,38 %) et EWLD (Amundi, 0,38 %, la part distribuante du même fonds que CW8). Pour de nouveaux achats, WPEA et DCAM répliquent le même indice pour presque deux fois moins de frais. VWCE (Vanguard FTSE All-World) et IWDA (iShares Core MSCI World) ne sont PAS éligibles au PEA.",
   },
   {
     q: "Le PEA est-il adapté si j'investis plus de 150 000 € ?",
@@ -105,7 +162,7 @@ export default function PEAouCTOPage() {
 
       <ArticleByline
         publishedAt="2026-04-12"
-        updatedAt="2026-05-25"
+        updatedAt="2026-09-28"
         readingMinutes={12}
         url="/pea-ou-cto"
         headline={TITLE}
@@ -153,11 +210,14 @@ export default function PEAouCTOPage() {
         <div className="rounded-2xl bg-primary-50 border border-primary-100 p-5 mb-4">
           <p className="text-sm font-semibold text-primary-800 mb-2">Exemple concret</p>
           <p className="text-sm text-primary-700 leading-relaxed">
-            Vous investissez 200 € par mois pendant 20 ans à 7 %/an.
-            Gain projeté : ~54 000 €. Sur ce gain :<br />
-            <span className="font-semibold">• PEA (&gt;5 ans) :</span> 54 000 × 18,6 % = <strong>10 044 € d&apos;impôts</strong><br />
-            <span className="font-semibold">• CTO :</span> 54 000 × 31,4 % = <strong>16 956 € d&apos;impôts</strong><br />
-            Soit <strong>6 912 € économisés</strong> grâce au PEA.{" "}
+            Vous investissez {HYPOTHESES_COMPARATIFS.monthlyAmount} € par mois
+            pendant {HYPOTHESES_COMPARATIFS.durationYears} ans à{" "}
+            {HYPOTHESES_COMPARATIFS.annualReturnPct} %/an, dans un ETF MSCI
+            World à 0,20 % de frais. Gain projeté : ~{gainsPour(TER_EXEMPLE)} €.
+            Sur ce gain :<br />
+            <span className="font-semibold">• PEA (&gt;5 ans) :</span> {gainsPour(TER_EXEMPLE)} × 18,6 % = <strong>{impotPEA(GAIN_EXEMPLE)} € d&apos;impôts</strong><br />
+            <span className="font-semibold">• CTO :</span> {gainsPour(TER_EXEMPLE)} × 31,4 % = <strong>{impotCTO(GAIN_EXEMPLE)} € d&apos;impôts</strong><br />
+            Soit <strong>{ecartFiscal(GAIN_EXEMPLE)} € économisés</strong> grâce au PEA.{" "}
             <Link href="/simulateur" className="underline hover:text-primary-900 transition-colors">
               Calculez votre propre scénario →
             </Link>
@@ -185,10 +245,19 @@ export default function PEAouCTOPage() {
           Quels ETF sont éligibles au PEA ?
         </h2>
         <p className="text-gray-600 leading-relaxed mb-6">
-          Pour être éligible au PEA, un ETF doit être coté sur un marché européen
-          et respecter les critères de l&apos;AMF. Les ETF MSCI World et FTSE
-          All-World sont accessibles via réplication synthétique (swap) ou
-          physique avec domiciliation européenne. Pour une sélection plus
+          {/* Réécrit le 28/09/2026 : « coté sur un marché européen » n'est pas
+              le critère, aucun FTSE All-World de la table n'est éligible, et
+              « physique avec domiciliation européenne » est faux (IWDA est
+              physique, domicilié en Irlande, et non éligible). */}
+          Un ETF est éligible au PEA quand il détient au moins 75 %
+          d&apos;actions de sociétés européennes. Les ETF « monde » ou
+          « S&amp;P 500 » éligibles y parviennent par réplication synthétique
+          (swap) : ils détiennent des actions européennes et reçoivent, par
+          contrat, la performance de leur indice. Mais un swap ne suffit pas :
+          chez Amundi, les versions « Swap » du S&amp;P 500, du Nasdaq-100 et
+          des émergents ne sont pas éligibles, leurs versions « PEA » le sont.
+          Le nom ne fait pas foi, l&apos;ISIN et la documentation de
+          l&apos;émetteur si. Pour une sélection plus
           étoffée que la liste ci-dessous, voyez notre guide{" "}
           <Link href="/guide-5-etf-pea-premium" className="text-primary-700 font-medium hover:underline">
             5 ETF éligibles PEA
@@ -197,22 +266,32 @@ export default function PEAouCTOPage() {
         </p>
 
         <h3 className="text-base font-semibold text-gray-900 mb-3">
-          ✅ ETF éligibles PEA (recommandés)
+          ✅ ETF éligibles PEA (vérifiés le 28/09/2026)
         </h3>
         <div className="space-y-3 mb-8">
           {ETF_PEA.map((etf) => (
             <div key={etf.symbol} className="flex items-start gap-4 p-4 rounded-xl border border-green-100 bg-green-50/50">
-              <Link
-                href={`/etf/${etf.symbol}`}
-                className="shrink-0 w-12 h-12 rounded-xl bg-white border border-green-100 flex items-center justify-center hover:border-primary-200 transition-colors"
-              >
-                <span className="text-xs font-bold text-gray-800">{etf.symbol}</span>
-              </Link>
+              {aUneFiche(etf.symbol) ? (
+                <Link
+                  href={`/etf/${etf.symbol}`}
+                  className="shrink-0 w-12 h-12 rounded-xl bg-white border border-green-100 flex items-center justify-center hover:border-primary-200 transition-colors"
+                >
+                  <span className="text-xs font-bold text-gray-800">{etf.symbol}</span>
+                </Link>
+              ) : (
+                <div className="shrink-0 w-12 h-12 rounded-xl bg-white border border-green-100 flex items-center justify-center">
+                  <span className="text-xs font-bold text-gray-800">{etf.symbol}</span>
+                </div>
+              )}
               <div>
                 <p className="text-sm font-semibold text-gray-900">
-                  <Link href={`/etf/${etf.symbol}`} className="hover:text-primary-600 transition-colors">
-                    {etf.name}
-                  </Link>
+                  {aUneFiche(etf.symbol) ? (
+                    <Link href={`/etf/${etf.symbol}`} className="hover:text-primary-600 transition-colors">
+                      {etf.name}
+                    </Link>
+                  ) : (
+                    etf.name
+                  )}
                   <span className="ml-2 text-xs font-normal text-gray-500">TER {etf.ter}</span>
                 </p>
                 <p className="text-xs text-gray-500 mt-0.5">{etf.note}</p>
@@ -222,22 +301,32 @@ export default function PEAouCTOPage() {
         </div>
 
         <h3 className="text-base font-semibold text-gray-900 mb-3">
-          ❌ ETF non éligibles PEA (CTO uniquement)
+          ❌ ETF non éligibles PEA
         </h3>
         <div className="space-y-3">
           {ETF_CTO.map((etf) => (
             <div key={etf.symbol} className="flex items-start gap-4 p-4 rounded-xl border border-gray-100 bg-gray-50">
-              <Link
-                href={`/etf/${etf.symbol}`}
-                className="shrink-0 w-12 h-12 rounded-xl bg-white border border-gray-100 flex items-center justify-center hover:border-primary-200 transition-colors"
-              >
-                <span className="text-xs font-bold text-gray-800">{etf.symbol}</span>
-              </Link>
+              {aUneFiche(etf.symbol) ? (
+                <Link
+                  href={`/etf/${etf.symbol}`}
+                  className="shrink-0 w-12 h-12 rounded-xl bg-white border border-gray-100 flex items-center justify-center hover:border-primary-200 transition-colors"
+                >
+                  <span className="text-xs font-bold text-gray-800">{etf.symbol}</span>
+                </Link>
+              ) : (
+                <div className="shrink-0 w-12 h-12 rounded-xl bg-white border border-gray-100 flex items-center justify-center">
+                  <span className="text-xs font-bold text-gray-800">{etf.symbol}</span>
+                </div>
+              )}
               <div>
                 <p className="text-sm font-semibold text-gray-900">
-                  <Link href={`/etf/${etf.symbol}`} className="hover:text-primary-600 transition-colors">
-                    {etf.name}
-                  </Link>
+                  {aUneFiche(etf.symbol) ? (
+                    <Link href={`/etf/${etf.symbol}`} className="hover:text-primary-600 transition-colors">
+                      {etf.name}
+                    </Link>
+                  ) : (
+                    etf.name
+                  )}
                   <span className="ml-2 text-xs font-normal text-gray-500">TER {etf.ter}</span>
                 </p>
                 <p className="text-xs text-gray-500 mt-0.5">{etf.note}</p>
@@ -258,7 +347,7 @@ export default function PEAouCTOPage() {
             <ul className="space-y-2.5">
               {[
                 "Vous investissez à long terme (≥ 5 ans)",
-                "Vous visez le MSCI World ou le FTSE All-World",
+                "Vous visez le MSCI World, le S&P 500 ou le Nasdaq-100",
                 "Vous voulez minimiser votre fiscalité sur les gains",
                 "Vos versements totaux resteront sous 150 000 €",
               ].map((item) => (
@@ -273,7 +362,7 @@ export default function PEAouCTOPage() {
             <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-3">Choisissez le CTO si…</p>
             <ul className="space-y-2.5">
               {[
-                "Vous voulez acheter des ETF US (SPY, QQQ…)",
+                "Vous voulez des ETF non éligibles au PEA (VWCE, IWDA, QQQ…)",
                 "Vous avez déjà atteint le plafond PEA de 150 000 €",
                 "Vous avez besoin de flexibilité totale sur les retraits",
                 "Vous compensez des moins-values avec des plus-values",
@@ -307,12 +396,13 @@ export default function PEAouCTOPage() {
                   comparez les courtiers PEA
                 </Link>{" "}
                 (Trade Republic, Boursorama, Fortuneo) — et commencez à investir sur{" "}
-                <strong>CW8 ou EWLD</strong> (MSCI World, TER faible, PEA éligible).
+                un MSCI World éligible : <strong>WPEA ou DCAM</strong> (0,20 %),
+                plutôt que CW8 (0,38 %) pour de nouveaux achats.
               </span>
             </li>
             <li className="flex gap-3 text-sm text-gray-700">
               <span className="shrink-0 w-6 h-6 rounded-full bg-primary-600 text-white text-xs flex items-center justify-center font-bold">2</span>
-              <span>Si vous voulez des ETF US (SPY, QQQ) ou si vous avez dépassé 150 000 €, <strong>ajoutez un CTO</strong> en complément.</span>
+              <span>Si vous voulez des ETF non éligibles au PEA (VWCE, IWDA, QQQ…) ou si vous avez dépassé 150 000 €, <strong>ajoutez un CTO</strong> en complément.</span>
             </li>
             <li className="flex gap-3 text-sm text-gray-700">
               <span className="shrink-0 w-6 h-6 rounded-full bg-gray-400 text-white text-xs flex items-center justify-center font-bold">3</span>
@@ -325,8 +415,7 @@ export default function PEAouCTOPage() {
           </p>
         </div>
         <p className="text-gray-600 leading-relaxed mt-5">
-          Si vous hésitez encore entre les deux MSCI World les plus utilisés en
-          PEA, notre face-à-face{" "}
+          Si vous hésitez entre CW8 et WPEA, notre face-à-face{" "}
           <Link href="/comparatif-etf/cw8-vs-wpea" className="text-primary-700 font-medium hover:underline">
             CW8 vs WPEA pour PEA
           </Link>
@@ -342,7 +431,10 @@ export default function PEAouCTOPage() {
             Simulez votre DCA sur le MSCI World
           </p>
           <p className="text-primary-200 text-sm leading-snug">
-            200 €/mois pendant 20 ans à 7 %/an → 102 000 € projetés.
+            {HYPOTHESES_COMPARATIFS.monthlyAmount} €/mois pendant{" "}
+            {HYPOTHESES_COMPARATIFS.durationYears} ans à{" "}
+            {HYPOTHESES_COMPARATIFS.annualReturnPct} %/an, avec 0,20 % de
+            frais → ~{capitalPour(TER_EXEMPLE)} € projetés.
             Calculez votre propre scénario en quelques secondes.
           </p>
         </div>

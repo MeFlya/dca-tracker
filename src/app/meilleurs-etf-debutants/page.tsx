@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ETF_LIST } from "@/lib/etf-config";
+import { ETF_LIST, getETFBySymbol } from "@/lib/etf-config";
 import { EmailCapture } from "@/components/ui/EmailCapture";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { ArticleByline } from "@/components/ui/ArticleByline";
@@ -42,84 +42,129 @@ export const metadata: Metadata = {
 };
 
 // ─── ETF selection for beginners ──────────────────────────────────────────────
+//
+// ─── SÉLECTION REFAITE LE 28/09/2026 ─────────────────────────────────────────
+//
+// Ce qui était faux, d'après la table de vérité ETF du 28/09/2026 (documents
+// des émetteurs recoupés avec justETF, Boursorama et Euronext) :
+//   · « 500 — Amundi S&P 500 », présenté « ✓ PEA éligible » : il ne l'est pas
+//     (reporting Amundi du 31/08/2026 : « Compte-titres, Assurance-vie »).
+//     Remplacé par SPEA, le S&P 500 éligible PEA le moins cher de la table.
+//   · « TER le plus bas de notre sélection (0,15 %) » : c'était le TER d'un
+//     ETF hors PEA. Dans la sélection actuelle, le plus bas est SPEA à 0,10 %.
+//   · CW8 « Recommandé #1 » et « choix par défaut » alors que la meta de la
+//     page et nos comparatifs concluent l'inverse : WPEA et DCAM répliquent le
+//     même indice à 0,20 % contre 0,38 %. La page se contredisait.
+//   · VWCE à 0,22 % : ses frais sont de 0,14 %.
+//   · « Le CW8 ou VWCE », cités comme « ETF MSCI World » : VWCE réplique le
+//     FTSE All-World.
+// Retirés faute de pouvoir les vérifier : nombres d'entreprises et de pays des
+// indices, poids des émergents ou de la tech, « le plus grand gestionnaire au
+// monde », « le plus liquide », prix de part de CW8.
 
-const TOP_PICKS = [
+interface Pick {
+  symbol: string;
+  name: string;
+  ter: number;
+  pea: boolean;
+  /** Absente quand la table de vérité ne la documente pas — on n'affiche pas
+   *  une donnée qu'on n'a pas vérifiée. */
+  replication?: string;
+  index: string;
+  verdict: string;
+  verdictClass: string;
+  tagClass: string;
+  tag: string;
+  why: string[];
+  watchOut: string;
+  /** Page du site qui détaille cet ETF, quand il n'a pas (encore) de fiche
+   *  /etf/[symbole] : un lien vers une fiche absente mène à une 404. */
+  detail?: { href: string; label: string };
+}
+
+const TOP_PICKS: Pick[] = [
   {
-    symbol: "CW8",
-    name: "Amundi MSCI World UCITS ETF",
-    ter: 0.38,
+    symbol: "WPEA",
+    name: "iShares MSCI World Swap PEA UCITS ETF EUR (Acc)",
+    ter: 0.20,
     pea: true,
-    replication: "Synthétique",
-    index: "MSCI World (~1 500 entreprises, 23 pays développés)",
-    verdict: "Le choix n°1 pour un débutant en France",
+    replication: "Synthétique (swap)",
+    index: "MSCI World (grandes et moyennes capitalisations des pays développés)",
+    verdict: "Le choix n°1 pour un débutant en PEA",
     verdictClass: "bg-primary-50 border-primary-100 text-primary-800",
     tagClass: "bg-primary-600 text-white",
-    tag: "Recommandé #1",
+    tag: "Notre choix n°1",
     why: [
-      "Éligible PEA — fiscalité la plus avantageuse disponible en France",
-      "Liquidité maximale sur Euronext Paris — largement disponible chez tous les courtiers français",
-      "1 500 entreprises dans 23 pays = diversification mondiale immédiate en un seul ETF",
-      "Politique capitalisante — dividendes réinvestis automatiquement, intérêts composés optimaux",
+      "0,20 % de frais contre 0,38 % pour CW8 : le même indice, presque deux fois moins cher",
+      "Éligible PEA — après 5 ans, seuls les prélèvements sociaux de 18,6 % s'appliquent aux gains",
+      "Encours d'environ 2,1 milliards d'euros fin août 2026, plus que DCAM (environ 1,4)",
+      "Capitalisant, avec une part sous 10 € : un petit versement mensuel achète des parts entières",
     ],
-    watchOut: "La réplication synthétique (swap) introduit un risque de contrepartie faible mais réel. Encadré à 10 % par la réglementation UCITS.",
+    watchOut: "Fonds récent (lancé le 26/03/2024). La réplication synthétique (swap) introduit un risque de contrepartie faible mais réel, encadré par la réglementation UCITS. Aucun pays émergent : le MSCI World ne couvre que les pays développés.",
+    detail: { href: "/comparatif-etf/cw8-vs-wpea", label: "Comparatif CW8 vs WPEA →" },
   },
   {
-    symbol: "IWDA",
-    name: "iShares Core MSCI World UCITS ETF",
+    symbol: "DCAM",
+    name: "Amundi PEA Monde (MSCI World) UCITS ETF Acc",
     ter: 0.20,
-    pea: false,
-    replication: "Physique optimisé",
-    index: "MSCI World (~1 500 entreprises, 23 pays développés)",
-    verdict: "La meilleure alternative physique — en CTO",
+    pea: true,
+    index: "MSCI World (grandes et moyennes capitalisations des pays développés)",
+    verdict: "L'équivalent d'Amundi, au même prix",
     verdictClass: "bg-blue-50 border-blue-100 text-blue-800",
     tagClass: "bg-blue-600 text-white",
-    tag: "Alternative physique (CTO)",
+    tag: "Alternative PEA",
     why: [
-      "TER inférieur au CW8 (0,20 % vs 0,38 %) — moins cher sur le long terme",
-      "Réplication physique — le fonds détient réellement les actions, sans risque de contrepartie",
-      "BlackRock (iShares) : le plus grand gestionnaire d'actifs au monde",
+      "Même indice et même TER (0,20 %) que WPEA",
+      "Part sous 10 € : adaptée aux petits versements mensuels",
+      "Capitalisant — dividendes réinvestis automatiquement",
     ],
-    watchOut: "Non éligible PEA (réplication physique majoritairement hors UE) : il se loge en CTO ou assurance-vie. Pour un PEA, préférez un ETF World synthétique (WPEA, DCAM ou CW8).",
+    watchOut: "Le plus jeune des deux (lancé le 04/03/2025), avec un encours plus petit que WPEA (environ 1,4 milliard d'euros au 31/08/2026). À frais égaux, ce qui départage WPEA et DCAM tient surtout aux frais d'ordre du courtier.",
+    detail: { href: "/comparatif-etf/wpea-vs-dcam", label: "Comparatif WPEA vs DCAM →" },
   },
   {
-    symbol: "VWCE",
-    name: "Vanguard FTSE All-World UCITS ETF",
-    ter: 0.22,
-    pea: false,
-    replication: "Physique optimisé",
-    index: "FTSE All-World (~3 700 entreprises, 49 pays)",
-    verdict: "La diversification maximale pour compte-titres ou assurance-vie",
-    verdictClass: "bg-slate-50 border-slate-200 text-slate-800",
-    tagClass: "bg-slate-600 text-white",
-    tag: "Diversification maximale",
-    why: [
-      "Pays développés ET émergents — ~3 700 entreprises dans 49 pays en un seul ETF",
-      "Inclut Chine, Inde, Brésil, Taiwan, Corée du Sud — marchés exclus du MSCI World",
-      "Vanguard : pionnier de l'investissement passif, structure coopérative, frais structurellement bas",
-      "Réplication physique complète — transparence totale sur les positions détenues",
-    ],
-    watchOut: "Non éligible PEA. À loger en CTO ou assurance-vie. La pondération émergents (~12 %) augmente la volatilité.",
-  },
-  {
-    symbol: "500",
-    name: "Amundi S&P 500 UCITS ETF",
-    ter: 0.15,
+    symbol: "SPEA",
+    name: "iShares S&P 500 Swap PEA UCITS ETF EUR (Acc)",
+    ter: 0.10,
     pea: true,
-    replication: "Synthétique",
-    index: "S&P 500 (500 plus grandes entreprises américaines)",
+    replication: "Synthétique (swap)",
+    index: "S&P 500 (500 grandes entreprises américaines)",
     verdict: "Le S&P 500 en PEA — pour parier sur les États-Unis",
     verdictClass: "bg-amber-50 border-amber-100 text-amber-800",
     tagClass: "bg-amber-500 text-white",
     tag: "S&P 500 PEA",
     why: [
-      "TER le plus bas de notre sélection (0,15 %) — excellent rapport qualité/coût",
-      "Le S&P 500 est l'indice de référence mondial — 80 % de la capitalisation boursière américaine",
-      "Éligible PEA via réplication synthétique — unique avantage d'Amundi",
-      "Capitalisant — composé automatiquement sans friction fiscale dans le PEA",
+      "TER le plus bas de notre sélection : 0,10 %",
+      "Éligible PEA — contrairement à l'Amundi S&P 500 Swap (mnémonique 500), qui ne l'est pas",
+      "Alternatives éligibles : PSP5 (Amundi, 0,12 %) et ESE (BNP Paribas, 0,14 %)",
+      "Capitalisant — dividendes réinvestis automatiquement",
     ],
-    watchOut: "Concentration géographique 100 % américaine. Forte surpondération technologique (~35 % de l'indice). Moins diversifié qu'un ETF monde.",
+    watchOut: "100 % américain : moins diversifié qu'un ETF monde. Les actions américaines sont déjà dans WPEA et DCAM : ajouter SPEA à l'un d'eux surpondère des sociétés déjà détenues. Fonds récent (lancé le 29/05/2025), encours non vérifié dans notre table.",
+    detail: { href: "/comparatif-etf/ese-vs-psp5", label: "Comparatif ESE vs PSP5 →" },
+  },
+  {
+    symbol: "VWCE",
+    name: "Vanguard FTSE All-World UCITS ETF (USD) Accumulating",
+    ter: 0.14,
+    pea: false,
+    index: "FTSE All-World (pays développés et émergents)",
+    verdict: "Hors PEA : le monde entier en une ligne",
+    verdictClass: "bg-slate-50 border-slate-200 text-slate-800",
+    tagClass: "bg-slate-600 text-white",
+    tag: "Compte-titres",
+    why: [
+      "Pays développés ET émergents en un seul ETF — les émergents sont absents du MSCI World",
+      "0,14 % de frais",
+      "Capitalisant — dividendes réinvestis automatiquement",
+    ],
+    watchOut: "Non éligible PEA : il se loge en compte-titres, où les gains supportent le PFU de 31,4 %, contre 18,6 % de prélèvements sociaux dans un PEA de plus de 5 ans. En PEA, GPEA (Amundi PEA Global, MSCI ACWI, 0,30 %) couvre aussi développés et émergents, mais le fonds n'existe que depuis le 06/07/2026.",
+    detail: { href: "/comparatif-etf/vwce-vs-wpea", label: "Comparatif VWCE vs WPEA →" },
   },
 ];
+
+/** Vrai quand l'ETF a une fiche /etf/[symbole] — sinon le lien serait une 404. */
+function aUneFiche(symbol: string): boolean {
+  return getETFBySymbol(symbol) !== undefined;
+}
 
 const CRITERIA = [
   {
@@ -130,7 +175,7 @@ const CRITERIA = [
   {
     title: "Diversification",
     icon: "🌍",
-    body: "Un ETF MSCI World couvre 1 500 entreprises dans 23 pays. Un ETF S&P 500 : 500 entreprises dans un seul pays. Plus la couverture est large, moins votre portefeuille dépend d'une entreprise ou d'un marché spécifique.",
+    body: "Un ETF MSCI World couvre les grandes et moyennes capitalisations de tous les pays développés. Un ETF S&P 500 : 500 entreprises d'un seul pays. Plus la couverture est large, moins votre portefeuille dépend d'une entreprise ou d'un marché spécifique.",
   },
   {
     title: "Éligibilité PEA",
@@ -145,22 +190,22 @@ const CRITERIA = [
   {
     title: "Liquidité",
     icon: "📊",
-    body: "La liquidité détermine à quel prix vous pouvez acheter ou vendre. Un ETF très liquide (comme le CW8 sur Euronext Paris) a un faible écart acheteur/vendeur (spread). Sur des montants modestes, préférez les ETF à fort volume quotidien.",
+    body: "La liquidité détermine à quel prix vous pouvez acheter ou vendre. Un ETF très liquide a un faible écart acheteur/vendeur (spread). Sur des montants modestes, préférez les ETF à fort volume quotidien.",
   },
 ];
 
 const FAQ = [
   {
     q: "Quel est le meilleur ETF pour commencer en bourse avec un petit budget ?",
-    a: "Le CW8 (Amundi MSCI World) est le point de départ recommandé pour la grande majorité des débutants en France. Il est éligible PEA, disponible chez tous les courtiers français, capitalisant, et offre une diversification immédiate sur 1 500 entreprises mondiales. Disponible à partir d'environ 400 € la part sur Euronext Paris — ou en fraction chez Trade Republic.",
+    a: "Un ETF MSCI World éligible PEA à 0,20 % de frais : WPEA (iShares) ou DCAM (Amundi). Tous deux sont capitalisants et leur part coûte moins de 10 €, ce qui permet d'investir de petites sommes chaque mois. CW8 réplique le même indice, mais à 0,38 %.",
   },
   {
     q: "Faut-il choisir CW8, WPEA ou DCAM ?",
-    a: "Les trois couvrent le MSCI World et sont éligibles PEA (réplication synthétique). WPEA et DCAM coûtent moitié moins cher (TER 0,20 % vs 0,38 % pour CW8) : pour de nouveaux achats, ils ont l'avantage. CW8 reste le plus liquide et le plus répandu chez les courtiers. DCAM a un prix de part (~5 €) idéal pour les petits versements mensuels. Sur le long terme, la différence de performance entre eux devrait rester marginale.",
+    a: "Les trois répliquent le MSCI World et sont éligibles PEA. WPEA et DCAM coûtent presque deux fois moins cher (0,20 % contre 0,38 % pour CW8) : pour de nouveaux achats, ils ont l'avantage, et cet écart de 0,18 point par an se retrouve tel quel dans la performance. Entre WPEA et DCAM, WPEA a le plus gros encours (environ 2,1 milliards d'euros fin août 2026, contre 1,4) ; les deux ont une part sous 10 €.",
   },
   {
     q: "Un seul ETF suffit-il pour un portefeuille débutant ?",
-    a: "Oui, et c'est souvent la meilleure approche. Un ETF MSCI World comme CW8 ou VWCE offre une diversification mondiale suffisante pour un investisseur particulier. Ajouter des ETF crée de la complexité et du risque de chevauchement (overlap) sans améliorer nécessairement la diversification. Commencez simple, puis complexifiez si vous avez des raisons précises de le faire.",
+    a: "Oui, et c'est souvent la meilleure approche. Un ETF monde — WPEA ou DCAM (MSCI World) en PEA, VWCE (FTSE All-World) en compte-titres — offre une diversification mondiale suffisante pour un investisseur particulier. Ajouter des ETF crée de la complexité et du risque de chevauchement (overlap) sans améliorer nécessairement la diversification. Commencez simple, puis complexifiez si vous avez des raisons précises de le faire.",
   },
   {
     q: "Peut-on investir en ETF avec 50 € par mois ?",
@@ -172,7 +217,7 @@ const FAQ = [
   },
   {
     q: "Comment acheter mon premier ETF ?",
-    a: "1) Ouvrez un PEA chez un courtier en ligne (Boursorama, Trade Republic, Fortuneo). 2) Effectuez un virement. 3) Recherchez l'ETF par son symbole (ex. CW8) ou son ISIN (LU1681043599). 4) Passez un ordre au marché ou à cours limité. Le premier ordre prend généralement moins de 5 minutes.",
+    a: "1) Ouvrez un PEA chez un courtier en ligne (Boursorama, Trade Republic, Fortuneo). 2) Effectuez un virement. 3) Recherchez l'ETF par son ISIN (ex. IE0002XZSHO1 pour WPEA) : c'est lui, pas le nom, qui identifie le fonds. 4) Passez un ordre au marché ou à cours limité. Le premier ordre prend généralement moins de 5 minutes.",
   },
 ];
 
@@ -180,7 +225,9 @@ export default function MeilleursETFDebutantsPage() {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://dcatracker.fr";
 
   // Get ETFs from config to show full list at bottom
-  const allETFs = ETF_LIST.filter((e) => ["CW8", "IWDA", "VWCE", "500", "ANX", "AEEM", "PCEU"].includes(e.displaySymbol));
+  // 500, ANX et AEEM retirés le 28/09/2026 : cette liste les affichait avec un
+  // badge « PEA » alors qu'aucun des trois n'est éligible (table de vérité ETF).
+  const allETFs = ETF_LIST.filter((e) => ["CW8", "IWDA", "VWCE", "CSPX", "PCEU"].includes(e.displaySymbol));
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -229,7 +276,7 @@ export default function MeilleursETFDebutantsPage() {
 
       <ArticleByline
         publishedAt="2026-04-20"
-        updatedAt="2026-05-25"
+        updatedAt="2026-09-28"
         readingMinutes={11}
         url="/meilleurs-etf-debutants"
         headline={TITLE}
@@ -251,8 +298,8 @@ export default function MeilleursETFDebutantsPage() {
         </h2>
         <p className="text-gray-600 leading-relaxed mb-4">
           Avant de présenter notre sélection, voici les critères qui
-          guident nos recommandations — et que vous devriez utiliser pour
-          évaluer n&apos;importe quel ETF par vous-même.
+          guident nos recommandations — et qui permettent d&apos;évaluer
+          n&apos;importe quel ETF par soi-même.
         </p>
         <p className="text-gray-600 leading-relaxed mb-6">
           Le premier critère, et de loin le plus impactant, est le cadre
@@ -286,12 +333,18 @@ export default function MeilleursETFDebutantsPage() {
 
               {/* Header */}
               <div className="flex items-start gap-4 mb-4">
-                <Link
-                  href={`/etf/${etf.symbol}`}
-                  className="shrink-0 w-14 h-14 rounded-xl bg-white border border-gray-100 flex items-center justify-center hover:border-primary-200 transition-colors shadow-sm"
-                >
-                  <span className="text-sm font-bold text-gray-800">{etf.symbol}</span>
-                </Link>
+                {aUneFiche(etf.symbol) ? (
+                  <Link
+                    href={`/etf/${etf.symbol}`}
+                    className="shrink-0 w-14 h-14 rounded-xl bg-white border border-gray-100 flex items-center justify-center hover:border-primary-200 transition-colors shadow-sm"
+                  >
+                    <span className="text-sm font-bold text-gray-800">{etf.symbol}</span>
+                  </Link>
+                ) : (
+                  <div className="shrink-0 w-14 h-14 rounded-xl bg-white border border-gray-100 flex items-center justify-center shadow-sm">
+                    <span className="text-sm font-bold text-gray-800">{etf.symbol}</span>
+                  </div>
+                )}
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-2 mb-1">
                     <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${etf.tagClass}`}>
@@ -304,13 +357,17 @@ export default function MeilleursETFDebutantsPage() {
                     )}
                     {!etf.pea && (
                       <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">
-                        CTO / Assurance-vie
+                        Hors PEA (CTO)
                       </span>
                     )}
                   </div>
-                  <Link href={`/etf/${etf.symbol}`} className="text-base font-bold text-gray-900 hover:text-primary-700 transition-colors leading-tight block">
-                    {etf.name}
-                  </Link>
+                  {aUneFiche(etf.symbol) ? (
+                    <Link href={`/etf/${etf.symbol}`} className="text-base font-bold text-gray-900 hover:text-primary-700 transition-colors leading-tight block">
+                      {etf.name}
+                    </Link>
+                  ) : (
+                    <p className="text-base font-bold text-gray-900 leading-tight">{etf.name}</p>
+                  )}
                   <p className="text-xs text-gray-500 mt-0.5">{etf.index}</p>
                 </div>
               </div>
@@ -321,10 +378,12 @@ export default function MeilleursETFDebutantsPage() {
                   <p className="text-xs text-gray-500">TER</p>
                   <p className="text-sm font-bold text-gray-900">{etf.ter} %</p>
                 </div>
-                <div className="bg-white/70 rounded-lg px-3 py-1.5 text-center">
-                  <p className="text-xs text-gray-500">Réplication</p>
-                  <p className="text-sm font-bold text-gray-900">{etf.replication}</p>
-                </div>
+                {etf.replication && (
+                  <div className="bg-white/70 rounded-lg px-3 py-1.5 text-center">
+                    <p className="text-xs text-gray-500">Réplication</p>
+                    <p className="text-sm font-bold text-gray-900">{etf.replication}</p>
+                  </div>
+                )}
                 <div className="bg-white/70 rounded-lg px-3 py-1.5 text-center">
                   <p className="text-xs text-gray-500">Distribution</p>
                   <p className="text-sm font-bold text-gray-900">Capitalisant</p>
@@ -352,12 +411,22 @@ export default function MeilleursETFDebutantsPage() {
 
               {/* Links */}
               <div className="flex flex-wrap gap-3">
-                <Link
-                  href={`/etf/${etf.symbol}`}
-                  className="text-xs font-semibold text-primary-600 hover:text-primary-700 underline transition-colors"
-                >
-                  Fiche détaillée {etf.symbol} →
-                </Link>
+                {aUneFiche(etf.symbol) && (
+                  <Link
+                    href={`/etf/${etf.symbol}`}
+                    className="text-xs font-semibold text-primary-600 hover:text-primary-700 underline transition-colors"
+                  >
+                    Fiche détaillée {etf.symbol} →
+                  </Link>
+                )}
+                {etf.detail && (
+                  <Link
+                    href={etf.detail.href}
+                    className="text-xs font-semibold text-primary-600 hover:text-primary-700 underline transition-colors"
+                  >
+                    {etf.detail.label}
+                  </Link>
+                )}
                 <Link
                   href={`/simulateur?fees=${etf.ter}`}
                   className="text-xs font-semibold text-gray-500 hover:text-gray-700 underline transition-colors"
@@ -388,10 +457,10 @@ export default function MeilleursETFDebutantsPage() {
       {/* ── Section 4: Tableau récapitulatif ──────────────────────────────── */}
       <section className="mb-14">
         <h2 className="text-2xl font-bold text-gray-900 mb-6">
-          Tableau comparatif de notre sélection
+          Tableau comparatif de notre sélection (et de CW8)
         </h2>
         <p className="text-gray-600 leading-relaxed mb-6">
-          Les écarts de TER paraissent minimes (0,15 % à 0,38 %), mais sur
+          Les écarts de TER paraissent minimes (0,10 % à 0,38 %), mais sur
           20 ans de capitalisation, l&apos;effet sur le capital final est
           loin d&apos;être négligeable — c&apos;est la mécanique des{" "}
           <Link href="/interets-composes" className="text-primary-700 font-medium hover:underline">
@@ -412,16 +481,21 @@ export default function MeilleursETFDebutantsPage() {
             </thead>
             <tbody>
               {[
-                { symbol: "CW8",  ter: "0,38 %", pea: true,  cover: "1 500 titres / 23 pays développés", ideal: "Premier ETF en PEA" },
-                { symbol: "IWDA", ter: "0,20 %", pea: false, cover: "1 500 titres / 23 pays développés", ideal: "Alternative physique (CTO)" },
-                { symbol: "VWCE", ter: "0,22 %", pea: false, cover: "3 700 titres / 49 pays", ideal: "Diversification maximale CTO" },
-                { symbol: "500",  ter: "0,15 %", pea: true,  cover: "500 grandes caps américaines", ideal: "S&P 500 en PEA" },
+                { symbol: "WPEA", ter: "0,20 %", pea: true,  cover: "Pays développés (MSCI World)", ideal: "Premier ETF en PEA" },
+                { symbol: "DCAM", ter: "0,20 %", pea: true,  cover: "Pays développés (MSCI World)", ideal: "Premier ETF en PEA" },
+                { symbol: "SPEA", ter: "0,10 %", pea: true,  cover: "500 grandes entreprises américaines", ideal: "S&P 500 en PEA" },
+                { symbol: "VWCE", ter: "0,14 %", pea: false, cover: "Développés + émergents (FTSE All-World)", ideal: "Monde entier en CTO" },
+                { symbol: "CW8",  ter: "0,38 %", pea: true,  cover: "Pays développés (MSCI World)", ideal: "Même indice que WPEA, plus cher" },
               ].map((row, i) => (
                 <tr key={row.symbol} className={i % 2 === 0 ? "bg-white" : "bg-gray-50/50"}>
                   <td className="px-4 py-3 font-bold text-gray-900 border-b border-gray-50">
-                    <Link href={`/etf/${row.symbol}`} className="hover:text-primary-600 transition-colors">
-                      {row.symbol}
-                    </Link>
+                    {aUneFiche(row.symbol) ? (
+                      <Link href={`/etf/${row.symbol}`} className="hover:text-primary-600 transition-colors">
+                        {row.symbol}
+                      </Link>
+                    ) : (
+                      row.symbol
+                    )}
                   </td>
                   <td className="px-3 py-3 text-center text-gray-700 border-b border-gray-50">{row.ter}</td>
                   <td className="px-3 py-3 text-center border-b border-gray-50">
@@ -465,7 +539,7 @@ export default function MeilleursETFDebutantsPage() {
             {
               n: "2",
               title: "Choisir votre ETF de départ",
-              body: "Un seul ETF suffit pour commencer. Pour un PEA, le CW8 est le choix par défaut. Pour un CTO, le VWCE offre la couverture la plus large. Inutile de diversifier davantage au départ.",
+              body: "Un seul ETF suffit pour commencer. Pour un PEA, WPEA ou DCAM : le MSCI World à 0,20 %, contre 0,38 % pour CW8. Pour un CTO, VWCE ajoute les pays émergents. Inutile de diversifier davantage au départ.",
               link: { href: "/comparer-etf", label: "Comparer tous les ETF disponibles →" },
             },
             {
@@ -603,15 +677,16 @@ export default function MeilleursETFDebutantsPage() {
       <SourcesReferences
         sources={[
           {
-            label: "Amundi MSCI World UCITS ETF (CW8) — Factsheet",
+            label: "Amundi ETF — DCAM et CW8 / EWLD",
             url: "https://www.amundietf.fr/fr/particuliers",
             publisher: "Amundi ETF",
-            note: "TER, encours, réplication, performance historique de l'ETF CW8 / EWLD.",
+            note: "Documents officiels de DCAM et du fonds de CW8 (part capitalisante) et EWLD (part distribuante), ainsi que PSP5. Vérifiés le 28/09/2026.",
           },
           {
-            label: "iShares Core MSCI World UCITS ETF (IWDA) — Factsheet",
-            url: "https://www.ishares.com/fr/individual/fr/produits/251882/",
+            label: "iShares — WPEA et SPEA",
+            url: "https://www.ishares.com",
             publisher: "BlackRock — iShares",
+            note: "Documents officiels des ETF « Swap PEA » d'iShares. Vérifiés le 28/09/2026.",
           },
           {
             label: "Vanguard FTSE All-World UCITS ETF (VWCE) — Factsheet",
