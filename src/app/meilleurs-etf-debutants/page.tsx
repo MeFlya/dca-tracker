@@ -210,7 +210,11 @@ const FAQ = [
   },
   {
     q: "Peut-on investir en ETF avec 50 € par mois ?",
-    a: "Oui. Trade Republic permet les investissements programmés à partir de 1 € et propose des fractions d'ETF. Boursorama, Fortuneo et la plupart des courtiers français acceptent des ordres à partir de 50 à 100 €. Le montant mensuel importe moins que la régularité sur le long terme.",
+    // 28/09/2026 (grilles courtiers en vigueur) : « fractions d'ETF » chez
+    // Trade Republic non confirmées pour le PEA ; « Boursorama, Fortuneo…
+    // acceptent des ordres à partir de 50 à 100 € » faux pour BoursoBank
+    // (200 € minimum par ordre d'ETF, brochure du 04/09/2026).
+    a: "Oui, mais pas chez tous les courtiers. Chez Trade Republic, un plan d'investissement programmé s'exécute sans frais d'achat ; dans le PEA, vérifiez dans l'application s'il achète des fractions de parts ou seulement des parts entières. Chez Fortuneo, il n'y a pas de minimum d'ordre sur Euronext et, en tarif Starter, le premier ordre du mois est gratuit jusqu'à 500 €, mais il faut déposer 100 € à l'ouverture et passer l'ordre soi-même. Chez BoursoBank, selon la brochure tarifaire du 4 septembre 2026, un ordre d'ETF doit faire au moins 200 € : un versement de 50 € par mois n'y est possible qu'avec le Plan d'Épargne, qui investit dans des fonds maison. Le montant mensuel importe moins que la régularité sur le long terme.",
   },
   {
     q: "Quelle est la différence entre ETF et fonds actifs ?",
@@ -218,7 +222,7 @@ const FAQ = [
   },
   {
     q: "Comment acheter mon premier ETF ?",
-    a: "1) Ouvrez un PEA chez un courtier en ligne (Boursorama, Trade Republic, Fortuneo). 2) Effectuez un virement. 3) Recherchez l'ETF par son ISIN (ex. IE0002XZSHO1 pour WPEA) : c'est lui, pas le nom, qui identifie le fonds. 4) Passez un ordre au marché ou à cours limité. Le premier ordre prend généralement moins de 5 minutes.",
+    a: "1) Ouvrez un PEA chez un courtier en ligne (BoursoBank, Trade Republic, Fortuneo). 2) Effectuez un virement. 3) Recherchez l'ETF par son ISIN (ex. IE0002XZSHO1 pour WPEA) : c'est lui, pas le nom, qui identifie le fonds. 4) Passez un ordre au marché ou à cours limité. Le premier ordre prend généralement moins de 5 minutes.",
   },
 ];
 

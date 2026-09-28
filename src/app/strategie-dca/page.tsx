@@ -83,7 +83,9 @@ const STEPS = [
   {
     n: "1",
     title: "Ouvrir un PEA",
-    body: "Pour la fiscalité la plus avantageuse, ouvrez un PEA chez Boursorama, Trade Republic ou Fortuneo. Gratuit et sans engagement.",
+    // 28/09/2026 : « Gratuit et sans engagement » retiré — 100 € à déposer
+    // chez Fortuneo, 85 € pour y clôturer un PEA hors transfert.
+    body: "Pour la fiscalité la plus avantageuse, ouvrez un PEA chez un courtier en ligne (BoursoBank, Trade Republic, Fortuneo…). Comparez d'abord les frais d'ordre, le montant minimum par ordre et les frais de clôture.",
     href: "/comparatif",
     linkLabel: "Comparer les courtiers PEA →",
   },

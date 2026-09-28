@@ -30,7 +30,7 @@ export default async function ImportPage() {
       </h1>
       <p className="text-base text-gray-600 leading-relaxed mb-8">
         Importez l&apos;historique de votre courtier (Trade Republic,
-        Boursorama, Fortuneo, ou tout CSV avec des colonnes Date et Montant).
+        BoursoBank, Fortuneo, ou tout CSV avec des colonnes Date et Montant).
         Les transactions seront regroupées par mois et ajoutées à votre suivi.
       </p>
 

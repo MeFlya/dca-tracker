@@ -21,7 +21,7 @@ interface BrokerLogoMarkProps {
 /** Logos officiels hébergés localement (icônes de marque, fond clair). */
 const LOGOS: Record<string, { src: string; alt: string }> = {
   "trade-republic": { src: "/logos/trade-republic.png", alt: "Logo Trade Republic" },
-  "boursorama-bourse": { src: "/logos/boursorama-bourse.png", alt: "Logo Boursorama / BoursoBank" },
+  "boursorama-bourse": { src: "/logos/boursorama-bourse.png", alt: "Logo BoursoBank" },
   fortuneo: { src: "/logos/fortuneo.png", alt: "Logo Fortuneo" },
 };
 

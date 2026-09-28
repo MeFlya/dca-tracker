@@ -37,7 +37,10 @@ const FAQ = [
   },
   {
     q: "Que faire quand on dépasse le plafond du PEA ?",
-    a: "Une fois le plafond de 150 000 € atteint, vos versements supplémentaires doivent aller sur un autre compte. Le CTO est le choix le plus simple. Vous pouvez aussi explorer le PEA-PME (plafond séparé de 225 000 €, ETF éligibles plus restreints) et l'assurance-vie (cadre fiscal différent, frais plus élevés). Notre calculateur affiche automatiquement la combinaison optimale PEA + CTO quand vos versements dépassent 150 000 €.",
+    // 29/09/2026 (fait FISC-PEA-02, BOFiP + service-public) : « plafond séparé
+    // de 225 000 € » était faux. 225 000 € est le plafond CUMULÉ PEA + PEA-PME :
+    // avec 150 000 € déjà versés sur le PEA, il reste 75 000 € pour le PEA-PME.
+    a: "Une fois le plafond de 150 000 € atteint, vos versements supplémentaires doivent aller sur un autre compte. Le CTO est le choix le plus simple. Vous pouvez aussi explorer le PEA-PME, dont le plafond est commun avec le PEA : 225 000 € de versements au total sur les deux plans, soit 75 000 € de plus une fois le PEA rempli, avec un choix d'ETF éligibles plus restreint. L'assurance-vie est une autre piste (cadre fiscal différent, frais plus élevés). Notre calculateur affiche automatiquement la combinaison optimale PEA + CTO quand vos versements dépassent 150 000 €.",
   },
   {
     q: "Quelle différence entre PFU et option pour l'IR ?",

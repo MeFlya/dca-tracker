@@ -473,8 +473,10 @@ const VWCE_VS_CW8: ETFComparison = {
       a: "VWCE est libellé en USD mais peut se négocier en EUR selon la bourse. Le risque de change existe à court terme mais il est neutre sur le long terme : les devises fluctuent autour de leur juste valeur. Sur 20 ans, l'effet moyen du change est proche de zéro, et vous êtes déjà exposé au dollar via les entreprises américaines dans le MSCI World. Ne pas s'en soucier pour un DCA long-terme.",
     },
     {
-      q: "Peut-on acheter VWCE chez Trade Republic / Boursorama / Fortuneo ?",
-      a: "Oui, VWCE est disponible chez la quasi-totalité des courtiers européens. Chez Trade Republic, il est dans le catalogue d'épargne programmée gratuite (0 € de frais par versement). Chez Boursorama et Fortuneo, frais d'ordre standards s'appliquent.",
+      // 28/09/2026 (grilles courtiers) : la présence de VWCE dans les plans
+      // Trade Republic n'est pas vérifiée ; BoursoBank est le nom actuel.
+      q: "Peut-on acheter VWCE chez Trade Republic / BoursoBank / Fortuneo ?",
+      a: "Oui, VWCE est disponible chez la quasi-totalité des courtiers européens, en compte-titres. Chez Trade Republic, un plan d'investissement programmé s'exécute sans frais d'achat, et un ordre ponctuel coûte 1 € : vérifiez dans l'application que VWCE est proposé en plan. Chez BoursoBank et Fortuneo, les frais d'ordre du compte-titres s'appliquent.",
     },
   ],
 
@@ -721,10 +723,12 @@ const WPEA_VS_DCAM: ETFComparison = {
         "Les deux parts cotent sous 10 € : même un petit versement mensuel s'investit presque entièrement, avec l'un comme avec l'autre. Prenez celui que votre courtier facture le moins cher à l'ordre.",
     },
     {
-      profile: "Courtier avec achat fractionné (Trade Republic…)",
+      // 28/09/2026 : « Trade Republic » en exemple d'achat fractionné, sur deux
+      // ETF de PEA — or rien d'officiel ne confirme les fractions dans son PEA.
+      profile: "Courtier avec achat fractionné",
       winner: "both",
       explanation:
-        "Avec l'achat fractionné, le prix de part ne compte plus du tout. Choisissez celui qui est disponible avec les frais d'ordre les plus bas chez votre courtier.",
+        "Avec l'achat fractionné, le prix de part ne compte plus du tout. Choisissez celui qui est disponible avec les frais d'ordre les plus bas chez votre courtier. Dans un PEA, vérifiez auprès de votre courtier que les fractions y sont bien proposées.",
     },
     {
       profile: "Préférence pour la diversification des émetteurs",

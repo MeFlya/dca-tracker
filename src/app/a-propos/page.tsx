@@ -268,7 +268,7 @@ export default function AboutPage() {
                 investisseurs passifs.
               </p>
               <p className="text-sm text-gray-600 leading-relaxed">
-                Boursorama, Trade Republic, eToro affichent tous des graphes sur
+                BoursoBank, Trade Republic, eToro affichent tous des graphes sur
                 1 jour, 1 mois, 1 an. Aucun ne te demande : « montre-moi ma
                 trajectoire à 20 ans. » Or c&apos;est précisément la seule vue
                 qui compte quand tu fais du DCA.

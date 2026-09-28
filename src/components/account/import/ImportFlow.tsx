@@ -167,7 +167,7 @@ export function ImportFlow() {
             </li>
             <li className="flex items-start gap-2">
               <FileText size={14} className="text-gray-500 mt-0.5 shrink-0" />
-              <span><strong>Boursorama / Fortuneo</strong> — export des mouvements depuis votre espace client</span>
+              <span><strong>BoursoBank / Fortuneo</strong> — export des mouvements depuis votre espace client</span>
             </li>
             <li className="flex items-start gap-2">
               <FileText size={14} className="text-gray-500 mt-0.5 shrink-0" />

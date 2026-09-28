@@ -136,6 +136,46 @@ export function gainsPour(terPct: number, hyp = HYPOTHESES_COMPARATIFS): string 
 }
 
 /**
+ * Frais d'ordre payés sur la période quand chaque versement mensuel supporte
+ * le même frais fixe : frais × 12 × durée. `fraisOrdrePayes(1)` → « 240 ».
+ *
+ * Ce n'est pas une projection, juste une multiplication — mais elle lit la
+ * même durée que la prose qui l'entoure (« sur 20 ans »), donc elle suit si
+ * l'hypothèse change.
+ */
+export function fraisOrdrePayes(
+  fraisParOrdre: number,
+  hyp = HYPOTHESES_COMPARATIFS
+): string {
+  return formaterEuros(fraisParOrdre * 12 * hyp.durationYears);
+}
+
+/**
+ * Capital final en moins quand un frais d'ordre fixe est prélevé sur chaque
+ * versement mensuel (il reste « mensuel − frais » à investir), au TER donné.
+ * `coutFraisOrdre(1, 0.38)` → « 490 » : 240 € de frais payés, plus ce que ces
+ * frais auraient rapporté s'ils avaient été investis.
+ *
+ * Ajouté le 28/09/2026 : les fiches courtiers annonçaient « 3 000 à 5 000 € »
+ * puis « des milliers d'euros » d'économies pour 1 € par ordre de 200 € sur
+ * 20 ans. Le moteur répond environ 490 € (fait BT-33 du dossier de
+ * vérification) : un facteur 6 à 10 d'écart, écrit à la main.
+ */
+export function coutFraisOrdre(
+  fraisParOrdre: number,
+  terPct: number,
+  hyp = HYPOTHESES_COMPARATIFS
+): string {
+  const plein = runSimulation({ ...hyp, annualFeesPct: terPct }).base.finalValue;
+  const ampute = runSimulation({
+    ...hyp,
+    monthlyAmount: hyp.monthlyAmount - fraisParOrdre,
+    annualFeesPct: terPct,
+  }).base.finalValue;
+  return formaterEuros(arrondirEnviron(plein - ampute));
+}
+
+/**
  * Gains en NOMBRE, pour les calculs d'impôt — mêmes hypothèses que gainsPour.
  *
  * Ajouté le 28/09/2026 : plusieurs comparatifs calculaient l'écart fiscal sur

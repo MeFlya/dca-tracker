@@ -148,10 +148,12 @@ const MOTS_CLES_PAGES = {
 // Marque du courtier seule, dans k. Le slug découpé (« boursorama bourse »)
 // mettait « bourse » au poids 6 sur toute la page Boursorama : « investir en
 // bourse » la sortait devant /investir-en-etf.
+// 28/09/2026 : la fiche affiche le nom actuel, BoursoBank ; l'ancien nom reste
+// en mot-clé, parce que c'est encore celui que beaucoup de lecteurs tapent.
 const MARQUES_COURTIERS = {
-  "/comparatif/trade-republic": "Trade Republic",
-  "/comparatif/boursorama-bourse": "Boursorama",
-  "/comparatif/fortuneo": "Fortuneo",
+  "/comparatif/trade-republic": ["Trade Republic"],
+  "/comparatif/boursorama-bourse": ["BoursoBank", "Boursorama"],
+  "/comparatif/fortuneo": ["Fortuneo"],
 };
 
 // ─── Pages non pré-rendues ───────────────────────────────────────────────────
@@ -567,7 +569,7 @@ function motsCles(u, texte, fiches) {
     }
   }
   if (u.startsWith("/comparatif/")) {
-    if (MARQUES_COURTIERS[u]) k.add(MARQUES_COURTIERS[u]);
+    if (MARQUES_COURTIERS[u]) for (const marque of MARQUES_COURTIERS[u]) k.add(marque);
     else
       console.warn(
         `⚠ Index de recherche : ${u} n'a pas de marque dans MARQUES_COURTIERS ` +

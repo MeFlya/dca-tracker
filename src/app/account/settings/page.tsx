@@ -126,7 +126,7 @@ export default async function SettingsPage() {
                 Importer depuis mon courtier
               </p>
               <p className="text-xs text-gray-500 leading-relaxed">
-                Importez un CSV exporté depuis Trade Republic, Boursorama ou
+                Importez un CSV exporté depuis Trade Republic, BoursoBank ou
                 Fortuneo. Vos transactions sont regroupées par mois
                 automatiquement.
               </p>

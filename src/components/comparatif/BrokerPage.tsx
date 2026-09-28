@@ -344,9 +344,9 @@ export function BrokerPage({ broker }: { broker: BrokerData }) {
         en investissement personnalisé.{" "}
         <AffiliationNotice broker={{ slug: broker.slug, name: broker.name }} />{" "}
         Investir comporte un risque de perte en capital. Les informations
-        présentées ont été vérifiées à la date de publication mais peuvent
-        évoluer — consultez le site officiel du courtier pour les conditions
-        tarifaires à jour.
+        présentées ont été vérifiées à la date de mise à jour indiquée en haut
+        de page mais peuvent évoluer — consultez le site officiel du courtier
+        pour les conditions tarifaires à jour.
       </p>
     </article>
   );

@@ -127,7 +127,9 @@ export const BROKER_CONFIG: BrokerCTAConfig = {
     //   name: "Trade Republic",
     //   url: "[URL d'affiliation Impact.com]",
     //   accountTypes: ["PEA", "CTO"],
-    //   badge: "Sans commission",
+    //   // Pas « Sans commission » : un ordre ponctuel coûte 1 € (grille
+    //   // publique, 28/09/2026). Seuls les plans programmés sont à 0 €.
+    //   badge: "Plans programmés à 0 €",
     //   brokerSlug: "trade-republic",
     //   network: "Impact.com",
     //   commission: "",              // barème non public — laisser vide

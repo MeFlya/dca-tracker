@@ -6,11 +6,17 @@ import { BrokerLogoMark } from "@/components/ui/BrokerLogoMark";
 import { InvestCTA } from "@/components/ui/InvestCTA";
 import { AffiliationNotice } from "@/components/ui/AffiliationNotice";
 import { ComparisonDisclosure } from "@/components/ui/ComparisonDisclosure";
+import { TER_REFERENCE_SIMULATEUR } from "@/lib/etf-config";
+import {
+  coutFraisOrdre,
+  fraisOrdrePayes,
+  HYPOTHESES_COMPARATIFS,
+} from "@/lib/ecart-frais";
 
 const TITLE =
   "Comparatif des meilleurs courtiers pour un DCA ETF en 2026";
 const DESCRIPTION =
-  "Trade Republic, Boursorama Bourse, Fortuneo : comparaison des courtiers adaptés à un investissement DCA ETF en France. Frais, PEA, mobile, régulation.";
+  "Trade Republic, BoursoBank, Fortuneo : comparaison des courtiers adaptés à un investissement DCA ETF en France. Frais, PEA, mobile, régulation.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -48,11 +54,33 @@ export default function ComparatifHubPage() {
       <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3 leading-tight">
         Quel courtier pour un DCA ETF en 2026 ?
       </h1>
+      {/* 28/09/2026 : « même 0,2 % de frais en plus peuvent coûter plusieurs
+          milliers d'euros » — faux pour des frais d'ordre, les seuls que ces
+          courtiers facturent sur un DCA. Montants calculés par le moteur
+          (fait BT-33), jamais recopiés.
+          29/09/2026 : « la garantie des dépôts » ne départage pas les trois
+          (100 000 € partout, EdB ou FGDR) ; l'écart porte sur les titres
+          (70 000 € FGDR contre 90 % plafonnés à 20 000 € EdB — faits
+          fgdr-plafonds, tr-garantie-titres). Et la phrase doit rester alignée
+          sur le critère affiché juste dessous par <ComparisonDisclosure />
+          (coût d'un versement récurrent), sinon les deux se contredisent. */}
       <p className="text-lg text-gray-500 leading-relaxed mb-10">
-        Le choix du courtier détermine combien de frais vous allez payer sur
-        20-30 ans. Sur un DCA mensuel, même 0,2 % de frais en plus peuvent
-        coûter plusieurs milliers d&apos;euros. Voici les 3 options les plus
-        pertinentes pour un investisseur français.
+        Le choix du courtier fixe ce que coûte chaque versement. Sur un DCA de{" "}
+        {HYPOTHESES_COMPARATIFS.monthlyAmount} € par mois pendant{" "}
+        {HYPOTHESES_COMPARATIFS.durationYears} ans, 1 € de frais par ordre
+        représente {fraisOrdrePayes(1)} € payés, et environ{" "}
+        {coutFraisOrdre(1, TER_REFERENCE_SIMULATEUR)} € de capital en moins à
+        l&apos;arrivée (hypothèse de {HYPOTHESES_COMPARATIFS.annualReturnPct} %
+        par an) : réel, mais loin des milliers d&apos;euros qu&apos;on lit
+        parfois. Ce qui départage vraiment ces trois courtiers, c&apos;est ce
+        que coûte, et ce que permet, un versement récurrent : la gratuité ou
+        non de l&apos;achat programmé, et le montant minimum par ordre, qui
+        peut rendre un petit versement mensuel impossible. Autre différence à
+        connaître, la garantie en cas de défaillance du courtier, surtout pour
+        les titres : jusqu&apos;à 70 000 € avec le FGDR (BoursoBank,
+        Fortuneo), contre 90 % des créances dans la limite de 20 000 € côté
+        allemand (Trade Republic). Aucune ne protège contre une baisse des
+        marchés.
       </p>
 
       {/* Obligation D.111-7 II : critère + définition, exhaustivité + nombre,
@@ -156,32 +184,38 @@ export default function ComparatifHubPage() {
       <div className="space-y-3 mb-10">
         <div className="rounded-xl border border-gray-100 bg-white p-5">
           <p className="text-sm font-semibold text-gray-900 mb-1">
-            DCA mensuel low-cost, mobile-first
+            DCA automatique, sans frais d&apos;achat
           </p>
           <p className="text-sm text-gray-600 leading-relaxed">
-            <strong>Trade Republic</strong> — l&apos;épargne programmée ETF à
-            0 € de frais est imbattable sur le long terme, et le PEA est
-            disponible depuis 2023.
+            <strong>Trade Republic</strong> — les plans d&apos;investissement
+            programmé en ETF s&apos;exécutent sans frais d&apos;achat, et le PEA
+            est proposé depuis le 9 janvier 2025. Banque allemande : garantie
+            allemande (EdB), pas le FGDR ; pour les titres, 90 % des créances,
+            dans la limite de 20 000 €.
           </p>
         </div>
         <div className="rounded-xl border border-gray-100 bg-white p-5">
           <p className="text-sm font-semibold text-gray-900 mb-1">
-            Écosystème complet (banque + bourse + AV)
+            Écosystème complet (banque + bourse + assurance-vie)
           </p>
           <p className="text-sm text-gray-600 leading-relaxed">
-            <strong>Boursorama Bourse</strong> — si vous voulez tout
-            centraliser dans une banque en ligne française, avec accès à une
-            assurance-vie multi-supports.
+            <strong>BoursoBank</strong> (ex-Boursorama) — pour tout centraliser
+            dans une banque en ligne française, avec l&apos;assurance-vie Bourso
+            Vie. Selon la brochure tarifaire du 4 septembre 2026 : ordre
+            minimum de 200 € sur les ETF (un assouplissement est annoncé, pas
+            encore dans la brochure), 0 € à l&apos;achat sur la gamme
+            Boursomarkets.
           </p>
         </div>
         <div className="rounded-xl border border-gray-100 bg-white p-5">
           <p className="text-sm font-semibold text-gray-900 mb-1">
-            Courtier français à prix compétitifs
+            Un achat par mois, passé soi-même
           </p>
           <p className="text-sm text-gray-600 leading-relaxed">
-            <strong>Fortuneo</strong> — bon compromis qualité / frais, filiale
-            Crédit Mutuel Arkéa avec PEA, CTO et assurance-vie en un seul
-            compte.
+            <strong>Fortuneo</strong> — en tarif Starter, le premier ordre du
+            mois est gratuit jusqu&apos;à 500 €. Pas de plan programmé sur ETF :
+            l&apos;achat se fait à la main. Groupe Crédit Mutuel Arkéa, avec PEA,
+            compte-titres et assurance-vie.
           </p>
         </div>
       </div>

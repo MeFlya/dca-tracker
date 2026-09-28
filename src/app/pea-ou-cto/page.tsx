@@ -399,7 +399,7 @@ export default function PEAouCTOPage() {
                 <Link href="/comparatif" className="text-primary-700 font-medium hover:underline">
                   comparez les courtiers PEA
                 </Link>{" "}
-                (Trade Republic, Boursorama, Fortuneo) — et commencez à investir sur{" "}
+                (Trade Republic, BoursoBank, Fortuneo) — et commencez à investir sur{" "}
                 un MSCI World éligible : <strong>WPEA ou DCAM</strong> (0,20 %),
                 plutôt que CW8 (0,38 %) pour de nouveaux achats.
               </span>

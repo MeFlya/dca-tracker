@@ -283,7 +283,7 @@ export default async function AccountPage() {
               Importer mes positions
             </p>
             <p className="text-xs text-gray-500 leading-snug">
-              CSV Trade Republic, Boursorama, Fortuneo
+              CSV Trade Republic, BoursoBank, Fortuneo
             </p>
           </Link>
         ) : (

@@ -42,7 +42,6 @@ Ses frais (0,38 % par an) sont les plus élevés des MSCI World éligibles PEA d
     whyChooseIt: [
       "Éligible PEA — bénéficiez de la fiscalité avantageuse du plan d'épargne en actions après 5 ans de détention",
       "Politique capitalisante — les dividendes sont réinvestis sans intervention, idéal pour l'investissement passif long terme",
-      "Très liquide et disponible chez la grande majorité des courtiers français (Boursorama, Trade Republic, Degiro…)",
     ],
     watchOut: [
       "Frais de 0,38 % par an : près du double du WPEA et du DCAM (0,20 %), qui suivent le même MSCI World dans le PEA",

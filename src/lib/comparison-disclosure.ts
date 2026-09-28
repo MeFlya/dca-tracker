@@ -50,9 +50,12 @@
 //   D.111-7 III → 🔴 NON COUVERT À CE JOUR. Le texte impose, à proximité de
 //                 CHAQUE offre comparée, les caractéristiques essentielles et
 //                 « le prix total à payer par le consommateur », frais compris.
-//                 Le site affiche les frais en TEXTE LIBRE (« 0,20 % par ordre
-//                 (minimum applicable) ») : aucun total n'est calculable, et le
-//                 minimum d'ordre de Fortuneo n'est même pas documenté.
+//                 Le site affiche les frais en TEXTE LIBRE (« Tarif Starter :
+//                 0,35 % par ordre · 0 € pour le 1er ordre du mois jusqu'à
+//                 500 € ») : aucun total n'est calculable par le code. Les
+//                 grilles ont été revérifiées, sourcées et datées le
+//                 28/09/2026 (commentaires de brokers.ts), mais pas encore
+//                 structurées en nombres.
 //                 Structurer `BrokerSpecs` en valeurs numériques n'est donc pas
 //                 une amélioration produit, c'est la condition pour se
 //                 conformer — et le même chantier débloque le calcul du coût
@@ -115,8 +118,8 @@ export interface ComparisonSurface {
 // C'est volontairement dit tel quel sur /transparence : l'ordre d'affichage des
 // courtiers vient du tableau `BROKER_LIST`, il n'est pas calculé. Publier
 // « classé par coût croissant » serait faux — les frais sont stockés en texte
-// libre (« 0,60 % par ordre (min 1,99 €) »), donc non comparables par le code,
-// et le minimum d'ordre de Fortuneo n'est pas documenté.
+// libre (« 1,99 € jusqu'à 500 €, puis 0,60 %, plafonné à 0,5 % en PEA »), donc
+// non comparables par le code.
 //
 // Pour passer un jour à un vrai classement calculé, il faut d'abord structurer
 // les frais en nombres dans BrokerSpecs. C'est aussi ce qui débloquerait le
@@ -130,7 +133,12 @@ const BROKER_CRITERION: RankingCriterion = {
     "Le coût réel d'un DCA : frais d'ordre, gratuité ou non de l'épargne programmée, frais de tenue de compte. C'est le paramètre dominant, parce que c'est celui qui pèse sur vingt ans.",
     "Les enveloppes disponibles — PEA, compte-titres — et leur éligibilité aux ETF concernés.",
     "La régulation et la garantie des dépôts, avec l'entité juridique réellement teneuse de compte.",
-    "Le montant minimum d'investissement, décisif en dessous de 150 € par mois.",
+    // 29/09/2026 : « décisif en dessous de 150 € par mois » était faux dès la
+    // brochure BoursoBank du 04/09/2026 (200 € minimum par ordre d'ETF, fait
+    // bourso-montant-minimum-ordre) : un DCA de 150 à 199 € y est impossible.
+    // Pas de chiffre ici : ce minimum doit changer (annonce pour octobre 2026)
+    // et cette rubrique ne doit pas avoir à suivre chaque grille.
+    "Le montant minimum par ordre, décisif quand le versement prévu est inférieur au minimum exigé par le courtier : acheter chaque mois un ETF par ordre de bourse devient alors impossible.",
     "L'expérience d'usage, en dernier, parce qu'elle se juge mal à la place de quelqu'un d'autre.",
   ],
 };
@@ -244,4 +252,4 @@ export const UPDATE_POLICY = {
  * ⚠️ À bumper à CHAQUE modification de ce fichier ou de la liste des
  * partenaires. Une date saisie et oubliée est une date qui ment.
  */
-export const DISCLOSURE_REVISED_ON = "2026-07-28";
+export const DISCLOSURE_REVISED_ON = "2026-09-29";
