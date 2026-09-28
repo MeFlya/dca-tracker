@@ -163,6 +163,32 @@ const INFLATION_2022: BacktestStoryDef = {
   ],
 };
 
+/**
+ * Le DCA de 200 €/mois commencé en janvier 2008, rejoué sur la série publiée :
+ * pire écart entre valeur et total versé (ce qu'on lisait sur son relevé), et
+ * résultat au dernier mois disponible.
+ */
+function depart2008(): string {
+  const { min, max } = getAvailableRange();
+  if (min > "2008-01") {
+    return "La série publiée ne remonte pas jusqu'à 2008 : ce départ ne peut pas être rejoué ici.";
+  }
+  const r = runBacktest({ monthlyAmount: 200, startMonth: "2008-01", endMonth: max });
+  let pire = { ecart: 0, mois: "" };
+  for (const p of r.series) {
+    const e = p.invested > 0 ? p.value / p.invested - 1 : 0;
+    if (e < pire.ecart) pire = { ecart: e, mois: p.month };
+  }
+  const creux = pire.mois
+    ? ` Au pire moment, en ${formatMonthFr(pire.mois)}, le portefeuille valait ${fmtPct(-pire.ecart * 100)} % de moins que ce qui avait été versé.`
+    : "";
+  return (
+    "La série publiée remonte à janvier 2008 : ce départ se rejoue. Le même DCA de 200 €/mois commencé en janvier 2008 a pris la chute de Lehman Brothers dès sa première année." +
+    creux +
+    ` En continuant les versements, il a ensuite acheté à prix bas : ${formatEurBacktest(r.totalInvested)} versés valent ${formatEurBacktest(r.finalValue)} en ${formatMonthFr(max)}, soit un TRI d'environ ${fmtIrr(r)}.`
+  );
+}
+
 // ─── Depuis 2010 ──────────────────────────────────────────────────────────────
 
 const DEPUIS_2010: BacktestStoryDef = {
@@ -210,7 +236,12 @@ const DEPUIS_2010: BacktestStoryDef = {
     },
     {
       q: "Que serait-il arrivé en commençant en 2008, avant la crise financière ?",
-      a: "Notre dataset commence en août 2009 (date de création de l'ETF de référence), donc ce backtest ne couvre pas Lehman Brothers. Mais la mécanique observée sur le COVID s'applique : un DCA débuté juste avant 2008 aurait investi l'essentiel de son capital APRÈS la chute, à prix cassés — le krach initial n'aurait touché que les premiers versements.",
+      // Réécrit le 28/09/2026 : la réponse disait « notre dataset commence en
+      // août 2009, ce backtest ne couvre pas Lehman Brothers » alors que la
+      // série publiée remonte à janvier 2008 depuis le 04/08 — et que les pages
+      // « investir N €/mois » affichent justement un départ en janvier 2008.
+      // On rejoue donc le départ de 2008 au lieu de le raconter.
+      a: depart2008(),
     },
   ],
 };

@@ -80,7 +80,7 @@ const COLUMNS: MenuColumn[] = [
       {
         href: "/backtest",
         label: "Backtest historique",
-        desc: "DCA sur vraies données 2009-2026",
+        desc: "DCA sur les vrais cours depuis 2008",
         badge: { text: "Nouveau", tone: "new" },
       },
       { href: "/allocation-portefeuille", label: "Allocation portefeuille", desc: "Pondérer plusieurs ETF" },

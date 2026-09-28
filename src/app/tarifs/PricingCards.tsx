@@ -68,7 +68,7 @@ const PLANS: Plan[] = [
       { label: "Récap fiscal annuel (cases 2042 et 2074 calculées)", included: true },
       // Décisions stratégiques (Monte Carlo + A/B)
       { label: "Analyse Monte Carlo (1 000 scénarios de marché)", included: true },
-      { label: "Backtest historique (DCA sur données réelles 2009+)", included: true },
+      { label: "Backtest historique (DCA sur les vrais cours depuis 2008)", included: true },
       { label: "Comparaison A vs B (deux stratégies)", included: true },
       // Sauvegarde + outputs propres
       { label: "Simulations sauvegardées (10 slots)", included: true },

@@ -300,7 +300,7 @@ export function BacktestClient({ isPremium, minMonth, maxMonth }: Props) {
           <PreviewHint />
         )
       ) : (
-        <PremiumPreview onCtaClick={handleLockedCtaClick} />
+        <PremiumPreview onCtaClick={handleLockedCtaClick} minMonth={minMonth} />
       )}
     </div>
   );
@@ -528,7 +528,13 @@ function PreviewHint() {
 
 // ─── Sub: PremiumPreview (Free user — paywall dark) ──────────────────────────
 
-function PremiumPreview({ onCtaClick }: { onCtaClick: () => void }) {
+function PremiumPreview({
+  onCtaClick,
+  minMonth,
+}: {
+  onCtaClick: () => void;
+  minMonth: string;
+}) {
   return (
     <div className="relative rounded-2xl border border-slate-800 bg-slate-950 p-7 overflow-hidden">
       {/* Dot texture */}
@@ -578,7 +584,7 @@ function PremiumPreview({ onCtaClick }: { onCtaClick: () => void }) {
             />
             <span>
               <strong className="text-white">Période libre</strong> : depuis
-              2009, par mois, jusqu&apos;à aujourd&apos;hui.
+              {" "}{minMonth.slice(0, 4)}, par mois, jusqu&apos;à aujourd&apos;hui.
             </span>
           </li>
           <li className="flex items-start gap-2">

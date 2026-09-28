@@ -3,7 +3,24 @@
 // ajouté. Ne jamais rappeler resend.emails.send directement ici.
 import { sendEmail } from "./dispatch";
 import { resend } from "@/lib/resend-client";
-import { formatEur } from "@/lib/simulator";
+import { formatEur, runSimulation } from "@/lib/simulator";
+import {
+  ESSAI_JOURS,
+  PREMIUM_ANNUEL_EUR,
+  economieAnnuellePct,
+  prixAnnuel,
+  prixAnnuelParMois,
+  prixMensuel,
+} from "@/lib/tarifs-affiches";
+import { paramsFromSearch } from "@/lib/simulation-params";
+import { PFU_RATE, SOCIAL_CHARGES_RATE } from "@/lib/fiscal/pea-cto";
+import {
+  ecartFiscal,
+  impotCTO,
+  impotPEA,
+  netApresCTO,
+  netApresPEA,
+} from "@/lib/impot-affiche";
 
 
 export async function sendSubscriptionConfirmed(
@@ -149,11 +166,11 @@ export async function sendWinBackJ7(email: string, firstName: string) {
   </p>
 
   <p style="font-size:15px;color:#374151;margin:0 0 20px 0;line-height:1.7">
-    Les raisons les plus fréquentes que j'entends :
+    Si l'une de ces raisons est la vôtre, un numéro suffit :
   </p>
 
   <ul style="color:#4b5563;padding-left:20px;line-height:1.9;font-size:14px;margin:0 0 24px 0">
-    <li>Le prix (4,90 €/mois reste trop pour mon usage)</li>
+    <li>Le prix (${prixMensuel}, c'est trop pour mon usage)</li>
     <li>Pas le temps de loguer mes mois</li>
     <li>Il manque une fonctionnalité spécifique</li>
     <li>J'ai juste oublié — l'essai s'est transformé sans que je m'en rende compte</li>
@@ -190,7 +207,7 @@ export async function sendWinBackJ30(email: string, firstName: string) {
   const SITE_URL = "https://dcatracker.fr";
   await sendEmail({
     to: email,
-    subject: "Ce qui a changé sur DCA Tracker depuis votre départ",
+    subject: "Premium aujourd'hui — et vos données, toujours là",
     html: `<!DOCTYPE html>
 <html lang="fr">
 <body style="font-family:sans-serif;color:#1f2937;max-width:560px;margin:0 auto;padding:32px 16px">
@@ -200,19 +217,20 @@ export async function sendWinBackJ30(email: string, firstName: string) {
   </h1>
 
   <p style="font-size:15px;color:#374151;margin:0 0 16px 0;line-height:1.7">
-    Si vous êtes parti à cause d'une fonctionnalité manquante, voici ce qui a
-    été ajouté depuis. Pas de pitch, juste les faits.
+    Si vous êtes parti à cause d'une fonctionnalité manquante, voici ce que
+    Premium comprend aujourd'hui. Pas de pitch, juste la liste.
   </p>
 
   <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin:20px 0">
     <p style="margin:0 0 10px 0;font-size:13px;font-weight:700;color:#1e40af;text-transform:uppercase;letter-spacing:0.06em">
-      Ajouté récemment
+      Dans Premium
     </p>
     <ul style="margin:0;padding-left:20px;color:#374151;line-height:1.8;font-size:14px">
+      <li>Suivi mensuel de votre stratégie, avec emails personnalisés</li>
       <li>Récap fiscal annuel (cases 2042 et 2074 pré-calculées)</li>
-      <li>Allocation portefeuille multi-ETF avec pondérations</li>
+      <li>Backtest sur les vrais cours, sur la période de votre choix</li>
       <li>Comparaison A vs B de deux stratégies côte à côte</li>
-      <li>Simulations sauvegardées (jusqu'à 10 slots)</li>
+      <li>Simulations sauvegardées (jusqu'à 10)</li>
     </ul>
   </div>
 
@@ -222,9 +240,8 @@ export async function sendWinBackJ30(email: string, firstName: string) {
   </p>
 
   <p style="font-size:15px;color:#374151;margin:0 0 24px 0;line-height:1.7">
-    <strong>Et si le prix bloque :</strong> l'annuel à 49 €/an (au lieu de 4,90 €/mois
-    en mensuel) revient à 4,08 €/mois — économie de 17 %, et c'est le bon moment
-    pour bloquer le tarif actuel.
+    <strong>Et si le prix bloque :</strong> l'annuel à ${prixAnnuel} (au lieu de ${prixMensuel}
+    en mensuel) revient à ${prixAnnuelParMois} — ${economieAnnuellePct} d'économie.
   </p>
 
   <a href="${SITE_URL}/tarifs"
@@ -347,7 +364,7 @@ export async function sendOnboardingWelcome(email: string, firstName: string) {
     </a>
 
     <p style="margin-top:28px;font-size:13px;color:#64748b;line-height:1.6">
-      Note : la sauvegarde est une fonction Premium. Vous avez 7 jours
+      Note : la sauvegarde est une fonction Premium. Vous avez ${ESSAI_JOURS} jours
       gratuits pour tester — annulation en 1 clic.
     </p>
 
@@ -362,47 +379,82 @@ export async function sendOnboardingWelcome(email: string, firstName: string) {
   });
 }
 
+/**
+ * Le scénario de l'email D+3 — celui du simulateur ouvert sans paramètre.
+ *
+ * Réécrit le 28/09/2026. L'email posait « 200 €/mois pendant 20 ans, à 7 %/an
+ * net » puis « capital final ~102 000 € » : ni le moteur sans frais
+ * (≈ 104 200 €) ni le simulateur avec ses frais par défaut (97 753 €) ne
+ * donnent ce chiffre. Le lecteur qui cliquait vers le calculateur y trouvait
+ * un autre résultat que celui de l'email. Tout vient maintenant du moteur,
+ * avec les hypothèses par défaut du simulateur, et des taux de fiscal/pea-cto.
+ */
+function scenarioDay3() {
+  const input = paramsFromSearch(new URLSearchParams()).input;
+  const { finalValue, totalInvested } = runSimulation(input).base;
+  const gain = finalValue - totalInvested;
+  const pct = (v: number) => v.toLocaleString("fr-FR", { maximumFractionDigits: 2 });
+  const netPEA = finalValue - gain * SOCIAL_CHARGES_RATE;
+  const netCTO = finalValue - gain * PFU_RATE;
+  return {
+    input,
+    finalValue,
+    totalInvested,
+    gain,
+    pct,
+    gainNetEnPlus: Math.round(((netPEA - netCTO) / netCTO) * 100),
+  };
+}
+
 /** D+3 — PEA vs CTO : combien d'impôt vous coûte un mauvais choix
  * d'enveloppe. Pousse vers le calculateur fiscal public. */
 export async function sendOnboardingDay3(email: string, firstName: string) {
+  const { input, finalValue, totalInvested, gain, pct, gainNetEnPlus } = scenarioDay3();
+  const ecart = ecartFiscal(gain);
   const body = `
     <h1 style="font-size:22px;font-weight:700;color:#0f172a;margin:0 0 12px 0;line-height:1.3">
-      ${firstName}, PEA ou CTO : la décision à 6 900 €
+      ${firstName}, PEA ou CTO : la décision à ${ecart} €
     </h1>
     <p style="font-size:15px;color:#475569;line-height:1.7;margin:0 0 14px 0">
-      Voici le calcul qui surprend tout le monde. Prenons une stratégie
-      simple : <strong>200 €/mois pendant 20 ans</strong>, à 7 %/an net.
+      Voici le calcul qui surprend tout le monde. Prenons le scénario par
+      défaut du simulateur : <strong>${formatEur(input.monthlyAmount)} par mois
+      pendant ${input.durationYears} ans</strong>, à ${pct(input.annualReturnPct)} %/an
+      avant frais, avec ${pct(input.annualFeesPct)} % de frais annuels.
     </p>
     <p style="font-size:15px;color:#475569;line-height:1.7;margin:0 0 14px 0">
-      Capital investi : 48 000 €. Capital final : ~102 000 €. Soit
-      <strong>54 000 € de plus-values</strong>.
+      Capital versé : ${formatEur(totalInvested)}. Capital estimé :
+      ${formatEur(finalValue)} — le chiffre que vous verrez dans le simulateur.
+      Soit <strong>${formatEur(gain)} de plus-values</strong>.
     </p>
 
     <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:18px 20px;margin:20px 0">
       <p style="margin:0 0 8px 0;font-size:14px;color:#0f172a">
-        <strong>En PEA</strong> (≥ 5 ans) : 54 000 € × 18,6 % =
-        <strong>10 044 €</strong> d&apos;impôt → net 91 956 €
+        <strong>En PEA</strong> (≥ 5 ans) : prélèvements sociaux de
+        ${pct(SOCIAL_CHARGES_RATE * 100)} % → <strong>${impotPEA(gain)} €</strong>
+        d&apos;impôt → net ${netApresPEA(finalValue, gain)} €
       </p>
       <p style="margin:0 0 8px 0;font-size:14px;color:#0f172a">
-        <strong>En CTO</strong> : 54 000 € × 31,4 % =
-        <strong>16 956 €</strong> d&apos;impôt → net 85 044 €
+        <strong>En CTO</strong> : flat tax de ${pct(PFU_RATE * 100)} % →
+        <strong>${impotCTO(gain)} €</strong> d&apos;impôt → net ${netApresCTO(finalValue, gain)} €
       </p>
       <p style="margin:12px 0 0 0;padding-top:10px;border-top:1px solid #e2e8f0;font-size:14px;color:#1e40af;font-weight:700">
-        Différence : <span style="color:#15803d">+6 912 €</span>
-        (+ 8 % de net) — juste en choisissant le bon support fiscal
+        Différence : <span style="color:#15803d">+${ecart} €</span>
+        (+ ${gainNetEnPlus} % de net) — juste en choisissant l&apos;enveloppe
       </p>
     </div>
 
     <p style="font-size:15px;color:#475569;line-height:1.7;margin:0 0 14px 0">
-      Le piège : tous les ETF ne sont pas éligibles PEA. <strong>VWCE</strong>
-      par exemple n&apos;y va pas — il doit être logé en CTO. Tandis que
-      <strong>CW8</strong> fonctionne dans les deux.
+      Le piège : tous les ETF ne sont pas éligibles au PEA, et le nom ne
+      suffit pas à le savoir. Le <strong>500</strong> (S&amp;P 500),
+      l&apos;<strong>ANX</strong> (Nasdaq-100) et l&apos;<strong>AEEM</strong>
+      (émergents) sont des ETF Amundi… dont aucun n&apos;est éligible. Leurs
+      équivalents PEA : PSP5 ou SPEA, PUST, PAEEM. Avant de passer un ordre,
+      c&apos;est l&apos;ISIN qu&apos;il faut vérifier.
     </p>
 
     <p style="font-size:15px;color:#475569;line-height:1.7;margin:0 0 22px 0">
-      J&apos;ai mis en ligne un calculateur qui fait le calcul pour
-      <strong>vos</strong> chiffres en 5 secondes — règle des 5 ans
-      incluse, plafond 150 000 € géré.
+      Le calculateur fait la même chose avec <strong>vos</strong> chiffres —
+      règle des 5 ans incluse, plafond de versements de 150 000 € géré.
     </p>
 
     <a href="https://dcatracker.fr/calculateur-fiscal-pea-cto" style="display:inline-block;background:#2563eb;color:#fff;padding:12px 26px;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px">
@@ -422,68 +474,75 @@ export async function sendOnboardingDay3(email: string, firstName: string) {
   });
 }
 
-/** D+7 — Allocation multi-ETF : pourquoi 100 % MSCI World n'est pas
- * forcément optimal. Pousse vers /allocation-portefeuille. */
+/** D+7 — Allocation : ce qu'un MSCI World seul contient, et ce qui lui
+ * manque. Pousse vers /allocation-portefeuille.
+ *
+ * Réécrit le 28/09/2026. L'ancien email s'intitulait « le piège du 100 % MSCI
+ * World » — l'inverse de la ligne du site (« un seul ETF suffit ») — et
+ * reposait sur trois chiffres sans source : « 0,5 à 1 point de rendement
+ * annuel laissé sur la table », un mix 70/20/10 qui « rapporte historiquement
+ * ~7 % vs 6,8 % », « ~3 000 € de plus ». Émergents et petites capitalisations
+ * ont fait, selon les périodes, mieux ou nettement moins bien que le MSCI
+ * World : promettre un surplus de rendement était faux. */
 export async function sendOnboardingDay7(email: string, firstName: string) {
   const body = `
     <h1 style="font-size:22px;font-weight:700;color:#0f172a;margin:0 0 12px 0;line-height:1.3">
-      ${firstName}, le piège du "100 % MSCI World"
+      ${firstName}, un seul ETF suffit-il ?
     </h1>
     <p style="font-size:15px;color:#475569;line-height:1.7;margin:0 0 14px 0">
-      Le MSCI World, c&apos;est l&apos;ETF que tout le monde recommande
-      aux débutants. Et c&apos;est légitime : 1 500 entreprises, 23 pays
-      développés, frais bas, éligible PEA. Difficile de faire mieux pour
-      démarrer.
+      Pour démarrer, oui. Un ETF MSCI World éligible au PEA — WPEA ou DCAM
+      à 0,20 % de frais, CW8 à 0,38 % — couvre plus d&apos;un millier de
+      grandes et moyennes entreprises de 23 pays développés. On peut
+      s&apos;en tenir là pendant des années sans rien rater d&apos;essentiel.
     </p>
 
     <p style="font-size:15px;color:#475569;line-height:1.7;margin:0 0 14px 0">
-      Mais sur le long terme (15-20 ans), il a deux <strong>angles
-      morts</strong> :
+      Ce qu&apos;il ne contient pas, en revanche :
     </p>
 
     <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:18px 20px;margin:20px 0">
       <p style="margin:0 0 10px 0;font-size:14px;color:#0f172a">
-        <strong>1. Pas de marchés émergents</strong>
+        <strong>1. Les marchés émergents</strong>
       </p>
       <p style="margin:0 0 16px 0;font-size:14px;color:#475569;line-height:1.7">
-        Chine, Inde, Brésil, Taïwan : ~10 % du capital mondial absent.
-        Sur 30 ans, c&apos;est 0,5 à 1 point de rendement annuel laissé
-        sur la table.
+        Chine, Inde, Taïwan, Brésil… environ 10 % de la capitalisation
+        boursière mondiale. Dans un PEA : PAEEM (Amundi, 0,30 %).
       </p>
       <p style="margin:0 0 10px 0;font-size:14px;color:#0f172a">
-        <strong>2. Pas de small caps</strong>
+        <strong>2. Les petites capitalisations</strong>
       </p>
       <p style="margin:0;font-size:14px;color:#475569;line-height:1.7">
-        Le MSCI World ne contient que des grandes capitalisations. Le
-        "premium small-cap" historique (excès de rendement) est documenté
-        depuis 50 ans — 10 % d&apos;allocation suffit pour le capter.
+        Le MSCI World ne retient que les grandes et moyennes entreprises.
+        Dans un PEA : RS2K (Russell 2000, petites entreprises américaines,
+        0,35 %).
       </p>
     </div>
 
     <p style="font-size:15px;color:#475569;line-height:1.7;margin:0 0 14px 0">
-      Concrètement, un mix <strong>70 % MSCI World + 20 % Émergents +
-      10 % Small Caps</strong> rapporte historiquement ~7 % vs 6,8 % pour
-      le World seul. Sur 200 €/mois × 20 ans, c&apos;est ~3 000 € de plus.
+      Les ajouter élargit la diversification. Ça ne promet aucun rendement
+      de plus : selon les périodes, émergents et petites capitalisations ont
+      fait mieux ou nettement moins bien que le MSCI World. Et chaque ligne
+      ajoutée est une ligne de plus à rééquilibrer.
     </p>
 
     <p style="font-size:15px;color:#475569;line-height:1.7;margin:0 0 22px 0">
-      J&apos;ai créé un outil qui vous laisse construire votre allocation
-      en 30 secondes, voir le rendement pondéré, le TER moyen, et comparer
-      à un mono-MSCI World. Avec 4 presets éducatifs.
+      L&apos;outil d&apos;allocation vous laisse composer votre mix — ou
+      partir d&apos;un des quatre exemples, du MSCI World seul au 70/20/10 —
+      et voir son TER pondéré à côté d&apos;un MSCI World seul.
     </p>
 
     <a href="https://dcatracker.fr/allocation-portefeuille" style="display:inline-block;background:#2563eb;color:#fff;padding:12px 26px;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px">
-      Construire mon allocation →
+      Composer mon allocation →
     </a>
 
     <p style="margin-top:28px;font-size:13px;color:#64748b;line-height:1.6">
-      Note : tout n&apos;est pas éligible PEA — l&apos;outil le signale
-      automatiquement pour chaque ETF.
+      Tout n&apos;est pas éligible au PEA : l&apos;outil le signale pour
+      chaque ETF.
     </p>
   `;
   await sendEmail({
     to: email,
-    subject: "Le piège du \"100 % MSCI World\" (et comment le contourner)",
+    subject: "Un seul ETF suffit-il ? Ce qui manque au MSCI World",
     html: emailShell(body),
   });
 }
@@ -497,7 +556,7 @@ export async function sendOnboardingDay14(email: string, firstName: string) {
     </h1>
     <p style="font-size:15px;color:#475569;line-height:1.7;margin:0 0 14px 0">
       C&apos;est mon dernier email de cette série. Je voulais finir sur
-      les 2 outils Premium qui valent vraiment 4,90 €/mois — pas Monte
+      les 2 outils Premium qui valent vraiment ${prixMensuel} — pas Monte
       Carlo qui est joli mais ponctuel, mais ceux qui vous suivent
       <strong>année après année</strong>.
     </p>
@@ -535,17 +594,19 @@ export async function sendOnboardingDay14(email: string, firstName: string) {
     </div>
 
     <p style="font-size:15px;color:#475569;line-height:1.7;margin:0 0 14px 0">
-      <strong>4,90 €/mois</strong> en mensuel, ou <strong>49 €/an</strong>
-      (économisez 17 %). Sur un portefeuille de 100 000 € à 20 ans,
-      c&apos;est 0,01 % de votre capital final.
+      <strong>${prixMensuel}</strong> en mensuel, ou <strong>${prixAnnuel}</strong>
+      (${economieAnnuellePct} d&apos;économie). Rapporté à un portefeuille de
+      100 000 €, l&apos;abonnement annuel pèse
+      ${((PREMIUM_ANNUEL_EUR / 100_000) * 100).toLocaleString("fr-FR", { maximumFractionDigits: 2 })} %
+      par an.
     </p>
     <p style="font-size:15px;color:#475569;line-height:1.7;margin:0 0 22px 0">
-      <strong>7 jours d&apos;essai gratuit</strong> — vous testez tout,
+      <strong>${ESSAI_JOURS} jours d&apos;essai gratuit</strong> — vous testez tout,
       vous annulez en 1 clic si ça ne vous convient pas.
     </p>
 
     <a href="https://dcatracker.fr/tarifs" style="display:inline-block;background:#2563eb;color:#fff;padding:12px 26px;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px">
-      Essayer Premium 7 jours →
+      Essayer Premium ${ESSAI_JOURS} jours →
     </a>
 
     <p style="margin-top:28px;font-size:13px;color:#64748b;line-height:1.6">
@@ -560,7 +621,7 @@ export async function sendOnboardingDay14(email: string, firstName: string) {
   `;
   await sendEmail({
     to: email,
-    subject: "Les 2 fonctions Premium qui valent vraiment 4,90 €/mois",
+    subject: `Les 2 fonctions Premium qui valent vraiment ${prixMensuel}`,
     html: emailShell(body),
   });
 }
@@ -588,7 +649,7 @@ export async function sendAnnualPush({
       body: `
         <p style="font-size:15px;color:#374151;margin:0 0 16px 0;line-height:1.7">
           Ça fait <strong>3 mois</strong> que vous suivez votre DCA avec DCA Tracker
-          ${planLabel}. 60 % des gens abandonnent avant ce cap. Vous l'avez passé.
+          ${planLabel}.
         </p>
         <p style="font-size:15px;color:#374151;margin:0 0 16px 0;line-height:1.7">
           À ce stade, ça vaut le coup de sécuriser les 12 prochains mois d'un seul coup —
