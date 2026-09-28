@@ -18,11 +18,28 @@ import {
 } from "@/lib/impot-affiche";
 import { capitalPour, ecartCapital, gainsPour, HYPOTHESES_COMPARATIFS } from "@/lib/ecart-frais";
 import { runSimulation } from "@/lib/simulator";
+import { getBacktestStory } from "@/lib/backtest-stories";
+import { formatEurBacktest, formatMonthFr, reculIndice } from "@/lib/backtest";
 
 // 28/09/2026 : l'exemple PEA posait « ≈ 102 000 € finaux dont ≈ 54 000 € de
 // gains » — le capital SANS AUCUN FRAIS — et un écart fiscal « ≈ 6 900 € »
 // écrit à la main. Tout sort maintenant du moteur, au TER de WPEA/DCAM
 // (0,20 %, table de vérité ETF du 28/09/2026).
+// Chiffres de backtest cités par les termes TRI et drawdown — calculés sur la
+// série publiée, comme les pages /backtest-* auxquelles ils renvoient. Jusqu'au
+// 28/09/2026 ils étaient écrits à la main : « ~122 000 € », « 197 versements »,
+// « TRI 12,7 % », quand /backtest-depuis-2010 affichait 125 734 € et 200
+// versements. Deux pages du même site, deux résultats pour le même backtest.
+const BT_2010 = getBacktestStory("backtest-depuis-2010");
+const BT_COVID = getBacktestStory("backtest-covid-2020").result;
+const un = (n: number) =>
+  n.toLocaleString("fr-FR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+const TRI_2010 = un(BT_2010.result.irrAnnualPct ?? 0);
+const CREUX_2010 = BT_2010.result.maxDrawdown;
+const CREUX_INDICE_2010 = CREUX_2010
+  ? reculIndice(CREUX_2010.peakMonth, CREUX_2010.troughMonth)
+  : null;
+
 const TER_EXEMPLE_PEA = 0.2;
 const GAIN_EXEMPLE_PEA = (() => {
   const { finalValue, totalInvested } = runSimulation({
@@ -467,12 +484,21 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
       "Le drawdown mesure la chute pic-à-creux d'un portefeuille — le « pire moment » vécu. Sur un DCA MSCI World réel depuis 2010 : −17,8 % au pire (COVID). Pourquoi le DCA amortit les drawdowns de l'indice. Définition claire.",
     definition: [
       "Le drawdown mesure la baisse d'un portefeuille entre un sommet (pic) et le point bas qui suit (creux), avant de retrouver le sommet. Le « maximum drawdown » est la pire de ces baisses sur une période : c'est la réponse à la question qui compte vraiment — « au pire moment, combien aurais-je vu fondre ? ».",
-      "Contrairement à la volatilité (une moyenne statistique), le drawdown raconte l'expérience vécue : −34 % en séance pour le MSCI World pendant le COVID, −50 %+ en 2008. C'est lui qui teste les nerfs, pas l'écart-type.",
+      "Contrairement à la volatilité (une moyenne statistique), le drawdown raconte l'expérience vécue : −34 % en cinq semaines pour le MSCI World au printemps 2020, −50 %+ en 2008. C'est lui qui teste les nerfs, pas l'écart-type.",
     ],
     inPractice: [
       {
-        title: "Le drawdown d'un DCA est plus doux que celui de l'indice",
-        text: "Effet moyennage : votre portefeuille DCA contient des parts achetées à tous les prix, y compris pendant les creux. Sur notre backtest réel 2010-2026, le pire drawdown du portefeuille n'a été que de −17,8 % (COVID) — quand l'indice perdait bien davantage en séance.",
+        // Réécrit le 28/09/2026. Le titre promettait un drawdown « plus doux
+        // que celui de l'indice » et le texte ajoutait « quand l'indice perdait
+        // bien davantage ». Calculé sur la même série, en clôtures mensuelles :
+        // le portefeuille −17,9 %, l'indice −18,8 %. Après dix ans de
+        // versements, un DCA encaisse la baisse presque en entier ; l'effet
+        // amortisseur n'existe qu'au début, quand chaque versement pèse lourd.
+        title: "Après quelques années, un DCA encaisse la baisse presque en entier",
+        text:
+          CREUX_2010 && CREUX_INDICE_2010 != null
+            ? `Les versements amortissent une baisse au début, quand chacun pèse lourd face au capital déjà investi. Dix ans plus tard, ce n'est plus vrai : sur notre backtest réel depuis 2010, le portefeuille a reculé de −${un(CREUX_2010.pct)} % entre ${formatMonthFr(CREUX_2010.peakMonth)} et ${formatMonthFr(CREUX_2010.troughMonth)}, quand l'indice perdait −${un(CREUX_INDICE_2010)} % en clôtures mensuelles. Presque autant.`
+            : "Les versements amortissent une baisse au début, quand chacun pèse lourd face au capital déjà investi. Après une dizaine d'années, le portefeuille encaisse la baisse presque en entier.",
       },
       {
         title: "Dimensionner avant d'investir",
@@ -491,7 +517,12 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
     ],
     related: [
       { href: "/backtest", label: "Calculer le drawdown réel de votre DCA" },
-      { href: "/backtest-depuis-2010", label: "16 ans de DCA : −17,8 % au pire" },
+      {
+        href: "/backtest-depuis-2010",
+        label: CREUX_2010
+          ? `${Math.floor(BT_2010.result.monthsInvested / 12)} ans de DCA : −${un(CREUX_2010.pct)} % au pire`
+          : "16 ans de DCA sur les vrais cours",
+      },
       { href: "/glossaire/volatilite", label: "La volatilité" },
     ],
     category: "Stratégie & risque",
@@ -540,7 +571,7 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
 
   tri: {
     slug: "tri",
-    updatedAt: "2026-06-10",
+    updatedAt: "2026-09-28",
     term: "TRI — Taux de Rendement Interne",
     shortDef:
       "Le rendement annualisé qui tient compte des dates et montants de chaque versement — la vraie mesure de performance d'un DCA.",
@@ -558,11 +589,11 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
       },
       {
         title: "Le gain en % brut surestime toujours l'impression",
-        text: "« J'ai fait +60 % » sonne mieux que « TRI de 14,9 %/an » — pourtant c'est la même performance sur notre backtest COVID. Méfiez-vous des pourcentages bruts sans durée ni dates de versement.",
+        text: `« J'ai fait +${Math.round(BT_COVID.gainPct)} % » sonne mieux que « TRI de ${un(BT_COVID.irrAnnualPct ?? 0)} %/an » — pourtant c'est la même performance sur notre backtest COVID. Méfiez-vous des pourcentages bruts sans durée ni dates de versement.`,
       },
     ],
     example:
-      "Backtest réel : 200 €/mois depuis janvier 2010 = 39 400 € investis, ~122 000 € aujourd'hui. Gain brut : +210 %. TRI : ≈ 12,7 %/an — le chiffre à retenir, calculé sur les dates réelles des 197 versements.",
+      `Backtest réel : 200 €/mois depuis janvier 2010 = ${formatEurBacktest(BT_2010.result.totalInvested)} investis, ${formatEurBacktest(BT_2010.result.finalValue)} en ${formatMonthFr(BT_2010.endMonth)}. Gain brut : +${Math.round(BT_2010.result.gainPct)} %. TRI : ≈ ${TRI_2010} %/an — le chiffre à retenir, calculé sur les dates réelles des ${BT_2010.result.monthsInvested} versements.`,
     faq: [
       {
         q: "Quelle différence entre TRI et rendement annuel moyen ?",
@@ -575,7 +606,7 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
     ],
     related: [
       { href: "/backtest", label: "Le backtest calcule votre TRI réel" },
-      { href: "/backtest-depuis-2010", label: "Exemple réel : TRI 12,7 %/an depuis 2010" },
+      { href: "/backtest-depuis-2010", label: `Exemple réel : TRI ${TRI_2010} %/an depuis 2010` },
       { href: "/interets-composes", label: "Les intérêts composés" },
     ],
     category: "Stratégie & risque",

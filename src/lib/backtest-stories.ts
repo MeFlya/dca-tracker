@@ -19,6 +19,7 @@ import {
   formatEurBacktest,
   formatMonthFr,
   getDatasetMeta,
+  reculIndice,
   type BacktestResult,
 } from "./backtest";
 
@@ -49,7 +50,7 @@ export type BacktestStoryDef = {
  * date honnête est la plus récente entre la dernière révision du texte et le
  * dernier rafraîchissement de la série.
  */
-const TEXTE_REVISE_LE = "2026-08-05";
+const TEXTE_REVISE_LE = "2026-09-28";
 export function storyUpdatedAt(): string {
   const serie = getDatasetMeta().fetchedAt;
   return serie > TEXTE_REVISE_LE ? serie : TEXTE_REVISE_LE;
@@ -58,6 +59,28 @@ export function storyUpdatedAt(): string {
 const fmtPct = (n: number) => n.toFixed(1).replace(".", ",");
 const fmtIrr = (r: BacktestResult) =>
   r.irrAnnualPct === null ? "—" : `${r.irrAnnualPct.toFixed(1).replace(".", ",")} %/an`;
+
+/**
+ * Le pire écart entre la valeur du portefeuille et le total versé à cette
+ * date — ce qu'on lit sur son relevé. null si le portefeuille n'est jamais
+ * passé sous le versé.
+ *
+ * Pourquoi pas maxDrawdown : il mesure la baisse de la VALEUR d'un sommet à un
+ * creux, versements compris. Au début d'un DCA, chaque versement gonfle la
+ * valeur au moment où les cours chutent, et masque la perte. Jusqu'au
+ * 28/09/2026, la page COVID en concluait que « le pire creux n'a même pas été
+ * le COVID » (alors qu'en mars 2020 le portefeuille était à −9,9 % sous le
+ * versé), et la page 2022 citait « −8,1 % » comme le creux de 2022 — c'était
+ * celui d'avril 2025.
+ */
+function pireEcart(r: BacktestResult): { pct: number; mois: string } | null {
+  let pire = { e: 0, mois: "" };
+  for (const p of r.series) {
+    const e = p.invested > 0 ? p.value / p.invested - 1 : 0;
+    if (e < pire.e) pire = { e, mois: p.month };
+  }
+  return pire.mois ? { pct: -pire.e * 100, mois: pire.mois } : null;
+}
 
 // ─── COVID 2020 ───────────────────────────────────────────────────────────────
 
@@ -90,7 +113,12 @@ const COVID_2020: BacktestStoryDef = {
     },
   ],
   lesson: (r) =>
-    `La leçon : votre pire creux de portefeuille sur cette période n'a même pas été le COVID (${r.maxDrawdown ? `−${fmtPct(r.maxDrawdown.pct)} % entre ${formatMonthFr(r.maxDrawdown.peakMonth)} et ${formatMonthFr(r.maxDrawdown.troughMonth)}` : "—"}). Quand on étale ses achats, le moment où l'on commence compte beaucoup moins que le fait de continuer.`,
+    `La leçon : ${(() => {
+      const p = pireEcart(r);
+      return p
+        ? `au pire moment, en ${formatMonthFr(p.mois)}, le portefeuille valait ${fmtPct(p.pct)} % de moins que ce qui avait été versé. Ceux qui ont continué ont acheté ces mois-là au plus bas`
+        : "le portefeuille n'est jamais passé sous le total versé"
+    })()}, et ${formatEurBacktest(r.totalInvested)} versés valent ${formatEurBacktest(r.finalValue)} aujourd'hui. Quand on étale ses achats, le moment où l'on commence compte beaucoup moins que le fait de continuer.`,
   faq: (r) => [
     {
       q: "Combien aurait rapporté un DCA commencé juste avant le krach COVID ?",
@@ -142,7 +170,12 @@ const INFLATION_2022: BacktestStoryDef = {
     },
   ],
   lesson: (r) =>
-    `La leçon : l'année où votre portefeuille fait du surplace est l'année où votre futur rendement se construit. ${r.maxDrawdown ? `Le pire creux traversé sur la période n'a été que de −${fmtPct(r.maxDrawdown.pct)} % (effet moyennage du DCA)` : ""} — bien moins douloureux que les gros titres de 2022 ne le laissaient craindre.`,
+    `La leçon : l'année où votre portefeuille fait du surplace est l'année où votre futur rendement se construit. ${(() => {
+      const p = pireEcart(r);
+      return p
+        ? `Au pire moment, en ${formatMonthFr(p.mois)}, il valait ${fmtPct(p.pct)} % de moins que le total versé ; les versements de ces mois-là ont été achetés à prix bas.`
+        : "Le portefeuille n'est jamais passé sous le total versé."
+    })()}`,
   faq: (r) => [
     {
       q: "Combien vaut un DCA commencé en janvier 2022 ?",
@@ -174,13 +207,9 @@ function depart2008(): string {
     return "La série publiée ne remonte pas jusqu'à 2008 : ce départ ne peut pas être rejoué ici.";
   }
   const r = runBacktest({ monthlyAmount: 200, startMonth: "2008-01", endMonth: max });
-  let pire = { ecart: 0, mois: "" };
-  for (const p of r.series) {
-    const e = p.invested > 0 ? p.value / p.invested - 1 : 0;
-    if (e < pire.ecart) pire = { ecart: e, mois: p.month };
-  }
-  const creux = pire.mois
-    ? ` Au pire moment, en ${formatMonthFr(pire.mois)}, le portefeuille valait ${fmtPct(-pire.ecart * 100)} % de moins que ce qui avait été versé.`
+  const pire = pireEcart(r);
+  const creux = pire
+    ? ` Au pire moment, en ${formatMonthFr(pire.mois)}, le portefeuille valait ${fmtPct(pire.pct)} % de moins que ce qui avait été versé.`
     : "";
   return (
     "La série publiée remonte à janvier 2008 : ce départ se rejoue. Le même DCA de 200 €/mois commencé en janvier 2008 a pris la chute de Lehman Brothers dès sa première année." +
@@ -220,7 +249,19 @@ const DEPUIS_2010: BacktestStoryDef = {
     },
   ],
   lesson: (r) =>
-    `La leçon : sur ${r.monthsInvested} mois, le pire creux traversé n'a été que de ${r.maxDrawdown ? `−${fmtPct(r.maxDrawdown.pct)} % (${formatMonthFr(r.maxDrawdown.troughMonth)})` : "—"} — l'effet moyennage du DCA amortit même les krachs. La régularité a transformé ${formatEurBacktest(r.totalInvested)} d'épargne en ${formatEurBacktest(r.finalValue)} de patrimoine.`,
+    `La leçon : ${(() => {
+      const p = pireEcart(r);
+      const dd = r.maxDrawdown;
+      const indice = dd ? reculIndice(dd.peakMonth, dd.troughMonth) : null;
+      const debut = p
+        ? `sur ${r.monthsInvested} mois, le pire écart sous le total versé a été de −${fmtPct(p.pct)} % (${formatMonthFr(p.mois)}). `
+        : `sur ${r.monthsInvested} mois, le portefeuille n'est jamais passé sous le total versé. `;
+      const recul =
+        dd && indice != null
+          ? `Plus tard, il a reculé de −${fmtPct(dd.pct)} % entre ${formatMonthFr(dd.peakMonth)} et ${formatMonthFr(dd.troughMonth)}, presque autant que l'indice (−${fmtPct(indice)} %) : après dix ans, un DCA ne protège plus d'une baisse, il permet de continuer à acheter pendant qu'elle dure. `
+          : "";
+      return debut + recul;
+    })()}La régularité a transformé ${formatEurBacktest(r.totalInvested)} d'épargne en ${formatEurBacktest(r.finalValue)} de patrimoine.`,
   faq: (r) => [
     {
       q: "Combien rapporte 200 €/mois investis depuis 2010 ?",

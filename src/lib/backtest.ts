@@ -102,6 +102,18 @@ export function getAvailableRange(): { min: string; max: string } {
   };
 }
 
+/**
+ * Recul du cours entre deux mois (clôtures mensuelles), en % positif.
+ * Sert à comparer le recul d'un portefeuille DCA à celui de l'indice sur la
+ * même fenêtre — la comparaison que le glossaire affirmait sans la calculer.
+ */
+export function reculIndice(depuis: string, jusqua: string): number | null {
+  const a = PRICE_BY_MONTH.get(depuis);
+  const b = PRICE_BY_MONTH.get(jusqua);
+  if (a == null || b == null || a <= 0) return null;
+  return (1 - b / a) * 100;
+}
+
 /** Métadonnées du dataset — exposées pour affichage UI. */
 export function getDatasetMeta() {
   return {
