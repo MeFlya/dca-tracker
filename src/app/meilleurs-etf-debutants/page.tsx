@@ -336,7 +336,12 @@ export default function MeilleursETFDebutantsPage() {
             PEA ou CTO
           </Link>
           {" "}conditionne l&apos;univers d&apos;ETF accessibles avant même la
-          question du TER ou de l&apos;indice répliqué.
+          question du TER ou de l&apos;indice répliqué. Pour les fonds que nous
+          avons vérifiés, notre{" "}
+          <Link href="/etf-eligibles-pea" className="text-primary-700 font-medium hover:underline">
+            liste des ETF éligibles au PEA, vérifiés un par un
+          </Link>
+          , donne leur ISIN et leur statut.
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {CRITERIA.map((c) => (

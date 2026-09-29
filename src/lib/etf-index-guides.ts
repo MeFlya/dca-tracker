@@ -15,6 +15,7 @@
 // pages, un lecteur recopie l'ISIN pour passer son ordre.
 
 import { ecartCapital } from "@/lib/ecart-frais";
+import type { ProductId } from "@/lib/products";
 
 export type IndexTracker = {
   ticker: string;
@@ -51,6 +52,11 @@ export type IndexGuide = {
   verdict: { label: string; text: string }[];
   /** Points clés / à retenir. */
   keyPoints: string[];
+  /**
+   * Renvoi vers un produit, posé après la FAQ (RenvoiProduit). L'accroche est
+   * écrite pour l'indice : une page sans accroche n'a pas de renvoi.
+   */
+  renvoiProduit?: { produit: ProductId; contexte: string };
   faq: { q: string; a: string }[];
   related: { label: string; href: string }[];
   /** `note` : précision affichée sous la source (date de consultation…). */
@@ -217,6 +223,18 @@ const MSCI_WORLD: IndexGuide = {
     "Les ETF MSCI World éligibles PEA de ce guide (CW8, WPEA, DCAM) sont en réplication synthétique (swap) — c'est ce qui permet l'éligibilité PEA. Le risque de contrepartie est plafonné par la réglementation : un fonds ne peut pas être exposé à plus de 10 % de son actif sur une même banque contrepartie (5 % pour une contrepartie qui n'est pas un établissement de crédit).",
     "Un seul ETF MSCI World suffit pour démarrer. Inutile de cumuler CW8 + WPEA : c'est le même indice.",
   ],
+  // 29/09/2026 : 1 169 impressions en 90 jours (Search Console au 28/09), et
+  // aucun chemin vers le guide. L'accroche suppose le choix fait (le guide
+  // compare les trackers, « un seul ETF suffit ») : reste à l'acheter.
+  // ISIN (30/09/2026) : le code d'une PART de fonds, pas d'un fonds — CW8 et
+  // EWLD, cités plus haut, sont deux parts du même fonds.
+  renvoiProduit: {
+    produit: "guide-demarrer-dca",
+    contexte:
+      "Une fois le tracker choisi, il reste à l'acheter\u00a0: ouvrir le PEA ou le compte-titres chez un courtier " +
+      "dont les frais conviennent à votre montant, passer le premier ordre sur le bon ISIN (le code qui désigne une part précise d'un fonds), " +
+      "puis répéter le versement chaque mois.",
+  },
   faq: [
     {
       q: "Quel est le meilleur ETF MSCI World pour un PEA en 2026 ?",

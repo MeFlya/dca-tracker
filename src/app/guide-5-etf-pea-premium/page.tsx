@@ -254,7 +254,12 @@ export default function GuideCinqETFPEAPremiumPage() {
           des frais faux. Les cinq ETF ci-dessous ont été vérifiés un par un
           auprès des émetteurs, puis recoupés sur justETF, Boursorama et
           Euronext. Au moment de passer un ordre, c&apos;est l&apos;ISIN, pas
-          le nom, qui identifie le fonds.
+          le nom, qui identifie le fonds. Les autres ETF d&apos;actions
+          contrôlés ce jour-là, éligibles ou non, sont dans notre{" "}
+          <Link href="/etf-eligibles-pea" className="font-semibold underline underline-offset-2 hover:text-amber-950">
+            liste des ETF éligibles au PEA vérifiés
+          </Link>
+          .
         </p>
       </aside>
 

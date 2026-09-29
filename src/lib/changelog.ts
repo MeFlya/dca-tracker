@@ -41,6 +41,24 @@ export interface ChangelogEntry {
 
 /** Du plus récent au plus ancien. Garder cet ordre à la main. */
 export const CHANGELOG: ChangelogEntry[] = [
+  // 30/09/2026 : entrée posée avec la page /etf-eligibles-pea, qui reconnaît
+  // cette erreur en tête. Sources : table de vérité ETF du 28/09/2026, fait
+  // swap-non-eligible, commit ac4b0d5 (cheat sheet et email). « Les quatre
+  // fonds Amundi » n'est pas écrit : la table ne cite pas de reporting pour
+  // JPNK.
+  {
+    date: "2026-09-28",
+    kind: "correction",
+    title: "Cinq ETF présentés comme éligibles au PEA ne l'étaient pas",
+    body:
+      "Jusqu'au 28 septembre 2026, le catalogue du site présentait 500, ANX, AEEM et JPNK comme éligibles au PEA, et la page PEA ou CTO rangeait aussi IWDA parmi les ETF éligibles. Aucun ne l'est\u00a0: pour 500, ANX et AEEM, les reportings mensuels d'Amundi du 31 août 2026 indiquent «\u00a0Éligibilité\u00a0: Compte-titres, Assurance-vie\u00a0». " +
+      "Ces trois-là figuraient aussi dans la cheat sheet «\u00a05 ETF Premium pour PEA\u00a0», sur la page et dans l'email envoyé à chaque inscrit. " +
+      "Chaque fonds a été revérifié sur les documents de son émetteur, puis recoupé sur justETF, Boursorama et Euronext. La cheat sheet ne contient plus que des fonds éligibles. " +
+      "Depuis le 30 septembre 2026, la liste vérifiée, avec l'ISIN de chaque fonds et la raison de chaque exclusion, est publiée sur la page «\u00a0ETF éligibles au PEA\u00a0».",
+    why:
+      "L'éligibilité au PEA ne se devine ni au nom d'un fonds ni à sa méthode de réplication\u00a0: 500, ANX et AEEM utilisent un swap, comme leurs versions PEA chez Amundi (PSP5, PUST, PAEEM), et ne sont pas éligibles. Seul le document de l'émetteur, lu sur l'ISIN, fait foi. " +
+      "Et une liste d'ETF qui ne dit pas quand elle a été vérifiée ne dit pas si elle est encore juste\u00a0: celle du site porte désormais sa date.",
+  },
   {
     date: "2026-08-03",
     kind: "correction",

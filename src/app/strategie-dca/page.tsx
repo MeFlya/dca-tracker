@@ -8,6 +8,7 @@ import { ArticleByline } from "@/components/ui/ArticleByline";
 import { BreadcrumbSchema } from "@/components/ui/BreadcrumbSchema";
 import { SourcesReferences } from "@/components/ui/SourcesReferences";
 import { EtapeSuivante } from "@/components/ui/EtapeSuivante";
+import { RenvoiProduit } from "@/components/products/RenvoiProduit";
 
 // Repositionnement, pas simple réécriture : les requêtes « méthode dca » et
 // « dca investissement » sont à la position 47+. La question réellement posée
@@ -591,6 +592,20 @@ export default function StrategieDCAPage() {
           ))}
         </div>
       </section>
+
+      {/* Renvoi vers le guide (29/09/2026), après les erreurs : c'est la fin
+          de la partie pratique, avant le simulateur et la FAQ. Une parade par
+          erreur, dans l'ordre de MISTAKES (30/09/2026) : le « bon moment »,
+          la baisse, le changement d'ETF, le fonds d'urgence. */}
+      <RenvoiProduit
+        produit="guide-demarrer-dca"
+        contexte={
+          "Ces quatre erreurs se préviennent avant le premier versement, pas pendant\u00a0: une date de versement fixée " +
+          "une fois pour toutes, ce qu'on fera les mois de baisse, décidé par écrit, un ETF choisi une fois, et une épargne " +
+          "de précaution mise de côté."
+        }
+        className="mb-14"
+      />
 
       {/* ── Simulator CTA ─────────────────────────────────────────────────── */}
       <section className="mb-14 rounded-2xl bg-primary-600 p-8 text-center">

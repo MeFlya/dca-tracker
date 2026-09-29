@@ -6,6 +6,7 @@ import Link from "next/link";
 import { runSimulation, formatEur, SCENARIO_DELTA } from "@/lib/simulator";
 import { paramsFromSearch } from "@/lib/simulation-params";
 import { ArticleByline } from "@/components/ui/ArticleByline";
+import { RenvoiProduit } from "@/components/products/RenvoiProduit";
 
 // ─── FAQ : ce que les concurrents placés devant ont, et que cette page n'avait pas ─
 //
@@ -199,6 +200,21 @@ export default async function SimulateurPage({ searchParams }: Props) {
 
       {/* Interactive simulator — hydrates with serverComputedOutput as initial state */}
       <SimulatorPageClient initialOutput={initialOutput} isPremium={premium} />
+
+      {/* ── Renvoi vers le guide (29/09/2026) ─────────────────────────────────
+          Sous l'outil, jamais dedans : la colonne de résultats porte déjà la
+          sauvegarde, le backtest et la cheat sheet, et un quatrième cadre
+          gênerait l'usage. Une phrase, en largeur de lecture comme la FAQ qui
+          suit. Côté serveur : le simulateur ne s'alourdit pas de products.ts. */}
+      <div className="max-w-3xl">
+        <RenvoiProduit
+          produit="guide-demarrer-dca"
+          contexte={
+            "Ce simulateur répond à «\u00a0combien\u00a0». Il ne dit ni dans quelle enveloppe verser, ni chez quel courtier, " +
+            "ni sur quel ETF, et ce sont ces trois choix qui fixent l'impôt et les frais."
+          }
+        />
+      </div>
 
       {/* ── Questions fréquentes — rendues côté serveur, sous l'outil ─────────── */}
       <section aria-labelledby="faq-simulateur" className="max-w-3xl mt-16">

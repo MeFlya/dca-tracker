@@ -12,6 +12,7 @@ import { SourcesReferences } from "@/components/ui/SourcesReferences";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { IssuerLogoMark } from "@/components/ui/IssuerLogoMark";
 import { AuroraSweep } from "@/components/ui/AuroraSweep";
+import { RenvoiProduit } from "@/components/products/RenvoiProduit";
 import type { IndexGuide } from "@/lib/etf-index-guides";
 
 const ICONS: Record<IndexGuide["icon"], LucideIcon> = {
@@ -147,6 +148,17 @@ export function IndexGuidePage({ guide }: { guide: IndexGuide }) {
           vérifiez toujours le Document d&apos;Informations Clés (DIC) de
           l&apos;émetteur avant d&apos;investir.
         </p>
+        {/* 29/09/2026 : la liste vérifiée réunit les fonds de cet indice et
+            des autres — un lecteur qui compare les trackers d'un indice veut
+            souvent savoir ce qui existe à côté, en PEA. */}
+        <p className="text-sm text-gray-600 leading-relaxed mt-3">
+          Tous les ETF éligibles au PEA que nous avons vérifiés, cet indice
+          compris, sont réunis dans notre{" "}
+          <Link href="/etf-eligibles-pea" className="text-primary-700 font-medium hover:underline">
+            liste des ETF éligibles au PEA, indice par indice
+          </Link>
+          .
+        </p>
       </section>
 
       {/* ── Verdict ─────────────────────────────────────────────────────────── */}
@@ -222,6 +234,18 @@ export function IndexGuidePage({ guide }: { guide: IndexGuide }) {
           ))}
         </div>
       </section>
+
+      {/* ── Renvoi produit (si l'indice a son accroche) ─────────────────────── */}
+      {/* Après la FAQ, pas sous « À retenir » (30/09/2026) : là, il se collait
+          au bandeau « Construire mon portefeuille… / ou en valeurs
+          directes », trois liens d'action au même endroit. */}
+      {guide.renvoiProduit && (
+        <RenvoiProduit
+          produit={guide.renvoiProduit.produit}
+          contexte={guide.renvoiProduit.contexte}
+          className="mb-12"
+        />
+      )}
 
       {/* ── Pour aller plus loin ────────────────────────────────────────────── */}
       <section className="mb-12">

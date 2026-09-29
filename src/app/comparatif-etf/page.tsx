@@ -4,6 +4,7 @@ import { ArrowLeftRight } from "lucide-react";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { ETF_COMPARISON_LIST } from "@/lib/etf-comparisons";
 import { ComparisonDisclosure } from "@/components/ui/ComparisonDisclosure";
+import { RenvoiProduit } from "@/components/products/RenvoiProduit";
 
 // « Comparateur » et « comparatif » ne se substituent pas dans l'index de
 // Google et le site n'est positionné sur ni l'un ni l'autre. Le titre prend
@@ -68,7 +69,12 @@ export default function ComparatifETFHubPage() {
         <Link href="/guide-5-etf-pea-premium" className="text-primary-700 font-medium hover:underline">
           5 ETF Premium éligibles PEA
         </Link>
-        {" "}propose une sélection courte et commentée.
+        {" "}propose une sélection courte et commentée. Et pour vérifier
+        qu&apos;un fonds entre dans un PEA avant de le comparer, notre{" "}
+        <Link href="/etf-eligibles-pea" className="text-primary-700 font-medium hover:underline">
+          liste des ETF éligibles au PEA
+        </Link>
+        {" "}donne chaque fonds vérifié avec son ISIN.
       </p>
       <p className="text-base text-gray-600 leading-relaxed mb-10">
         Avant tout choix, gardez en tête que l&apos;essentiel se joue dans la
@@ -123,6 +129,20 @@ export default function ComparatifETFHubPage() {
           </Link>
         ))}
       </div>
+
+      {/* Renvoi vers le guide (29/09/2026), juste après la liste : le hub
+          aiguille vers des réponses sur l'ETF, et c'est tout ce qui entoure ce
+          choix que le guide met dans l'ordre. « Parfois aussi d'enveloppe »
+          (30/09/2026) : trois duels opposent un fonds hors PEA à un fonds PEA,
+          l'enveloppe n'y vient donc pas « avant ». */}
+      <RenvoiProduit
+        produit="guide-demarrer-dca"
+        contexte={
+          "Chaque comparatif ci-dessus tranche une question d'ETF ou d'indice, parfois aussi d'enveloppe. " +
+          "Autour, il reste le courtier, le premier ordre et un rythme à tenir, y compris les mois de baisse."
+        }
+        className="mb-10"
+      />
 
       {/* Related */}
       <div className="pt-8 border-t border-gray-100 mb-10">

@@ -7,6 +7,7 @@ import { PRODUCT_LIST } from "@/lib/products";
 import { INDEX_GUIDES } from "@/lib/etf-index-guides";
 import { BACKTEST_STORY_LIST, storyUpdatedAt } from "@/lib/backtest-stories";
 import { getDatasetMeta } from "@/lib/backtest";
+import { MAJ_LISTE_PEA, URL_LISTE_PEA } from "@/lib/etf-pea-verifies";
 
 export const dynamic = "force-static";
 
@@ -103,6 +104,9 @@ export async function GET(): Promise<NextResponse> {
     { url: `${base}/strategie-dca`,            changeFreq: "monthly", priority: 0.9,  lastmod: REV.etf },
     { url: `${base}/interets-composes`,        changeFreq: "monthly", priority: 0.85, lastmod: REV.etf },
     { url: `${base}/pea-ou-cto`,               changeFreq: "monthly", priority: 0.85, lastmod: REV.etf },
+    // Liste vérifiée des ETF éligibles au PEA (29/09/2026) : sa date vient de
+    // son module de données, la même que celle de la byline.
+    { url: `${base}${URL_LISTE_PEA}`,          changeFreq: "monthly", priority: 0.9,  lastmod: MAJ_LISTE_PEA },
     { url: `${base}/guide-5-etf-pea-premium`,  changeFreq: "monthly", priority: 0.9,  lastmod: REV.etf },
     { url: `${base}/calculateur-fiscal-pea-cto`, changeFreq: "monthly", priority: 0.9, lastmod: REV.etf },
     { url: `${base}/allocation-portefeuille`,  changeFreq: "monthly", priority: 0.85, lastmod: REV.etf },

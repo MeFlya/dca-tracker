@@ -20,6 +20,23 @@ export type Product = {
   /** Nom court pour les cards/cross-sell. */
   shortName: string;
   tagline: string;
+  /**
+   * Fin de phrase du renvoi de fin d'article (RenvoiProduit), après
+   * l'accroche propre à chaque page : `avantLien` + lien + `role`, puis le
+   * prix (lu dans `priceEur`, jamais ici), « paiement unique » et `format`.
+   *
+   * Décrit l'OBJET — ce qu'il contient, sous quelle forme — et jamais ce que
+   * le lecteur devrait faire de son argent (pas de statut CIF). Un produit
+   * sans ce champ ne peut pas être renvoyé depuis un article.
+   */
+  renvoi?: {
+    /** Ce qui précède le lien, quand le nom seul ne se lit pas en début de phrase. */
+    avantLien?: string;
+    /** Texte du lien. Par défaut : `shortName`. */
+    lien?: string;
+    role: string;
+    format: string;
+  };
   /** Prix affiché en euros TTC — DOIT matcher le prix Stripe. */
   priceEur: number;
   /** Prix barré (bundle) — somme des produits séparés. */
@@ -104,6 +121,13 @@ const TEMPLATE: Product = {
   name: "Cockpit DCA — Tableau de bord PEA (Excel + Google Sheets)",
   shortName: "Cockpit DCA",
   tagline: "Le tableau de bord que votre courtier aurait dû vous donner.",
+  // Texte du renvoi posé le 23/08/2026 sur /investir-200 et /investir-500,
+  // sorti du composant le 29/09/2026 quand il a dû renvoyer aussi au guide :
+  // rendu identique, mot pour mot.
+  renvoi: {
+    role: "est le classeur qu'on utilise pour ça",
+    format: "Excel et Google\u00a0Sheets",
+  },
   priceEur: 19,
   priceNote: "Prix de lancement — passera ensuite à 24 €",
   priceIdEnv: "STRIPE_PRODUCT_TEMPLATE_PRICE_ID",
@@ -216,13 +240,33 @@ const TEMPLATE: Product = {
 // chiffres vérifiés au 28/09/2026. L'ancien pitch promettait des « captures »
 // d'applications que le guide ne contient pas, et « quel ETF pour commencer »,
 // ce que le guide refuse de dire (pas de conseil personnalisé).
+//
+// Nombre de pages et prix : écrits UNE fois. La meta, la liste « ce que vous
+// obtenez » et le renvoi de fin d'article les lisent ici — la v1.1 prévue
+// après le 5/10/2026 changera sans doute le premier, et trois « 63 » à
+// retrouver à la main, c'est un oubli garanti. Le prix, lui, doit rester
+// égal au prix Stripe (`livePriceId`) : un « 19 € » recopié dans la meta
+// survivrait à sa hausse.
+const GUIDE_PAGES = 63;
+const GUIDE_PRIX = 19;
+
 const GUIDE: Product = {
   id: "guide-demarrer-dca",
   slug: "guide-demarrer-dca",
   name: "Guide PDF — Démarrer le DCA en France",
   shortName: "Guide Démarrer le DCA",
   tagline: "De zéro à votre premier investissement, puis une routine mensuelle qui tient dans la durée.",
-  priceEur: 19,
+  // « Le guide » devant le lien : « Guide Démarrer le DCA » ne se lit pas en
+  // début de phrase. Le rôle reprend ce que la partie 2 et les annexes
+  // contiennent réellement (voir `contents`) : l'ordre des décisions, les
+  // arbres de décision, les fiches à remplir. Pas de « quel ETF acheter ».
+  renvoi: {
+    avantLien: "Le guide",
+    lien: "«\u00a0Démarrer le DCA en France\u00a0»",
+    role: "assemble le parcours dans l'ordre, de l'enveloppe à la routine mensuelle, avec arbres de décision et fiches à remplir",
+    format: `PDF de ${GUIDE_PAGES}\u00a0pages`,
+  },
+  priceEur: GUIDE_PRIX,
   priceIdEnv: "STRIPE_PRODUCT_GUIDE_PRICE_ID",
   livePriceId: "price_1UL1rCLVB4yZ8CXvoFZG1wOj",
   screenshots: [
@@ -247,13 +291,13 @@ const GUIDE: Product = {
   ],
   metaTitle: "Guide PDF : Démarrer le DCA en France (PEA, ETF, courtiers)",
   metaDescription:
-    "Lancer un DCA en France pas à pas : PEA ou CTO, 3 courtiers et 13 ETF vérifiés, baisses chiffrées, 7 erreurs à éviter. PDF de 63 pages, 19 €.",
+    `Lancer un DCA en France pas à pas\u00a0: PEA ou CTO, 3 courtiers et 13 ETF vérifiés, baisses chiffrées, 7 erreurs à éviter. PDF de ${GUIDE_PAGES} pages, ${GUIDE_PRIX}\u00a0€.`,
   abstract: [
     "Tout ce qu'il faut pour démarrer un DCA existe gratuitement, éparpillé sur de nombreux sites qui se contredisent, et beaucoup ne sont pas à jour : fiscalité 2026, tarifs des courtiers. Ce guide assemble le parcours dans l'ordre, de « je ne sais pas par où commencer » à votre premier investissement, puis à une routine mensuelle.",
     "Chaque chiffre est sourcé et daté, vérifié au 28 septembre 2026 : prélèvements sociaux à 18,6 %, grilles officielles de Trade Republic, BoursoBank et Fortuneo, 13 ETF éligibles au PEA vérifiés un par un, baisses passées chiffrées en euros. Il ne vous dit pas quoi acheter : il vous donne des critères, des arbres de décision et des outils à remplir.",
   ],
   features: [
-    "PDF de 63 pages, chiffres vérifiés au 28 septembre 2026, chaque source citée",
+    `PDF de ${GUIDE_PAGES} pages, chiffres vérifiés au 28 septembre 2026, chaque source citée`,
     "PEA ou CTO : les règles de 2026 et l'écart en euros, ramenés à quelques critères que vous appliquez à votre situation",
     "Trois courtiers (Trade Republic, BoursoBank, Fortuneo) comparés sur leurs grilles officielles, et le coût d'un achat selon votre montant",
     "Les 13 ETF éligibles au PEA vérifiés (ISIN, frais), et les pièges : fonds non éligibles, versions plus chères du même indice",

@@ -6,6 +6,8 @@ import { EducationalHeader } from "@/components/ui/EducationalHeader";
 import { ArticleByline } from "@/components/ui/ArticleByline";
 import { BreadcrumbSchema } from "@/components/ui/BreadcrumbSchema";
 import { SourcesReferences } from "@/components/ui/SourcesReferences";
+import { RenvoiProduit } from "@/components/products/RenvoiProduit";
+import { DATE_VERIFICATION_PEA, URL_LISTE_PEA, dateEnToutesLettres } from "@/lib/etf-pea-verifies";
 import { getETFBySymbol } from "@/lib/etf-config";
 import { runSimulation } from "@/lib/simulator";
 import { capitalPour, gainsPour, HYPOTHESES_COMPARATIFS } from "@/lib/ecart-frais";
@@ -352,6 +354,23 @@ export default function PEAouCTOPage() {
             </div>
           ))}
         </div>
+
+        {/* Renvoi vers la liste complète (29/09/2026) : les deux listes
+            ci-dessus sont un extrait, choisi pour la décision PEA ou CTO.
+            « ETF d'actions » (30/09/2026) : C3M, quasi monétaire, a été
+            contrôlé le même jour mais n'est pas dans la liste. Et
+            « l'équivalent PEA, quand il en existe » : VWCE n'a qu'un
+            équivalent approché, JPNK aucun. */}
+        <p className="text-gray-600 leading-relaxed mt-6">
+          Ces deux listes sont un extrait. Notre{" "}
+          <Link href={URL_LISTE_PEA} className="text-primary-700 font-medium hover:underline">
+            liste vérifiée des ETF éligibles au PEA
+          </Link>
+          {" "}reprend les ETF d&apos;actions contrôlés le{" "}
+          {dateEnToutesLettres(DATE_VERIFICATION_PEA)}, avec leur ISIN et leurs
+          frais. Pour ceux qui ne sont pas éligibles, elle donne la raison et,
+          quand il en existe, l&apos;équivalent PEA vérifié.
+        </p>
       </section>
 
       {/* ── Section 4: Quand choisir quoi ─────────────────────────────── */}
@@ -502,6 +521,22 @@ export default function PEAouCTOPage() {
           ))}
         </div>
       </section>
+
+      {/* Renvoi vers le guide (29/09/2026), après la FAQ : la page tranche
+          l'enveloppe, le guide prend la suite dans l'ordre. Pas à la fin de
+          la recommandation (30/09/2026) : il s'y collait au lien « CW8 vs
+          WPEA » et au bandeau simulateur, trois appels au même endroit.
+          ISIN : le code d'une PART de fonds — CW8 et EWLD, deux parts du
+          même fonds, en ont deux. */}
+      <RenvoiProduit
+        produit="guide-demarrer-dca"
+        contexte={
+          "L'enveloppe choisie, il reste deux décisions avant le premier versement\u00a0: le courtier, dont les frais pèsent " +
+          "différemment selon le montant investi, et l'ETF, qu'on identifie par son ISIN (le code qui désigne une part précise " +
+          "d'un fonds) plutôt que par son nom."
+        }
+        className="mb-14"
+      />
 
       {/* ── Sources & références ───────────────────────────────────────── */}
       {/* Sources revues le 29/09/2026 (liens vérifiés, consultés le

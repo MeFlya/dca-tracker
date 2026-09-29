@@ -9,9 +9,11 @@ import { getMarketDataProvider, isDemo, libelleFournisseur } from "@/lib/market-
 import { formatCurrency, formatPercent, formatPercentSansSigne, formatDate, formatTer } from "@/lib/utils";
 import { DemoBadge, DelayedBadge } from "@/components/ui/Disclaimer";
 import { InvestCTA } from "@/components/ui/InvestCTA";
+import { RenvoiProduit } from "@/components/products/RenvoiProduit";
 import { IssuerLogoMark } from "@/components/ui/IssuerLogoMark";
 import { RegionMark } from "@/components/ui/RegionMark";
 import { cn } from "@/lib/utils";
+import { lienListePea } from "@/lib/etf-pea-verifies";
 
 // ─── Static generation ───────────────────────────────────────────────────────
 
@@ -99,6 +101,7 @@ export default async function ETFDetailPage({
   const demo = isDemo();
 
   const otherETFs = ETF_LIST.filter((e) => e.displaySymbol !== etf.displaySymbol);
+  const lienPea = lienListePea(etf.displaySymbol);
 
   const etfAccountType: AccountType = etf.peaEligible ? "PEA" : "CTO";
 
@@ -142,6 +145,38 @@ export default async function ETFDetailPage({
                 <span className="px-2.5 py-0.5 rounded-full bg-gray-100 text-xs font-medium text-gray-600">
                   {etf.category}
                 </span>
+                {/* Statut PEA (29/09/2026) : ce qu'un lecteur français cherche
+                    d'abord, et qu'aucune pastille ne disait. Le lien mène à
+                    l'endroit de la liste vérifiée qui parle de CE fonds : son
+                    groupe d'indice s'il est éligible, sa carte et son
+                    équivalent PEA s'il ne l'est pas. Un fonds absent de la
+                    liste (C3M, SPY) garde la pastille, sans lien : elle
+                    mènerait à une page qui ne parle pas de lui. */}
+                {lienPea ? (
+                  <Link
+                    href={lienPea}
+                    title="Liste vérifiée des ETF éligibles au PEA"
+                    className={cn(
+                      "px-2.5 py-0.5 rounded-full border text-xs font-semibold transition-colors",
+                      etf.peaEligible
+                        ? "text-emerald-700 bg-emerald-50 border-emerald-100 hover:border-emerald-300"
+                        : "text-slate-600 bg-slate-50 border-slate-200 hover:border-slate-300",
+                    )}
+                  >
+                    {etf.peaEligible ? "Éligible PEA" : "Hors PEA"}
+                  </Link>
+                ) : (
+                  <span
+                    className={cn(
+                      "px-2.5 py-0.5 rounded-full border text-xs font-semibold",
+                      etf.peaEligible
+                        ? "text-emerald-700 bg-emerald-50 border-emerald-100"
+                        : "text-slate-600 bg-slate-50 border-slate-200",
+                    )}
+                  >
+                    {etf.peaEligible ? "Éligible PEA" : "Hors PEA"}
+                  </span>
+                )}
                 {demo && <DemoBadge />}
                 {!demo && quote?.isDelayed && <DelayedBadge />}
               </div>
@@ -271,6 +306,31 @@ export default async function ETFDetailPage({
               : "Données différées (fin de journée). Source : " + libelleFournisseur(provider.name) + "."}
           </p>
         </div>
+      )}
+
+      {/* ── Renvoi vers le guide (29/09/2026) ──────────────────────────────
+          Seulement sur les fiches d'ETF éligibles au PEA : le guide est bâti
+          autour du PEA et vérifie un par un 13 ETF éligibles, dont les huit
+          de ce catalogue. Sur un fonds hors PEA — SPY et QQQ, qu'un
+          particulier de l'UE ne peut pas acheter, C3M, quasi-monétaire —
+          une phrase sur « l'acheter » pousserait vers ce que le guide ne
+          traite pas.
+          Au conditionnel (« si vous le retenez ») : sur CW8, le plus cher
+          des MSCI World éligibles de notre sélection, une phrase qui tient
+          l'achat pour acquis serait un conseil déguisé.
+          Placé après les données de marché, pas contre le bandeau
+          simulateur : collés, ses deux liens et celui-ci faisaient trois
+          appels au même endroit. */}
+      {etf.peaEligible && (
+        <RenvoiProduit
+          produit="guide-demarrer-dca"
+          contexte={
+            `${etf.displaySymbol} est éligible au PEA. Si vous le retenez, c'est son ISIN` +
+            `${etf.isin ? `, ${etf.isin},` : ""} qu'on saisit chez le courtier. ` +
+            `Avant ce premier ordre, il reste à ouvrir un PEA et à choisir un courtier dont les frais conviennent à votre montant.`
+          }
+          className="mb-10"
+        />
       )}
 
       {/* ── Autres ETF ─────────────────────────────────────────────────── */}

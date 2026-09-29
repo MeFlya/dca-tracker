@@ -6,6 +6,7 @@ import { JsonLd } from "@/components/ui/JsonLd";
 import { ArticleByline } from "@/components/ui/ArticleByline";
 import { IssuerLogoMark } from "@/components/ui/IssuerLogoMark";
 import { AuroraSweep } from "@/components/ui/AuroraSweep";
+import { RenvoiProduit } from "@/components/products/RenvoiProduit";
 
 function PEAPill({ value }: { value: string }) {
   const normalized = value.toLowerCase();
@@ -120,6 +121,35 @@ export function ETFComparisonPage({ comparison }: { comparison: ETFComparison })
   const canonical = `/comparatif-etf/${comparison.slug}`;
   const terBas = terLePlusBas(comparison);
   const otherComparisons = ETF_COMPARISON_LIST.filter((c) => c.slug !== comparison.slug);
+
+  // ─── Accroche du renvoi vers le guide (29/09/2026) ─────────────────────────
+  // Ces pages font un tiers des clics du site (Search Console, 90 jours au
+  // 28/09) et se terminaient sur le simulateur, sans chemin vers le guide.
+  // L'accroche est construite à partir du duel pour convenir aux huit : qui
+  // finit un comparatif a tranché la question de l'ETF (ou de l'indice, pour
+  // MSCI World vs S&P 500).
+  // Deux formes, lues dans `peaEligible` (30/09/2026). Quand les deux côtés
+  // entrent dans un PEA, l'enveloppe et le courtier se choisissent avant le
+  // duel. Quand un seul y entre (IWDA vs CW8, VWCE vs CW8, VWCE vs WPEA),
+  // choisir l'ETF, c'est déjà choisir l'enveloppe : dire qu'elle se choisit
+  // « avant » contredirait la page.
+  // Aucun chiffre ni aucun nom de fonds de plus que ceux du duel : le reste de
+  // la phrase décrit, il ne recommande rien.
+  // Un indice prend l'article (« le MSCI World »), un ticker non (« WPEA »).
+  const indices = comparison.left.type === "Indice";
+  const nommer = (side: ETFSide) => (side.type === "Indice" ? `le ${side.heading}` : side.heading);
+  const estPea = (side: ETFSide) => side.peaEligible.startsWith("Oui");
+  const enveloppeEnJeu = estPea(comparison.left) !== estPea(comparison.right);
+  const [enPea, horsPea] = estPea(comparison.left)
+    ? [comparison.left, comparison.right]
+    : [comparison.right, comparison.left];
+  const accrocheGuide = enveloppeEnJeu
+    ? `Choisir entre ${nommer(comparison.left)} et ${nommer(comparison.right)}, c'est aussi choisir l'enveloppe\u00a0: ` +
+      `${nommer(horsPea)} n'entre pas dans un PEA, ${nommer(enPea)} oui. ` +
+      `Il reste le courtier, qui fixe le coût de chaque achat, puis le premier ordre et un rythme à tenir.`
+    : `Choisir entre ${nommer(comparison.left)} et ${nommer(comparison.right)} règle la question ` +
+      `${indices ? "de l'indice" : "de l'ETF"}. ` +
+      `Deux choix se font avant elle\u00a0: l'enveloppe, qui fixe l'impôt, et le courtier, qui fixe le coût de chaque achat.`;
 
   return (
     <article className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
@@ -293,6 +323,13 @@ export function ETFComparisonPage({ comparison }: { comparison: ETFComparison })
           </details>
         ))}
       </div>
+
+      {/* Renvoi vers le guide, après la FAQ (30/09/2026) : c'est la fin du
+          contenu. Placé juste après l'analyse, il suivait sur cw8-vs-wpea un
+          paragraphe qui cite déjà « le guide 5 ETF Premium pour PEA » —
+          deux guides différents, l'un gratuit, l'autre payant, à une ligne
+          d'écart. */}
+      <RenvoiProduit produit="guide-demarrer-dca" contexte={accrocheGuide} className="mb-10" />
 
       {/* Étape suivante.
           Ce bloc terminait sur « Ouvrir le simulateur → » et un TER de 0,25 %

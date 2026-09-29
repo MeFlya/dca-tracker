@@ -93,6 +93,12 @@ export type AnalyticsEvent =
   | { name: "backtest_teaser_click" }
 
   // ── Produits digitaux (paiement unique)
+  /**
+   * Clic sur un renvoi de fin d'article (RenvoiProduit). `page` est le chemin
+   * de l'article : c'est lui qui dit quelle page amène des acheteurs, ce que
+   * product_checkout_click, tiré sur la page produit, ne peut pas savoir.
+   */
+  | { name: "product_renvoi_click"; props: { product_id: string; page: string } }
   | { name: "product_checkout_click"; props: { product_id: string } }
   | { name: "product_purchase"; props: { product_id: string } }
   | { name: "backtest_quick_scenario_used"; props: { scenario_name: string } }
