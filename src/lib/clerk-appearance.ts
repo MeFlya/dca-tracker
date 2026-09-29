@@ -78,7 +78,7 @@ export const clerkLocalization = {
   // Clés absentes de frFR 4.13.8 sur les écrans que nos visiteurs voient
   // (inscription, connexion, erreurs) : Clerk les affichait en anglais,
   // « Create a password » dans le champ mot de passe par exemple.
-  formFieldInputPlaceholder__signUpPassword: "Choisissez un mot de passe",
+  formFieldInputPlaceholder__signUpPassword: "Mot de passe",
   formFieldInput__emailAddress_format: "Format attendu : nom@exemple.fr",
   badge__banned: "Suspendu",
   signUp: {
