@@ -133,6 +133,20 @@ export default function CalculateurFiscalPage() {
             réel le net après impôt sur PEA et sur CTO — règle des 5 ans,
             plafond 150 000 €, PFU et prélèvements sociaux compris.
           </p>
+          {/* 29/09/2026 : remarque d'un conseiller (CIF) lecteur du site — une
+              comparaison fiscale ne suffit pas à choisir une enveloppe. Il a
+              raison, et la page ne le disait pas. */}
+          <p className="text-sm text-gray-500 leading-relaxed max-w-2xl mt-3">
+            Ce calcul compare l&apos;impôt, rien d&apos;autre. Le choix d&apos;une
+            enveloppe dépend aussi de ce que vous voulez y loger (un PEA
+            n&apos;accepte que des titres éligibles, dans la limite de ses
+            plafonds), de votre horizon et de votre besoin de disponibilité :
+            ces critères sont détaillés dans notre{" "}
+            <Link href="/pea-ou-cto" className="text-primary-700 underline underline-offset-2">
+              guide PEA ou CTO
+            </Link>
+            .
+          </p>
         </header>
 
         {/* Calculator */}
