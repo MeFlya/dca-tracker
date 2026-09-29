@@ -75,14 +75,27 @@ export const clerkAppearance = {
 // continuer vers DCA Tracker ».
 export const clerkLocalization = {
   ...frFR,
+  // Clés absentes de frFR 4.13.8 sur les écrans que nos visiteurs voient
+  // (inscription, connexion, erreurs) : Clerk les affichait en anglais,
+  // « Create a password » dans le champ mot de passe par exemple.
+  formFieldInputPlaceholder__signUpPassword: "Choisissez un mot de passe",
+  formFieldInput__emailAddress_format: "Format attendu : nom@exemple.fr",
+  badge__banned: "Suspendu",
   signUp: {
     ...frFR.signUp,
     start: {
       ...frFR.signUp?.start,
       title: "Inscription",
       titleCombined: "Inscription",
-      subtitle: "Gratuite et sans engagement.",
-      subtitleCombined: "Gratuite et sans engagement.",
+      // Vide : « Inscription gratuite » figure déjà sous le formulaire.
+      subtitle: "",
+      subtitleCombined: "",
+    },
+    protectCheck: {
+      title: "Vérification en cours",
+      subtitle: "Merci de patienter pendant que nous vérifions votre demande.",
+      loading: "Chargement…",
+      retryButton: "Réessayer",
     },
   },
   signIn: {
@@ -92,6 +105,41 @@ export const clerkLocalization = {
       title: "Connexion",
       titleCombined: "Connexion",
       subtitle: "Retrouvez votre stratégie et votre suivi.",
+      subtitleCombined: "Retrouvez votre stratégie et votre suivi.",
     },
+    passwordCompromised: {
+      ...frFR.signIn?.passwordCompromised,
+      title: "Mot de passe compromis",
+    },
+    passwordUntrusted: {
+      ...frFR.signIn?.passwordUntrusted,
+      title: "Mot de passe non fiable",
+    },
+    protectCheck: {
+      title: "Vérification en cours",
+      subtitle: "Merci de patienter pendant que nous vérifions votre demande.",
+      loading: "Chargement…",
+      retryButton: "Réessayer",
+    },
+  },
+  unstable__errors: {
+    ...frFR.unstable__errors,
+    action_blocked:
+      "Cette action n'a pas pu aboutir. Réessayez plus tard, ou écrivez à hello@dcatracker.fr si le problème persiste.",
+    form_new_password_matches_current:
+      "Le nouveau mot de passe doit être différent de l'actuel.",
+    form_password_untrusted__sign_in:
+      "Votre mot de passe a peut-être été compromis. Pour protéger votre compte, connectez-vous par une autre méthode : il vous sera demandé de le réinitialiser ensuite.",
+    oauth_access_denied: "Vous n'avez pas autorisé l'accès à votre compte.",
+    protect_check_execution_failed: "La vérification n'a pas abouti. Réessayez.",
+    protect_check_invalid_script:
+      "La vérification n'a pas pu se charger. Écrivez à hello@dcatracker.fr si le problème persiste.",
+    protect_check_invalid_sdk_url:
+      "La vérification n'a pas pu démarrer. Écrivez à hello@dcatracker.fr.",
+    protect_check_script_load_failed:
+      "La vérification n'a pas pu se charger, peut-être à cause du réseau ou d'un bloqueur. Réessayez, ou écrivez à hello@dcatracker.fr.",
+    protect_check_timed_out: "La vérification a pris trop de temps. Réessayez.",
+    protect_check_unsupported_environment:
+      "La vérification ne fonctionne pas dans ce navigateur. Utilisez un navigateur standard, ou écrivez à hello@dcatracker.fr.",
   },
 };
