@@ -18,6 +18,7 @@ import {
   blendPortfolio,
   rebalanceToHundred,
   PORTFOLIO_PRESETS,
+  HISTORICAL_RETURNS_PERIOD,
   type PortfolioItem,
   type BlendedPortfolio,
 } from "@/lib/portfolio";
@@ -121,7 +122,7 @@ export function PortfolioPicker({
         <span className="font-medium">
           {blend.isBalanced
             ? "Allocation équilibrée"
-            : `Total ${blend.totalWeight.toFixed(1)} % (cible 100 %)`}
+            : `Total ${blend.totalWeight.toFixed(1).replace(".", ",")}\u00a0% (cible 100\u00a0%)`}
         </span>
         {!blend.isBalanced && (
           <button
@@ -154,26 +155,50 @@ export function PortfolioPicker({
         <AddEtfDropdown etfs={availableEtfs} onSelect={addItem} />
       )}
 
-      {/* Inferred metrics — read-only badges */}
+      {/* Inferred metrics — read-only badges.
+          Corrigé le 29/09/2026 : « Rendement attendu (brut) » présentait la
+          moyenne historique des indices comme une prévision, un clic après la
+          page /allocation-portefeuille qui l'appelle « Moyenne historique des
+          indices ». Mêmes libellés que BlendedStats désormais. */}
       <div className="rounded-xl bg-slate-50 border border-slate-200/70 p-3 space-y-1.5 text-sm">
-        <div className="flex justify-between">
-          <span className="text-gray-600">Rendement attendu (brut)</span>
-          <span className="font-semibold tabular-nums text-gray-900">
-            {blend.blendedReturn.toFixed(2).replace(".", ",")} %/an
+        <div className="flex justify-between gap-3">
+          <span className="text-gray-600">
+            Moyenne historique des indices (avant frais)
+          </span>
+          <span className="font-semibold tabular-nums text-gray-900 whitespace-nowrap">
+            {blend.blendedReturn.toFixed(2).replace(".", ",")}&nbsp;%/an
           </span>
         </div>
-        <div className="flex justify-between">
+        <div className="flex justify-between gap-3">
           <span className="text-gray-600">TER pondéré</span>
-          <span className="font-semibold tabular-nums text-gray-900">
-            {blend.blendedTer.toFixed(3).replace(".", ",")} %/an
+          <span className="font-semibold tabular-nums text-gray-900 whitespace-nowrap">
+            {blend.blendedTer.toFixed(3).replace(".", ",")}&nbsp;%/an
           </span>
         </div>
-        <div className="flex justify-between pt-1.5 border-t border-slate-200/70">
-          <span className="text-gray-700 font-medium">Net après frais</span>
-          <span className="font-bold tabular-nums text-primary-700">
-            {blend.blendedNetReturn.toFixed(2).replace(".", ",")} %/an
+        <div className="flex justify-between gap-3 pt-1.5 border-t border-slate-200/70">
+          <span className="text-gray-700 font-medium">Après frais des ETF</span>
+          <span className="font-bold tabular-nums text-primary-700 whitespace-nowrap">
+            {blend.blendedNetReturn.toFixed(2).replace(".", ",")}&nbsp;%/an
           </span>
         </div>
+        <p className="text-[11px] text-gray-500 leading-relaxed pt-1.5 border-t border-slate-200/70">
+          Moyenne pondérée des rendements annualisés d&apos;un indice de
+          référence par région, en euros,{" "}
+          {HISTORICAL_RETURNS_PERIOD.label}, pas une prévision. La projection
+          l&apos;utilise comme hypothèse de rendement constant.
+        </p>
+        {blend.unverifiedSymbols.length > 0 && (
+          <p className="text-[11px] text-amber-700 leading-relaxed flex items-start gap-1.5">
+            <AlertTriangle size={12} className="shrink-0 mt-0.5" />
+            <span>
+              Hypothèse non sourcée, à vérifier : le chiffre historique utilisé
+              pour {blend.unverifiedSymbols.join(", ")} ne représente pas
+              l&apos;indice suivi par l&apos;ETF (Nasdaq-100 : chiffre du MSCI
+              USA) ou n&apos;est pas sourcé. La moyenne et la projection en
+              dépendent.
+            </span>
+          </p>
+        )}
         {blend.hasNonPeaEtf && (
           <p className="text-[11px] text-amber-700 leading-relaxed pt-1.5 border-t border-slate-200/70 flex items-start gap-1.5">
             <AlertTriangle size={12} className="shrink-0 mt-0.5" />
@@ -235,9 +260,9 @@ function CompactRow({
         <div className="flex items-baseline justify-between text-xs">
           <span className="text-gray-500">Poids</span>
           <span className="font-semibold tabular-nums text-gray-900">
-            {item.weight.toFixed(1)} %
+            {item.weight.toFixed(1).replace(".", ",")}&nbsp;%
             <span className="text-gray-500 font-normal ml-1.5">
-              ({Math.round(monthlyAllocated)} €/mois)
+              ({Math.round(monthlyAllocated)}&nbsp;€/mois)
             </span>
           </span>
         </div>

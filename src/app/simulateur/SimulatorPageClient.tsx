@@ -101,6 +101,9 @@ export function SimulatorPageClient({ initialOutput, isPremium }: Props) {
   }, []);
 
   const [output, setOutput] = useState<SimulatorOutput>(initialOutput);
+  // Mode réellement affiché par le formulaire (remonté par onModeChange,
+  // après montage) : « rapid » au rendu serveur, comme le formulaire.
+  const [mode, setMode] = useState<SimulatorMode>("rapid");
 
   // Mark the onboarding "step 2: run first simulation" as complete as soon
   // as the user lands on the simulator page. Read by <OnboardingChecklist>
@@ -249,13 +252,14 @@ export function SimulatorPageClient({ initialOutput, isPremium }: Props) {
           defaultInflationEnabled={initialInflationEnabled}
           defaultMode={initialMode}
           defaultPortfolio={initialPortfolio}
+          onModeChange={setMode}
         />
       </div>
 
       {/* Results column */}
       <div id="results" className="space-y-5">
         {/* Hero — big impactful result + MC distribution */}
-        <SimulatorHero output={output} />
+        <SimulatorHero output={output} mode={mode} />
 
         {/* Conversion blocks — emotional tension on result view */}
         <ConversionBlocks output={output} />

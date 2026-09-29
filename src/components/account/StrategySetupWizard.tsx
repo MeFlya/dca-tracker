@@ -12,7 +12,12 @@ import { Check, ArrowRight, ArrowLeft, Wallet, CalendarClock, PieChart, Clipboar
 import { SliderInput } from "@/components/ui/SliderInput";
 import { PortfolioPicker, type PortfolioPickerValue } from "@/components/simulator/PortfolioPicker";
 import { ETF_LIST } from "@/lib/etf-config";
-import { PORTFOLIO_PRESETS, blendPortfolio, type PortfolioItem } from "@/lib/portfolio";
+import {
+  PORTFOLIO_PRESETS,
+  HISTORICAL_RETURNS_PERIOD,
+  blendPortfolio,
+  type PortfolioItem,
+} from "@/lib/portfolio";
 import { runSimulation, formatEur } from "@/lib/simulator";
 import { currentMonth } from "@/lib/strategy-math";
 import type { Strategy } from "@/lib/user-strategy";
@@ -246,8 +251,9 @@ export function StrategySetupWizard({
           <div className="space-y-4 animate-fade-in">
             <p className="text-sm text-gray-600 leading-relaxed flex items-start gap-2">
               <StepIcon size={16} className="text-primary-600 mt-0.5 shrink-0" />
-              Choisissez vos ETF. Le rendement et les frais de votre projection
-              sont calculés à partir de cette allocation.
+              Choisissez vos ETF. L&apos;hypothèse de rendement (moyenne
+              historique des indices) et les frais de votre projection sont
+              calculés à partir de cette allocation.
             </p>
             <PortfolioPicker
               etfs={ETF_LIST}
@@ -277,9 +283,11 @@ export function StrategySetupWizard({
                 label="Allocation"
                 value={picker.items.map((i) => `${i.etf.displaySymbol} ${Math.round(i.weight)} %`).join(" · ")}
               />
+              {/* Corrigé le 29/09/2026 : « Rendement net estimé » présentait
+                  la moyenne historique des indices comme une estimation. */}
               <RecapRow
-                label="Rendement net estimé"
-                value={`${picker.blend.blendedNetReturn.toFixed(2).replace(".", ",")} %/an`}
+                label="Hypothèse de rendement (moyenne historique des indices, après frais)"
+                value={`${picker.blend.blendedNetReturn.toFixed(2).replace(".", ",")}\u00a0%/an`}
               />
             </dl>
 
@@ -292,6 +300,11 @@ export function StrategySetupWizard({
               </p>
               <p className="text-xs text-gray-600 mt-1">
                 dont <strong className="text-gain-dark">{formatEur(projection.totalGain)}</strong> d&apos;intérêts composés
+              </p>
+              <p className="text-[11px] text-gray-500 mt-2 leading-relaxed">
+                Calcul à rendement constant, avec la moyenne historique des
+                indices {HISTORICAL_RETURNS_PERIOD.label} : une hypothèse, pas
+                une prévision.
               </p>
             </div>
           </div>

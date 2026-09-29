@@ -11,6 +11,8 @@ import {
 } from "@/components/simulator/PortfolioPicker";
 import {
   PORTFOLIO_PRESETS,
+  REGION_RETURN_SOURCES,
+  ROLLING_10Y_CALC,
   type PortfolioItem,
 } from "@/lib/portfolio";
 
@@ -31,6 +33,8 @@ interface SimulatorFormProps {
   defaultMode?: SimulatorMode;
   /** Initial portfolio items — used when defaultMode = "portfolio". */
   defaultPortfolio?: PortfolioItem[];
+  /** Called on mount and whenever the mode changes (libellé du résultat). */
+  onModeChange?: (mode: SimulatorMode) => void;
 }
 
 const DEFAULTS: SimulatorInput = {
@@ -40,6 +44,28 @@ const DEFAULTS: SimulatorInput = {
   annualFeesPct: TER_REFERENCE_SIMULATEUR, // même source que les liens — voir simulation-params.ts
   annualInflationPct: undefined,
 };
+
+/** « 6,64 » : décimales données, virgule française. */
+const fr = (n: number, digits: number) => n.toFixed(digits).replace(".", ",");
+/** « −1,6 % » ou « +14,4 % », signe typographique. */
+const signedPct = (n: number) =>
+  `${n < 0 ? "−" : "+"}${fr(Math.abs(n), 1)}\u00a0%`;
+
+// Corrigé le 29/09/2026 : l'aide disait « Rendement attendu avant frais. Le
+// MSCI World a affiché ~7–8 %/an sur 30 ans (dividendes inclus) » — phrase non
+// sourcée (ni devise, ni net/brut, ni dates), déjà retirée de portfolio.ts, et
+// contredite par la fiche MSCI (6,64 %/an en euros depuis le 29/12/2000).
+// Repère interpolé depuis REGION_RETURN_SOURCES.monde. Décision : le 7 % par
+// défaut du mode rapide (simulation-params, HYPOTHESES_COMPARATIFS) reste une
+// hypothèse de travail assumée — de nombreux montants publiés sur le site en
+// dépendent (97 753 € pour 200 €/mois sur 20 ans, etc.) — et l'aide le dit ; le mode « Mes ETF », lui, part de la
+// moyenne historique des indices, d'où un résultat différent pour un même ETF.
+const WORLD = REGION_RETURN_SOURCES.monde;
+const RETURN_HINT = `Hypothèse de rendement avant frais, pas une prévision. Les ${fr(DEFAULTS.annualReturnPct, 0)}\u00a0%/an proposés par défaut sont une hypothèse de travail ; le mode « Mes ETF » part, lui, de la moyenne historique des indices. Pour repère : ${WORLD.referenceIndex} en euros, dividendes nets réinvestis, ${fr(WORLD.annualizedPct, 2)}\u00a0%/an ${WORLD.period} (${WORLD.shortSource})${
+  WORLD.rolling10y
+    ? ` ; sur 10 ans glissants dans cette période, de ${signedPct(WORLD.rolling10y.min)} à ${signedPct(WORLD.rolling10y.max)}/an selon le mois de départ (${ROLLING_10Y_CALC.shortLabel})`
+    : ""
+}.`;
 
 /** Default portfolio when user switches to portfolio mode without prior selection. */
 function defaultPortfolioItems(etfs: ETFConfig[]): PortfolioItem[] {
@@ -61,8 +87,15 @@ export function SimulatorForm({
   defaultInflationEnabled,
   defaultMode = "rapid",
   defaultPortfolio,
+  onModeChange,
 }: SimulatorFormProps) {
   const [mode, setMode] = useState<SimulatorMode>(defaultMode);
+
+  // Le résultat (SimulatorHero) doit savoir si le rendement vient de la
+  // moyenne historique des indices (mode portefeuille) ou d'une saisie.
+  useEffect(() => {
+    onModeChange?.(mode);
+  }, [mode, onModeChange]);
   const [values, setValues] = useState<SimulatorInput>({
     ...DEFAULTS,
     ...defaultValues,
@@ -257,7 +290,7 @@ export function SimulatorForm({
               max={15}
               step={0.1}
               unit="%"
-              hint="Rendement attendu avant frais. Le MSCI World a affiché ~7–8 %/an sur 30 ans (dividendes inclus)."
+              hint={RETURN_HINT}
               onChange={set("annualReturnPct")}
             />
 
@@ -390,10 +423,10 @@ function NetReturnBadge({ gross, fees }: { gross: number; fees: number }) {
   return (
     <div className="flex items-center justify-between px-4 py-2.5 rounded-xl bg-primary-50 border border-primary-100">
       <span className="text-xs text-primary-700 font-medium">
-        Rendement net après frais
+        Hypothèse de rendement après frais
       </span>
       <span className="text-sm font-bold text-primary-800 tabular-nums">
-        {netStr} %<span className="font-normal text-primary-700">/an</span>
+        {netStr}&nbsp;%<span className="font-normal text-primary-700">/an</span>
       </span>
     </div>
   );

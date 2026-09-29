@@ -5,12 +5,20 @@ import type { SimulatorOutput } from "@/lib/simulator";
 import { formatEur } from "@/lib/simulator";
 import { CountUp } from "@/components/ui/CountUp";
 import { AuroraSweep } from "@/components/ui/AuroraSweep";
+import { HISTORICAL_RETURNS_PERIOD } from "@/lib/portfolio";
+import type { SimulatorMode } from "@/components/simulator/SimulatorForm";
 
 interface Props {
   output: SimulatorOutput;
+  /**
+   * Mode du formulaire. En mode « portfolio », le rendement est la moyenne
+   * historique pondérée des indices (blendPortfolio), pas une estimation :
+   * le libellé le dit. « rapid » par défaut (rendu serveur).
+   */
+  mode?: SimulatorMode;
 }
 
-export function SimulatorHero({ output }: Props) {
+export function SimulatorHero({ output, mode = "rapid" }: Props) {
   const { base, input } = output;
   const multiplier = base.totalInvested > 0
     ? base.finalValue / base.totalInvested
@@ -57,7 +65,7 @@ export function SimulatorHero({ output }: Props) {
           pendant{" "}
           <span className="font-semibold text-white">{input.durationYears} ans</span>
           {" "}·{" "}
-          rendement {returnFmt} %/an
+          hypothèse de rendement {returnFmt}&nbsp;%/an avant frais
         </p>
 
         {/* Big number — text-white over the radial halo. */}
@@ -66,8 +74,24 @@ export function SimulatorHero({ output }: Props) {
             <CountUp value={base.finalValue} format={formatEur} />
           </p>
         </div>
+        {/* Corrigé le 29/09/2026 : « Scénario moyen basé sur un rendement
+            estimé » présentait comme une estimation, en mode portefeuille, la
+            moyenne historique des indices que /allocation-portefeuille
+            appelle « pas une prévision ». En mode rapide, le 7 % par défaut
+            est une hypothèse de travail assumée (FAQ du simulateur). */}
         <p className="text-slate-400 text-sm mb-6">
-          Scénario moyen basé sur un rendement estimé de {returnFmt}&nbsp;%/an
+          {mode === "portfolio" ? (
+            <>
+              Scénario central : moyenne historique des indices (
+              {HISTORICAL_RETURNS_PERIOD.start} → {HISTORICAL_RETURNS_PERIOD.end}
+              ), {returnFmt}&nbsp;%/an avant frais, hypothèse et non prévision
+            </>
+          ) : (
+            <>
+              Scénario central : hypothèse de {returnFmt}&nbsp;%/an avant
+              frais, pas une prévision
+            </>
+          )}
         </p>
 
         {/* Stats row — glass tiles consistent with TrackingPitch */}

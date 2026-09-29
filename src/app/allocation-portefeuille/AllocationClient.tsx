@@ -9,6 +9,10 @@ import {
   blendPortfolio,
   rebalanceToHundred,
   PORTFOLIO_PRESETS,
+  REGION_RETURN_SOURCES,
+  HISTORICAL_RETURNS_PERIOD,
+  ROLLING_10Y_CALC,
+  historicalReturnCaveat,
   type PortfolioItem,
   type BlendedPortfolio,
 } from "@/lib/portfolio";
@@ -30,6 +34,13 @@ const DEFAULTS = {
   monthlyAmount: 500,
   durationYears: 20,
 };
+
+/** « 6,6 % », « −1,6 % » ou, avec signed, « +14,4 % » — espace insécable. */
+function fmtPct(n: number, signed = false): string {
+  const abs = Math.abs(n).toFixed(1).replace(".", ",");
+  const sign = n < 0 ? "−" : signed && n > 0 ? "+" : "";
+  return `${sign}${abs}\u00a0%`;
+}
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
@@ -211,10 +222,23 @@ export function AllocationClient({ etfs }: { etfs: ETFConfig[] }) {
             >
               <span className="font-medium">Total des poids</span>
               <span className="font-bold tabular-nums">
-                {blend.totalWeight.toFixed(1)} %{" "}
+                {blend.totalWeight.toFixed(1).replace(".", ",")}&nbsp;%{" "}
                 {blend.isBalanced ? "✓" : "(doit faire 100 %)"}
               </span>
             </div>
+
+            {/* Corrigé le 29/09/2026 : la note parlait de « l'indice de
+                référence de chaque ETF », faux pour 13 des 20 ETF du catalogue
+                (S&P 500 et Nasdaq-100 affichés avec le MSCI USA, VWCE avec le
+                MSCI World, etc.). */}
+            <p className="text-xs text-gray-500 leading-relaxed">
+              Rendements affichés : historique annualisé d&apos;un indice de
+              référence par région (pas toujours l&apos;indice suivi par
+              l&apos;ETF, voir la précision sous la ligne concernée), en euros,
+              avant frais (dividendes réinvestis pour les actions),{" "}
+              {HISTORICAL_RETURNS_PERIOD.label}. Ce n&apos;est pas une
+              prévision.
+            </p>
 
             {/* ETF list with weight sliders */}
             <div className="space-y-3">
@@ -298,13 +322,13 @@ function EtfRow({
               {item.etf.indexLabel}
             </p>
             <p className="text-xs text-gray-500">
-              TER {item.etf.ter.toString().replace(".", ",")} % · Rendement
-              attendu {expectedReturn.toFixed(1).replace(".", ",")} %
+              TER {item.etf.ter.toString().replace(".", ",")}&nbsp;%
             </p>
           </div>
           <p className="text-xs text-gray-500 mt-0.5">
             {item.etf.displaySymbol} · {item.etf.name}
           </p>
+          <HistoricalReturnLine etf={item.etf} value={expectedReturn} />
           <div className="flex items-center gap-2 mt-1.5 flex-wrap">
             {item.etf.peaEligible ? (
               <span className="text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 px-1.5 py-0.5 rounded">
@@ -319,7 +343,9 @@ function EtfRow({
                 CTO uniquement
               </span>
             )}
-            <span className="text-[10px] text-gray-500">{item.etf.region}</span>
+            <span className="text-[10px] text-gray-500">
+              {REGION_RETURN_SOURCES[item.etf.region].regionLabel}
+            </span>
           </div>
         </div>
         {canRemove && (
@@ -351,7 +377,7 @@ function EtfRow({
             Poids dans le portefeuille
           </label>
           <span className="text-sm font-bold tabular-nums text-gray-900">
-            {item.weight.toFixed(1)} %{" "}
+            {item.weight.toFixed(1).replace(".", ",")}&nbsp;%{" "}
             <span className="text-gray-500 text-xs font-normal">
               ({formatEur(monthlyAllocated)}/mois)
             </span>
@@ -374,6 +400,65 @@ function EtfRow({
           }
         />
       </div>
+    </div>
+  );
+}
+
+// ─── HistoricalReturnLine ────────────────────────────────────────────────────
+//
+// Corrigé le 29/09/2026 : la ligne affichait « Rendement attendu 7,5 % » à
+// partir d'une table non sourcée. Elle affiche désormais le rendement
+// historique de l'indice de référence de la région, sa source courte et
+// l'écart selon le point de départ, pour ne jamais présenter un seul chiffre
+// comme une promesse. Période et définition : note au-dessus de la liste.
+
+function HistoricalReturnLine({
+  etf,
+  value,
+}: {
+  etf: ETFConfig;
+  value: number;
+}) {
+  const src = REGION_RETURN_SOURCES[etf.region];
+  const caveat = historicalReturnCaveat(etf);
+  return (
+    <div className="mt-1.5 text-xs text-gray-600 leading-relaxed">
+      <p
+        title={`${src.referenceIndex}, en euros, rendement ${src.returnType}, ${src.period}. Source : ${src.sourceName}, données au ${src.dataDate}.`}
+      >
+        Historique du {src.referenceIndex} :{" "}
+        <span className="font-semibold text-gray-800 tabular-nums">
+          {fmtPct(value)}/an
+        </span>{" "}
+        {src.sourced ? (
+          <span className="text-gray-500">({src.shortSource})</span>
+        ) : (
+          <span className="text-amber-700">
+            (hypothèse non sourcée, à vérifier)
+          </span>
+        )}
+        {/* Corrigé le 29/09/2026 : la fourchette suivait « (MSCI, fiche
+            officielle) » alors qu'aucune fiche MSCI ne la publie : c'est un
+            calcul DCA Tracker sur les niveaux MSCI, dit comme tel. */}
+        {src.rolling10y ? (
+          <span className="text-gray-500">
+            {" "}
+            · sur 10 ans glissants {HISTORICAL_RETURNS_PERIOD.span} (
+            {ROLLING_10Y_CALC.shortLabel}) : de{" "}
+            {fmtPct(src.rolling10y.min, true)} à{" "}
+            {fmtPct(src.rolling10y.max, true)}/an
+          </span>
+        ) : src.dispersionNote ? (
+          <span className="text-gray-500"> · {src.dispersionNote}</span>
+        ) : null}
+      </p>
+      {caveat && (
+        <p
+          className={`mt-0.5 ${caveat.unsourced ? "text-amber-700" : "text-gray-500"}`}
+        >
+          {caveat.text}
+        </p>
+      )}
     </div>
   );
 }
@@ -575,7 +660,7 @@ function DonutTooltip({
         {entry.name}
       </p>
       <p className="text-gray-700">
-        {entry.value.toFixed(1)} % ·{" "}
+        {entry.value.toFixed(1).replace(".", ",")}&nbsp;% ·{" "}
         <span className="tabular-nums">
           {formatEur(entry.payload.monthlyAmount)}/mois
         </span>
@@ -594,19 +679,39 @@ function BlendedStats({ blend }: { blend: BlendedPortfolio }) {
       </h3>
       <div className="space-y-2.5">
         <StatRow
-          label="Rendement attendu (brut)"
-          value={`${blend.blendedReturn.toFixed(2).replace(".", ",")} %/an`}
+          label="Moyenne historique des indices (avant frais)"
+          value={`${fmtPct(blend.blendedReturn)}/an`}
         />
         <StatRow
           label="TER pondéré"
-          value={`${blend.blendedTer.toFixed(3).replace(".", ",")} %/an`}
+          value={`${blend.blendedTer.toFixed(3).replace(".", ",")}\u00a0%/an`}
         />
         <StatRow
-          label="Rendement net après frais"
-          value={`${blend.blendedNetReturn.toFixed(2).replace(".", ",")} %/an`}
+          label="Après frais des ETF"
+          value={`${fmtPct(blend.blendedNetReturn)}/an`}
           bold
         />
       </div>
+      {/* Corrigé le 29/09/2026 : « Rendement attendu » remplacé par ce que le
+          chiffre est réellement — une moyenne de rendements PASSÉS. */}
+      <p className="pt-3 border-t border-slate-100 text-xs text-gray-500 leading-relaxed">
+        Moyenne pondérée des rendements annualisés des indices de référence,
+        en euros, {HISTORICAL_RETURNS_PERIOD.label} (MSCI, dividendes
+        réinvestis ; BCE pour le monétaire). Un
+        ordre de grandeur : rééquilibrage et corrélations ne sont pas
+        modélisés. Ce n&apos;est pas une prévision : les performances passées
+        ne préjugent pas des performances futures.
+      </p>
+      {/* 29/09/2026 : l'alerte ne regardait que les régions ; elle se
+          déclenche aussi quand le chiffre d'une ligne ne représente pas
+          l'indice suivi (Nasdaq-100). */}
+      {blend.unverifiedSymbols.length > 0 && (
+        <p className="text-xs text-amber-700 leading-relaxed">
+          Hypothèse non sourcée, à vérifier : le chiffre historique utilisé
+          pour {blend.unverifiedSymbols.join(", ")} n&apos;est pas vérifié
+          (voir la précision sous la ligne). La moyenne pondérée en dépend.
+        </p>
+      )}
       {blend.hasNonPeaEtf && (
         <div className="pt-3 border-t border-slate-100 text-xs text-amber-700 leading-relaxed">
           ⚠️ Ce portefeuille contient au moins un ETF non éligible PEA — il
