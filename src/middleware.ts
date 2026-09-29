@@ -5,11 +5,18 @@ import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 const isProtectedRoute = createRouteMatcher(["/account(.*)"]);
 
 // Built once at module load — safe, just creates a function, doesn't call Clerk API
-const _clerkMw = clerkMiddleware(async (auth, req) => {
-  if (isProtectedRoute(req)) {
-    await auth.protect();
-  }
-});
+// signInUrl explicite : sans NEXT_PUBLIC_CLERK_SIGN_IN_URL dans l'environnement
+// de production, auth.protect() renvoyait les visiteurs non connectés vers la
+// page hébergée par Clerk (accounts.dcatracker.fr), pas vers /sign-in, qui est
+// à nos couleurs et en français.
+const _clerkMw = clerkMiddleware(
+  async (auth, req) => {
+    if (isProtectedRoute(req)) {
+      await auth.protect();
+    }
+  },
+  { signInUrl: "/sign-in", signUpUrl: "/sign-up" },
+);
 
 const CANONICAL_HOST = "dcatracker.fr";
 

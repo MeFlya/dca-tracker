@@ -1,3 +1,5 @@
+import { frFR } from "@clerk/localizations";
+
 // Shared Clerk appearance config.
 // Applied globally via <ClerkProvider> so every Clerk primitive
 // (SignIn, SignUp, UserButton) matches the product design system.
@@ -54,7 +56,42 @@ export const clerkAppearance = {
     socialButtonsPlacement: "top" as const,
     socialButtonsVariant: "blockButton" as const,
     showOptionalFields: false,
-    termsPageUrl: "https://dcatracker.fr/tarifs",
-    privacyPageUrl: "https://dcatracker.fr/methodologie",
+    // Pointaient vers /tarifs et /methodologie jusqu'au 29/09/2026 : les liens
+    // « Conditions » et « Confidentialité » des formulaires menaient ailleurs
+    // que vers les textes juridiques.
+    termsPageUrl: "https://dcatracker.fr/cgv",
+    privacyPageUrl: "https://dcatracker.fr/confidentialite",
   },
 } as const;
+
+// Textes des formulaires Clerk en français.
+//
+// Jusqu'au 29/09/2026, aucune localisation n'était passée à <ClerkProvider> :
+// l'inscription, la connexion et le menu du compte s'affichaient en anglais
+// (« Create your account », « Email address », « Continue ») sous un titre de
+// page en français. frFR est la traduction officielle de Clerk ; seuls les
+// titres des premiers écrans sont remplacés, parce que frFR y répète mot pour
+// mot le titre de nos pages (« Créez votre compte ») et y ajoute « pour
+// continuer vers DCA Tracker ».
+export const clerkLocalization = {
+  ...frFR,
+  signUp: {
+    ...frFR.signUp,
+    start: {
+      ...frFR.signUp?.start,
+      title: "Inscription",
+      titleCombined: "Inscription",
+      subtitle: "Gratuite et sans engagement.",
+      subtitleCombined: "Gratuite et sans engagement.",
+    },
+  },
+  signIn: {
+    ...frFR.signIn,
+    start: {
+      ...frFR.signIn?.start,
+      title: "Connexion",
+      titleCombined: "Connexion",
+      subtitle: "Retrouvez votre stratégie et votre suivi.",
+    },
+  },
+};

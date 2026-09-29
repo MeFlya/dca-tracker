@@ -18,6 +18,7 @@
     "seo:indexnow": "node scripts/indexnow.mjs"
   },
   "dependencies": {
+    "@clerk/localizations": "4.13.8",
     "@clerk/nextjs": "^7.2.3",
     "@vercel/analytics": "^2.0.1",
     "clsx": "^2.1.1",

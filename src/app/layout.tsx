@@ -7,7 +7,7 @@ import { Footer } from "@/components/layout/Footer";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { AmbientBackground } from "@/components/ui/AmbientBackground";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
-import { clerkAppearance } from "@/lib/clerk-appearance";
+import { clerkAppearance, clerkLocalization } from "@/lib/clerk-appearance";
 import { Analytics } from "@vercel/analytics/next";
 import { AncresTitres } from "@/components/search/AncresTitres";
 import { AnalyticsContextProvider } from "@/components/analytics/AnalyticsContext";
@@ -148,7 +148,7 @@ export default function RootLayout({
         {/* Animated ambient background — sits below all content.
             Provides the "premium feel" on every page for free. */}
         <AmbientBackground />
-        <ClerkProvider appearance={clerkAppearance}>
+        <ClerkProvider appearance={clerkAppearance} localization={clerkLocalization}>
         <JsonLd
           data={{
             "@context": "https://schema.org",
