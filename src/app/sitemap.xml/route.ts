@@ -47,7 +47,7 @@ const REV = {
   // taux fiscaux 2026
   methodologie: "2026-08-03",
   // capture du Dashboard corrigée, prix unifiés
-  produits: "2026-08-22",
+  produits: "2026-09-29",
   // Vercel Web Analytics remplace Plausible (mention dans la page)
   analytics: "2026-08-23",
   // entrée de changelog sur la régression de série du 2 août ; partenariats

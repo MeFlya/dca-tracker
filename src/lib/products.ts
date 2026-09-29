@@ -4,7 +4,7 @@
 // vivent ici. Les PRIX AFFICHÉS doivent correspondre aux prix Stripe
 // (créés dans le Dashboard, IDs en env vars).
 // Cockpit DCA : argumentaire DÉFINITIF (Cowork, 2026-06-11). Guide : pitch
-// placeholder à remplacer — chercher les commentaires [À CONFIRMER].
+// aligné sur le PDF v1.0 le 29/09/2026 (voir le commentaire au-dessus de GUIDE).
 //
 // Positionnement (décision produit, ne pas dévier) : ces produits captent
 // les "non" au SaaS (les gens qui veulent du Excel/PDF, pas un abonnement).
@@ -55,6 +55,14 @@ export type Product = {
   };
   /** Env var contenant le price ID Stripe (mode payment). */
   priceIdEnv: string;
+  /**
+   * Price ID Stripe LIVE, utilisé si la variable d'environnement est absente.
+   * Un identifiant de prix n'est pas un secret (il transite par le navigateur
+   * au checkout). Repli ajouté le 29/09/2026 : la modification des variables
+   * Vercel est bloquée derrière une validation à deux facteurs, et le guide
+   * devait pouvoir se vendre sans attendre.
+   */
+  livePriceId?: string;
   metaTitle: string;
   metaDescription: string;
   /** Abstract — 2-3 paragraphes. */
@@ -204,41 +212,68 @@ const TEMPLATE: Product = {
   ],
 };
 
+// Pitch aligné sur le contenu réel du PDF v1.0 (29/09/2026) : 63 pages,
+// chiffres vérifiés au 28/09/2026. L'ancien pitch promettait des « captures »
+// d'applications que le guide ne contient pas, et « quel ETF pour commencer »,
+// ce que le guide refuse de dire (pas de conseil personnalisé).
 const GUIDE: Product = {
   id: "guide-demarrer-dca",
   slug: "guide-demarrer-dca",
   name: "Guide PDF — Démarrer le DCA en France",
   shortName: "Guide Démarrer le DCA",
-  tagline: "De zéro à votre premier versement programmé, sans jargon.",
+  tagline: "De zéro à votre premier investissement, puis une routine mensuelle qui tient dans la durée.",
   priceEur: 19,
   priceIdEnv: "STRIPE_PRODUCT_GUIDE_PRICE_ID",
+  livePriceId: "price_1UL1rCLVB4yZ8CXvoFZG1wOj",
+  screenshots: [
+    {
+      src: "/produits/guide-couverture.png",
+      alt: "Couverture du guide « Démarrer le DCA en France », édition septembre 2026, chiffres vérifiés au 28 septembre 2026",
+      width: 1397,
+      height: 1977,
+    },
+    {
+      src: "/produits/guide-courtiers.png",
+      alt: "Page du chapitre 5 : Trade Republic, BoursoBank et Fortuneo comparés d'après leurs grilles officielles, et le coût d'un achat d'ETF de 50 à 1 000 €",
+      width: 1397,
+      height: 1977,
+    },
+    {
+      src: "/produits/guide-charte.png",
+      alt: "Annexe A, la charte d'investisseur à remplir : épargne de précaution, enveloppe, courtier, ETF, montant mensuel et règles de conduite",
+      width: 1397,
+      height: 1977,
+    },
+  ],
   metaTitle: "Guide PDF : Démarrer le DCA en France (PEA, ETF, courtiers)",
   metaDescription:
-    "Le guide pas-à-pas pour lancer votre DCA en France : choisir l'enveloppe (PEA/CTO), le courtier, l'ETF, programmer ses versements et éviter les 7 erreurs classiques. PDF, paiement unique.",
-  // [À CONFIRMER] — pitch placeholder structuré, à remplacer par le pitch final.
+    "Lancer un DCA en France pas à pas : PEA ou CTO, 3 courtiers et 13 ETF vérifiés, baisses chiffrées, 7 erreurs à éviter. PDF de 63 pages, 19 €.",
   abstract: [
-    "Toutes les informations pour démarrer un DCA existent gratuitement, éparpillées sur cent sites contradictoires. Ce guide les condense en un parcours unique : de « je ne sais pas par où commencer » à votre premier versement programmé.",
-    "Spécifique à la France : PEA vs CTO chiffré, courtiers comparés, ETF éligibles avec leurs vrais frais, fiscalité expliquée simplement — et les 7 erreurs qui coûtent le plus cher aux débutants.",
+    "Tout ce qu'il faut pour démarrer un DCA existe gratuitement, éparpillé sur de nombreux sites qui se contredisent, et beaucoup ne sont pas à jour : fiscalité 2026, tarifs des courtiers. Ce guide assemble le parcours dans l'ordre, de « je ne sais pas par où commencer » à votre premier investissement, puis à une routine mensuelle.",
+    "Chaque chiffre est sourcé et daté, vérifié au 28 septembre 2026 : prélèvements sociaux à 18,6 %, grilles officielles de Trade Republic, BoursoBank et Fortuneo, 13 ETF éligibles au PEA vérifiés un par un, baisses passées chiffrées en euros. Il ne vous dit pas quoi acheter : il vous donne des critères, des arbres de décision et des outils à remplir.",
   ],
   features: [
-    "PDF structuré, lisible en une soirée, consultable à vie",
-    "Le choix d'enveloppe (PEA/CTO) tranché avec des chiffres, pas des généralités",
-    "Quel courtier selon votre profil (frais réels comparés)",
-    "Quel ETF pour commencer — et lesquels éviter",
-    "Programmer ses versements : la mise en place pas à pas",
-    "Les 7 erreurs de débutant les plus chères (et comment les éviter)",
-    "Mises à jour du guide incluses",
+    "PDF de 63 pages, chiffres vérifiés au 28 septembre 2026, chaque source citée",
+    "PEA ou CTO : les règles de 2026 et l'écart en euros, ramenés à quelques critères que vous appliquez à votre situation",
+    "Trois courtiers (Trade Republic, BoursoBank, Fortuneo) comparés sur leurs grilles officielles, et le coût d'un achat selon votre montant",
+    "Les 13 ETF éligibles au PEA vérifiés (ISIN, frais), et les pièges : fonds non éligibles, versions plus chères du même indice",
+    "Ouvrir le PEA, passer le premier ordre, automatiser : étapes numérotées, check-lists et fiches à remplir",
+    "Les baisses de 2008 à 2025 chiffrées en euros, et les 7 erreurs les plus chères, chacune chiffrée avec ses hypothèses",
+    "Trois arbres de décision, une charte d'investisseur et un plan de crise à remplir, un calendrier annuel",
+    "Mises à jour incluses : chaque version est datée, la suivante vous est envoyée sur simple demande",
   ],
   contents: [
-    { title: "Partie 1 — Comprendre", detail: "Le DCA, les ETF, les intérêts composés : le minimum vital, sans théorie inutile." },
-    { title: "Partie 2 — Choisir", detail: "Enveloppe (PEA/CTO), courtier, ETF : trois décisions, trois arbres de décision chiffrés." },
-    { title: "Partie 3 — Mettre en place", detail: "Ouvrir le compte, passer le premier ordre, automatiser — captures et étapes concrètes." },
-    { title: "Partie 4 — Tenir", detail: "Quoi faire (et ne pas faire) pendant les baisses ; le suivi minimal qui suffit." },
+    { title: "Avant de commencer", detail: "Le parcours dans l'ordre, ce que le guide ne fait pas, la méthode et la date de vérification des chiffres." },
+    { title: "Partie 1 — Comprendre", detail: "Le DCA face à l'investissement en une fois, les ETF en dix minutes, le temps, le rendement et le risque, en euros." },
+    { title: "Partie 2 — Choisir", detail: "Enveloppe, courtier, ETF : trois décisions, trois arbres de décision, les grilles tarifaires et les frais vérifiés." },
+    { title: "Partie 3 — Mettre en place", detail: "Épargne de précaution, ouverture du PEA, premier ordre, automatisation, montant : étapes numérotées, check-lists et fiches à remplir." },
+    { title: "Partie 4 — Tenir", detail: "Les baisses passées chiffrées (2008, 2020, 2022, 2025), le suivi minimal, la revue annuelle, le rééquilibrage et les retraits après 5 ans." },
+    { title: "Les 7 erreurs et les annexes", detail: "Les erreurs les plus chères chiffrées en euros ; charte d'investisseur, plan de crise, calendrier annuel, glossaire et sources." },
   ],
   forWho: [
     "Vous voulez démarrer mais vous tournez en rond entre les avis contradictoires",
     "Vous préférez un parcours structuré à 40 onglets ouverts",
-    "Vous voulez éviter les erreurs coûteuses des 12 premiers mois",
+    "Vous voulez éviter les erreurs qui coûtent le plus cher, chiffrées en euros",
   ],
   notForWho: [
     "Vous investissez déjà en DCA depuis des années (le contenu vous semblera basique)",
@@ -247,15 +282,19 @@ const GUIDE: Product = {
   faq: [
     {
       q: "En quoi ce guide diffère du contenu gratuit du site ?",
-      a: "Le site couvre chaque sujet séparément ; le guide est le parcours assemblé dans le bon ordre, avec les arbres de décision et les étapes de mise en place détaillées. C'est la différence entre une encyclopédie et un itinéraire.",
+      a: "Le site couvre chaque sujet séparément ; le guide est le parcours assemblé dans le bon ordre, avec les arbres de décision, les étapes de mise en place, les fiches à remplir et les chiffres regroupés et datés. C'est la différence entre une encyclopédie et un itinéraire.",
     },
     {
       q: "Est-ce un conseil en investissement ?",
-      a: "Non. C'est un guide pédagogique sur la mécanique du DCA en France (enveloppes, frais, mise en place). Aucune recommandation personnalisée — pour cela, consultez un conseiller agréé AMF.",
+      a: "Non. C'est un guide pédagogique sur la mécanique du DCA en France (enveloppes, frais, mise en place). Aucune recommandation personnalisée : pour cela, consultez un conseiller en investissements financiers (CIF) immatriculé à l'ORIAS.",
     },
     {
       q: "Le guide est-il maintenu à jour ?",
-      a: "Oui : frais des courtiers, TER des ETF et règles fiscales évoluent. Votre lien de téléchargement donne accès à la dernière version.",
+      a: "Oui : frais des courtiers, frais des ETF et fiscalité évoluent. Chaque version indique la date de vérification de ses chiffres. Quand une nouvelle version paraît, écrivez à hello@dcatracker.fr depuis votre email d'achat : nous vous l'envoyons.",
+    },
+    {
+      q: "Y a-t-il des captures d'écran des applications ?",
+      a: "Non, volontairement : les applications changent souvent et une capture périmée induit en erreur. Le guide donne des étapes écrites valables chez les trois courtiers, avec ce qu'il faut vérifier à chaque étape.",
     },
     {
       q: "Et si ça ne me convient pas ?",
@@ -265,7 +304,8 @@ const GUIDE: Product = {
   deliverables: [{ label: "Guide PDF", fileKey: "guide-pdf" }],
 };
 
-// [À CONFIRMER] Prix bundle : recalculé après passage du Cockpit à 19 €
+// Prix bundle : 19 + 19 = 38 € séparés, pack à 33 € (prix Stripe créé le
+// 29/09/2026, price_1UL1t9LVB4yZ8CXvb69XgEnn). Ancienne note : recalculé après passage du Cockpit à 19 €
 // (lancement) → 19 + 19 = 38 € séparés, bundle à 33 € (~-13 %). Quand le
 // Cockpit repassera à 24 € : séparés 43 €, revoir le prix du pack.
 const BUNDLE: Product = {
@@ -277,6 +317,7 @@ const BUNDLE: Product = {
   priceEur: 33,
   compareAtEur: 38, // 19 + 19 — recalculer si les prix unitaires changent
   priceIdEnv: "STRIPE_PRODUCT_BUNDLE_PRICE_ID",
+  livePriceId: "price_1UL1t9LVB4yZ8CXvb69XgEnn",
   metaTitle: "Pack Démarrage DCA : guide PDF + Cockpit DCA (suivi PEA)",
   metaDescription:
     "Le guide pour lancer votre DCA en France + le Cockpit DCA (tableau de bord Excel/Google Sheets) pour le piloter. Tout pour démarrer proprement, en paiement unique. Moins cher qu'en séparé.",
@@ -317,7 +358,7 @@ const BUNDLE: Product = {
     },
     {
       q: "Est-ce un conseil en investissement ?",
-      a: "Non — le guide est pédagogique et le Cockpit est un outil de suivi basé sur l'allocation que VOUS définissez. Aucune recommandation personnalisée — pour cela, consultez un conseiller agréé AMF.",
+      a: "Non — le guide est pédagogique et le Cockpit est un outil de suivi basé sur l'allocation que VOUS définissez. Aucune recommandation personnalisée : pour cela, consultez un conseiller en investissements financiers (CIF) immatriculé à l'ORIAS.",
     },
   ],
   deliverables: [
@@ -345,5 +386,5 @@ export function getProduct(idOrSlug: string): Product | null {
 
 /** Price ID Stripe du produit (null si non configuré → produit "bientôt dispo"). */
 export function getProductPriceId(product: Product): string | null {
-  return process.env[product.priceIdEnv] ?? null;
+  return process.env[product.priceIdEnv] ?? product.livePriceId ?? null;
 }
