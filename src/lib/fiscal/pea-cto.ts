@@ -34,6 +34,12 @@ export interface FiscalInput {
   finalValue: number;
   /** Years between first deposit and withdrawal. Decimals OK. */
   holdingYears: number;
+  /**
+   * Année du retrait ou de la vente : elle fixe le barème appliqué (voir
+   * `baremeCapital`). Par défaut, l'année en cours — ce qui convient à une
+   * simulation, pas à un récap d'une année passée.
+   */
+  annee?: number;
 }
 
 export interface AccountResult {
@@ -89,7 +95,8 @@ export interface OptimalMix {
 export const PEA_DEPOSIT_CAP_EUR = 150_000;
 
 /**
- * Barème des prélèvements sur les revenus du capital, PAR MILLÉSIME.
+ * Barème des prélèvements sur les revenus du capital, PAR CATÉGORIE DE REVENU
+ * ET PAR MILLÉSIME.
  *
  * ─── Pourquoi un barème et non deux constantes ──────────────────────────────
  *
@@ -97,6 +104,22 @@ export const PEA_DEPOSIT_CAP_EUR = 150_000;
  * en 2025 ? », question que pose n'importe quel récap fiscal établi l'année
  * suivante. Elles obligent aussi à réécrire le code à chaque loi de finances,
  * et c'est ainsi que le site s'est retrouvé à publier 17,2 % après la hausse.
+ *
+ * ─── Pourquoi la catégorie : la hausse n'a pas la même date d'effet ────────
+ *
+ * Un barème indexé sur la seule année répondait 17,2 % pour 2025. C'était faux
+ * pour la moitié des cas : la date d'effet dépend de la nature du revenu
+ * (LFSS 2026, art. 12, II).
+ *   - Plus-values de cession de valeurs mobilières (vente sur un CTO) : ce sont
+ *     des revenus du patrimoine (art. L. 136-6 CSS), imposés par voie de rôle.
+ *     Le taux de 18,6 % s'applique dès les plus-values RÉALISÉES EN 2025.
+ *   - Produits de placement (dividendes, intérêts, gain net d'un retrait de
+ *     PEA) : prélevés à la source (art. L. 136-7 CSS). Le taux de 18,6 % ne
+ *     s'applique qu'à ceux perçus À PARTIR DU 1er JANVIER 2026 ; ceux de 2025
+ *     restaient à 17,2 %.
+ * Conséquence concrète : un retrait de PEA de 2025 supporte 17,2 %, une
+ * plus-value de CTO de 2025 supporte 18,6 %. À partir de 2026, les deux
+ * catégories ont le même barème.
  *
  * ─── Sources, lues sur le texte et non sur un commentaire ───────────────────
  *
@@ -106,6 +129,9 @@ export const PEA_DEPOSIT_CAP_EUR = 150_000;
  *   → prélèvements sociaux = CSG 10,6 % + CRDS 0,5 % (art. 19 ord. n° 96-50)
  *     + prélèvement de solidarité 7,5 % (art. 235 ter CGI) = 18,6 %.
  *   → PFU = 12,8 % d'IR (art. 200 A CGI, inchangé) + 18,6 % = 31,4 %.
+ * Dates d'effet : LFSS 2026, art. 12, II ; brochure pratique IR 2026, p. 137
+ * (impots.gouv.fr, consultée le 28/09/2026) ; service-public.gouv.fr F2329
+ * (consultée le 28/09/2026).
  *
  * ⚠️ LA HAUSSE N'EST PAS GÉNÉRALE, et c'est le piège de ce dossier. Le même
  * article 12 rétablit un IV à L. 136-8 qui MAINTIENT 9,2 % de CSG — donc
@@ -117,60 +143,101 @@ export const PEA_DEPOSIT_CAP_EUR = 150_000;
  * LE CAS DU PEA, qui est le cadre majoritaire de l'audience : le gain net de
  * PEA relève du 5° du II de l'article L. 136-7. La liste dérogatoire du IV
  * couvre les 1°, 2°, 2° bis, 3° et 4° de ce même II — elle s'arrête au 4°.
- * Le PEA n'y figure pas : il suit donc la hausse, à 18,6 %. Vérifié en lisant
- * les deux articles, pas en le déduisant.
+ * Le PEA n'y figure pas : il suit donc la hausse, à 18,6 %, pour les retraits
+ * faits depuis le 1er janvier 2026. Vérifié en lisant les deux articles, pas
+ * en le déduisant.
  *
  * ─── Ce que ce barème NE modélise PAS ───────────────────────────────────────
  *
- * La clause de sauvegarde des PEA ouverts AVANT le 01/01/2018 (LFSS 2018,
- * art. 8, V), qui conserve les taux historiques sur la seule fraction de gain
- * acquise avant cette date. `FiscalInput` ne porte pas de date d'ouverture, on
- * ne peut donc pas distinguer les deux cas. Le calcul est juste pour un plan
- * ouvert à partir de 2018 — le cas majoritaire — et SURESTIME légèrement
- * l'impôt d'un plan plus ancien. Surestimer est le bon sens de l'erreur, mais
- * ça reste une limite : à lever en ajoutant la date d'ouverture en entrée.
+ * - Les années antérieures à 2018 (pas de PFU) : `PREMIERE_ANNEE_BAREME`.
+ * - La clause de sauvegarde des PEA ouverts AVANT le 01/01/2018 (LFSS 2018,
+ *   art. 8, V), qui conserve les taux historiques sur la seule fraction de
+ *   gain acquise avant cette date. Le calcul est juste pour un plan ouvert à
+ *   partir de 2018 — le cas majoritaire — et SURESTIME légèrement l'impôt d'un
+ *   plan plus ancien. Le récap fiscal, qui connaît la date du premier
+ *   versement, le signale à l'utilisateur.
  */
-export const BAREMES_CAPITAL: Record<number, { sociaux: number; pfu: number }> = {
-  2018: { sociaux: 0.172, pfu: 0.3 },
-  2026: { sociaux: 0.186, pfu: 0.314 },
+export type CategorieRevenuCapital =
+  /** Vente de titres sur un CTO (revenus du patrimoine, art. L. 136-6 CSS). */
+  | "plus-value-cession"
+  /** Dividendes, intérêts, gain d'un retrait de PEA (art. L. 136-7 CSS). */
+  | "produit-placement";
+
+export const BAREMES_CAPITAL: Record<
+  CategorieRevenuCapital,
+  Record<number, { sociaux: number; pfu: number }>
+> = {
+  "plus-value-cession": {
+    2018: { sociaux: 0.172, pfu: 0.3 },
+    // Plus-values réalisées en 2025, déclarées en 2026 : déjà 18,6 %.
+    2025: { sociaux: 0.186, pfu: 0.314 },
+  },
+  "produit-placement": {
+    2018: { sociaux: 0.172, pfu: 0.3 },
+    // Dividendes et retraits de PEA perçus à partir du 1er janvier 2026.
+    2026: { sociaux: 0.186, pfu: 0.314 },
+  },
 };
 
+/** Premier millésime connu du barème. Avant, le PFU n'existait pas : un calcul
+ *  sur une année antérieure serait faux, l'appelant doit le refuser. */
+export const PREMIERE_ANNEE_BAREME = 2018;
+
 /**
- * Barème applicable à une année : le millésime le plus récent qui lui soit
- * antérieur ou égal. Une année inconnue ne renvoie donc jamais `undefined`,
- * elle prolonge le dernier barème connu — le contraire ferait planter un récap
- * sur une année non encore inscrite.
+ * Barème applicable à une année et à une catégorie de revenu : le millésime le
+ * plus récent qui lui soit antérieur ou égal. Une année postérieure au dernier
+ * millésime prolonge le dernier barème connu — le contraire ferait planter un
+ * récap sur une année non encore inscrite. Une année antérieure à 2018 reçoit
+ * le premier millésime : c'est à l'appelant de ne pas l'afficher comme exact
+ * (voir `PREMIERE_ANNEE_BAREME`).
+ *
+ * La catégorie est obligatoire, à dessein : pour 2025, la réponse change selon
+ * qu'il s'agit d'une vente sur CTO ou d'un retrait de PEA.
  */
-export function baremeCapital(annee: number): { sociaux: number; pfu: number } {
-  const millesimes = Object.keys(BAREMES_CAPITAL)
+export function baremeCapital(
+  annee: number,
+  categorie: CategorieRevenuCapital
+): { sociaux: number; pfu: number } {
+  const bareme = BAREMES_CAPITAL[categorie];
+  const millesimes = Object.keys(bareme)
     .map(Number)
     .sort((a, b) => a - b);
   const retenu = millesimes.filter((m) => m <= annee).pop() ?? millesimes[0];
-  return BAREMES_CAPITAL[retenu];
+  return bareme[retenu];
 }
 
 /**
  * Alias sur le millésime en cours, pour les appelants qui n'ont pas d'année à
- * fournir. `currentYear()` répond dans le fuseau de l'audience, pas dans celui
- * du serveur : au 1er janvier, un serveur en UTC aurait basculé une heure trop
- * tard pour un lecteur français.
+ * fournir (pages de contenu, simulateur). `currentYear()` répond dans le fuseau
+ * de l'audience, pas dans celui du serveur : au 1er janvier, un serveur en UTC
+ * aurait basculé une heure trop tard pour un lecteur français.
+ *
+ * Depuis le 1er janvier 2026, les deux catégories ont le même barème : les
+ * alias n'ont donc pas besoin de catégorie. On lit celle dont la hausse est la
+ * plus tardive (produits de placement), pour qu'un alias ne devance jamais la
+ * loi. Pour une année passée, appeler `baremeCapital(annee, categorie)`.
  */
-export const SOCIAL_CHARGES_RATE = baremeCapital(currentYear()).sociaux;
+const BAREME_EN_COURS = baremeCapital(currentYear(), "produit-placement");
+
+/** Prélèvements sociaux — PEA de 5 ans ou plus (seul prélèvement dû). */
+export const SOCIAL_CHARGES_RATE = BAREME_EN_COURS.sociaux;
 
 /** PFU (Prélèvement Forfaitaire Unique) — CTO, et PEA clôturé avant 5 ans. */
-export const PFU_RATE = baremeCapital(currentYear()).pfu;
+export const PFU_RATE = BAREME_EN_COURS.pfu;
 
 /** Un taux (0.186) en pourcentage affichable (« 18,6 »). Garde la décimale
  *  quand elle existe, la supprime quand le taux est entier. */
-function tauxAffiche(taux: number): string {
-  const pct = taux * 100;
+export function tauxAffiche(taux: number): string {
+  const pct = Math.round(taux * 1000) / 10;
   return (Number.isInteger(pct) ? String(pct) : pct.toFixed(1)).replace(".", ",");
 }
 
 // ─── Per-account calculations ────────────────────────────────────────────────
 
 /**
- * PEA tax computation.
+ * PEA tax computation. Le gain d'un retrait de PEA est un produit de placement :
+ * barème « produit-placement » de l'année du retrait (17,2 % en 2025, 18,6 %
+ * depuis le 1er janvier 2026).
  * - Closure < 5 years: gain × PFU du millésime
  * - Closure ≥ 5 years: gain × prélèvements sociaux du millésime (only — PEA is income-tax exempt)
  * - Loss: 0 tax (loss can be carried forward but we don't model that)
@@ -178,6 +245,10 @@ function tauxAffiche(taux: number): string {
 function computePeaResult(input: FiscalInput): AccountResult {
   const { totalInvested, finalValue, holdingYears } = input;
   const capitalGain = finalValue - totalInvested;
+  const { pfu, sociaux } = baremeCapital(
+    input.annee ?? currentYear(),
+    "produit-placement"
+  );
 
   if (capitalGain <= 0) {
     return {
@@ -193,39 +264,45 @@ function computePeaResult(input: FiscalInput): AccountResult {
   }
 
   if (holdingYears < 5) {
-    const taxDue = capitalGain * PFU_RATE;
+    const taxDue = capitalGain * pfu;
     return {
       totalInvested,
       grossFinalValue: finalValue,
       capitalGain,
-      taxRate: PFU_RATE,
+      taxRate: pfu,
       taxDue,
       netFinalValue: finalValue - taxDue,
       netGain: finalValue - taxDue - totalInvested,
-      taxRuleLabel: `PFU ${tauxAffiche(PFU_RATE)} % (clôture avant 5 ans)`,
+      taxRuleLabel: `PFU ${tauxAffiche(pfu)} % (clôture avant 5 ans)`,
     };
   }
 
-  const taxDue = capitalGain * SOCIAL_CHARGES_RATE;
+  const taxDue = capitalGain * sociaux;
   return {
     totalInvested,
     grossFinalValue: finalValue,
     capitalGain,
-    taxRate: SOCIAL_CHARGES_RATE,
+    taxRate: sociaux,
     taxDue,
     netFinalValue: finalValue - taxDue,
     netGain: finalValue - taxDue - totalInvested,
-    taxRuleLabel: `Prélèvements sociaux ${tauxAffiche(SOCIAL_CHARGES_RATE)} % uniquement (≥ 5 ans)`,
+    taxRuleLabel: `Prélèvements sociaux ${tauxAffiche(sociaux)} % uniquement (≥ 5 ans)`,
   };
 }
 
 /**
- * CTO tax computation. PFU 30 % on all gains, regardless of holding duration.
+ * CTO tax computation. PFU on all gains, regardless of holding duration —
+ * barème « plus-value-cession » de l'année de la vente (31,4 % dès les
+ * plus-values réalisées en 2025).
  * IR-progressive option exists but is more advanced — not modeled here.
  */
 function computeCtoResult(input: FiscalInput): AccountResult {
   const { totalInvested, finalValue } = input;
   const capitalGain = finalValue - totalInvested;
+  const { pfu, sociaux } = baremeCapital(
+    input.annee ?? currentYear(),
+    "plus-value-cession"
+  );
 
   if (capitalGain <= 0) {
     return {
@@ -240,16 +317,16 @@ function computeCtoResult(input: FiscalInput): AccountResult {
     };
   }
 
-  const taxDue = capitalGain * PFU_RATE;
+  const taxDue = capitalGain * pfu;
   return {
     totalInvested,
     grossFinalValue: finalValue,
     capitalGain,
-    taxRate: PFU_RATE,
+    taxRate: pfu,
     taxDue,
     netFinalValue: finalValue - taxDue,
     netGain: finalValue - taxDue - totalInvested,
-    taxRuleLabel: `PFU ${tauxAffiche(PFU_RATE)} % (${tauxAffiche(PFU_RATE - SOCIAL_CHARGES_RATE)} % IR + ${tauxAffiche(SOCIAL_CHARGES_RATE)} % sociaux)`,
+    taxRuleLabel: `PFU ${tauxAffiche(pfu)} % (${tauxAffiche(pfu - sociaux)} % IR + ${tauxAffiche(sociaux)} % sociaux)`,
   };
 }
 
@@ -264,7 +341,7 @@ function computeCtoResult(input: FiscalInput): AccountResult {
  * the input's gain ratio: finalValue / totalInvested).
  */
 function computeOptimalMix(input: FiscalInput): OptimalMix | undefined {
-  const { totalInvested, finalValue, holdingYears } = input;
+  const { totalInvested, finalValue, holdingYears, annee } = input;
 
   if (totalInvested <= PEA_DEPOSIT_CAP_EUR) return undefined;
 
@@ -277,6 +354,7 @@ function computeOptimalMix(input: FiscalInput): OptimalMix | undefined {
     totalInvested: peaInvested,
     finalValue: peaFinal,
     holdingYears,
+    annee,
   });
 
   const ctoInvested = totalInvested - PEA_DEPOSIT_CAP_EUR;
@@ -285,6 +363,7 @@ function computeOptimalMix(input: FiscalInput): OptimalMix | undefined {
     totalInvested: ctoInvested,
     finalValue: ctoFinal,
     holdingYears,
+    annee,
   });
 
   const totalNetFinalValue = peaPortion.netFinalValue + ctoPortion.netFinalValue;

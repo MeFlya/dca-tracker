@@ -341,7 +341,7 @@ export default async function AccountPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {[
               { feature: "save-strategy", Icon: SaveIcon,    label: "Suivi de stratégie", desc: "Enregistrez vos performances mensuelles" },
-              { feature: "recap-fiscal",  Icon: ReceiptIcon, label: "Récap fiscal annuel", desc: "Cases 2042 et 2074 calculées" },
+              { feature: "recap-fiscal",  Icon: ReceiptIcon, label: "Récap fiscal annuel", desc: "Ce qui se déclare, et sur quelle ligne" },
               { feature: "monte-carlo",   Icon: ChartIcon,   label: "Monte Carlo",        desc: "1 000 scénarios de marché simulés" },
               { feature: "pdf-export",    Icon: PdfIcon,     label: "Export PDF propre",  desc: "Sans filigrane, prêt à partager" },
               { feature: "ab-comparison", Icon: ScaleIcon,   label: "Comparaison A/B",   desc: "Deux stratégies côte à côte" },

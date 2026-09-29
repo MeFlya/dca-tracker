@@ -128,14 +128,20 @@ const MISTAKES = [
   },
   {
     title: "Investir l'argent de son fonds d'urgence",
-    body: "Le DCA n'a de sens que sur l'épargne disponible à long terme. Gardez toujours 3 à 6 mois de dépenses en épargne de précaution hors bourse.",
+    // 29/09/2026 (precaution-montant-mqda, precaution-montant-inc) : les
+    // sources institutionnelles comptent en mois de REVENUS — 2 à 6 mois, 3 le
+    // plus souvent —, pas en « 3 à 6 mois de dépenses ».
+    body: "Le DCA n'a de sens que sur l'épargne disponible à long terme. Gardez toujours une épargne de précaution hors bourse, sur un livret disponible : 2 à 6 mois de revenus selon le portail de la Banque de France, 3 mois le plus souvent.",
   },
 ];
 
 const FAQ = [
   {
     q: "DCA ou lump sum : quelle stratégie est la meilleure ?",
-    a: "Statistiquement, le lump sum (investir tout d'un coup) surperforme le DCA environ 2/3 du temps sur des marchés haussiers longs. Mais le DCA élimine le risque de mauvais timing, s'adapte mieux aux investisseurs avec un revenu mensuel régulier, et réduit le stress psychologique. Pour la grande majorité des épargnants, le DCA est la stratégie la plus réaliste et la plus sustainable.",
+    // 29/09/2026 (vanguard-2012-dca-baisse) : le DCA RÉDUIT le risque de
+    // mauvais timing, il ne l'élimine pas — pertes sur 12 mois dans 17,6 % des
+    // périodes contre 22,4 % pour le versement unique (Vanguard 2012).
+    a: "Statistiquement, le lump sum (investir tout d'un coup) surperforme le DCA environ 2/3 du temps sur l'historique étudié par Vanguard. Mais le DCA réduit le risque de mauvais timing (sans le supprimer), s'adapte mieux aux investisseurs avec un revenu mensuel régulier, et atténue le stress psychologique. Pour la grande majorité des épargnants, le DCA est la stratégie la plus réaliste et la plus tenable.",
   },
   {
     q: "Combien investir par mois avec le DCA ?",
@@ -197,7 +203,7 @@ export default function StrategieDCAPage() {
 
       <ArticleByline
         publishedAt="2026-04-10"
-        updatedAt="2026-09-28"
+        updatedAt="2026-09-29"
         readingMinutes={10}
         url="/strategie-dca"
         headline={TITLE}
@@ -664,15 +670,27 @@ export default function StrategieDCAPage() {
             note: "Source des 68 %, du tableau par durée d'étalement et des percentiles cités. Cadre : 100 % actions, étalement sur 3 mois, mesure à 1 an, liquidités non rémunérées.",
           },
           {
+            // 29/09/2026 (vanguard-2012-url-morte, vanguard-2012-lsi-deux-tiers) :
+            // l'adresse Vanguard renvoie « 404 Error - Page not found » ; seule
+            // une copie du PDF original reste en ligne (vérifiée le 28/09/2026,
+            // identique à celle relevée page par page). « 64 ans de données »
+            // n'apparaît nulle part dans l'étude : ses périodes sont 1926-2011
+            // (États-Unis), 1976-2011 (Royaume-Uni) et 1984-2011 (Australie).
             label: "Dollar-Cost Averaging Just Means Taking Risk Later (étude)",
-            url: "https://corporate.vanguard.com/content/dam/corp/research/pdf/Dollar-cost-averaging-just-means-taking-risk-later.pdf",
-            publisher: "Vanguard Research",
-            note: "Étude antérieure sur 64 ans de données US/UK/Australie. Conclusions convergentes ; aucun chiffre de la page n'en est tiré.",
+            url: "https://static.twentyoverten.com/5980d16bbfb1c93238ad9c24/rJpQmY8o7/Dollar-Cost-Averaging-Just-Means-Taking-Risk-Later-Vanguard.pdf",
+            publisher: "Vanguard Research, juillet 2012 (copie hébergée par un tiers)",
+            note: "Étude antérieure, sur les données américaines de 1926 à 2011, britanniques de 1976 à 2011 et australiennes de 1984 à 2011. Le lien d'origine chez Vanguard ne répond plus ; copie du PDF original consultée le 28/09/2026. Conclusions convergentes ; aucun chiffre de la page n'en est tiré.",
           },
           {
             label: "Espace épargnants — investir progressivement",
             url: "https://www.amf-france.org/fr/espace-epargnants",
             publisher: "Autorité des marchés financiers (AMF)",
+          },
+          {
+            label: "Une épargne de précaution : pourquoi et comment faire ?",
+            url: "https://www.mesquestionsdargent.fr/epargne-et-placements/epargne-de-precaution",
+            publisher: "Mes questions d'argent (Banque de France)",
+            note: "Épargne de précaution de 2 à 6 mois de revenus, 3 mois le plus souvent. Consultée le 28/09/2026.",
           },
           {
             label: "MSCI World Index — méthodologie et historique",
@@ -681,9 +699,13 @@ export default function StrategieDCAPage() {
             note: "Indice de référence pour la diversification mondiale utilisée dans les exemples DCA.",
           },
           {
-            label: "Risques liés à l'investissement en actions",
-            url: "https://www.amf-france.org/fr/espace-epargnants/savoir-bien-investir/principes-pour-bien-investir/diversifier",
+            // 29/09/2026 : l'ancienne adresse (…/principes-pour-bien-investir/
+            // diversifier) renvoyait « la page que vous avez demandée n'existe
+            // pas ».
+            label: "Comment bien diversifier un investissement ?",
+            url: "https://www.amf-france.org/fr/espace-epargnants/savoir-bien-investir/conseils-pratiques/diversifier-ses-placements",
             publisher: "AMF",
+            note: "Consultée le 28/09/2026.",
           },
         ]}
       />

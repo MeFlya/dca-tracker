@@ -1,5 +1,9 @@
 // Backtest historique : reconstitue ce qu'aurait donné un DCA mensuel
-// sur l'indice MSCI World (proxy IWDA.AS EUR) entre deux dates.
+// sur le MSCI World en euros entre deux dates. La série est celle de l'ETF
+// Xtrackers MSCI World Swap UCITS ETF 1C (XMWO.MI, LU0274208692), cours de
+// clôture mensuels en EUR sur Borsa Italiana — src/data/msci-world-eur.json.
+// Elle a remplacé IWDA.AS le 04/08/2026 parce qu'elle couvre la crise de 2008
+// (ce commentaire parlait encore d'un « proxy IWDA.AS » jusqu'au 28/09/2026).
 //
 // Pourquoi cette feature :
 //   - Le simulateur classique projette à partir d'un rendement annuel
@@ -75,7 +79,11 @@ export interface BacktestResult {
    * Drawdown maximum traversé en route :
    *   { pct, peakMonth, troughMonth }
    * Le drawdown est calculé sur la valeur du portefeuille (pas sur le
-   * cours de l'ETF) — c'est la "vraie" perte de papier qu'a vécue l'user.
+   * cours de l'ETF), versements compris. Ce n'est PAS la perte lue sur le
+   * relevé : au début d'un DCA, chaque versement gonfle la valeur pendant que
+   * les cours chutent et masque la perte (départ en janvier 2020 : −9,9 % sous
+   * le versé en mars 2020, mais un maxDrawdown situé en 2025). Pour la perte
+   * face aux sommes versées, voir pireEcart() dans backtest-stories.ts.
    */
   maxDrawdown: {
     pct: number;

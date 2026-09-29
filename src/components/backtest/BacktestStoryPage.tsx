@@ -15,6 +15,7 @@ import { CountUp } from "@/components/ui/CountUp";
 import {
   formatEurBacktest,
   formatMonthFr,
+  getDatasetMeta,
   type BacktestSeriesPoint,
 } from "@/lib/backtest";
 import { DataAnomalyNotice } from "@/components/backtest/DataAnomalyNotice";
@@ -283,13 +284,19 @@ export function BacktestStoryPage({ story }: { story: ComputedStory }) {
       {/* ── Méthodo + disclaimer ────────────────────────────────────────────── */}
       <div className="rounded-2xl border border-gray-200 bg-gray-50 p-5 mb-10">
         <p className="text-xs text-gray-600 leading-relaxed">
+          {/* Jusqu'au 29/09/2026 : « proxy : iShares Core MSCI World, IWDA »
+              et « ne tient pas compte du TER (~0,20 %/an) ». La série est
+              celle de XMWO depuis le 04/08/2026, et les frais du fonds sont
+              déjà dans ses cours (voir backtest.ts). */}
           <strong>Méthodologie</strong> — calcul sur les clôtures mensuelles
-          réelles du MSCI World en euros (proxy : iShares Core MSCI World,
-          IWDA, coté sur Euronext Amsterdam), achat en fin de mois, données
-          mises à jour mensuellement. Ne tient pas compte du TER de l&apos;ETF
-          (~0,20 %/an), des frais de courtage ni de la fiscalité. Les
-          performances passées ne préjugent pas des performances futures —
-          outil pédagogique, pas un conseil en investissement.{" "}
+          réelles du MSCI World en euros (série : ETF Xtrackers MSCI World
+          Swap, XMWO, coté en euros à Milan), achat en fin de mois, données
+          mises à jour mensuellement. Les frais de gestion du fonds (
+          {getDatasetMeta().terAnnuelPct.toFixed(2).replace(".", ",")} %/an)
+          sont déjà dans les cours ; ne tient pas compte des frais de
+          courtage ni de la fiscalité. Les performances passées ne préjugent
+          pas des performances futures — outil pédagogique, pas un conseil en
+          investissement.{" "}
           <Link href="/methodologie" className="underline hover:text-gray-900 transition-colors">
             Méthodologie détaillée
           </Link>
@@ -305,15 +312,30 @@ export function BacktestStoryPage({ story }: { story: ComputedStory }) {
             publisher: "MSCI Inc.",
           },
           {
-            label: "iShares Core MSCI World UCITS ETF (IWDA) — fiche officielle",
-            url: "https://www.ishares.com/fr/individual/fr",
-            publisher: "BlackRock — iShares",
-            note: "Série de prix utilisée comme proxy de l'indice en euros.",
+            // 29/09/2026 : la source présentait IWDA comme la série utilisée ;
+            // c'est XMWO (LU0274208692) depuis le 04/08/2026. Fiche Borsa
+            // Italiana vérifiée : XMWO, LU0274208692, frais 0,45 %, Xtrackers.
+            // (Le source_url du jeu de données, finance.yahoo.com, répond 404
+            // aux robots.)
+            label: "Xtrackers MSCI World Swap UCITS ETF 1C (XMWO, LU0274208692) — fiche de cotation",
+            url: "https://www.borsaitaliana.it/borsa/etf/scheda/LU0274208692-ETFP.html?lang=it",
+            publisher: "Borsa Italiana",
+            note: "Série de prix utilisée : clôtures mensuelles de cet ETF en euros, frais du fonds inclus. Consultée le 28/09/2026.",
           },
           {
-            label: "Espace épargnants — comprendre les ETF",
-            url: "https://www.amf-france.org/fr/espace-epargnants/comprendre-les-produits-financiers/produits-collectifs/fonds-indiciels-cotes-etf",
+            // La page cite « selon MSCI, −12,78 % en 2022 » : sa source doit
+            // figurer ici.
+            label: "Index Factsheet MSCI World Index (EUR), données au 31/08/2026",
+            url: "https://www.msci.com/documents/10199/890dd84d-3750-4656-87f2-1229ed5a5d6e",
+            publisher: "MSCI Inc.",
+            note: "Performances annuelles de l'indice en euros, dividendes nets réinvestis. Consultée le 28/09/2026.",
+          },
+          {
+            // 29/09/2026 : la page AMF « fonds-indiciels-cotes-etf » → 404.
+            label: "Les ETF : caractéristiques, état des lieux et analyse des risques (étude, février 2017)",
+            url: "https://www.amf-france.org/sites/institutionnel/files/contenu_simple/lettre_ou_cahier/risques_tendances/Les%20ETF%20%20caracteristiques,%20etat%20des%20lieux%20et%20analyse%20des%20risques%20-%20Le%20cas%20du%20marche%20francais.pdf",
             publisher: "Autorité des marchés financiers (AMF)",
+            note: "Consulté le 28/09/2026.",
           },
         ]}
       />

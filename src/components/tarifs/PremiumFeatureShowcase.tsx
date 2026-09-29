@@ -16,6 +16,15 @@
 
 import Link from "next/link";
 import { Sparkles } from "lucide-react";
+import { runBacktest, getAvailableRange, formatMonthFr } from "@/lib/backtest";
+import { runMonteCarlo } from "@/lib/monte-carlo";
+import { paramsFromSearch } from "@/lib/simulation-params";
+import {
+  computeFiscalComparison,
+  formatFiscalEur,
+  tauxAffiche,
+} from "@/lib/fiscal/pea-cto";
+import { currentYear } from "@/lib/strategy-math";
 
 // ─── Mockup 1 : Suivi mensuel (le moat) ──────────────────────────────────────
 
@@ -76,12 +85,48 @@ function TrackingMockup() {
 }
 
 // ─── Mockup 2 : Monte Carlo ──────────────────────────────────────────────────
+//
+// Calculé par runMonteCarlo (serveur, déterministe) sur les paramètres par
+// défaut du simulateur (200 €/mois, 20 ans, 7 %/an, frais du CW8). Jusqu'au
+// 29/09/2026, la maquette affichait « 68k€ · 102k€ · 158k€ » et « 87 % de
+// plus-value », dessinés à la main : aucune combinaison de paramètres ne les
+// reproduisait, et « 87 % de plus-value » se lisait comme un gain de 87 %.
+
+const MOCK_MC = paramsFromSearch(new URLSearchParams()).input;
+
+/** « 86 k€ » : milliers d'euros arrondis, espace insécable. */
+const kEur = (v: number) => `${Math.round(v / 1000).toLocaleString("fr-FR")}\u00a0k€`;
+
+function monteCarloMockData() {
+  const mc = runMonteCarlo(MOCK_MC);
+  // Courbes annuelles p10 / p50 / p90, mises à l'échelle du viewBox 200 × 64.
+  const vmax = Math.max(...mc.data.map((d) => d.p90));
+  const pas = 192 / Math.max(1, mc.data.length);
+  const point = (i: number, v: number) =>
+    `${Math.round((4 + i * pas) * 10) / 10} ${Math.round((60 - (v / vmax) * 54) * 10) / 10}`;
+  const courbe = (cle: "p10" | "p50" | "p90") =>
+    "M" + [point(0, 0), ...mc.data.map((d, i) => point(i + 1, d[cle]))].join(" L");
+  const bas = [point(0, 0), ...mc.data.map((d, i) => point(i + 1, d.p10))];
+  const cone = `${courbe("p90")} L${bas.reverse().join(" L")} Z`;
+  return {
+    hypothese: `${MOCK_MC.monthlyAmount} €/mois · ${MOCK_MC.durationYears} ans · ${MOCK_MC.annualReturnPct} %/an`,
+    p10: kEur(mc.finalP10),
+    p50: kEur(mc.finalP50),
+    p90: kEur(mc.finalP90),
+    part: `${mc.probabilityPositive} % des scénarios en plus-value`,
+    p10Ligne: courbe("p10"),
+    p50Ligne: courbe("p50"),
+    p90Ligne: courbe("p90"),
+    cone,
+  };
+}
 
 function MonteCarloMockup() {
+  const d = monteCarloMockData();
   return (
     <div className="w-full h-full bg-white rounded-xl border border-slate-200/80 p-4 flex flex-col">
       <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mb-2">
-        1 000 marchés possibles
+        1 000 marchés possibles · {d.hypothese}
       </p>
       <svg viewBox="0 0 200 64" className="w-full flex-1" preserveAspectRatio="none" aria-hidden>
         <defs>
@@ -90,26 +135,23 @@ function MonteCarloMockup() {
             <stop offset="100%" stopColor="#f97316" stopOpacity="0.06" />
           </linearGradient>
         </defs>
-        {/* Cône de dispersion p10–p90 */}
-        <path
-          d="M4 34 C 70 30, 130 22, 196 6 L 196 40 C 130 38, 70 36, 4 35 Z"
-          fill="url(#mcMockArea)"
-        />
-        {/* p90 (meilleur cas) */}
-        <path d="M4 34 C 70 28, 130 18, 196 6" fill="none" stroke="#10b981" strokeWidth="1.5" strokeDasharray="4 3" />
+        {/* Cône de dispersion p10–p90 (runMonteCarlo) */}
+        <path d={d.cone} fill="url(#mcMockArea)" />
+        {/* p90 (scénario favorable) */}
+        <path d={d.p90Ligne} fill="none" stroke="#10b981" strokeWidth="1.5" strokeDasharray="4 3" />
         {/* p50 (médiane) — se dessine au mount */}
-        <path d="M4 35 C 70 32, 130 26, 196 20" fill="none" stroke="#2563eb" strokeWidth="2" className="animate-draw-line" />
-        {/* p10 (pire cas) */}
-        <path d="M4 36 C 70 36, 130 36, 196 40" fill="none" stroke="#f97316" strokeWidth="1.5" strokeDasharray="4 3" />
+        <path d={d.p50Ligne} fill="none" stroke="#2563eb" strokeWidth="2" className="animate-draw-line" />
+        {/* p10 (scénario défavorable) */}
+        <path d={d.p10Ligne} fill="none" stroke="#f97316" strokeWidth="1.5" strokeDasharray="4 3" />
       </svg>
-      <div className="flex items-center justify-between mt-2.5">
+      <div className="flex flex-wrap items-center justify-between gap-1.5 mt-2.5">
         <div className="flex gap-2.5 text-[10px]">
-          <span className="text-orange-500 font-semibold tabular-nums">68k€</span>
-          <span className="text-blue-600 font-semibold tabular-nums">102k€</span>
-          <span className="text-emerald-600 font-semibold tabular-nums">158k€</span>
+          <span className="text-orange-500 font-semibold tabular-nums">{d.p10}</span>
+          <span className="text-blue-600 font-semibold tabular-nums">{d.p50}</span>
+          <span className="text-emerald-600 font-semibold tabular-nums">{d.p90}</span>
         </div>
         <span className="text-[11px] font-bold text-gray-900 bg-gray-100 px-2 py-0.5 rounded-full transition-transform group-hover:scale-105">
-          87 % de plus-value
+          {d.part}
         </span>
       </div>
     </div>
@@ -117,16 +159,57 @@ function MonteCarloMockup() {
 }
 
 // ─── Mockup 3 : Backtest historique ──────────────────────────────────────────
+//
+// Contrairement aux autres aperçus, celui-ci n'est pas dessiné à la main : la
+// courbe et les chiffres sortent de runBacktest, sur la série publiée, pour le
+// DCA que raconte /backtest-depuis-2010 (200 €/mois depuis janvier 2010).
+// Jusqu'au 28/09/2026, il affichait « TRI 13 %/an · pire creux traversé −34 %
+// (mars 2020) » : un chiffre en séance que le moteur, qui travaille en
+// clôtures mensuelles, ne peut pas produire — présenté comme un résultat de
+// l'outil qu'on vend.
+
+const MOCK_BACKTEST = { monthlyAmount: 200, startMonth: "2010-01" } as const;
+
+/** Un chiffre à une décimale, en typographie française : « 12,6 ». */
+const un = (n: number) =>
+  n.toLocaleString("fr-FR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+
+function backtestMockData() {
+  const { max } = getAvailableRange();
+  const r = runBacktest({ ...MOCK_BACKTEST, endMonth: max });
+  // Courbe de la valeur du portefeuille, mise à l'échelle du viewBox 200 × 64.
+  const vmax = Math.max(...r.series.map((p) => p.value));
+  const pas = 192 / (r.series.length - 1);
+  const pts = r.series.map((p, i) => ({
+    month: p.month,
+    x: Math.round((4 + i * pas) * 10) / 10,
+    y: Math.round((58 - (p.value / vmax) * 52) * 10) / 10,
+  }));
+  const ligne = "M" + pts.map((p) => `${p.x} ${p.y}`).join(" L");
+  const dd = r.maxDrawdown;
+  const creux = dd ? pts.find((p) => p.month === dd.troughMonth) : undefined;
+  return {
+    periode: `${MOCK_BACKTEST.startMonth.slice(0, 4)} → ${max.slice(0, 4)}`,
+    gain: `${r.gainPct >= 0 ? "+" : "−"}${Math.round(Math.abs(r.gainPct)).toLocaleString("fr-FR")} %`,
+    tri: r.irrAnnualPct === null ? null : `${un(r.irrAnnualPct)} %/an`,
+    recul: dd ? { pct: `−${un(dd.pct)} %`, mois: formatMonthFr(dd.troughMonth) } : null,
+    ligne,
+    aire: `${ligne} L196 64 L4 64 Z`,
+    creux,
+    fin: pts[pts.length - 1],
+  };
+}
 
 function BacktestMockup() {
+  const d = backtestMockData();
   return (
     <div className="w-full h-full bg-white rounded-xl border border-slate-200/80 p-4 flex flex-col">
       <div className="flex items-center justify-between mb-2">
         <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">
-          DCA réel · 2010 → 2025
+          DCA réel · {d.periode}
         </p>
         <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full tabular-nums transition-transform group-hover:scale-105">
-          +187 %
+          {d.gain}
         </span>
       </div>
       <svg viewBox="0 0 200 64" className="w-full flex-1" preserveAspectRatio="none" aria-hidden>
@@ -136,31 +219,41 @@ function BacktestMockup() {
             <stop offset="100%" stopColor="#2563eb" stopOpacity="0" />
           </linearGradient>
         </defs>
-        {/* Courbe avec un vrai creux (COVID) puis reprise — montre que c'est du réel */}
+        {/* Valeur réelle du portefeuille, mois par mois (runBacktest) */}
+        <path d={d.aire} fill="url(#btMockArea)" />
         <path
-          d="M4 52 C 30 48, 45 44, 60 42 C 70 41, 74 52, 84 50 C 100 47, 120 30, 150 22 C 170 16, 185 10, 196 6 L 196 64 L 4 64 Z"
-          fill="url(#btMockArea)"
-        />
-        <path
-          d="M4 52 C 30 48, 45 44, 60 42 C 70 41, 74 52, 84 50 C 100 47, 120 30, 150 22 C 170 16, 185 10, 196 6"
+          d={d.ligne}
           fill="none"
           stroke="#2563eb"
           strokeWidth="2"
           strokeLinecap="round"
+          strokeLinejoin="round"
           className="animate-draw-line"
         />
-        {/* Marqueur du creux COVID */}
-        <circle cx="80" cy="50" r="2.5" fill="#f97316" />
+        {/* Marqueur du pire recul de la valeur */}
+        {d.creux && <circle cx={d.creux.x} cy={d.creux.y} r="2.5" fill="#f97316" />}
         {/* Point d'arrivée + ping */}
-        <circle cx="196" cy="6" r="3" fill="#2563eb" />
-        <circle cx="196" cy="6" r="3" fill="none" stroke="#2563eb" strokeWidth="1.5">
+        <circle cx={d.fin.x} cy={d.fin.y} r="3" fill="#2563eb" />
+        <circle cx={d.fin.x} cy={d.fin.y} r="3" fill="none" stroke="#2563eb" strokeWidth="1.5">
           <animate attributeName="r" from="3" to="9" dur="1.8s" repeatCount="indefinite" />
           <animate attributeName="opacity" from="0.6" to="0" dur="1.8s" repeatCount="indefinite" />
         </circle>
       </svg>
+      {/* Mêmes libellés que l'outil (/backtest) : « Pire recul de la valeur »
+          est le maxDrawdown, versements compris — pas une perte en séance. */}
       <p className="text-[10px] text-gray-500 mt-2">
-        TRI <strong className="text-gray-700">13 %/an</strong> · pire creux traversé{" "}
-        <strong className="text-orange-600">−34 %</strong> (mars 2020)
+        {d.tri && (
+          <>
+            TRI <strong className="text-gray-700">{d.tri}</strong>
+          </>
+        )}
+        {d.tri && d.recul && " · "}
+        {d.recul && (
+          <>
+            pire recul de la valeur{" "}
+            <strong className="text-orange-600">{d.recul.pct}</strong> ({d.recul.mois})
+          </>
+        )}
       </p>
     </div>
   );
@@ -168,18 +261,44 @@ function BacktestMockup() {
 
 // ─── Mockup 4 : Récap fiscal annuel ──────────────────────────────────────────
 // Compact (espacement serré) pour tenir dans la hauteur fixe sans déborder.
+//
+// Calculé par computeFiscalComparison (CTO, 1 240 € de plus-value, barème de
+// l'année en cours), avec les lignes que le récap affiche pour ce cas. Jusqu'au
+// 29/09/2026 : « À reporter case 2074 : 372 € », soit l'impôt à l'ancien PFU
+// de 30 %, sous une ligne « 31,4 % » — alors que la 2074 reçoit la
+// plus-value, pas l'impôt, et que « case 2042 » ne nomme aucune case.
+
+const MOCK_FISCAL = { prixAchat: 10_000, prixVente: 11_240 } as const;
+
+function fiscalMockData() {
+  const annee = currentYear();
+  const { cto } = computeFiscalComparison({
+    totalInvested: MOCK_FISCAL.prixAchat,
+    finalValue: MOCK_FISCAL.prixVente,
+    holdingYears: 0,
+    annee,
+  });
+  const gain = formatFiscalEur(cto.capitalGain);
+  return {
+    annee,
+    rows: [
+      { label: "Plus-value réalisée (CTO)", value: gain },
+      { label: "2042 C, case 3VG", value: gain },
+      { label: "2074 (facultative dans le cas simple)", value: gain },
+      {
+        label: `Impôt et prélèvements (${tauxAffiche(cto.taxRate)} %)`,
+        value: formatFiscalEur(cto.taxDue),
+      },
+    ],
+  };
+}
 
 function FiscalMockup() {
-  const rows = [
-    { label: "Plus-values réalisées", value: "1 240 €" },
-    { label: "À reporter case 2042", value: "1 240 €" },
-    { label: "À reporter case 2074", value: "372 €" },
-    { label: "Prélèvement (PFU)", value: "31,4 %" },
-  ];
+  const { annee, rows } = fiscalMockData();
   return (
     <div className="w-full h-full bg-white rounded-xl border border-slate-200/80 px-4 py-3 flex flex-col">
       <div className="flex items-center justify-between mb-2">
-        <p className="text-sm font-bold text-gray-900">Récap fiscal 2026</p>
+        <p className="text-sm font-bold text-gray-900">Récap fiscal {annee}</p>
         <span className="text-[10px] font-bold text-red-600 bg-red-50 border border-red-100 px-1.5 py-0.5 rounded transition-transform group-hover:scale-105">
           PDF
         </span>
@@ -188,7 +307,7 @@ function FiscalMockup() {
         {rows.map((r, i) => (
           <div
             key={r.label}
-            className={`flex items-center justify-between text-[11px] ${
+            className={`flex items-center justify-between gap-2 text-[11px] ${
               i === rows.length - 1 ? "pt-1.5 border-t border-slate-100" : ""
             }`}
           >
@@ -267,7 +386,7 @@ export function PremiumFeatureShowcase() {
         <FeatureCard
           mockup={<MonteCarloMockup />}
           title="Analyse Monte Carlo"
-          desc="1 000 trajectoires de marché simulées avec la vraie volatilité des ETF. Vous voyez votre pire cas réaliste, votre meilleur cas, et votre probabilité exacte d'être en plus-value."
+          desc="1 000 trajectoires de marché simulées avec une volatilité supposée de 15 %/an. Vous voyez un scénario défavorable réaliste, un scénario favorable et la part des scénarios qui finissent en plus-value."
         />
         <FeatureCard
           mockup={<BacktestMockup />}
@@ -278,7 +397,7 @@ export function PremiumFeatureShowcase() {
         <FeatureCard
           mockup={<FiscalMockup />}
           title="Récap fiscal annuel"
-          desc="Une synthèse PDF qui calcule pour vous les montants à reporter dans les cases 2042 et 2074, avec les bons prélèvements (PFU / PS) selon votre situation PEA ou CTO."
+          desc="Pour une vente ou un retrait que vous saisissez, une synthèse PDF calcule l'impôt au barème de l'année et les montants à reporter (2042 C, et 2074 si besoin), selon votre situation PEA ou CTO."
         />
       </div>
 

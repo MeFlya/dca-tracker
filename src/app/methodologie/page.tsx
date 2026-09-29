@@ -245,10 +245,12 @@ Optimiste   : rendement_brut + 2 %`}
       <SourcesReferences
         sources={[
           {
-            label: "Indice des prix à la consommation (IPC) — série mensuelle",
-            url: "https://www.insee.fr/fr/statistiques/2122401",
+            // 29/09/2026 : /fr/statistiques/2122401 répondait HTTP 404. Remplacé
+            // par la définition INSEE de l'IPC (vérifiée, mise à jour le 04/02/2026).
+            label: "Indice des prix à la consommation (IPC) — définition",
+            url: "https://www.insee.fr/fr/metadonnees/definition/c1557",
             publisher: "INSEE",
-            note: "Référence pour le calcul de la valeur réelle (corrigée de l'inflation).",
+            note: "L'IPC est l'instrument de mesure de l'inflation en France : c'est lui qui sert à passer d'un montant nominal à un montant réel. Consultée le 28/09/2026.",
           },
           {
             label: "MSCI World Index — méthodologie et historique",
@@ -273,10 +275,13 @@ Optimiste   : rendement_brut + 2 %`}
             note: "Conditions d'exonération d'IR après 5 ans (prélèvements sociaux 18,6 % maintenus).",
           },
           {
-            label: "Document d'Informations Clés (DIC) — règles d'information investisseur",
-            url: "https://www.amf-france.org/fr/espace-epargnants/comprendre-les-produits-financiers/produits-collectifs/fonds-indiciels-cotes-etf",
+            // 29/09/2026 : la page AMF « fonds-indiciels-cotes-etf » renvoie une
+            // 404 (et ne portait pas sur le DIC). Remplacée par le guide
+            // pédagogique de l'AMF consacré au DIC, vérifié.
+            label: "Comprendre le document d'informations clés (DIC) — guide pédagogique",
+            url: "https://www.amf-france.org/sites/institutionnel/files/contenu_simple/guide/guide_pedagogique/Comprendre%20le%20document%20d'informations%20cles%20(DIC).pdf",
             publisher: "AMF",
-            note: "Les TER cités dans nos hypothèses sont issus des DIC officiels des émetteurs.",
+            note: "Les TER cités dans nos hypothèses se vérifient dans le DIC de chaque ETF, publié par son émetteur. Consulté le 28/09/2026.",
           },
         ]}
       />

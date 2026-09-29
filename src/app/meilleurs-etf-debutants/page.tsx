@@ -8,6 +8,7 @@ import { BreadcrumbSchema } from "@/components/ui/BreadcrumbSchema";
 import { SourcesReferences } from "@/components/ui/SourcesReferences";
 import { EtapeSuivante } from "@/components/ui/EtapeSuivante";
 import { formatTer } from "@/lib/utils";
+import { ecartCapital, HYPOTHESES_COMPARATIFS } from "@/lib/ecart-frais";
 
 // CTR (audit 07/2026) : le title mettait en avant IWDA/VWCE (non éligibles
 // PEA — hors intent du débutant FR) et contredisait la meta. Title aligné
@@ -98,10 +99,15 @@ const TOP_PICKS: Pick[] = [
     why: [
       "0,20 % de frais contre 0,38 % pour CW8 : le même indice, presque deux fois moins cher",
       "Éligible PEA — après 5 ans, seuls les prélèvements sociaux de 18,6 % s'appliquent aux gains",
-      "Encours d'environ 2,1 milliards d'euros fin août 2026, plus que DCAM (environ 1,4)",
+      // 29/09/2026 : montants d'encours (2,1 et 1,4 Md€) retirés — la table et
+      // justETF divergent (part ou fonds ?, fait encours-a-trancher) ; les deux
+      // s'accordent sur le classement WPEA > DCAM.
+      "Un encours plus important que celui de DCAM, son équivalent chez Amundi",
       "Capitalisant, avec une part sous 10 € : un petit versement mensuel achète des parts entières",
     ],
-    watchOut: "Fonds récent (lancé le 26/03/2024). La réplication synthétique (swap) introduit un risque de contrepartie faible mais réel, encadré par la réglementation UCITS. Aucun pays émergent : le MSCI World ne couvre que les pays développés.",
+    // 29/09/2026 : « encadré par la réglementation UCITS » précisé et sourcé
+    // (CMF art. R214-21, fait ucits-contrepartie-10pc).
+    watchOut: "Fonds récent (lancé le 26/03/2024). La réplication synthétique (swap) introduit un risque de contrepartie faible mais réel, plafonné par la réglementation : au plus 10 % de l'actif du fonds sur une même banque contrepartie. Aucun pays émergent : le MSCI World ne couvre que les pays développés.",
     detail: { href: "/comparatif-etf/cw8-vs-wpea", label: "Comparatif CW8 vs WPEA →" },
   },
   {
@@ -119,7 +125,7 @@ const TOP_PICKS: Pick[] = [
       "Part sous 10 € : adaptée aux petits versements mensuels",
       "Capitalisant — dividendes réinvestis automatiquement",
     ],
-    watchOut: "Le plus jeune des deux (lancé le 04/03/2025), avec un encours plus petit que WPEA (environ 1,4 milliard d'euros au 31/08/2026). À frais égaux, ce qui départage WPEA et DCAM tient surtout aux frais d'ordre du courtier.",
+    watchOut: "Le plus jeune des deux (lancé le 04/03/2025), avec un encours plus petit que WPEA. À frais égaux, ce qui départage WPEA et DCAM tient surtout aux frais d'ordre du courtier.",
     detail: { href: "/comparatif-etf/wpea-vs-dcam", label: "Comparatif WPEA vs DCAM →" },
   },
   {
@@ -139,7 +145,10 @@ const TOP_PICKS: Pick[] = [
       "Alternatives éligibles : PSP5 (Amundi, 0,12 %) et ESE (BNP Paribas, 0,14 %)",
       "Capitalisant — dividendes réinvestis automatiquement",
     ],
-    watchOut: "100 % américain : moins diversifié qu'un ETF monde. Les actions américaines sont déjà dans WPEA et DCAM : ajouter SPEA à l'un d'eux surpondère des sociétés déjà détenues. Fonds récent (lancé le 29/05/2025), encours non vérifié dans notre table.",
+    // 29/09/2026 : « encours non vérifié » taisait sa petite taille : justETF
+    // (1 source) le place très loin derrière PSP5 au 31/08/2026 (faits
+    // etf-pea-spea, encours-a-trancher). Signalé sans chiffre.
+    watchOut: "100 % américain : moins diversifié qu'un ETF monde. Les actions américaines sont déjà dans WPEA et DCAM : ajouter SPEA à l'un d'eux surpondère des sociétés déjà détenues. Fonds récent (lancé le 29/05/2025) et encore petit : d'après justETF, son encours est très inférieur à celui de PSP5 au 31/08/2026, et un petit fonds est plus exposé au risque de fermeture.",
     detail: { href: "/comparatif-etf/ese-vs-psp5", label: "Comparatif ESE vs PSP5 →" },
   },
   {
@@ -171,7 +180,12 @@ const CRITERIA = [
   {
     title: "Frais (TER)",
     icon: "💶",
-    body: "Le TER (Total Expense Ratio) est déduit automatiquement de la performance du fonds chaque année. Un TER de 0,07 % vs 1,5 % (fonds actif) représente sur 30 ans une différence considérable sur votre capital final. Visez moins de 0,5 % pour un ETF passif.",
+    // 29/09/2026 : « 0,07 % vs 1,5 % (fonds actif) … une différence
+    // considérable » : ni le 1,5 % des fonds actifs ni l'écart n'étaient
+    // sourcés. Le 1,5 % devient une hypothèse d'illustration et l'écart est
+    // CALCULÉ par le moteur (ecartCapital, faits BT-24 et BT-26). Le TER est
+    // prélevé au jour le jour sur l'actif, pas « chaque année » (ter-definition).
+    body: `Le TER (Total Expense Ratio, ou frais courants) est prélevé au jour le jour sur l'actif du fonds : la performance affichée en est déjà nette. Sur la durée, l'écart pèse lourd : avec ${HYPOTHESES_COMPARATIFS.monthlyAmount} € par mois pendant ${HYPOTHESES_COMPARATIFS.durationYears} ans et un rendement brut hypothétique de ${HYPOTHESES_COMPARATIFS.annualReturnPct} % par an, des frais de 1,5 % par an au lieu de 0,20 % laissent environ ${ecartCapital(1.5, 0.2)} € de moins. Visez moins de 0,5 % pour un ETF passif.`,
   },
   {
     title: "Diversification",
@@ -202,7 +216,11 @@ const FAQ = [
   },
   {
     q: "Faut-il choisir CW8, WPEA ou DCAM ?",
-    a: "Les trois répliquent le MSCI World et sont éligibles PEA. WPEA et DCAM coûtent presque deux fois moins cher (0,20 % contre 0,38 % pour CW8) : pour de nouveaux achats, ils ont l'avantage, et cet écart de 0,18 point par an se retrouve tel quel dans la performance. Entre WPEA et DCAM, WPEA a le plus gros encours (environ 2,1 milliards d'euros fin août 2026, contre 1,4) ; les deux ont une part sous 10 €.",
+    // 29/09/2026 : « cet écart de 0,18 point se retrouve tel quel dans la
+    // performance » était faux — le TER exclut notamment les frais de swap ;
+    // l'écart réel est l'écart de suivi (fait ter-definition). Montants
+    // d'encours retirés (écart table / justETF non tranché).
+    a: "Les trois répliquent le MSCI World et sont éligibles PEA. WPEA et DCAM coûtent presque deux fois moins cher (0,20 % contre 0,38 % pour CW8) : pour de nouveaux achats, ils ont l'avantage. Cet écart de frais de 0,18 point par an pèse sur la performance, mais ne s'y retrouve pas forcément au centième près : ce qui la sépare vraiment, c'est l'écart de suivi (tracking difference) de chaque ETF, qui intègre aussi des coûts absents du TER, comme les frais de swap. Entre WPEA et DCAM, WPEA a le plus gros encours ; les deux ont une part sous 10 €.",
   },
   {
     q: "Un seul ETF suffit-il pour un portefeuille débutant ?",
@@ -218,7 +236,12 @@ const FAQ = [
   },
   {
     q: "Quelle est la différence entre ETF et fonds actifs ?",
-    a: "Un ETF passif suit mécaniquement un indice (MSCI World, S&P 500) sans chercher à le battre. Un fonds actif essaie de sélectionner des titres pour surperformer l'indice. En pratique, plus de 80 % des fonds actifs sous-performent leur indice de référence sur 10 ans, et leurs frais sont 5 à 10 fois plus élevés qu'un ETF passif.",
+    // 29/09/2026 : « plus de 80 % des fonds actifs sous-performent… » et
+    // « frais 5 à 10 fois plus élevés » retirés : aucune source sur la page ni
+    // dans le dossier de vérification (même défaut que le « 90 % des
+    // investisseurs » retiré au commit b9292fa). La fourchette de TER citée
+    // est celle des ETF vérifiés (fait selection-pea-fourchette-ter).
+    a: "Un ETF passif suit mécaniquement un indice (MSCI World, S&P 500) sans chercher à le battre. Un fonds actif essaie de sélectionner des titres pour surperformer l'indice. Pour y parvenir, il doit d'abord regagner ses propres frais de gestion — ceux des 13 ETF éligibles au PEA que nous avons vérifiés vont de 0,10 % à 0,38 % par an — et rien ne garantit qu'il y arrive. Comparez toujours les frais courants indiqués dans le document d'informations clés (DIC) des deux produits.",
   },
   {
     q: "Comment acheter mon premier ETF ?",
@@ -593,13 +616,19 @@ export default function MeilleursETFDebutantsPage() {
           devant les pages qui en parlent vraiment. Le titre suivant est le h2
           de la FAQ : rien d'autre ne change de passage. */}
       <section data-nosearch="" className="mb-14">
+        {/* 29/09/2026 : « Tous les ETF disponibles » alors que la liste est
+            filtrée (allETFs, 5 fiches sur le catalogue), et « les ETF les plus
+            utilisés par les investisseurs particuliers » sans aucune mesure
+            derrière. Le titre dit ce que la liste est ; le nombre est lu sur
+            la liste elle-même, pas écrit. */}
         <h2 className="text-2xl font-bold text-gray-900 mb-4">
-          Tous les ETF disponibles sur DCA Tracker
+          D&apos;autres fiches ETF de notre base
         </h2>
         <p className="text-gray-500 text-sm mb-6">
-          Notre base couvre les ETF les plus utilisés par les investisseurs
-          particuliers en France. Chaque fiche inclut la description détaillée,
-          les forces et points d&apos;attention.
+          {allETFs.length} fiches détaillées, éligibles au PEA ou non (la
+          mention PEA l&apos;indique) : description, forces et points
+          d&apos;attention. Le comparateur, lui, réunit tous les ETF suivis par
+          DCA Tracker.
         </p>
         <div className="space-y-2">
           {allETFs.map((etf) => (
@@ -693,25 +722,47 @@ export default function MeilleursETFDebutantsPage() {
             note: "Documents officiels de DCAM et du fonds de CW8 (part capitalisante) et EWLD (part distribuante), ainsi que PSP5. Vérifiés le 28/09/2026.",
           },
           {
-            label: "iShares — WPEA et SPEA",
-            url: "https://www.ishares.com",
+            // 29/09/2026 : https://www.ishares.com menait à l'annuaire mondial
+            // de BlackRock. Remplacé par les deux fiches produit, vérifiées.
+            label: "iShares MSCI World Swap PEA UCITS ETF (WPEA) — fiche produit",
+            url: "https://www.blackrock.com/fr/particuliers/products/335178/ishares-msci-world-swap-pea-ucits-etf",
             publisher: "BlackRock — iShares",
-            note: "Documents officiels des ETF « Swap PEA » d'iShares. Vérifiés le 28/09/2026.",
+            note: "Document officiel de l'émetteur. Consulté le 28/09/2026.",
           },
           {
-            label: "Vanguard FTSE All-World UCITS ETF (VWCE) — Factsheet",
-            url: "https://www.fr.vanguard/professional/produits/etf",
+            label: "iShares S&P 500 Swap PEA UCITS ETF (SPEA) — fiche produit",
+            url: "https://www.blackrock.com/fr/particuliers/products/342916/ishares-s-p-500-swap-pea-ucits-etf",
+            publisher: "BlackRock — iShares",
+            note: "Document officiel de l'émetteur. Consulté le 28/09/2026.",
+          },
+          {
+            label: "justETF — fiche SPEA (IE000DQLYVB9)",
+            url: "https://www.justetf.com/fr/etf-profile.html?isin=IE000DQLYVB9",
+            publisher: "justETF",
+            note: "Source de recoupement, notamment pour la taille du fonds au 31/08/2026. Consulté le 28/09/2026.",
+          },
+          {
+            // 29/09/2026 : fr.vanguard/professional/produits/etf → 404.
+            // Remplacé par le DIC français de VWCE (IE00BK5BQT80).
+            label: "Vanguard FTSE All-World UCITS ETF (VWCE) — document d'informations clés",
+            url: "https://fund-docs.vanguard.com/ie00bk5bqt80_priipskid_fr.pdf",
             publisher: "Vanguard",
+            note: "DIC en français, daté du 28/07/2026. Consulté le 28/09/2026.",
           },
           {
-            label: "Comprendre les ETF (trackers)",
-            url: "https://www.amf-france.org/fr/espace-epargnants/comprendre-les-produits-financiers/produits-collectifs/fonds-indiciels-cotes-etf",
+            // 29/09/2026 : la page AMF « fonds-indiciels-cotes-etf » → 404.
+            label: "Les ETF : caractéristiques, état des lieux et analyse des risques (étude, février 2017)",
+            url: "https://www.amf-france.org/sites/institutionnel/files/contenu_simple/lettre_ou_cahier/risques_tendances/Les%20ETF%20%20caracteristiques,%20etat%20des%20lieux%20et%20analyse%20des%20risques%20-%20Le%20cas%20du%20marche%20francais.pdf",
             publisher: "Autorité des marchés financiers (AMF)",
+            note: "Réplication physique et synthétique (swap), risque de contrepartie. Consulté le 28/09/2026.",
           },
           {
-            label: "Règlement UCITS — cadre européen des fonds de placement",
-            url: "https://www.esma.europa.eu/about-esma/whats-esma",
-            publisher: "ESMA (Autorité européenne des marchés financiers)",
+            // 29/09/2026 : la page ESMA citée (404) ne portait pas sur UCITS.
+            // Le plafond de contrepartie invoqué plus haut est dans le CMF.
+            label: "Code monétaire et financier, art. R214-21 — risque de contrepartie d'un OPCVM",
+            url: "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000027797309",
+            publisher: "Légifrance",
+            note: "10 % de l'actif par contrepartie établissement de crédit, 5 % dans les autres cas. Consulté le 28/09/2026.",
           },
         ]}
       />

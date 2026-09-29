@@ -402,9 +402,9 @@ function PremiumNudge() {
             </p>
           </div>
           <p className="text-xs text-slate-300 leading-relaxed">
-            Suivez chaque année vos plus-values, dividendes et impôt à payer.
-            Synthèse PDF avec les montants à reporter dans vos cases 2042
-            et 2074.
+            Suivez chaque année vos plus-values réalisées et l&apos;impôt de
+            vos ventes et retraits. Synthèse PDF avec les montants à reporter
+            sur votre déclaration (2042 C, et 2074 si besoin).
           </p>
         </div>
         <Link

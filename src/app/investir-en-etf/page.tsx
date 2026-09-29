@@ -173,9 +173,14 @@ const STEPS = [
           Il vaut mieux commencer avec 50 €/mois et tenir que commencer avec
           500 €/mois et paniquer au premier krach.
         </p>
+        {/* 29/09/2026 (precaution-montant-mqda, precaution-montant-inc) : les
+            sources institutionnelles comptent en mois de REVENUS — 2 à 6 mois,
+            3 le plus souvent —, pas en « 3 à 6 mois de dépenses ». */}
         <p className="text-sm text-gray-600 leading-relaxed mb-4">
           Une règle simple : investissez ce qui reste après avoir constitué
-          votre épargne de précaution (3 à 6 mois de dépenses en liquidité).
+          votre épargne de précaution, sur un livret disponible à tout moment.
+          Le portail de la Banque de France la situe entre 2 et 6 mois de
+          revenus, 3 mois le plus souvent.
         </p>
         <div className="rounded-xl bg-gray-50 border border-gray-100 p-4 text-sm">
           <p className="font-semibold text-gray-700 mb-2">L&apos;effet des intérêts composés dans le temps :</p>
@@ -269,7 +274,7 @@ export default function InvestirEnETFPage() {
 
       <ArticleByline
         publishedAt="2026-04-18"
-        updatedAt="2026-09-28"
+        updatedAt="2026-09-29"
         readingMinutes={7}
         url="/investir-en-etf"
         headline={TITLE}
@@ -353,13 +358,17 @@ export default function InvestirEnETFPage() {
       </section>
 
       {/* ── Legal ──────────────────────────────────────────────────────── */}
+      {/* 29/09/2026 (cif-conditions-amf) : un CIF n'est pas « agréé AMF » ; il
+          est immatriculé à l'ORIAS et adhère à une association agréée par
+          l'AMF. */}
       <div className="rounded-xl bg-amber-50 border border-amber-200 p-4 mb-12">
         <p className="text-xs text-amber-800 leading-relaxed">
           <strong>Avertissement :</strong> Ce guide est à caractère éducatif et
           informatif. Il ne constitue pas un conseil en investissement financier
           personnalisé. Les performances passées ne préjugent pas des performances
           futures. Investir comporte un risque de perte en capital. Consultez un
-          conseiller en gestion de patrimoine (CGP) ou un CIF agréé AMF avant
+          conseiller en gestion de patrimoine (CGP) ayant le statut de conseiller
+          en investissements financiers (CIF), immatriculé à l&apos;ORIAS, avant
           toute décision d&apos;investissement.
         </p>
       </div>
@@ -375,9 +384,12 @@ export default function InvestirEnETFPage() {
             note: "Indice de référence des ETF monde cités. Les 7 %/an des simulations sont une hypothèse, avant frais et avant inflation — pas une performance mesurée ni garantie.",
           },
           {
-            label: "Espace épargnants — comprendre les ETF",
-            url: "https://www.amf-france.org/fr/espace-epargnants/comprendre-les-produits-financiers/produits-collectifs/fonds-indiciels-cotes-etf",
+            // 29/09/2026 : l'ancienne adresse (…/produits-collectifs/
+            // fonds-indiciels-cotes-etf) renvoyait une 404.
+            label: "Ce qu'il faut savoir sur les ETF avant d'investir",
+            url: "https://www.amf-france.org/fr/espace-epargnants/comprendre-les-produits-financiers/placements-collectifs/trackers-etf",
             publisher: "Autorité des marchés financiers (AMF)",
+            note: "Consultée le 28/09/2026.",
           },
           {
             label: "Plan d'Épargne en Actions — fiscalité",
@@ -386,10 +398,18 @@ export default function InvestirEnETFPage() {
             note: "Exonération d'IR après 5 ans — l'enveloppe de référence pour un DCA long terme.",
           },
           {
-            label: "Indice des prix à la consommation",
-            url: "https://www.insee.fr/fr/statistiques/2122401",
+            label: "Une épargne de précaution : pourquoi et comment faire ?",
+            url: "https://www.mesquestionsdargent.fr/epargne-et-placements/epargne-de-precaution",
+            publisher: "Mes questions d'argent (Banque de France)",
+            note: "Épargne de précaution de 2 à 6 mois de revenus, 3 mois le plus souvent. Consultée le 28/09/2026.",
+          },
+          {
+            // 29/09/2026 : /fr/statistiques/2122401 répondait HTTP 404. Remplacé
+            // par la définition INSEE de l'IPC (vérifiée, mise à jour le 04/02/2026).
+            label: "Indice des prix à la consommation (IPC) — définition",
+            url: "https://www.insee.fr/fr/metadonnees/definition/c1557",
             publisher: "INSEE",
-            note: "Référence pour l'impact de l'inflation sur la valeur réelle des projections.",
+            note: "L'IPC est l'instrument de mesure de l'inflation en France : c'est lui qui sert à passer d'un montant nominal à un montant réel. Consultée le 28/09/2026.",
           },
         ]}
       />

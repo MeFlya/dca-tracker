@@ -116,15 +116,22 @@ export function computeNotifications(ctx: NotificationContext): AppNotification[
   // Fuseau de l'audience : ces notifications sont calées sur le calendrier
   // fiscal français, et `tax:${année}` sert d'IDENTIFIANT — une année fausse
   // crée un doublon ou fait sauter la notification.
+  // La déclaration du printemps porte sur les revenus de l'année PRÉCÉDENTE :
+  // le lien ouvre donc le récap N−1. Jusqu'au 29/09/2026, il ouvrait le récap
+  // de l'année en cours, où un retrait de PEA de l'an passé recevait le barème
+  // et l'ancienneté de la mauvaise année. Le texte promettait aussi des « cases
+  // 2042 et 2074 calculées », alors que le récap ne calcule qu'une opération
+  // saisie.
   const month0 = anneeEtMois().m - 1; // 0 = janvier
   if (isPremium && (month0 === 3 || month0 === 4)) {
+    const anneeDeclaree = anneeEtMois().y - 1;
     out.push({
       id: `tax:${anneeEtMois().y}`,
       category: "action",
       icon: "🧾",
       title: "Saison des impôts",
-      body: "Votre récap fiscal annuel est prêt — cases 2042 et 2074 calculées.",
-      href: "/account/recap-fiscal",
+      body: `Revenus ${anneeDeclaree} : votre récap fiscal ${anneeDeclaree} vous indique quoi déclarer pour une vente ou un retrait, selon votre compte (PEA ou CTO).`,
+      href: `/account/recap-fiscal?year=${anneeDeclaree}`,
       tone: "info",
     });
   }

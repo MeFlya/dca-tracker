@@ -459,10 +459,12 @@ export default function InteretsComposesPage() {
             note: "Indice de référence des ETF monde. Les 7 %/an des exemples sont une hypothèse, avant frais et avant inflation — pas une performance mesurée ni garantie.",
           },
           {
-            label: "Indice des prix à la consommation (IPC)",
-            url: "https://www.insee.fr/fr/statistiques/2122401",
+            // 29/09/2026 : /fr/statistiques/2122401 répondait HTTP 404. Remplacé
+            // par la définition INSEE de l'IPC (vérifiée, mise à jour le 04/02/2026).
+            label: "Indice des prix à la consommation (IPC) — définition",
+            url: "https://www.insee.fr/fr/metadonnees/definition/c1557",
             publisher: "INSEE",
-            note: "Référence pour la conversion rendement nominal → réel (inflation France).",
+            note: "L'IPC est l'instrument de mesure de l'inflation en France : c'est lui qui sert à passer d'un montant nominal à un montant réel. Consultée le 28/09/2026.",
           },
           {
             label: "Plan d'Épargne en Actions — fiscalité après 5 ans",

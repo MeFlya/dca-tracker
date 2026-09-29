@@ -740,9 +740,12 @@ export default function Investir300EurosMoisPage() {
             note: "Indice répliqué par les ETF monde cités (WPEA, DCAM, CW8). Les 7 %/an des simulations sont une hypothèse, pas une performance garantie.",
           },
           {
-            label: "Espace épargnants — comprendre les ETF",
-            url: "https://www.amf-france.org/fr/espace-epargnants/comprendre-les-produits-financiers/produits-collectifs/fonds-indiciels-cotes-etf",
+            // 29/09/2026 : la page AMF « fonds-indiciels-cotes-etf » renvoie une
+            // 404. Remplacée par l'étude AMF sur les ETF, vérifiée.
+            label: "Les ETF : caractéristiques, état des lieux et analyse des risques (étude, février 2017)",
+            url: "https://www.amf-france.org/sites/institutionnel/files/contenu_simple/lettre_ou_cahier/risques_tendances/Les%20ETF%20%20caracteristiques,%20etat%20des%20lieux%20et%20analyse%20des%20risques%20-%20Le%20cas%20du%20marche%20francais.pdf",
             publisher: "Autorité des marchés financiers (AMF)",
+            note: "Consulté le 28/09/2026.",
           },
           {
             label: "Plan d'Épargne en Actions — fiscalité",
@@ -751,10 +754,12 @@ export default function Investir300EurosMoisPage() {
             note: "Exonération d'IR après 5 ans — l'enveloppe de référence pour un DCA long terme.",
           },
           {
-            label: "Indice des prix à la consommation",
-            url: "https://www.insee.fr/fr/statistiques/2122401",
+            // 29/09/2026 : /fr/statistiques/2122401 répondait HTTP 404. Remplacé
+            // par la définition INSEE de l'IPC (vérifiée, mise à jour le 04/02/2026).
+            label: "Indice des prix à la consommation (IPC) — définition",
+            url: "https://www.insee.fr/fr/metadonnees/definition/c1557",
             publisher: "INSEE",
-            note: "Référence pour l'impact de l'inflation sur la valeur réelle des projections.",
+            note: "L'IPC est l'instrument de mesure de l'inflation en France : c'est lui qui sert à passer d'un montant nominal à un montant réel. Consultée le 28/09/2026.",
           },
         ]}
       />

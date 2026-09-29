@@ -73,7 +73,10 @@ const ETFS: ETFRow[] = [
     name: "iShares MSCI World Swap PEA UCITS ETF EUR (Acc)",
     index: "MSCI World — grandes et moyennes capitalisations des pays développés",
     ter: "0,20 %",
-    why: "Le MSCI World éligible PEA le moins cher de notre sélection : 0,20 %, à égalité avec DCAM. Entre les deux, WPEA a le plus gros encours (environ 2,1 milliards d'euros fin août 2026, contre 1,4 pour DCAM) — c'est ce critère qui le place ici. Face à CW8 (0,38 %), même indice pour presque deux fois moins de frais.",
+    // 29/09/2026 : encours chiffrés (2,1 et 1,4 Md€) retirés — la table et
+    // justETF donnent des montants différents (part ou fonds ?, fait
+    // encours-a-trancher). Les deux sources s'accordent sur le classement.
+    why: "Le MSCI World éligible PEA le moins cher de notre sélection : 0,20 %, à égalité avec DCAM. Entre les deux, WPEA a le plus gros encours au 31 août 2026 (nos sources concordent sur ce classement, pas encore sur les montants) — c'est ce critère qui le place ici. Face à CW8 (0,38 %), même indice pour presque deux fois moins de frais.",
     watchOut: "Aucun pays émergent : le MSCI World ne couvre que les pays développés, d'où PAEEM en n° 5. Fonds récent, lancé le 26/03/2024. DCAM (Amundi PEA Monde, FR001400U5Q4) est l'équivalent direct, au même TER de 0,20 %.",
     role: "Cœur de portefeuille",
   },
@@ -85,7 +88,12 @@ const ETFS: ETFRow[] = [
     index: "S&P 500 — 500 grandes entreprises américaines",
     ter: "0,10 %",
     why: "Le S&P 500 éligible PEA le moins cher de notre sélection : 0,10 %. PSP5 (Amundi PEA S&P 500, FR0011871128) fait le même travail à 0,12 %. Piège à connaître : l'Amundi S&P 500 Swap (mnémonique 500) n'est PAS éligible au PEA.",
-    watchOut: "Encours non vérifié : notre table ne départage pas SPEA et PSP5 sur ce critère, et SPEA est récent (lancé le 29/05/2025). Les actions américaines sont déjà présentes dans WPEA : ajouter SPEA revient à surpondérer les mêmes sociétés, pas à diversifier.",
+    // 29/09/2026 : « Encours non vérifié » taisait le point faible de SPEA,
+    // alors que la page pose le critère « un gros encours réduit le risque de
+    // fermeture ». justETF (1 source) le donne très loin derrière PSP5 au
+    // 31/08/2026 (faits etf-pea-spea, encours-a-trancher) : signalé sans
+    // chiffre, faute de recoupement.
+    watchOut: "Petit fonds : d'après justETF, l'encours de SPEA est très inférieur à celui de PSP5 au 31 août 2026, et SPEA est récent (lancé le 29/05/2025). Un fonds de petite taille est plus exposé au risque de fermeture : PSP5 (0,12 %), bien plus gros, est l'alternative si ce point vous importe. Les actions américaines sont déjà présentes dans WPEA : ajouter SPEA revient à surpondérer les mêmes sociétés, pas à diversifier.",
     role: "Surpondération US",
   },
   {
@@ -106,7 +114,9 @@ const ETFS: ETFRow[] = [
     name: "Amundi PEA Nasdaq-100 UCITS ETF Acc",
     index: "Nasdaq-100 — les 100 plus grandes sociétés non financières cotées au Nasdaq, très orienté technologie",
     ter: "0,30 %",
-    why: "Le Nasdaq-100 dans un PEA pour 0,30 %, avec un encours d'environ 1,17 milliard d'euros fin août 2026. L'Amundi Nasdaq-100 Swap (ANX), moins cher, n'est PAS éligible au PEA. PUST n'est pas la seule ligne Nasdaq-100 éligible (il existe par exemple PNAS) : c'est celle dont nous avons vérifié les données.",
+    // 29/09/2026 : encours chiffré (1,17 Md€) retiré — écart table / justETF
+    // non tranché (fait encours-a-trancher).
+    why: "Le Nasdaq-100 dans un PEA pour 0,30 %. L'Amundi Nasdaq-100 Swap (ANX), moins cher, n'est PAS éligible au PEA. PUST n'est pas la seule ligne Nasdaq-100 éligible (il existe par exemple PNAS) : c'est celle dont nous avons vérifié les données.",
     watchOut: "Une ligne concentrée, surtout sur la technologie : au-delà de 20 à 30 % du portefeuille, c'est elle qui dicte les variations de l'ensemble. Une bonne partie de ses sociétés figure déjà dans WPEA et SPEA : l'ajouter concentre, ça ne diversifie pas.",
     role: "Boost croissance",
   },
@@ -140,7 +150,9 @@ const SELECTION_CRITERIA = [
     // Le seuil « supérieurs à 500 M€ » a été retiré le 28/09/2026 : la table de
     // vérité ne donne l'encours que de WPEA, DCAM et PUST. Affirmer que les
     // cinq le dépassent aurait été deviner.
-    detail: "Un gros encours réduit le risque de fermeture du fonds. Quand deux ETF se valent sur les frais, le plus gros encours l'emporte. Nous n'avons vérifié l'encours que de trois lignes (WPEA, DCAM, PUST) : pour les autres, la fiche le dit au lieu de l'inventer.",
+    // 29/09/2026 : même ces trois encours divergent entre la table et justETF
+    // (part ou fonds ?) : aucun montant publié tant que ce n'est pas tranché.
+    detail: "Un gros encours réduit le risque de fermeture du fonds. Quand deux ETF se valent sur les frais, le plus gros encours l'emporte. Les montants d'encours diffèrent selon les sources (encours de la part ou du fonds entier ?) : tant que l'écart n'est pas tranché, sur cette page, nous n'en publions aucun et signalons seulement les écarts nets, comme la petite taille de SPEA.",
   },
   {
     title: "Capitalisant",
@@ -438,28 +450,49 @@ export default function GuideCinqETFPEAPremiumPage() {
             note: "Documents officiels de PCEU, PUST, PAEEM, ainsi que DCAM et PSP5 cités en alternative. Vérifiés le 28/09/2026.",
           },
           {
-            label: "iShares — ETF « Swap PEA »",
-            url: "https://www.ishares.com",
+            // 29/09/2026 : https://www.ishares.com redirigeait vers l'annuaire
+            // mondial de BlackRock, pas vers WPEA ni SPEA. Remplacé par les
+            // deux fiches produit, vérifiées (ISIN et TER).
+            label: "iShares MSCI World Swap PEA UCITS ETF (WPEA) — fiche produit",
+            url: "https://www.blackrock.com/fr/particuliers/products/335178/ishares-msci-world-swap-pea-ucits-etf",
             publisher: "BlackRock — iShares",
-            note: "Documents officiels de WPEA et SPEA. Vérifiés le 28/09/2026.",
+            note: "Document officiel de l'émetteur. Consulté le 28/09/2026.",
+          },
+          {
+            label: "iShares S&P 500 Swap PEA UCITS ETF (SPEA) — fiche produit",
+            url: "https://www.blackrock.com/fr/particuliers/products/342916/ishares-s-p-500-swap-pea-ucits-etf",
+            publisher: "BlackRock — iShares",
+            note: "Document officiel de l'émetteur. Consulté le 28/09/2026.",
           },
           {
             label: "justETF — fiches ETF",
             url: "https://www.justetf.com/fr/",
             publisher: "justETF",
-            note: "Source de recoupement : ISIN, TER et éligibilité PEA, comparés aux documents des émetteurs.",
+            note: "Source de recoupement : ISIN, TER et éligibilité PEA, comparés aux documents des émetteurs, ainsi que la taille relative des fonds (encours au 31/08/2026). Consulté le 28/09/2026.",
           },
           {
             label: "Plan d'Épargne en Actions — règles d'éligibilité",
             url: "https://www.service-public.fr/particuliers/vosdroits/F2385",
             publisher: "service-public.fr",
-            note: "Conditions pour qu'un fonds soit éligible au PEA : au moins 75 % d'actions de sociétés européennes, y compris pour un ETF synthétique.",
+            // 29/09/2026 : « au moins 75 % d'actions de sociétés européennes »
+            // → plus de 75 %, sociétés de l'UE ou de l'EEE (CMF L221-31, fait
+            // pea-regle-75). Le texte de loi est ajouté juste en dessous.
+            note: "Conditions pour qu'un fonds soit éligible au PEA : plus de 75 % de son actif en actions de sociétés ayant leur siège dans l'Union européenne ou l'Espace économique européen (le Royaume-Uni et la Suisse n'en font pas partie), y compris pour un ETF synthétique.",
           },
           {
-            label: "Comprendre les ETF synthétiques (swap)",
-            url: "https://www.amf-france.org/fr/espace-epargnants/comprendre-les-produits-financiers/produits-collectifs/fonds-indiciels-cotes-etf",
+            label: "Code monétaire et financier, art. L221-31 — titres éligibles au PEA",
+            url: "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000051218125",
+            publisher: "Légifrance",
+            note: "Le texte de la règle des 75 %. Consulté le 28/09/2026.",
+          },
+          {
+            // 29/09/2026 : la page AMF « fonds-indiciels-cotes-etf » renvoie une
+            // 404. Remplacée par l'étude AMF sur les ETF, qui décrit les
+            // réplications physique et synthétique (swap).
+            label: "Les ETF : caractéristiques, état des lieux et analyse des risques (étude, février 2017)",
+            url: "https://www.amf-france.org/sites/institutionnel/files/contenu_simple/lettre_ou_cahier/risques_tendances/Les%20ETF%20%20caracteristiques,%20etat%20des%20lieux%20et%20analyse%20des%20risques%20-%20Le%20cas%20du%20marche%20francais.pdf",
             publisher: "Autorité des marchés financiers (AMF)",
-            note: "Le mécanisme de swap, qui permet à un ETF de détenir des actions européennes tout en répliquant un indice monde ou américain. Un swap ne rend pas éligible à lui seul : 500, ANX et AEEM sont des swaps non éligibles.",
+            note: "Le mécanisme de swap, qui permet à un ETF de détenir des actions européennes tout en répliquant un indice monde ou américain. Un swap ne rend pas éligible à lui seul : 500, ANX et AEEM sont des swaps non éligibles. Consulté le 28/09/2026.",
           },
         ]}
       />

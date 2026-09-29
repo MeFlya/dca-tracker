@@ -10,6 +10,9 @@ import {
   Lock,
 } from "lucide-react";
 import { runSimulation, formatEur } from "@/lib/simulator";
+import { ecartCapital, HYPOTHESES_COMPARATIFS } from "@/lib/ecart-frais";
+import { paramsFromSearch } from "@/lib/simulation-params";
+import { PREMIUM_ANNUEL_EUR } from "@/lib/tarifs-affiches";
 import { VisitTracker } from "@/components/analytics/VisitTracker";
 import { PremiumTrialLink } from "@/components/checkout/PremiumTrialLink";
 import type { SimulatorInput } from "@/lib/simulator";
@@ -105,6 +108,101 @@ type FeatureCopy = {
   faq: { q: string; a: string }[];
 };
 
+// ─── Entrée par défaut et textes calculés — Monte Carlo ──────────────────────
+//
+// Jusqu'au 29/09/2026, la copie Monte Carlo était écrite à la main : « Votre
+// projection à 102 000 € », « De 68 000 € à 158 000 € ? », « 1 chiffre
+// (102 000 €) », « 87 % ? ». Aucun de ces nombres ne sortait du moteur : juste
+// en dessous, la même page affichait les lignes calculées (98 647 € pour le
+// scénario moyen, avec les frais de l'hypothèse). 102 000 € était le capital
+// SANS frais. Elle disait aussi que le simulateur gratuit fait « une hypothèse
+// unique » : il calcule trois scénarios (rendement ± SCENARIO_DELTA).
+//
+// Désormais tout nombre vient de runSimulation, et aucune phrase visible ne
+// cite le 90e percentile ni la probabilité, masqués dans le tableau.
+
+/** Entrée par défaut : celle du simulateur (paramsFromSearch sans paramètre). */
+const ENTREE_PAR_DEFAUT: SimulatorInput = paramsFromSearch(new URLSearchParams()).input;
+
+/** 7 → « 7 » ; 6.5 → « 6,5 ». */
+const pctFr = (n: number) => n.toLocaleString("fr-FR", { maximumFractionDigits: 2 });
+
+function monteCarloTextes(input: SimulatorInput) {
+  const sim = runSimulation(input);
+  const scenarios = `${pctFr(sim.conservative.annualReturnPct)}, ${pctFr(sim.base.annualReturnPct)} et ${pctFr(sim.optimistic.annualReturnPct)} % par an`;
+  const ans = input.durationYears;
+  return {
+    hero: {
+      eyebrow: "❌ Vous voyez des rendements réguliers.",
+      title: "Les marchés, eux, ne le sont jamais.",
+      pain: `Votre projection à ${formatEur(sim.base.finalValue)} suppose le même rendement chaque année pendant ${ans} ans. Spoiler : ce ne sera jamais le cas.`,
+    },
+    loss: {
+      headline: "Actuellement, vous ne voyez pas :",
+      items: [
+        {
+          icon: "🔒",
+          title: "Votre pire scénario réaliste",
+          desc: `Si les ${ans} prochaines années sont défavorables, combien vous reste-t-il ?`,
+        },
+        {
+          icon: "🔒",
+          title: "La part des scénarios qui finissent en plus-value",
+          desc: "Le simulateur de base ne la calcule pas : ses trois scénarios avancent au même rythme chaque année.",
+        },
+        {
+          icon: "🔒",
+          title: "L'amplitude de vos résultats possibles",
+          desc: "Entre le scénario défavorable et le favorable, l'écart est large — et il change tout.",
+        },
+      ],
+    },
+    beforeAfter: {
+      before: {
+        label: "Simulateur gratuit",
+        lines: [
+          `3 scénarios à rendement constant (${scenarios})`,
+          "Le même rendement chaque année",
+          "Aucune probabilité de gain",
+          "\"Est-ce que ce sera vraiment ça ?\"",
+        ],
+      },
+      after: {
+        label: "Avec Monte Carlo",
+        lines: [
+          "1 000 scénarios de marché",
+          "Distribution complète (p10/p50/p90)",
+          "Part des scénarios en plus-value",
+          "L'éventail des résultats possibles",
+        ],
+      },
+    },
+    value: {
+      title: "Pourquoi Monte Carlo change tout",
+      // 15 %/an est le paramètre de runMonteCarlo, une hypothèse : la
+      // volatilité historique du MSCI World en euros ressort à 13,8 %/an sur la
+      // série publiée (rendements mensuels 2008-2026) et à 13,45 % sur 10 ans
+      // selon MSCI (fiche MSCI World Index (EUR) au 31/08/2026,
+      // https://www.msci.com/documents/10199/890dd84d-3750-4656-87f2-1229ed5a5d6e,
+      // consultée le 28/09/2026).
+      body: `Le simulateur gratuit calcule trois scénarios à rendement constant (${scenarios}). Monte Carlo fait varier le rendement d'un mois à l'autre, sur 1 000 trajectoires, avec une volatilité supposée de 15 %/an : un peu plus que celle observée sur le MSCI World en euros, autour de 13 à 14 % par an. Vous ne payez pas un graphique : vous payez un moyen concret de voir ce que devient votre stratégie dans les scénarios défavorables, pas seulement dans le scénario moyen.`,
+    },
+    // Jusqu'au 29/09/2026 : « ≈ 0,01 % de votre portefeuille final projeté ».
+    // 49 €/an sur 98 647 € font 0,05 % par an : calculé désormais.
+    priceAnchors: [
+      "≈ 1 café par mois",
+      "≈ 0,16 € par jour",
+      `≈ ${(sim.base.finalValue > 0 ? (PREMIUM_ANNUEL_EUR / sim.base.finalValue) * 100 : 0).toLocaleString("fr-FR", { maximumFractionDigits: 2 })} % par an de votre portefeuille final projeté`,
+    ],
+    faqSimulateur: {
+      q: "Quelle différence avec le simulateur gratuit ?",
+      a: `Le gratuit calcule trois scénarios à rendement constant (${scenarios}). Monte Carlo en simule 1 000, où le rendement varie d'un mois à l'autre avec une volatilité supposée de 15 %/an, un peu au-dessus de celle observée historiquement. C'est la différence entre "probable" et "possible".`,
+    },
+  };
+}
+
+const MC_DEFAUT = monteCarloTextes(ENTREE_PAR_DEFAUT);
+
 // ─── Copy — Monte Carlo ───────────────────────────────────────────────────────
 
 const MONTE_CARLO: FeatureCopy = {
@@ -117,76 +215,14 @@ const MONTE_CARLO: FeatureCopy = {
   shortLabel: "Monte Carlo",
   shortDesc: "1 000 scénarios de marché simulés",
 
-  hero: {
-    eyebrow: "❌ Vous voyez un seul chiffre.",
-    title: "Les marchés, eux, ne sont jamais uniques.",
-    pain: "Votre projection à 102 000 € suppose que les 20 prochaines années ressemblent exactement à vos hypothèses. Spoiler : ce ne sera jamais le cas.",
-  },
-
-  loss: {
-    headline: "Actuellement, vous ne voyez pas :",
-    items: [
-      {
-        icon: "🔒",
-        title: "Votre pire scénario réaliste",
-        desc: "Si les 20 prochaines années sont défavorables, combien vous reste-t-il ?",
-      },
-      {
-        icon: "🔒",
-        title: "Votre probabilité d'être en plus-value",
-        desc: "87 % ? 65 % ? Vous l'ignorez totalement.",
-      },
-      {
-        icon: "🔒",
-        title: "L'amplitude de vos résultats possibles",
-        desc: "De 68 000 € à 158 000 € ? L'écart est énorme — et il change tout.",
-      },
-    ],
-  },
-
-  projection: {
-    title: "Exemple : 200 €/mois · 20 ans · 7 %/an",
-    intro: "Voici ce que Monte Carlo révèle que le simulateur de base cache :",
-    rows: [
-      { label: "Scénario moyen", value: "102 000 €", baseline: true },
-      { label: "Pire cas réaliste (10e percentile)", value: "68 400 €", locked: true },
-      { label: "Meilleur cas réaliste (90e percentile)", value: "158 200 €", locked: true, secret: true },
-      { label: "Probabilité d'être en plus-value", value: "87 %", locked: true, secret: true },
-    ],
-    conclusion: "Le meilleur cas est plus de deux fois supérieur au pire. C'est exactement l'écart que vous devez comprendre avant d'engager 48 000 € sur 20 ans.",
-  },
-
-  beforeAfter: {
-    before: {
-      label: "Simulateur gratuit",
-      lines: [
-        "1 chiffre (102 000 €)",
-        "1 hypothèse de rendement",
-        "Aucune notion de risque",
-        "\"Est-ce que ce sera vraiment ça ?\"",
-      ],
-    },
-    after: {
-      label: "Avec Monte Carlo",
-      lines: [
-        "1 000 scénarios de marché",
-        "Distribution complète (p10/p50/p90)",
-        "Probabilité de gain chiffrée",
-        "Vous savez à quoi vous attendre",
-      ],
-    },
-  },
-
-  value: {
-    title: "Pourquoi Monte Carlo change tout",
-    body: "Le simulateur classique fait une hypothèse unique : 7 % par an, chaque année, sans exception. Monte Carlo simule 1 000 trajectoires alternatives avec la volatilité réelle du marché (≈ 15 %/an pour les ETF actions). Vous ne payez pas un graphique : vous payez la seule façon de vérifier que votre stratégie tient face aux pires 10 % de l'histoire des marchés.",
-  },
-
-  priceAnchors: [
-    "≈ 1 café par mois",
-    "≈ 0,16 € par jour",
-    "≈ 0,01 % de votre portefeuille final projeté",
-  ],
+  // Textes chiffrés : calculés par monteCarloTextes, sur les paramètres par
+  // défaut ici, sur ceux du visiteur dans la page.
+  hero: MC_DEFAUT.hero,
+  loss: MC_DEFAUT.loss,
+  projection: projectionMonteCarlo(ENTREE_PAR_DEFAUT, false),
+  beforeAfter: MC_DEFAUT.beforeAfter,
+  value: MC_DEFAUT.value,
+  priceAnchors: MC_DEFAUT.priceAnchors,
 
   faq: [
     {
@@ -197,10 +233,9 @@ const MONTE_CARLO: FeatureCopy = {
       q: "Mes données restent-elles si j'annule ?",
       a: "Oui, votre stratégie et votre historique restent en base. Vous perdez l'accès aux analyses avancées, mais vous pouvez réactiver à tout moment.",
     },
-    {
-      q: "Quelle différence avec le simulateur gratuit ?",
-      a: "Le gratuit suppose un seul futur possible. Monte Carlo en simule 1 000, basés sur la volatilité historique du marché. C'est la différence entre \"probable\" et \"possible\".",
-    },
+    // Troisième question : calculée par monteCarloTextes (rendements des
+    // scénarios du simulateur gratuit).
+    MC_DEFAUT.faqSimulateur,
   ],
 };
 
@@ -402,6 +437,36 @@ const PDF_EXPORT: FeatureCopy = {
   ],
 };
 
+/**
+ * Exemple A/B par défaut, calculé : 200 €/mois pendant 25 ans contre 300 €/mois
+ * pendant 20 ans, au rendement et aux frais de `input`. La conclusion suit le
+ * résultat au lieu de le supposer.
+ */
+function exempleAB(input: SimulatorInput): FeatureCopy["projection"] {
+  const a = { monthlyAmount: 200, durationYears: 25 };
+  const b = { monthlyAmount: 300, durationYears: 20 };
+  const simA = runSimulation({ ...input, ...a }).base;
+  const simB = runSimulation({ ...input, ...b }).base;
+  const versA = a.monthlyAmount * a.durationYears * 12;
+  const versB = b.monthlyAmount * b.durationYears * 12;
+  const ecart = Math.abs(simA.finalValue - simB.finalValue);
+  const gagnant = simA.finalValue >= simB.finalValue ? "A" : "B";
+  return {
+    title: `Exemple concret · ${pctFr(input.annualReturnPct)} %/an, frais ${pctFr(input.annualFeesPct)} %`,
+    intro: "Deux stratégies, deux arbitrages entre montant et durée :",
+    rows: [
+      { label: `A : ${a.monthlyAmount} €/mois × ${a.durationYears} ans (${formatEur(versA)} investis)`, value: formatEur(simA.finalValue), baseline: true },
+      { label: `B : ${b.monthlyAmount} €/mois × ${b.durationYears} ans (${formatEur(versB)} investis)`, value: formatEur(simB.finalValue), locked: true },
+      { label: "Différence finale", value: `${formatEur(ecart)} pour ${gagnant}`, locked: true },
+      { label: "Total investi en moins (A)", value: `− ${formatEur(versB - versA)}`, locked: true },
+    ],
+    conclusion:
+      gagnant === "A"
+        ? `Ici, A finit devant avec ${formatEur(versB - versA)} de versements en moins : cinq ans de plus compensent un versement plus faible. L'écart dépend du rendement supposé ; la comparaison A/B le chiffre pour vos propres paramètres.`
+        : `Ici, B finit devant : verser plus pendant moins longtemps l'emporte avec ces hypothèses. L'écart dépend du rendement supposé ; la comparaison A/B le chiffre pour vos propres paramètres.`,
+  };
+}
+
 // ─── Copy — A/B Comparison ────────────────────────────────────────────────────
 
 const AB_COMPARISON: FeatureCopy = {
@@ -435,23 +500,19 @@ const AB_COMPARISON: FeatureCopy = {
       },
       {
         icon: "🔒",
-        title: "Frais de 0,3 % vs 0,5 %",
-        desc: "Un écart anodin en apparence, des dizaines de milliers d'euros à l'arrivée.",
+        title: "Frais de 0,20 % vs 0,38 %",
+        // Jusqu'au 29/09/2026 : « des dizaines de milliers d'euros à
+        // l'arrivée » pour 0,2 point de frais. Le moteur répond quelques
+        // milliers (ecartCapital).
+        desc: `Un écart anodin en apparence : environ ${ecartCapital(0.2, 0.38)} € sur ${HYPOTHESES_COMPARATIFS.durationYears} ans à ${HYPOTHESES_COMPARATIFS.monthlyAmount} €/mois.`,
       },
     ],
   },
 
-  projection: {
-    title: "Exemple concret",
-    intro: "Deux stratégies à total investi équivalent — le gagnant n'est pas celui que vous croyez :",
-    rows: [
-      { label: "A : 200 €/mois × 25 ans (60 000 € investis)", value: "167 000 €", baseline: true },
-      { label: "B : 300 €/mois × 20 ans (72 000 € investis)", value: "156 000 €", locked: true },
-      { label: "Différence finale", value: "+11 000 € pour A", locked: true },
-      { label: "Total investi en moins (A)", value: "− 12 000 €", locked: true },
-    ],
-    conclusion: "Moins investir sur plus longtemps bat plus investir sur moins longtemps. Le temps vaut plus que le montant. Cette intuition, seule la comparaison A/B la révèle chiffres à l'appui.",
-  },
+  // Calculé par exempleAB (plus bas). Jusqu'au 29/09/2026 : 167 000 € et
+  // 156 000 € écrits à la main, et une conclusion générale (« le temps vaut
+  // plus que le montant ») que l'écart réel, faible, ne soutient pas.
+  projection: exempleAB(ENTREE_PAR_DEFAUT),
 
   beforeAfter: {
     before: {
@@ -476,7 +537,10 @@ const AB_COMPARISON: FeatureCopy = {
 
   value: {
     title: "La décision la plus importante de votre DCA",
-    body: "Fixer le bon montant et la bonne durée est la seule décision qui compte vraiment dans une stratégie DCA. Le choix de l'ETF a un impact marginal à côté. La comparaison A/B vous donne la seule vraie vision : deux futurs possibles, chiffrés, côte à côte — pour que vous tranchiez sur des chiffres, pas sur une intuition.",
+    // Jusqu'au 29/09/2026 : « la seule décision qui compte vraiment », « le
+    // choix de l'ETF a un impact marginal », « la seule vraie vision ». Les
+    // frais ne sont pas marginaux (ecartCapital).
+    body: `Le montant et la durée pèsent le plus lourd dans une stratégie DCA ; les frais de l'ETF comptent aussi (environ ${ecartCapital(0.2, 0.38)} € sur ${HYPOTHESES_COMPARATIFS.durationYears} ans entre 0,20 % et 0,38 % de frais, à ${HYPOTHESES_COMPARATIFS.monthlyAmount} €/mois). La comparaison A/B vous montre deux futurs possibles, chiffrés, côte à côte — pour que vous tranchiez sur des chiffres, pas sur une intuition.`,
   },
 
   priceAnchors: [
@@ -535,7 +599,7 @@ const RECAP_FISCAL: FeatureCopy = {
       {
         icon: "🔒",
         title: "Stocker votre historique année par année",
-        desc: "Pour les contrôles fiscaux (3-10 ans), il faut conserver tous les détails. Excel devient vite ingérable.",
+        desc: "Chaque retrait et chaque vente se retrouvent avec leur date et leur montant, plutôt qu'éparpillés dans un tableur.",
       },
     ],
   },
@@ -545,12 +609,12 @@ const RECAP_FISCAL: FeatureCopy = {
     intro: "Pour chaque année fiscale, une synthèse PDF prête pour votre déclaration :",
     rows: [
       { label: "Plus-values réalisées (PEA et CTO)", value: "Calculées", baseline: true },
-      { label: "Prélèvements applicables (PFU 31,4 % ou PS 18,6 %)", value: "Pré-déterminés", locked: true },
+      { label: "Prélèvements applicables, au barème de l'année de l'opération", value: "Calculés", locked: true },
       { label: "Montants à reporter case 2042", value: "Calculés", locked: true },
       { label: "Montants à reporter case 2074", value: "Calculés", locked: true },
       { label: "Export CSV pour archivage", value: "Inclus", locked: true },
     ],
-    conclusion: "Une aide à la déclaration concrète — qui ne remplace ni l'IFU de votre courtier ni un expert-comptable pour les cas complexes, mais qui élimine 80 % du travail manuel et des risques d'erreur.",
+    conclusion: "Une aide à la déclaration concrète — qui ne remplace ni l'IFU de votre courtier ni un expert-comptable pour les cas complexes, mais qui vous épargne l'essentiel du travail manuel.",
   },
 
   beforeAfter: {
@@ -576,7 +640,9 @@ const RECAP_FISCAL: FeatureCopy = {
 
   value: {
     title: "Pourquoi cet outil change la déclaration",
-    body: "La fiscalité du DCA en France est simple sur le papier mais piégeuse en pratique : règle des 5 ans pour le PEA, PFU vs prélèvements sociaux, cases différentes selon retrait/cession, plafond 150 000 €, etc. Le récap fiscal annuel élimine la friction : vous voyez chaque année les bons chiffres et les bonnes cases. C'est le seul outil français qui suit votre situation réelle année après année — pas une simulation générique.",
+    // Jusqu'au 29/09/2026, se terminait par « C'est le seul outil français qui
+    // suit votre situation réelle » : affirmation de marché invérifiable.
+    body: "La fiscalité du DCA en France est simple sur le papier mais piégeuse en pratique : règle des 5 ans pour le PEA, PFU vs prélèvements sociaux, cases différentes selon retrait/cession, plafond 150 000 €, etc. Le récap fiscal annuel élimine la friction : vous voyez chaque année les bons chiffres et les bonnes cases. Le récap suit votre situation réelle année après année, et non une simulation générique.",
   },
 
   priceAnchors: [
@@ -592,11 +658,15 @@ const RECAP_FISCAL: FeatureCopy = {
     },
     {
       q: "Le calcul fonctionne pour PEA et CTO ?",
-      a: "Oui. Le récap distingue automatiquement les plus-values PEA (PFU 31,4 % avant 5 ans, PS 18,6 % après) et CTO (PFU 31,4 % systématique sauf option barème).",
+      // Jusqu'au 29/09/2026 : « PFU 31,4 % avant 5 ans, PS 18,6 % après »,
+      // présentés comme fixes. Pour un retrait de PEA de 2025, c'était 30 % et
+      // 17,2 % (hausse de la CSG au 1er janvier 2026 pour les produits de
+      // placement, LFSS 2026 art. 12).
+      a: "Oui. Le récap applique le barème de l'année du retrait ou de la vente et distingue PEA de moins de 5 ans, PEA de 5 ans ou plus (rien à déclarer, prélèvements sociaux retenus par l'établissement) et CTO.",
     },
     {
       q: "Et si je n'ai rien retiré dans l'année ?",
-      a: "Pas de souci — le récap est utile aussi pour visualiser vos plus-values latentes et préparer les retraits futurs. La déclaration n'est nécessaire que sur les gains réalisés (cessions, retraits PEA, dividendes).",
+      a: "Pas de souci — le récap est utile aussi pour visualiser vos plus-values latentes et préparer les retraits futurs. La déclaration n'est nécessaire que sur les gains réalisés : ventes avec plus-value sur CTO, retraits de PEA de moins de 5 ans, dividendes sur CTO ; un retrait de PEA de plus de 5 ans n'a pas à être déclaré.",
     },
     {
       q: "Puis-je annuler à tout moment ?",
@@ -621,6 +691,36 @@ const FALLBACK = MONTE_CARLO;
 // Replaces the static projection rows with numbers computed from the user's
 // current simulator params. Pass-through if feature doesn't support it.
 
+function projectionMonteCarlo(
+  input: SimulatorInput,
+  explicit: boolean,
+): FeatureCopy["projection"] {
+  const strategyLabel = `${input.monthlyAmount} €/mois · ${input.durationYears} ans · ${input.annualReturnPct} %/an`;
+  const titlePrefix = explicit ? "Pour votre stratégie" : "Exemple";
+  const sim = runSimulation(input);
+  const mc = runMonteCarlo(input);
+  const totalInvested = input.monthlyAmount * input.durationYears * 12;
+  // Jusqu'au 29/09/2026 : « plus de ${Math.max(2, …)} fois », qui annonçait
+  // « plus de 2 fois » même quand le rapport était de 1,5.
+  const rapport = Math.floor(mc.finalP90 / Math.max(1, mc.finalP10));
+  const ecart =
+    rapport >= 2
+      ? `Le meilleur cas est plus de ${rapport} fois supérieur au pire.`
+      : "Entre le pire et le meilleur cas, l'écart reste large.";
+
+  return {
+    title: `${titlePrefix} : ${strategyLabel}`,
+    intro: "Voici ce que Monte Carlo révèle que le simulateur de base cache :",
+    rows: [
+      { label: "Scénario moyen", value: formatEur(sim.base.finalValue), baseline: true },
+      { label: "Pire cas réaliste (10e percentile)", value: formatEur(mc.finalP10), locked: true },
+      { label: "Meilleur cas réaliste (90e percentile)", value: formatEur(mc.finalP90), locked: true, secret: true },
+      { label: "Probabilité d'être en plus-value", value: `${mc.probabilityPositive} %`, locked: true, secret: true },
+    ],
+    conclusion: `${ecart} C'est exactement l'écart que vous devez comprendre avant d'engager ${formatEur(totalInvested)} sur ${input.durationYears} ans.`,
+  };
+}
+
 function buildDynamicProjection(
   key: FeatureKey,
   base: FeatureCopy,
@@ -631,23 +731,8 @@ function buildDynamicProjection(
   const titlePrefix = explicit ? "Pour votre stratégie" : "Exemple";
 
   switch (key) {
-    case "monte-carlo": {
-      const sim = runSimulation(input);
-      const mc = runMonteCarlo(input);
-      const totalInvested = input.monthlyAmount * input.durationYears * 12;
-
-      return {
-        title: `${titlePrefix} : ${strategyLabel}`,
-        intro: "Voici ce que Monte Carlo révèle que le simulateur de base cache :",
-        rows: [
-          { label: "Scénario moyen", value: formatEur(sim.base.finalValue), baseline: true },
-          { label: "Pire cas réaliste (10e percentile)", value: formatEur(mc.finalP10), locked: true },
-          { label: "Meilleur cas réaliste (90e percentile)", value: formatEur(mc.finalP90), locked: true, secret: true },
-          { label: "Probabilité d'être en plus-value", value: `${mc.probabilityPositive} %`, locked: true, secret: true },
-        ],
-        conclusion: `Le meilleur cas est plus de ${Math.max(2, Math.floor(mc.finalP90 / Math.max(1, mc.finalP10)))} fois supérieur au pire. C'est exactement l'écart que vous devez comprendre avant d'engager ${formatEur(totalInvested)} sur ${input.durationYears} ans.`,
-      };
-    }
+    case "monte-carlo":
+      return projectionMonteCarlo(input, explicit);
 
     case "save-strategy": {
       const theo12 = theoreticalValueAtMonth(input, 12);
@@ -673,7 +758,7 @@ function buildDynamicProjection(
       // Keep the A/B example narrative-driven — user's exact strategy isn't
       // enough for a meaningful comparison (we'd need a second strategy).
       // Just reflect their monthly amount in the A label when explicit.
-      if (!explicit) return base.projection;
+      if (!explicit) return exempleAB(input);
       const altMonthly = Math.round(input.monthlyAmount * 1.5);
       const altYears = Math.max(5, input.durationYears - 5);
       const simA = runSimulation(input);
@@ -743,19 +828,35 @@ export default async function UpgradePage({ searchParams }: Props) {
   const rawReturn = Number(params.return);
   const rawFees = Number(params.fees);
 
+  // Défauts : ceux du simulateur. Les frais par défaut étaient ici 0,3 %,
+  // « un chiffre choisi au jugé » abandonné par le simulateur le 28/09/2026.
   const input: SimulatorInput = {
-    monthlyAmount: Number.isFinite(rawMonthly) && rawMonthly >= 1 ? rawMonthly : 200,
-    durationYears: Number.isFinite(rawYears) && rawYears >= 1 ? rawYears : 20,
-    annualReturnPct: Number.isFinite(rawReturn) && rawReturn >= 0 ? rawReturn : 7,
-    annualFeesPct: Number.isFinite(rawFees) && rawFees >= 0 ? rawFees : 0.3,
+    monthlyAmount: Number.isFinite(rawMonthly) && rawMonthly >= 1 ? rawMonthly : ENTREE_PAR_DEFAUT.monthlyAmount,
+    durationYears: Number.isFinite(rawYears) && rawYears >= 1 ? rawYears : ENTREE_PAR_DEFAUT.durationYears,
+    annualReturnPct: Number.isFinite(rawReturn) && rawReturn >= 0 ? rawReturn : ENTREE_PAR_DEFAUT.annualReturnPct,
+    annualFeesPct: Number.isFinite(rawFees) && rawFees >= 0 ? rawFees : ENTREE_PAR_DEFAUT.annualFeesPct,
   };
 
   const hasExplicitParams = params.monthly != null && params.years != null;
 
-  // Override projection with dynamic values per feature.
+  // Override projection with dynamic values per feature. Pour Monte Carlo,
+  // les textes chiffrés suivent aussi les paramètres du visiteur : sinon le
+  // héros citait un capital que le tableau juste en dessous contredisait.
+  const cle = key ?? "monte-carlo";
+  const mcTextes = cle === "monte-carlo" ? monteCarloTextes(input) : null;
   const f: FeatureCopy = {
     ...base,
-    projection: buildDynamicProjection(key ?? "monte-carlo", base, input, hasExplicitParams),
+    ...(mcTextes && {
+      hero: mcTextes.hero,
+      loss: mcTextes.loss,
+      beforeAfter: mcTextes.beforeAfter,
+      value: mcTextes.value,
+      priceAnchors: mcTextes.priceAnchors,
+      faq: base.faq.map((item) =>
+        item.q === mcTextes.faqSimulateur.q ? mcTextes.faqSimulateur : item
+      ),
+    }),
+    projection: buildDynamicProjection(cle, base, input, hasExplicitParams),
   };
 
   return (

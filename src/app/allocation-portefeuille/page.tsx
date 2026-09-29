@@ -55,7 +55,7 @@ const FAQ = [
     // AEEM (émergents) étaient donnés en exemple d'ETF éligibles PEA. Aucun des
     // deux ne l'est (reporting Amundi du 31/08/2026 : « Compte-titres,
     // Assurance-vie »). SPY, absent de la table, remplacé par CSPX.
-    a: "Le PEA n'accepte que les ETF investis à au moins 75 % en actions de l'UE. Les ETF synthétiques (réplication par swap) respectent cette règle en détenant des actions européennes tout en répliquant un indice mondial : WPEA, DCAM ou CW8 (MSCI World), SPEA, PSP5 ou ESE (S&P 500), PUST (Nasdaq-100), PCEU (Europe), PAEEM (émergents). Mais un swap ne rend pas éligible à lui seul : les Amundi S&P 500 Swap (500), Nasdaq-100 Swap (ANX) et MSCI Emerging Markets Swap (AEEM) ne le sont PAS. Les ETF physiques comme VWCE, IWDA, CSPX ne sont pas éligibles non plus — il faut les loger en CTO. Notre comparateur affiche le statut PEA de chaque ETF.",
+    a: "Le PEA n'accepte que les ETF investis à plus de 75 % en actions de sociétés de l'UE ou de l'EEE. Les ETF synthétiques (réplication par swap) respectent cette règle en détenant des actions européennes tout en répliquant un indice mondial : WPEA, DCAM ou CW8 (MSCI World), SPEA, PSP5 ou ESE (S&P 500), PUST (Nasdaq-100), PCEU (Europe), PAEEM (émergents). Mais un swap ne rend pas éligible à lui seul : les Amundi S&P 500 Swap (500), Nasdaq-100 Swap (ANX) et MSCI Emerging Markets Swap (AEEM) ne le sont PAS. Les ETF physiques comme VWCE, IWDA, CSPX ne sont pas éligibles non plus — il faut les loger en CTO. Notre comparateur affiche le statut PEA de chaque ETF.",
   },
   {
     q: "Le rendement attendu pondéré : sur quoi est-il basé ?",

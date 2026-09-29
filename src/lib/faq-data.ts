@@ -14,7 +14,7 @@ export const FAQ_ITEMS: FAQItem[] = [
   },
   {
     q: "Ce site propose-t-il des conseils financiers ?",
-    a: "Non. DCA Tracker est un outil éducatif et informatif. Les simulations sont hypothétiques et ne constituent pas une recommandation d'investissement personnalisée. Les performances passées ne préjugent pas des performances futures. Pour tout projet d'investissement, consultez un conseiller en gestion de patrimoine (CGP) ou un conseiller en investissements financiers (CIF) agréé AMF.",
+    a: "Non. DCA Tracker est un outil éducatif et informatif. Les simulations sont hypothétiques et ne constituent pas une recommandation d'investissement personnalisée. Les performances passées ne préjugent pas des performances futures. Pour tout projet d'investissement, consultez un conseiller en gestion de patrimoine (CGP) ayant le statut de conseiller en investissements financiers (CIF), immatriculé à l'ORIAS.",
   },
   {
     q: "Les données de marché sont-elles en temps réel ?",

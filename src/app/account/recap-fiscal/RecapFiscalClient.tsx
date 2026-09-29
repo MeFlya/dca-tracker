@@ -5,10 +5,15 @@ import Link from "next/link";
 import type { Strategy, MonthlyEntry } from "@/lib/user-strategy";
 import {
   compileRecap,
+  dateFr,
   type AccountType,
   type RecapData,
 } from "@/lib/fiscal/recap";
-import { formatFiscalEur } from "@/lib/fiscal/pea-cto";
+import {
+  formatFiscalEur,
+  PEA_DEPOSIT_CAP_EUR,
+  tauxAffiche,
+} from "@/lib/fiscal/pea-cto";
 
 interface Props {
   strategy: Strategy;
@@ -33,6 +38,12 @@ export function RecapFiscalClient({
   const [grossAmount, setGrossAmount] = useState<string>("");
   const [investedPortion, setInvestedPortion] = useState<string>("");
   const [saleDate, setSaleDate] = useState<string>("");
+  // PEA : le retrait a clôturé le plan. Seule une clôture rend déclarable la
+  // perte d'un plan de plus de 5 ans.
+  const [cloture, setCloture] = useState(false);
+  // PEA : date du premier versement, qui fait partir le délai de 5 ans.
+  // Vide = premier versement enregistré dans le suivi.
+  const [peaFirstDeposit, setPeaFirstDeposit] = useState<string>("");
 
   const recap: RecapData = useMemo(() => {
     const grossNum = parseFloat(grossAmount.replace(",", "."));
@@ -49,11 +60,13 @@ export function RecapFiscalClient({
       entries,
       year: selectedYear,
       accountType,
+      peaFirstDepositDate: peaFirstDeposit || undefined,
       sale: saleValid
         ? {
             grossAmountSold: grossNum,
             investedPortionSold: investedNum,
             date: saleDate || undefined,
+            cloture: accountType === "PEA" && cloture,
           }
         : undefined,
     });
@@ -66,7 +79,13 @@ export function RecapFiscalClient({
     grossAmount,
     investedPortion,
     saleDate,
+    cloture,
+    peaFirstDeposit,
   ]);
+
+  const isPea = accountType === "PEA";
+  const anciennete = recap.anciennetePea;
+  const irTaux = recap.bareme.cto.pfu - recap.bareme.cto.sociaux;
 
   return (
     <>
@@ -172,7 +191,7 @@ export function RecapFiscalClient({
             value={formatFiscalEur(recap.cumulativeContributedToYearEnd)}
             sub={
               recap.peaCapReachedThisYear
-                ? "⚠️ Plafond PEA 150 000 € atteint"
+                ? `⚠️ Plafond PEA ${formatFiscalEur(PEA_DEPOSIT_CAP_EUR)} atteint`
                 : undefined
             }
           />
@@ -216,12 +235,26 @@ export function RecapFiscalClient({
           />
           <label htmlFor="sale-enabled" className="cursor-pointer flex-1">
             <p className="font-semibold text-gray-900 mb-1">
-              J&apos;ai vendu une partie ou la totalité en {selectedYear}
+              {isPea
+                ? `J'ai retiré de l'argent de mon PEA en ${selectedYear}`
+                : `J'ai vendu une partie ou la totalité en ${selectedYear}`}
             </p>
             <p className="text-sm text-gray-600 leading-relaxed">
-              Cochez si vous avez réalisé une vente cette année — c&apos;est
-              le seul cas où une plus-value imposable est déclarée. Les
-              versements DCA seuls ne génèrent pas d&apos;impôt.
+              {isPea ? (
+                <>
+                  Cochez si vous avez fait un retrait du plan cette année.
+                  Vendre des titres à l&apos;intérieur du PEA sans retirer
+                  l&apos;argent n&apos;est pas imposable : seul un retrait
+                  l&apos;est. Les versements DCA seuls ne génèrent pas
+                  d&apos;impôt.
+                </>
+              ) : (
+                <>
+                  Cochez si vous avez réalisé une vente cette année — c&apos;est
+                  le seul cas où une plus-value imposable est déclarée. Les
+                  versements DCA seuls ne génèrent pas d&apos;impôt.
+                </>
+              )}
             </p>
           </label>
         </div>
@@ -229,49 +262,116 @@ export function RecapFiscalClient({
         {saleEnabled && (
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-3 border-t border-slate-200/70">
             <Input
-              label="Date de vente"
+              label={isPea ? "Date du retrait" : "Date de vente"}
               id="sale-date"
               type="date"
               value={saleDate}
               onChange={setSaleDate}
-              hint="Optionnel"
+              hint={
+                isPea
+                  ? `Obligatoire : elle fixe l'ancienneté du plan (règle des 5 ans) et doit tomber en ${selectedYear}`
+                  : "Optionnel"
+              }
             />
             <Input
-              label="Montant brut vendu (€)"
+              label={isPea ? "Montant brut retiré (€)" : "Montant brut vendu (€)"}
               id="gross-amount"
               type="text"
               inputMode="decimal"
               value={grossAmount}
               onChange={setGrossAmount}
-              hint="Cash reçu de la cession (avant impôt)"
+              hint={
+                isPea
+                  ? "Avant les prélèvements retenus par votre établissement"
+                  : "Cash reçu de la cession (avant impôt)"
+              }
             />
             <Input
-              label="Capital investi correspondant (€)"
+              label={
+                isPea
+                  ? "Versements correspondant au retrait (€)"
+                  : "Capital investi correspondant (€)"
+              }
               id="invested-portion"
               type="text"
               inputMode="decimal"
               value={investedPortion}
               onChange={setInvestedPortion}
-              hint="Coût d'achat des parts vendues (votre IFU le précise)"
+              hint={
+                isPea
+                  ? // BOFiP BOI-RPPM-RCM-40-50-40, § 240 : les versements sont
+                    // « diminué[s] du montant des sommes déjà retenues à ce
+                    // titre lors des précédents retraits ». Jusqu'au 29/09/2026,
+                    // la formule omettait ce terme et comptait deux fois les
+                    // versements dès le deuxième retrait.
+                    "Retrait partiel : montant retiré × (total versé − versements déjà pris en compte lors de vos retraits précédents) ÷ valeur du plan le jour du retrait. Retrait total : total versé − versements déjà pris en compte lors des retraits précédents. Votre établissement l'indique sur le relevé du retrait."
+                  : "Coût d'achat des parts vendues (votre IFU le précise)"
+              }
             />
+            {isPea && (
+              <div className="sm:col-span-3 flex items-start gap-3">
+                <input
+                  id="pea-cloture"
+                  type="checkbox"
+                  checked={cloture}
+                  onChange={(e) => setCloture(e.target.checked)}
+                  className="mt-0.5 w-4 h-4 accent-primary-600 cursor-pointer"
+                />
+                <label htmlFor="pea-cloture" className="cursor-pointer text-xs text-gray-700 leading-relaxed">
+                  <span className="font-semibold">Retrait total : ce retrait a clôturé le plan.</span>{" "}
+                  Utile si le retrait est en perte : après 5 ans, seule la
+                  clôture du plan permet de déclarer la perte.
+                </label>
+              </div>
+            )}
+            {isPea && (
+              <div className="sm:col-span-3">
+                <Input
+                  label="Date du premier versement sur ce PEA"
+                  id="pea-first-deposit"
+                  type="date"
+                  value={peaFirstDeposit}
+                  onChange={setPeaFirstDeposit}
+                  hint={
+                    anciennete?.source === "suivi" && anciennete.premierVersement
+                      ? `Par défaut : votre premier versement enregistré, le ${dateFr(anciennete.premierVersement)}. Le délai de 5 ans court à partir du premier versement sur le PEA : si le vôtre est plus ancien, indiquez sa date.`
+                      : anciennete?.source === "suivi-mois" && anciennete.premierVersement
+                        ? `Votre suivi ne donne que le mois du premier versement (${dateFr(anciennete.premierVersement)}). Le délai de 5 ans court à partir de sa date exacte : indiquez-la si le calcul le demande.`
+                        : anciennete?.source === "saisie"
+                          ? "C'est cette date qui fait partir le délai de 5 ans."
+                          : anciennete?.source === "capital-anterieur"
+                            ? `Votre stratégie inclut ${formatFiscalEur(recap.capitalAnterieur)} de capital déjà investi avant le début du suivi : votre premier versement sur le PEA est plus ancien que votre suivi. Indiquez sa date, c'est elle qui fait partir le délai de 5 ans.`
+                            : "Aucun versement enregistré dans votre suivi. Le délai de 5 ans court à partir du premier versement sur le PEA : indiquez sa date."
+                  }
+                />
+              </div>
+            )}
           </div>
         )}
       </section>
+
+      {/* ── Sale entered but not computable: say why instead of guessing ── */}
+      {recap.saleNonCalculee && (
+        <section className="mb-10 rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-900 leading-relaxed">
+          <p className="font-semibold mb-1">Calcul impossible en l&apos;état</p>
+          <p>{recap.saleNonCalculee}</p>
+        </section>
+      )}
 
       {/* ── Sale impact + declaration guide (only if sale active) ── */}
       {recap.saleResult && (
         <section className="mb-10">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">
-            Impact fiscal de la vente
+            {isPea ? "Impact fiscal du retrait" : "Impact fiscal de la vente"}
           </h2>
           <div className="rounded-2xl border border-slate-200/70 bg-white shadow-card p-5 mb-4">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
               <Row
-                label="Plus-value réalisée"
+                label={isPea ? "Gain net du retrait" : "Plus-value réalisée"}
                 value={formatFiscalEur(recap.saleResult.capitalGain)}
               />
               <Row
-                label={`Impôt (${(recap.saleResult.taxRate * 100).toFixed(1).replace(".", ",")} %)`}
+                label={recap.saleResult.taxLabel}
                 value={`− ${formatFiscalEur(recap.saleResult.taxDue)}`}
                 valueColor="text-red-600"
               />
@@ -283,7 +383,16 @@ export function RecapFiscalClient({
               />
             </div>
             <p className="mt-4 pt-3 border-t border-slate-100 text-xs text-gray-500">
-              Règle appliquée : {recap.saleResult.taxRuleLabel}
+              Règle appliquée ({isPea ? "retrait" : "vente"} en {selectedYear}) :{" "}
+              {recap.saleResult.taxRuleLabel}
+              {anciennete?.premierVersement && (
+                <>
+                  {" "}· Premier versement sur le PEA :{" "}
+                  {dateFr(anciennete.premierVersement)}
+                </>
+              )}
+              .
+              {recap.saleResult.paiementNote && ` ${recap.saleResult.paiementNote}`}
             </p>
           </div>
 
@@ -292,35 +401,52 @@ export function RecapFiscalClient({
             Guide de déclaration
           </h2>
           <div className="space-y-4">
-            {recap.saleResult.declarationGuide.form2074.applicable && (
-              <DeclCard
-                form="2074"
-                subtitle="Détail des plus-values mobilières"
-                amount={formatFiscalEur(
-                  recap.saleResult.declarationGuide.form2074.plusValueAmount
-                )}
-                amountLabel="Plus-value à reporter"
-                note={recap.saleResult.declarationGuide.form2074.note}
-              />
+            {recap.saleResult.declarationGuide.rienADeclarer && (
+              <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 text-sm text-emerald-900 leading-relaxed">
+                {recap.saleResult.declarationGuide.rienADeclarer}
+              </div>
             )}
             {recap.saleResult.declarationGuide.form2042.map((c) => (
               <DeclCard
                 key={c.caseId}
-                form={`2042 case ${c.caseId}`}
+                form={`${c.form} case ${c.caseId}`}
                 subtitle={c.label}
                 amount={formatFiscalEur(c.amount)}
                 amountLabel="Montant à reporter"
                 note={c.note}
               />
             ))}
-            {!recap.saleResult.declarationGuide.form2074.applicable &&
-              recap.saleResult.declarationGuide.form2042.length === 0 && (
-                <p className="text-sm text-gray-600">
-                  Aucune déclaration de plus-value requise (pas de gain ou
-                  cession en moins-value).
-                </p>
-              )}
+            {recap.saleResult.declarationGuide.form2074.applicable && (
+              <DeclCard
+                form="2074"
+                subtitle={
+                  recap.saleResult.declarationGuide.form2074.obligatoire
+                    ? "Détail des plus-values mobilières"
+                    : "Détail des plus-values mobilières — facultative dans le cas simple"
+                }
+                amount={formatFiscalEur(
+                  Math.abs(recap.saleResult.declarationGuide.form2074.plusValueAmount)
+                )}
+                amountLabel={
+                  recap.saleResult.declarationGuide.form2074.plusValueAmount < 0
+                    ? "Moins-value"
+                    : "Plus-value"
+                }
+                note={recap.saleResult.declarationGuide.form2074.note}
+              />
+            )}
           </div>
+        </section>
+      )}
+
+      {/* ── Hypothèses et limites propres à ce récap ── */}
+      {recap.avertissements.length > 0 && (
+        <section className="rounded-2xl border border-amber-200 bg-amber-50 p-4 mb-4 text-xs text-amber-900 leading-relaxed">
+          <ul className="space-y-1">
+            {recap.avertissements.map((a) => (
+              <li key={a}>{a}</li>
+            ))}
+          </ul>
         </section>
       )}
 
@@ -349,20 +475,44 @@ export function RecapFiscalClient({
         <ul className="text-sm text-gray-700 space-y-2 leading-relaxed">
           <li>
             <strong>Les versements DCA seuls ne sont pas taxables.</strong>{" "}
-            Vous payez de l&apos;impôt uniquement quand vous vendez et
-            réalisez une plus-value.
+            L&apos;imposition vient d&apos;une vente avec plus-value sur un
+            CTO, ou d&apos;un retrait d&apos;argent d&apos;un PEA. Vendre
+            des titres à l&apos;intérieur du PEA sans rien retirer n&apos;est
+            pas imposable.
           </li>
+          {recap.baremeConnu ? (
+            <>
+              <li>
+                <strong>PEA de moins de 5 ans</strong> : un retrait fait en{" "}
+                {selectedYear} supporte {tauxAffiche(irTaux)} % d&apos;impôt
+                (ligne 3VT) et {tauxAffiche(recap.bareme.pea.sociaux)} % de
+                prélèvements sociaux, et clôture en principe le plan.{" "}
+                <strong>PEA de 5 ans ou plus</strong> : seulement{" "}
+                {tauxAffiche(recap.bareme.pea.sociaux)} % de prélèvements
+                sociaux, retenus par l&apos;établissement ; rien à déclarer.
+              </li>
+              <li>
+                <strong>Délai de 5 ans</strong> : il court à partir de la date
+                du premier versement sur le PEA, pas de l&apos;année civile.
+              </li>
+              <li>
+                <strong>CTO</strong> : PFU de{" "}
+                {tauxAffiche(recap.bareme.cto.pfu)} % sur les plus-values
+                réalisées en {selectedYear} ({tauxAffiche(irTaux)} %
+                d&apos;impôt + {tauxAffiche(recap.bareme.cto.sociaux)} % de
+                prélèvements sociaux), quelle que soit la durée de détention.
+              </li>
+            </>
+          ) : (
+            <li>
+              Les règles d&apos;avant 2018 (avant le prélèvement forfaitaire
+              unique) ne sont pas modélisées : fiez-vous à l&apos;IFU de votre
+              établissement.
+            </li>
+          )}
           <li>
-            <strong>PEA &lt; 5 ans</strong> : clôture taxée au PFU 31,4 % comme
-            un CTO. <strong>PEA ≥ 5 ans</strong> : seulement les prélèvements
-            sociaux 18,6 % à la sortie.
-          </li>
-          <li>
-            <strong>CTO</strong> : PFU 31,4 % constant sur les plus-values
-            réalisées (12,8 % IR + 18,6 % social), peu importe la durée.
-          </li>
-          <li>
-            <strong>Plafond PEA</strong> : 150 000 € de versements cumulés.
+            <strong>Plafond PEA</strong> :{" "}
+            {formatFiscalEur(PEA_DEPOSIT_CAP_EUR)} de versements cumulés.
             La valorisation au-delà reste autorisée et avantageuse.
           </li>
           <li>

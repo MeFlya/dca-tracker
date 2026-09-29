@@ -39,7 +39,10 @@ const ROWS = [
   { label: "Plafond de versements",  pea: "150 000 €",              cto: "Illimité"                },
   { label: "Fiscalité avant 5 ans",  pea: "31,4 % (flat tax)",        cto: "31,4 % (flat tax)"         },
   { label: "Fiscalité après 5 ans",  pea: "18,6 % (PS uniquement)", cto: "31,4 % (flat tax)"         },
-  { label: "ETF éligibles",          pea: "EU uniquement",           cto: "Monde entier"            },
+  // 29/09/2026 (FISC-PEA-14) : « EU uniquement » contredisait la page, qui
+  // liste des ETF Monde et S&P 500 éligibles. Le critère porte sur l'actif du
+  // fonds : plus de 75 % d'actions de sociétés de l'UE ou de l'EEE.
+  { label: "ETF éligibles",          pea: "Plus de 75 % d'actions UE/EEE (ETF monde via swap)", cto: "Monde entier" },
   { label: "Retraits",               pea: "Libres après 5 ans",      cto: "Toujours libres"         },
   { label: "Durée idéale",           pea: "Long terme (≥ 5 ans)",    cto: "Toute durée"             },
   { label: "Idéal pour",            pea: "DCA MSCI World long terme", cto: "ETF US, diversification" },
@@ -118,11 +121,16 @@ const GAIN_EXEMPLE =
 const FAQ = [
   {
     q: "Peut-on avoir à la fois un PEA et un CTO ?",
-    a: "Oui. On ne peut détenir qu'un seul PEA par personne, mais vous pouvez très bien ouvrir un CTO en complément pour les ETF non éligibles PEA ou pour dépasser le plafond de 150 000 €.",
+    // 29/09/2026 (FISC-PEA-04, pea-un-seul-personnel) : l'interdiction vise
+    // les PEA classiques ; un PEA-PME-ETI peut s'y ajouter.
+    a: "Oui. On ne peut détenir qu'un seul PEA classique par personne (un PEA-PME-ETI peut s'y ajouter), mais vous pouvez très bien ouvrir un CTO en complément pour les ETF non éligibles PEA ou pour dépasser le plafond de 150 000 €.",
   },
   {
     q: "Que se passe-t-il si je retire de l'argent avant 5 ans sur un PEA ?",
-    a: "Un retrait avant 5 ans entraîne la clôture automatique du PEA et l'imposition des gains au taux de 31,4 % (flat tax). Après 5 ans, vous pouvez retirer sans fermer le compte et sans payer d'impôt sur le revenu — seuls les prélèvements sociaux (18,6 %) s'appliquent.",
+    // 29/09/2026 (FISC-PEA-06, FISC-PEA-10, CMF L221-32, service-public
+    // F2385) : la clôture n'est que la règle de principe. La loi prévoit des
+    // retraits anticipés sans clôture, et le barème peut remplacer le PFU.
+    a: "En principe, un retrait avant 5 ans entraîne la clôture du PEA, et le gain est imposé à 31,4 % : 12,8 % d'impôt sur le revenu (ou le barème progressif, sur option) et 18,6 % de prélèvements sociaux. La loi prévoit des exceptions où le retrait ne clôture pas le plan : licenciement, invalidité ou mise à la retraite anticipée du titulaire ou de son conjoint ou partenaire de Pacs, création ou reprise d'une entreprise, retrait des titres d'une société en liquidation judiciaire. Après 5 ans, vous pouvez retirer sans fermer le plan et sans payer d'impôt sur le revenu — seuls les prélèvements sociaux (18,6 %) s'appliquent.",
   },
   {
     q: "Quels ETF MSCI World sont éligibles au PEA ?",
@@ -166,7 +174,7 @@ export default function PEAouCTOPage() {
 
       <ArticleByline
         publishedAt="2026-04-12"
-        updatedAt="2026-09-28"
+        updatedAt="2026-09-29"
         readingMinutes={12}
         url="/pea-ou-cto"
         headline={TITLE}
@@ -252,12 +260,18 @@ export default function PEAouCTOPage() {
           {/* Réécrit le 28/09/2026 : « coté sur un marché européen » n'est pas
               le critère, aucun FTSE All-World de la table n'est éligible, et
               « physique avec domiciliation européenne » est faux (IWDA est
-              physique, domicilié en Irlande, et non éligible). */}
-          Un ETF est éligible au PEA quand il détient au moins 75 %
-          d&apos;actions de sociétés européennes. Les ETF « monde » ou
-          « S&amp;P 500 » éligibles y parviennent par réplication synthétique
-          (swap) : ils détiennent des actions européennes et reçoivent, par
-          contrat, la performance de leur indice. Mais un swap ne suffit pas :
+              physique, domicilié en Irlande, et non éligible).
+              29/09/2026 (FISC-PEA-14, CMF L221-31) : « au moins 75 %
+              d'actions de sociétés européennes » → PLUS de 75 % de l'actif
+              en actions de sociétés de l'UE ou de l'EEE. */}
+          Un ETF est éligible au PEA quand il investit plus de 75 % de ses
+          actifs en actions de sociétés ayant leur siège dans l&apos;Union
+          européenne ou dans l&apos;Espace économique européen : être
+          « européenne » ne suffit pas, les sociétés britanniques ou suisses
+          n&apos;en font pas partie. Les ETF « monde » ou « S&amp;P 500 »
+          éligibles y parviennent par réplication synthétique (swap) : ils
+          détiennent des actions de sociétés de l&apos;UE ou de l&apos;EEE et
+          reçoivent, par contrat, la performance de leur indice. Mais un swap ne suffit pas :
           chez Amundi, les versions « Swap » du S&amp;P 500, du Nasdaq-100 et
           des émergents ne sont pas éligibles, leurs versions « PEA » le sont.
           Le nom ne fait pas foi, l&apos;ISIN et la documentation de
@@ -414,8 +428,12 @@ export default function PEAouCTOPage() {
             </li>
           </ol>
           <p className="text-xs text-gray-500">
+            {/* 29/09/2026 (cif-conditions-amf) : un CIF n'est pas « agréé AMF » ;
+                il est immatriculé à l'ORIAS et adhère à une association agréée
+                par l'AMF. */}
             Ces informations sont à caractère éducatif et ne constituent pas un conseil en investissement personnalisé.
-            Consultez un CGP ou CIF agréé AMF pour toute décision patrimoniale.
+            Pour toute décision patrimoniale, consultez un conseiller en gestion de patrimoine
+            ayant le statut de conseiller en investissements financiers (CIF), immatriculé à l&apos;ORIAS.
           </p>
         </div>
         <p className="text-gray-600 leading-relaxed mt-5">
@@ -486,35 +504,51 @@ export default function PEAouCTOPage() {
       </section>
 
       {/* ── Sources & références ───────────────────────────────────────── */}
+      {/* Sources revues le 29/09/2026 (liens vérifiés, consultés le
+          28/09/2026) :
+            · F1404 est la fiche « Faire une donation » → F21618, « Plus-values
+              sur valeurs mobilières », qui donne le PFU de 31,4 %.
+            · F2385 ne donne aucun taux de prélèvements sociaux : les 18,6 %
+              du PEA viennent de la FAQ impots.gouv.fr, ajoutée.
+            · AMF (404), Légifrance (404) et BOFiP 3220-PGP (« Document non
+              trouvé ») remplacés par leurs adresses actuelles. */}
       <SourcesReferences
         sources={[
           {
             label: "Plan d'Épargne en Actions (PEA) — règles et fiscalité",
-            url: "https://www.service-public.fr/particuliers/vosdroits/F2385",
-            publisher: "service-public.fr",
-            note: "Plafond 150 000 €, exonération d'IR après 5 ans, prélèvements sociaux 18,6 %.",
+            url: "https://www.service-public.gouv.fr/particuliers/vosdroits/F2385",
+            publisher: "service-public.gouv.fr",
+            note: "Plafond de 150 000 €, date d'ouverture fixée au premier versement, un seul PEA classique par personne, retraits avant 5 ans et leurs exceptions, exonération d'impôt sur le revenu après 5 ans. Fiche vérifiée le 22 mai 2026, consultée le 28/09/2026.",
           },
           {
-            label: "Imposition des plus-values mobilières (CTO)",
-            url: "https://www.service-public.fr/particuliers/vosdroits/F1404",
-            publisher: "service-public.fr",
-            note: "Prélèvement forfaitaire unique (PFU/Flat Tax) à 31,4 % sur CTO.",
+            label: "J'ai un plan d'épargne en actions (PEA), les retraits sont-ils imposables ?",
+            url: "https://www.impots.gouv.fr/particulier/questions/jai-un-plan-depargne-en-actions-pea-les-retraits-sont-ils-imposables",
+            publisher: "impots.gouv.fr",
+            note: "Après 5 ans, 18,6 % de prélèvements sociaux sur les gains ; avant 5 ans, PFU de 31,4 %. Page modifiée le 17/07/2026, consultée le 28/09/2026.",
           },
           {
-            label: "Guide pratique du PEA",
-            url: "https://www.amf-france.org/fr/espace-epargnants/comprendre-les-produits-financiers/marches-financiers-et-produits-financiers/plan-depargne-en-actions-pea",
+            label: "Impôt sur le revenu — Plus-values sur valeurs mobilières (CTO)",
+            url: "https://www.service-public.gouv.fr/particuliers/vosdroits/F21618",
+            publisher: "service-public.gouv.fr",
+            note: "Prélèvement forfaitaire unique de 31,4 % (12,8 % d'impôt sur le revenu et 18,6 % de prélèvements sociaux) sur les plus-values d'un CTO. Fiche vérifiée le 15 avril 2026, consultée le 28/09/2026.",
+          },
+          {
+            label: "PEA : tout savoir sur le plan d'épargne en actions",
+            url: "https://www.amf-france.org/fr/espace-epargnants/comprendre-les-produits-financiers/supports-dinvestissement/pea-tout-savoir-sur-le-plan-depargne-en-actions",
             publisher: "Autorité des marchés financiers (AMF)",
+            note: "Consultée le 28/09/2026.",
           },
           {
-            label: "Code monétaire et financier — articles L221-30 et suivants",
-            url: "https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006072026/LEGISCTA000006153523/",
+            label: "Code monétaire et financier — articles L221-30 à L221-32 (plan d'épargne en actions)",
+            url: "https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006072026/LEGISCTA000006170310/",
             publisher: "Légifrance",
-            note: "Cadre légal du PEA — éligibilité, fonctionnement, conditions de clôture.",
+            note: "Cadre légal du PEA : plafond, fonds éligibles (plus de 75 % d'actions de sociétés de l'UE ou de l'EEE), retraits et clôture. Consulté le 28/09/2026.",
           },
           {
-            label: "BoFiP — Régime fiscal du PEA",
-            url: "https://bofip.impots.gouv.fr/bofip/3220-PGP.html",
-            publisher: "Bulletin Officiel des Finances Publiques",
+            label: "BOFiP — Plan d'épargne en actions (BOI-RPPM-RCM-40-50)",
+            url: "https://bofip.impots.gouv.fr/bofip/3786-PGP.html/identifiant=BOI-RPPM-RCM-40-50-20240730",
+            publisher: "Bulletin officiel des finances publiques",
+            note: "Doctrine fiscale du PEA, version du 30/07/2024 : elle ne commente pas encore la hausse des prélèvements sociaux de 2026. Consulté le 28/09/2026.",
           },
         ]}
       />

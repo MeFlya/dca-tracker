@@ -262,7 +262,7 @@ export const ETF_LIST: ETFConfig[] = [
     indexLabel: "Nasdaq-100",
     name: "Amundi PEA Nasdaq-100 UCITS ETF Acc",
     description:
-      "Le Nasdaq-100 — les 100 plus grandes valeurs non financières du Nasdaq, très orientées technologie — dans le PEA, chez Amundi, à 0,30 % de frais. Environ 1,2 milliard d'euros d'encours fin août 2026. Une exposition concentrée, à réserver à une part minoritaire d'un portefeuille.",
+      "Le Nasdaq-100 — les 100 plus grandes valeurs non financières du Nasdaq, très orientées technologie — dans le PEA, chez Amundi, à 0,30 % de frais. Plus de 1 milliard d'euros d'encours. Une exposition concentrée, à réserver à une part minoritaire d'un portefeuille.",
     category: "Actions technologie US",
     ter: 0.3,
     replicationMethod: "Synthétique (swap)",

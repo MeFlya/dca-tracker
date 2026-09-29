@@ -582,14 +582,16 @@ export async function sendOnboardingDay14(email: string, firstName: string) {
         2. Récap fiscal annuel
       </p>
       <p style="margin:0 0 12px 0;font-size:14px;color:#0f172a;line-height:1.7">
-        Chaque année en mai, votre déclaration. La synthèse Premium calcule
-        les montants exacts à reporter dans <strong>les cases 2042 et
-        2074</strong> selon votre situation (PEA &lt; 5 ans, PEA ≥ 5 ans,
-        ou CTO).
+        Chaque année en mai, votre déclaration. Pour une vente sur CTO ou un
+        retrait de PEA de moins de 5 ans, la synthèse Premium calcule le
+        gain et l&apos;impôt au barème de l&apos;année, et indique les lignes
+        à remplir (<strong>2042 C</strong>, et <strong>2074</strong> si
+        besoin). Pour un retrait de PEA de plus de 5 ans, elle vous dit
+        qu&apos;il n&apos;y a rien à déclarer.
       </p>
       <p style="margin:0;font-size:14px;color:#475569;line-height:1.7">
-        Pas besoin de réfléchir aux taux applicables ou au formulaire
-        à utiliser — tout est pré-calculé, exportable en PDF.
+        Une aide à la déclaration, exportable en PDF : l&apos;IFU de votre
+        établissement reste le document de référence.
       </p>
     </div>
 

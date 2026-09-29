@@ -18,8 +18,16 @@ import {
 } from "@/lib/impot-affiche";
 import { capitalPour, ecartCapital, gainsPour, HYPOTHESES_COMPARATIFS } from "@/lib/ecart-frais";
 import { runSimulation } from "@/lib/simulator";
+import { runMonteCarlo } from "@/lib/monte-carlo";
+import { TER_REFERENCE_SIMULATEUR } from "@/lib/etf-config";
 import { getBacktestStory } from "@/lib/backtest-stories";
-import { formatEurBacktest, formatMonthFr, reculIndice } from "@/lib/backtest";
+import {
+  formatEurBacktest,
+  formatMonthFr,
+  getAvailableRange,
+  reculIndice,
+} from "@/lib/backtest";
+import dataset from "@/data/msci-world-eur.json";
 
 // 28/09/2026 : l'exemple PEA posait « ≈ 102 000 € finaux dont ≈ 54 000 € de
 // gains » — le capital SANS AUCUN FRAIS — et un écart fiscal « ≈ 6 900 € »
@@ -39,6 +47,79 @@ const CREUX_2010 = BT_2010.result.maxDrawdown;
 const CREUX_INDICE_2010 = CREUX_2010
   ? reculIndice(CREUX_2010.peakMonth, CREUX_2010.troughMonth)
   : null;
+
+// ─── Volatilité et krachs : calculés sur la série publiée (29/09/2026) ───────
+//
+// Les termes volatilité et drawdown écrivaient « ~15 %/an », « −34 % en cinq
+// semaines au printemps 2020 », « −50 %+ en 2008 » et « des baisses de 30 à
+// 50 % une à deux fois par décennie » : chiffres sans devise, sans granularité
+// ni source. Sur la série des backtests (EUR, clôtures mensuelles), la
+// volatilité ressort à 13,8 %/an, la baisse de 2020 à 18,8 % et celle de
+// 2008-2009 à 38,8 %. Ils sont désormais CALCULÉS ici. Les deux chiffres MSCI
+// (13,45 % de volatilité sur 10 ans, baisse maximale de 53,6 % du 24/05/2001 au
+// 09/03/2009) viennent de la fiche MSCI World Index (EUR) au 31/08/2026 : ils
+// ne sont pas calculables sur une série qui commence en 2008.
+const SERIE_INDICE: { month: string; value: number }[] = dataset.data;
+const PERIODE_SERIE = getAvailableRange();
+const ANNEE_DEBUT_SERIE = PERIODE_SERIE.min.slice(0, 4);
+const ANNEE_FIN_SERIE = PERIODE_SERIE.max.slice(0, 4);
+
+/** Écart-type des rendements mensuels × √12, en %. */
+const VOLATILITE_SERIE = (() => {
+  const r = SERIE_INDICE.slice(1).map((p, i) => p.value / SERIE_INDICE[i].value - 1);
+  const moyenne = r.reduce((s, x) => s + x, 0) / r.length;
+  const variance = r.reduce((s, x) => s + (x - moyenne) ** 2, 0) / (r.length - 1);
+  return Math.sqrt(variance * 12) * 100;
+})();
+
+/**
+ * Plus forte baisse de l'indice entre un plus haut et le creux qui le suit, à
+ * l'intérieur d'une fenêtre (clôtures mensuelles). Le pourcentage sort de
+ * reculIndice(), comme pour les pages /backtest-*.
+ */
+function pireReculIndice(debut: string, fin: string) {
+  const points = SERIE_INDICE.filter((p) => p.month >= debut && p.month <= fin);
+  if (points.length === 0) return null;
+  let sommet = points[0];
+  let pire: { pct: number; peakMonth: string; troughMonth: string } | null = null;
+  for (const p of points) {
+    if (p.value > sommet.value) sommet = p;
+    const pct = reculIndice(sommet.month, p.month);
+    if (pct != null && pct > 0 && (pire === null || pct > pire.pct)) {
+      pire = { pct, peakMonth: sommet.month, troughMonth: p.month };
+    }
+  }
+  return pire;
+}
+
+const KRACH_2008 = pireReculIndice("2008-01", "2009-12");
+const KRACH_2020 = pireReculIndice("2019-10", "2020-12");
+
+/** « 38,8 % entre mai 2008 et février 2009 » ; null si la série ne couvre pas. */
+function phraseKrach(k: ReturnType<typeof pireReculIndice>): string | null {
+  return k
+    ? `${un(k.pct)} % entre ${formatMonthFr(k.peakMonth)} et ${formatMonthFr(k.troughMonth)}`
+    : null;
+}
+const PHRASE_KRACH_2008 = phraseKrach(KRACH_2008);
+const PHRASE_KRACH_2020 = phraseKrach(KRACH_2020);
+/** Les deux krachs de la série, ou rien : pas de chiffre de repli écrit à la main. */
+const KRACHS_SERIE =
+  PHRASE_KRACH_2008 && PHRASE_KRACH_2020
+    ? `sur la série de nos backtests, en euros et en clôtures mensuelles, il a reculé de ${PHRASE_KRACH_2008}, puis de ${PHRASE_KRACH_2020}`
+    : null;
+const KRACHS_SERIE_PHRASE = KRACHS_SERIE
+  ? ` Plus près de nous, ${KRACHS_SERIE} ; des clôtures mensuelles lissent les creux vécus en séance.`
+  : "";
+
+// Monte Carlo du simulateur : 15 %/an de volatilité est une HYPOTHÈSE du
+// modèle (monte-carlo.ts), un peu au-dessus de la volatilité mesurée. L'exemple
+// disait « du simple au double entre le 10e et le 90e percentile » : sur les
+// paramètres par défaut du simulateur, l'écart est de près de trois fois.
+const MC_EXEMPLE = runMonteCarlo({
+  ...HYPOTHESES_COMPARATIFS,
+  annualFeesPct: TER_REFERENCE_SIMULATEUR,
+});
 
 const TER_EXEMPLE_PEA = 0.2;
 const GAIN_EXEMPLE_PEA = (() => {
@@ -82,7 +163,7 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
 
   pea: {
     slug: "pea",
-    updatedAt: "2026-09-28",
+    updatedAt: "2026-09-29",
     term: "PEA — Plan d'Épargne en Actions",
     shortDef:
       "Enveloppe fiscale française : après 5 ans, les gains ne supportent que 18,6 % de prélèvements sociaux au lieu de 31,4 %.",
@@ -90,7 +171,7 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
     metaDescription:
       "Le PEA en clair : plafond de 150 000 €, exonération d'impôt sur le revenu après 5 ans (reste 18,6 % de prélèvements sociaux), ETF éligibles. Définition + exemple chiffré pour un DCA.",
     definition: [
-      "Le Plan d'Épargne en Actions est une enveloppe fiscale française destinée à l'investissement en actions européennes — et, grâce aux ETF synthétiques, en indices mondiaux comme le MSCI World ou le S&P 500. Son atout : après 5 ans de détention, les gains sont exonérés d'impôt sur le revenu. Seuls les prélèvements sociaux de 18,6 % restent dus, contre 31,4 % de flat tax sur un compte-titres ordinaire.",
+      "Le Plan d'Épargne en Actions est une enveloppe fiscale française destinée à l'investissement en actions de sociétés de l'Union européenne ou de l'Espace économique européen — et, grâce aux ETF synthétiques, en indices mondiaux comme le MSCI World ou le S&P 500. Son atout : après 5 ans de détention, les gains sont exonérés d'impôt sur le revenu. Seuls les prélèvements sociaux de 18,6 % restent dus, contre 31,4 % de flat tax sur un compte-titres ordinaire.",
       "Le plafond de versement est de 150 000 € par personne (les gains peuvent faire croître le portefeuille au-delà sans limite). Un retrait avant 5 ans entraîne en principe la clôture du plan — d'où la règle d'or : n'y investir que de l'épargne de long terme.",
     ],
     inPractice: [
@@ -100,7 +181,10 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
       },
       {
         title: "Ouvrir tôt, même avec peu",
-        text: "C'est la date d'ouverture qui déclenche le compteur des 5 ans, pas les montants versés. Ouvrir un PEA avec 10 € « prend date » et débloque la fiscalité réduite plus tôt.",
+        // 29/09/2026 (FISC-PEA-05, service-public F2385 et F22449) : le délai
+        // de 5 ans part du PREMIER VERSEMENT, qui fixe la date d'ouverture du
+        // plan. Un PEA ouvert sans versement ne prend pas date.
+        text: "Le compteur des 5 ans part de la date du premier versement, quel qu'en soit le montant : c'est elle qui fixe la date d'ouverture du plan. Ouvrir un PEA et y verser une petite somme « prend date » et débloque la fiscalité réduite plus tôt. La loi ne fixe pas de versement minimum ; certains courtiers en demandent un à l'ouverture.",
       },
     ],
     example:
@@ -111,11 +195,19 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
         // 28/09/2026 : « les ETF synthétiques qui répliquent des indices
         // mondiaux » laissait croire qu'un swap suffit — 500, ANX et AEEM sont
         // des swaps Amundi NON éligibles (table de vérité ETF). SPEA ajouté.
-        a: "Les ETF qui détiennent au moins 75 % d'actions européennes. Pour suivre un indice mondial, ils reçoivent sa performance par un swap tout en détenant des actions européennes : MSCI World (WPEA, DCAM, CW8), S&P 500 (SPEA, PSP5, ESE), Nasdaq-100 (PUST), émergents (PAEEM)… Un swap ne suffit pas : l'Amundi S&P 500 Swap (500), l'Amundi Nasdaq-100 Swap (ANX) et l'Amundi MSCI Emerging Markets Swap (AEEM) ne sont pas éligibles. Les ETF physiques à dominante américaine (IWDA, VWCE, CSPX) non plus.",
+        // 29/09/2026 (FISC-PEA-14, CMF L221-31) : « au moins 75 % d'actions
+        // européennes » → PLUS de 75 % de l'actif en actions de sociétés de
+        // l'UE ou de l'EEE ; les sociétés britanniques ou suisses n'en sont pas.
+        a: "Les ETF qui investissent plus de 75 % de leurs actifs en actions de sociétés de l'Union européenne ou de l'Espace économique européen (les sociétés britanniques ou suisses n'en font pas partie). Pour suivre un indice mondial, ils reçoivent sa performance par un swap tout en détenant ces actions : MSCI World (WPEA, DCAM, CW8), S&P 500 (SPEA, PSP5, ESE), Nasdaq-100 (PUST), émergents (PAEEM)… Un swap ne suffit pas : l'Amundi S&P 500 Swap (500), l'Amundi Nasdaq-100 Swap (ANX) et l'Amundi MSCI Emerging Markets Swap (AEEM) ne sont pas éligibles. Les ETF physiques à dominante américaine (IWDA, VWCE, CSPX) non plus.",
       },
       {
         q: "Que se passe-t-il si je retire avant 5 ans ?",
-        a: "Un retrait avant 5 ans entraîne en principe la clôture du plan et l'imposition des gains au PFU de 31,4 % (sauf cas particuliers : licenciement, invalidité, création d'entreprise…). Après 5 ans, les retraits sont libres sans clôture.",
+        // Jusqu'au 29/09/2026, la parenthèse « sauf cas particuliers :
+        // licenciement, invalidité, création d'entreprise… » faisait passer ces
+        // retraits pour exonérés. Ils ne clôturent pas le plan, mais le gain
+        // reste imposable, sauf création ou reprise d'entreprise (exonérée
+        // d'IR) — BOFiP BOI-RPPM-RCM-40-50 § 30 ; brochure IR 2026 p. 143.
+        a: "Un retrait avant 5 ans entraîne en principe la clôture du plan, et le gain est imposé au PFU de 31,4 % (ou au barème sur option). Certains retraits ne clôturent pas le plan : licenciement, invalidité ou mise à la retraite anticipée, création ou reprise d'entreprise, titres d'une société en liquidation. Le gain reste alors imposable, sauf en cas de création ou de reprise d'entreprise, exonérée d'impôt sur le revenu. Après 5 ans, les retraits sont libres sans clôture.",
       },
     ],
     related: [
@@ -129,7 +221,7 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
 
   cto: {
     slug: "cto",
-    updatedAt: "2026-08-03",
+    updatedAt: "2026-09-29",
     term: "CTO — Compte-Titres Ordinaire",
     shortDef:
       "Compte d'investissement sans plafond ni restriction d'actifs, mais fiscalisé au PFU de 31,4 % sur les gains.",
@@ -143,7 +235,9 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
     inPractice: [
       {
         title: "La suite logique du PEA plein",
-        text: "L'ordre fiscal optimal pour la plupart des résidents français : remplir le PEA d'abord, puis continuer le DCA en CTO. Inverser l'ordre coûte 13 points de fiscalité sur les gains.",
+        // 29/09/2026 : « 13 points » → 12,8 (31,4 % − 18,6 %, FISC-PEA-10),
+        // comme l'écrit déjà l'entrée PFU de ce même glossaire.
+        text: "L'ordre fiscal optimal pour la plupart des résidents français : remplir le PEA d'abord, puis continuer le DCA en CTO. Inverser l'ordre coûte 12,8 points de fiscalité sur les gains (31,4 % au lieu de 18,6 % après 5 ans de PEA).",
       },
       {
         title: "Le terrain des ETF physiques",
@@ -157,7 +251,9 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
       },
       {
         q: "Peut-on avoir plusieurs CTO ?",
-        a: "Oui, sans limite — chez plusieurs courtiers si besoin. Contrairement au PEA (un seul par personne), le CTO n'a aucune restriction de nombre ni de plafond.",
+        // 29/09/2026 (FISC-PEA-04) : l'interdiction vise les PEA classiques ;
+        // un PEA-PME-ETI peut s'y ajouter.
+        a: "Oui, sans limite — chez plusieurs courtiers si besoin. Contrairement au PEA (un seul PEA classique par personne, auquel peut s'ajouter un PEA-PME-ETI), le CTO n'a aucune restriction de nombre ni de plafond.",
       },
     ],
     related: [
@@ -171,15 +267,19 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
 
   pfu: {
     slug: "pfu",
-    updatedAt: "2026-09-28",
+    updatedAt: "2026-09-29",
     term: "PFU — Prélèvement Forfaitaire Unique (flat tax)",
     shortDef:
-      "Imposition forfaitaire de 31,4 % sur les revenus du capital : 12,8 % d'impôt sur le revenu + 18,6 % de prélèvements sociaux.",
+      "Imposition forfaitaire des revenus du capital : 31,4 % en 2026 sur les plus-values et dividendes d'un compte-titres (12,8 % d'impôt sur le revenu + 18,6 % de prélèvements sociaux).",
     metaTitle: "PFU (flat tax 31,4 %) : définition et impact sur vos ETF",
     metaDescription:
       "Le Prélèvement Forfaitaire Unique en clair : 31,4 % sur les plus-values et dividendes en CTO (12,8 % IR + 18,6 % sociaux). Comment le PEA permet d'y échapper en partie — définition + exemple chiffré.",
     definition: [
-      "Le Prélèvement Forfaitaire Unique — souvent appelé « flat tax » — s'applique depuis 2018 aux revenus du capital : plus-values de cession, dividendes, intérêts. Son taux global est de 31,4 %, décomposé en 12,8 % d'impôt sur le revenu et 18,6 % de prélèvements sociaux.",
+      // 29/09/2026 (FISC-PS-01 à 04, BAREMES_CAPITAL) : le taux global n'est
+      // de 31,4 % que depuis la LFSS 2026 — 30 % de 2018 à 2025 — et il n'est
+      // pas universel : l'assurance-vie, le PEL et le CEL gardent 17,2 % de
+      // prélèvements sociaux.
+      "Le Prélèvement Forfaitaire Unique — souvent appelé « flat tax » — s'applique depuis 2018 aux revenus du capital : plus-values de cession, dividendes, intérêts. Créé au taux global de 30 %, il est passé à 31,4 % avec la loi de financement de la Sécurité sociale pour 2026, qui a relevé la CSG : 12,8 % d'impôt sur le revenu et 18,6 % de prélèvements sociaux. Ce taux vaut pour les plus-values réalisées depuis 2025 et pour les dividendes et intérêts perçus depuis le 1er janvier 2026. Il ne vaut pas pour tout : l'assurance-vie, le PEL et le CEL, notamment, gardent 17,2 % de prélèvements sociaux.",
       "C'est le régime par défaut des gains réalisés sur un compte-titres ordinaire. L'option pour le barème progressif de l'impôt sur le revenu reste possible si elle est plus avantageuse (revenus modestes), mais elle s'applique alors à l'ensemble des revenus du capital de l'année.",
     ],
     inPractice: [
@@ -261,7 +361,7 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
 
   "replication-physique": {
     slug: "replication-physique",
-    updatedAt: "2026-09-28",
+    updatedAt: "2026-09-29",
     term: "Réplication physique",
     shortDef:
       "L'ETF détient réellement les titres de l'indice qu'il réplique — pas d'intermédiaire, pas de contrat d'échange.",
@@ -281,13 +381,16 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
       },
       {
         title: "Ne pas en faire un dogme",
-        text: "Préférer le physique « par principe » en sortant du PEA coûte 13 points de fiscalité sur les gains. Le confort psychologique de la détention directe a un prix — qu'il faut chiffrer avant de le payer.",
+        text: "Préférer le physique « par principe » en sortant du PEA coûte 12,8 points de fiscalité sur les gains. Le confort psychologique de la détention directe a un prix — qu'il faut chiffrer avant de le payer.",
       },
     ],
     faq: [
       {
         q: "La réplication physique est-elle plus sûre que la synthétique ?",
-        a: "Marginalement : elle élimine le risque de contrepartie du swap. Mais ce risque est lui-même très encadré (limité à 10 % de l'actif par UCITS, collatéralisé en pratique quotidiennement) et ne s'est jamais matérialisé en perte pour les porteurs d'ETF européens. La différence de sécurité réelle est faible.",
+        // 29/09/2026 (ucits-contrepartie-10pc, CMF R214-21) : « ne s'est jamais
+        // matérialisé en perte » n'avait aucune source — retiré. Plafond
+        // précisé : 10 % par contrepartie bancaire, 5 % sinon.
+        a: "Marginalement : elle élimine le risque de contrepartie du swap. Mais ce risque est lui-même très encadré : l'exposition à une même contrepartie est plafonnée à 10 % de l'actif du fonds quand c'est une banque (5 % sinon), et elle est collatéralisée en pratique quotidiennement. La différence de sécurité réelle est faible.",
       },
       {
         q: "Les ETF physiques prêtent-ils leurs titres ?",
@@ -304,7 +407,7 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
 
   "replication-synthetique": {
     slug: "replication-synthetique",
-    updatedAt: "2026-09-28",
+    updatedAt: "2026-09-29",
     term: "Réplication synthétique (swap)",
     shortDef:
       "L'ETF reproduit la performance de l'indice via un contrat d'échange — c'est ce qui rend le MSCI World ou le S&P 500 éligibles au PEA.",
@@ -325,7 +428,9 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
       },
       {
         title: "Un risque réel mais borné",
-        text: "Le risque de contrepartie (la banque du swap fait défaut) est limité par la réglementation UCITS à 10 % de l'actif du fonds, et les émetteurs collatéralisent en pratique quotidiennement. En vingt ans d'ETF synthétiques européens, ce risque ne s'est jamais matérialisé en perte pour les porteurs.",
+        // 29/09/2026 : même correction que pour la réplication physique —
+        // l'affirmation « jamais matérialisé en perte » n'était pas sourcée.
+        text: "Le risque de contrepartie (la banque du swap fait défaut) est limité par la réglementation UCITS à 10 % de l'actif du fonds par contrepartie bancaire (5 % pour une autre contrepartie), et les émetteurs collatéralisent en pratique quotidiennement. Borné ne veut pas dire nul : c'est un risque faible, pas un risque absent.",
       },
     ],
     faq: [
@@ -391,7 +496,7 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
 
   "lump-sum": {
     slug: "lump-sum",
-    updatedAt: "2026-06-10",
+    updatedAt: "2026-09-29",
     term: "Lump sum (investissement en une fois)",
     shortDef:
       "Investir tout son capital disponible immédiatement, plutôt que de l'étaler dans le temps comme le DCA.",
@@ -400,7 +505,11 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
       "Le lump sum (tout investir d'un coup) bat statistiquement le DCA ~2 fois sur 3 — mais expose au pire timing. Définition, l'étude Vanguard, et pourquoi le DCA reste le bon choix pour un revenu mensuel.",
     definition: [
       "Le lump sum consiste à investir immédiatement l'intégralité d'un capital disponible — héritage, prime, épargne accumulée — plutôt que de l'étaler par versements réguliers. C'est l'alternative au DCA, et le sujet d'un débat classique de l'investissement passif.",
-      "Statistiquement, le lump sum l'emporte environ deux fois sur trois : les marchés montent plus souvent qu'ils ne baissent, donc chaque mois passé hors du marché a, en moyenne, un coût d'opportunité. L'étude de référence de Vanguard chiffre l'avantage moyen à 1-2 % sur les périodes d'étalement de 6-12 mois. Mais la moyenne cache la distribution : le tiers restant inclut les scénarios où tout investir la veille d'un krach fait très mal — financièrement et psychologiquement.",
+      // 29/09/2026 (vanguard-2012-lsi-deux-tiers, vanguard-2012-ecart-moyen) :
+      // « 1-2 % sur 6-12 mois » ne correspond pas à l'étude — l'écart moyen
+      // face à un étalement sur 12 mois y va de 1,3 % (Australie) à 2,3 %
+      // (États-Unis).
+      "Statistiquement, le lump sum l'emporte environ deux fois sur trois : les marchés montent plus souvent qu'ils ne baissent, donc chaque mois passé hors du marché a, en moyenne, un coût d'opportunité. Dans son étude de 2012, Vanguard chiffre l'avantage moyen du versement unique, face à un étalement sur 12 mois, entre 1,3 % et 2,3 % de capital final en plus au bout de dix ans, selon le pays (États-Unis, Royaume-Uni, Australie), pour un portefeuille 60 % actions / 40 % obligations. Mais la moyenne cache la distribution : le tiers restant inclut les scénarios où tout investir la veille d'un krach fait très mal — financièrement et psychologiquement.",
     ],
     inPractice: [
       {
@@ -415,7 +524,7 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
     faq: [
       {
         q: "Le lump sum est-il « meilleur » que le DCA ?",
-        a: "En espérance mathématique, oui (≈ 2 fois sur 3, +1-2 % en moyenne selon Vanguard). En pratique, le meilleur plan est celui que vous tiendrez : un DCA qui vous évite de paniquer en cas de krach immédiat bat un lump sum abandonné au premier −20 %. Et pour l'épargne mensuelle sur salaire, le DCA est la seule option logique.",
+        a: "En espérance mathématique, oui (environ 2 fois sur 3 et, en moyenne, 1,3 % à 2,3 % de capital en plus au bout de dix ans face à un étalement sur 12 mois, portefeuille 60/40, selon l'étude Vanguard de 2012). En pratique, le meilleur plan est celui que vous tiendrez : un DCA qui vous évite de paniquer en cas de krach immédiat bat un lump sum abandonné au premier −20 %. Et pour l'épargne mensuelle sur salaire, le DCA est la seule option logique.",
       },
       {
         q: "Que disait le backtest COVID sur ce sujet ?",
@@ -432,15 +541,18 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
 
   volatilite: {
     slug: "volatilite",
-    updatedAt: "2026-09-28",
+    updatedAt: "2026-09-29",
     term: "Volatilité",
     shortDef:
       "L'amplitude des variations d'un actif autour de sa tendance — la mesure standard du « risque » en finance.",
     metaTitle: "Volatilité : définition simple et impact sur un DCA",
     metaDescription:
-      "La volatilité mesure l'amplitude des variations d'un actif (~15 %/an pour les ETF actions monde). Pourquoi elle est le prix à payer du rendement, et pourquoi le DCA la transforme en alliée. Définition claire.",
+      "La volatilité mesure l'amplitude des variations d'un actif (13 à 14 %/an pour un ETF actions monde). Pourquoi elle est le prix à payer du rendement, et pourquoi le DCA la transforme en alliée. Définition claire.",
     definition: [
-      "La volatilité mesure l'amplitude des fluctuations d'un actif autour de sa tendance, généralement exprimée en pourcentage annualisé. Un ETF actions monde affiche une volatilité historique d'environ 15 %/an : les années à +25 % et les années à −15 % font partie du même paysage statistique, même si la tendance de long terme est haussière.",
+      // 29/09/2026 (BT-20, fiche MSCI World EUR au 31/08/2026) : « environ
+      // 15 %/an » → 13 à 14 %. La valeur de la série est calculée plus haut
+      // (VOLATILITE_SERIE) ; « +25 % / −15 % » (années non sourcées) retiré.
+      `La volatilité mesure l'amplitude des fluctuations d'un actif autour de sa tendance, généralement exprimée en pourcentage annualisé. Un ETF actions monde affiche une volatilité historique de l'ordre de 13 à 14 % par an : ${un(VOLATILITE_SERIE)} % sur la série mensuelle en euros de nos backtests (de ${ANNEE_DEBUT_SERIE} à ${ANNEE_FIN_SERIE}), 13,45 % sur dix ans selon MSCI (MSCI World en euros, rendements mensuels, au 31 août 2026). Les années de forte hausse et celles de forte baisse font partie du même paysage statistique, même si la tendance de long terme a été haussière.`,
       "En finance classique, volatilité = risque. Pour l'investisseur long terme, c'est plus nuancé : la volatilité est surtout le prix d'entrée du rendement des actions. Les actifs « sans volatilité » (livrets) sont aussi ceux sans rendement réel après inflation.",
     ],
     inPractice: [
@@ -453,12 +565,17 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
         text: "Sur 20 ans, le danger n'est pas la volatilité elle-même mais la vente panique pendant un creux — transformer une baisse temporaire en perte définitive. C'est le comportement, pas la variance, qui détruit les patrimoines.",
       },
     ],
+    // 29/09/2026 : les 15 %/an du Monte Carlo sont une hypothèse du modèle, et
+    // l'écart entre percentiles est calculé (MC_EXEMPLE) au lieu d'être écrit.
     example:
-      "Notre analyse Monte Carlo simule 1 000 trajectoires de marché avec une volatilité de ~15 %/an : pour un même DCA, les arrivées s'étalent du simple au double entre le 10e et le 90e percentile. La moyenne ne suffit pas pour piloter une stratégie.",
+      `Notre analyse Monte Carlo simule 1 000 trajectoires de marché en supposant une volatilité de 15 %/an, une hypothèse un peu plus prudente que la volatilité mesurée. Pour ${HYPOTHESES_COMPARATIFS.monthlyAmount} €/mois pendant ${HYPOTHESES_COMPARATIFS.durationYears} ans à ${HYPOTHESES_COMPARATIFS.annualReturnPct} %/an avant frais et ${TER_REFERENCE_SIMULATEUR.toLocaleString("fr-FR")} % de frais annuels, les arrivées vont de ${formatEurBacktest(MC_EXEMPLE.finalP10)} au 10e percentile à ${formatEurBacktest(MC_EXEMPLE.finalP90)} au 90e, soit ${un(MC_EXEMPLE.finalP90 / MC_EXEMPLE.finalP10)} fois plus. La moyenne ne suffit pas pour piloter une stratégie.`,
     faq: [
       {
         q: "Quelle est la volatilité d'un ETF MSCI World ?",
-        a: "Historiquement autour de 15 % par an (un peu moins que le S&P 500 seul, nettement moins qu'un Nasdaq-100 à ~20-25 %). La diversification sur l'ensemble des pays développés lisse les chocs individuels sans supprimer le risque de marché global.",
+        // 29/09/2026 : « autour de 15 % » → 13 à 14 %, avec la série et la
+        // source MSCI ; les comparaisons S&P 500 / Nasdaq-100 (« ~20-25 % »)
+        // n'étaient pas sourcées, retirées.
+        a: `De l'ordre de 13 à 14 % par an : ${un(VOLATILITE_SERIE)} % sur la série mensuelle en euros de nos backtests (de ${ANNEE_DEBUT_SERIE} à ${ANNEE_FIN_SERIE}), 13,45 % sur dix ans selon MSCI (MSCI World en euros, au 31 août 2026). Mesurée sur des cours quotidiens, elle ressortirait un peu plus élevée. La diversification sur l'ensemble des pays développés lisse les chocs individuels sans supprimer le risque de marché global.`,
       },
       {
         q: "Comment réduire la volatilité d'un portefeuille DCA ?",
@@ -475,16 +592,24 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
 
   drawdown: {
     slug: "drawdown",
-    updatedAt: "2026-09-28",
+    updatedAt: "2026-09-29",
     term: "Drawdown (perte maximale)",
     shortDef:
       "La baisse entre un sommet du portefeuille et le creux qui suit — la mesure la plus parlante du risque vécu.",
     metaTitle: "Drawdown : définition et chiffres réels d'un DCA MSCI World",
-    metaDescription:
-      "Le drawdown mesure la chute pic-à-creux d'un portefeuille — le « pire moment » vécu. Sur un DCA MSCI World réel depuis 2010 : −17,8 % au pire (COVID). Pourquoi le DCA amortit les drawdowns de l'indice. Définition claire.",
+    // 29/09/2026 : « −17,8 % » était écrit à la main ; le backtest calcule
+    // −17,9 % (BT-12). Le chiffre et le mois du creux sortent du moteur.
+    metaDescription: CREUX_2010
+      ? `Le drawdown mesure la chute pic-à-creux d'un portefeuille — le « pire moment » vécu. Sur un DCA MSCI World réel depuis 2010 : −${un(CREUX_2010.pct)} % au pire (${formatMonthFr(CREUX_2010.troughMonth)}). Pourquoi le DCA amortit les drawdowns de l'indice. Définition claire.`
+      : "Le drawdown mesure la chute pic-à-creux d'un portefeuille — le « pire moment » vécu, sur un DCA MSCI World réel depuis 2010. Pourquoi le DCA amortit les drawdowns de l'indice. Définition claire.",
     definition: [
       "Le drawdown mesure la baisse d'un portefeuille entre un sommet (pic) et le point bas qui suit (creux), avant de retrouver le sommet. Le « maximum drawdown » est la pire de ces baisses sur une période : c'est la réponse à la question qui compte vraiment — « au pire moment, combien aurais-je vu fondre ? ».",
-      "Contrairement à la volatilité (une moyenne statistique), le drawdown raconte l'expérience vécue : −34 % en cinq semaines pour le MSCI World au printemps 2020, −50 %+ en 2008. C'est lui qui teste les nerfs, pas l'écart-type.",
+      // 29/09/2026 : « −34 % en cinq semaines au printemps 2020, −50 %+ en
+      // 2008 » n'avait ni devise, ni granularité, ni source. MSCI : −53,6 % du
+      // 24/05/2001 au 09/03/2009 (fiche MSCI World EUR au 31/08/2026) — une
+      // baisse sur 2001-2009, pas sur la seule année 2008. Série du site :
+      // calculée (KRACH_2008, KRACH_2020).
+      `Contrairement à la volatilité (une moyenne statistique), le drawdown raconte l'expérience vécue. Selon MSCI, le MSCI World en euros (dividendes nets réinvestis) a perdu jusqu'à 53,6 % entre le 24 mai 2001 et le 9 mars 2009.${KRACHS_SERIE_PHRASE} C'est le drawdown qui teste les nerfs, pas l'écart-type.`,
     ],
     inPractice: [
       {
@@ -508,7 +633,11 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
     faq: [
       {
         q: "Quel drawdown faut-il anticiper sur un ETF monde ?",
-        a: "Historiquement, des baisses de 30 à 50 % de l'indice surviennent une à deux fois par décennie (2008, 2020, 2022 dans une moindre mesure). Un portefeuille en construction par DCA encaisse des drawdowns plus faibles grâce à l'étalement des achats — mais plus le capital grossit, plus il se comporte comme un lump sum face aux baisses.",
+        // 29/09/2026 : « des baisses de 30 à 50 % une à deux fois par
+        // décennie » n'était ni sourcé ni cohérent avec la série du site
+        // (2020 : moins de 20 % en clôtures mensuelles). Chiffres MSCI et
+        // chiffres calculés sur la série, chacun avec son périmètre.
+        a: `Aucun chiffre ne se prévoit, mais l'historique donne des ordres de grandeur. Selon MSCI, le MSCI World en euros a perdu jusqu'à 53,6 % entre mai 2001 et mars 2009.${KRACHS_SERIE_PHRASE} Un portefeuille en construction par DCA encaisse des drawdowns plus faibles au début grâce à l'étalement des achats — mais plus le capital grossit, plus il se comporte comme un lump sum face aux baisses.`,
       },
       {
         q: "Où voir le drawdown réel de mon scénario ?",
@@ -571,7 +700,7 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
 
   tri: {
     slug: "tri",
-    updatedAt: "2026-09-28",
+    updatedAt: "2026-09-29",
     term: "TRI — Taux de Rendement Interne",
     shortDef:
       "Le rendement annualisé qui tient compte des dates et montants de chaque versement — la vraie mesure de performance d'un DCA.",
@@ -580,7 +709,10 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
       "Le Taux de Rendement Interne annualise la performance en tenant compte de CHAQUE versement et de sa date — indispensable pour juger un DCA (le simple « +60 % » ne dit rien du temps). Définition + exemple réel.",
     definition: [
       "Le Taux de Rendement Interne est le taux annualisé qui égalise la valeur de tous vos versements (avec leurs dates) et la valeur finale du portefeuille. C'est l'équivalent de la fonction TRI.PAIEMENTS d'Excel — et la seule mesure honnête de la performance d'un DCA.",
-      "Pourquoi pas un simple pourcentage de gain ? Parce qu'avec des versements étalés, chaque euro n'a pas travaillé la même durée : l'euro investi il y a 15 ans a eu 15 ans pour composer, celui du mois dernier, un mois. Un gain total de « +210 % » sur 16 ans de DCA correspond ainsi à un TRI d'environ 12,7 %/an — c'est ce chiffre qui se compare aux rendements annoncés des autres placements.",
+      // 29/09/2026 : « +210 % » et « 12,7 %/an » étaient écrits à la main pour
+      // le backtest depuis 2010, qui calcule +214 % et 12,6 %/an (BT-11). Ils
+      // sortent désormais du même moteur que la page /backtest-depuis-2010.
+      `Pourquoi pas un simple pourcentage de gain ? Parce qu'avec des versements étalés, chaque euro n'a pas travaillé la même durée : l'euro investi il y a 15 ans a eu 15 ans pour composer, celui du mois dernier, un mois. Sur notre backtest depuis 2010, un gain total de « +${Math.round(BT_2010.result.gainPct)} % » en ${Math.floor(BT_2010.result.monthsInvested / 12)} ans de DCA correspond ainsi à un TRI d'environ ${TRI_2010} %/an — c'est ce chiffre qui se compare aux rendements annoncés des autres placements.`,
     ],
     inPractice: [
       {

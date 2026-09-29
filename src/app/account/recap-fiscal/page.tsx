@@ -1,5 +1,5 @@
 import { currentUser } from "@clerk/nextjs/server";
-import { currentYear as anneeCourante } from "@/lib/strategy-math";
+import { currentMonth, currentYear as anneeCourante } from "@/lib/strategy-math";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
@@ -69,12 +69,20 @@ export default async function RecapFiscalPage({
   // Fuseau de l'audience : au 1er janvier avant 1 h, un runtime UTC
   // proposerait encore l'année précédente sur le récap fiscal.
   const currentYear = anneeCourante();
+  const startYear = parseInt(strategy.startMonth.split("-")[0], 10);
+  // Année par défaut : de janvier à juin, on déclare les revenus de l'année
+  // PRÉCÉDENTE. Jusqu'au 29/09/2026, le récap s'ouvrait toujours sur l'année
+  // en cours — y compris depuis la notification « Saison des impôts » d'avril-
+  // mai —, et un retrait de l'an passé y recevait le barème et l'ancienneté de
+  // la mauvaise année.
+  const moisCourant = Number(currentMonth().slice(5, 7));
+  const anneeParDefaut =
+    moisCourant <= 6 && currentYear - 1 >= startYear ? currentYear - 1 : currentYear;
   const selectedYear = requestedYear && !isNaN(requestedYear)
     ? requestedYear
-    : currentYear;
+    : anneeParDefaut;
 
   // Build the list of available years (start year of strategy → current year).
-  const startYear = parseInt(strategy.startMonth.split("-")[0], 10);
   const availableYears: number[] = [];
   for (let y = currentYear; y >= startYear; y--) availableYears.push(y);
 

@@ -98,7 +98,15 @@ function percentile(sorted: number[], p: number): number {
 
 export function runMonteCarlo(
   input: SimulatorInput,
-  volatilityPct = 15 // historical ETF annual volatility — ~15% for MSCI World
+  // HYPOTHÈSE, pas une mesure. Ce commentaire disait « historical ETF annual
+  // volatility — ~15% for MSCI World », et des pages l'ont recopié comme « la
+  // volatilité réelle ». Mesurée, elle est plus basse : 13,8 %/an sur la série
+  // publiée (écart-type des rendements mensuels 2008-2026 × √12), 13,45 % sur
+  // 10 ans et 13,32 % sur 5 ans selon MSCI (fiche MSCI World Index (EUR) au
+  // 31/08/2026, consultée le 28/09/2026). 15 % est donc un peu prudent : à
+  // présenter comme une hypothèse. Le changer déplacerait tous les chiffres
+  // Monte Carlo déjà affichés — décision à prendre à part.
+  volatilityPct = 15
 ): MonteCarloResult {
   const randn = makeRandn(mulberry32(seedFrom(input, volatilityPct)));
   const { monthlyAmount, durationYears, annualReturnPct, annualFeesPct } = input;

@@ -29,7 +29,12 @@ const FAQ = [
   },
   {
     q: "Comment fonctionne la règle des 5 ans du PEA ?",
-    a: "À l'ouverture, le PEA est imposé comme un CTO classique (31,4 % PFU sur les plus-values) si vous clôturez avant 5 ans. À partir de la 5e année exacte (jour pour jour), les plus-values ne supportent plus que les prélèvements sociaux (18,6 %) en cas de retrait. C'est pourquoi il est conseillé d'ouvrir un PEA même sans verser dessus immédiatement : le compteur démarre à l'ouverture, pas au premier versement.",
+    // 29/09/2026 (FISC-PEA-05, service-public F2385 et F22449, BOFiP) : la
+    // page affirmait l'inverse de la règle — « le compteur démarre à
+    // l'ouverture, pas au premier versement ». La date d'ouverture fiscale EST
+    // celle du premier versement ; un PEA ouvert sans versement ne prend pas
+    // date. /investir-200-euros-mois-etf disait déjà la bonne règle.
+    a: "Tant que le plan a moins de 5 ans, un retrait entraîne en principe sa clôture, et le gain est imposé à 31,4 % (12,8 % d'impôt sur le revenu + 18,6 % de prélèvements sociaux), comme sur un CTO. Une fois les 5 ans passés, le gain n'est plus soumis à l'impôt sur le revenu : un retrait ne supporte que les prélèvements sociaux (18,6 %). Le délai de 5 ans part de la date du premier versement, pas de la signature du contrat : c'est pourquoi il est conseillé d'ouvrir un PEA tôt et d'y verser une petite somme, même si vous n'investissez pas tout de suite. La loi ne fixe pas de versement minimum ; certains courtiers en demandent un à l'ouverture.",
   },
   {
     q: "Quel est le plafond de versement du PEA ?",
@@ -44,7 +49,10 @@ const FAQ = [
   },
   {
     q: "Quelle différence entre PFU et option pour l'IR ?",
-    a: "Le PFU (Prélèvement Forfaitaire Unique) à 31,4 % est appliqué par défaut à toutes les plus-values mobilières. Vous pouvez opter pour l'imposition au barème progressif de l'IR (+ 18,6 % de prélèvements sociaux) si votre tranche marginale d'imposition (TMI) est inférieure à 12,8 % — ce qui est rare pour les épargnants concernés. Notre calculateur applique le PFU 31,4 % qui est le cas par défaut majoritaire.",
+    // 29/09/2026 (FISC-CTO-02, service-public F2613 et F21618) : « ce qui est
+    // rare » n'était pas sourcé ; l'option est surtout GLOBALE, ce que la
+    // réponse ne disait pas.
+    a: "Le PFU (Prélèvement Forfaitaire Unique) à 31,4 % est appliqué par défaut aux plus-values et dividendes d'un compte-titres. Vous pouvez opter à la place pour le barème progressif de l'impôt sur le revenu (+ 18,6 % de prélèvements sociaux). Selon service-public, c'est en général plus favorable si vous êtes non imposable ou dans la tranche à 11 %. Attention : l'option est globale, elle s'applique à tous vos revenus de capitaux mobiliers et plus-values de l'année, et se coche case 2OP de la déclaration. Notre calculateur applique le PFU à 31,4 %, le régime par défaut.",
   },
   {
     q: "Les ETF World comme CW8 ou VWCE sont-ils éligibles au PEA ?",
@@ -157,9 +165,12 @@ export default function CalculateurFiscalPage() {
                   PEA n&apos;a plus d&apos;intérêt fiscal vs CTO.
                 </li>
                 <li>
-                  <strong>CTO</strong> : PFU 31,4 % flat (12,8 % IR + 18,6 % CSG)
-                  sur toutes les plus-values, peu importe la durée de
-                  détention.
+                  {/* 29/09/2026 (FISC-PS-02) : 18,6 % est le TOTAL des
+                      prélèvements sociaux (CSG 10,6 % + CRDS 0,5 % +
+                      prélèvement de solidarité 7,5 %), pas la CSG seule. */}
+                  <strong>CTO</strong> : PFU de 31,4 % (12,8 % d&apos;impôt sur
+                  le revenu + 18,6 % de prélèvements sociaux) sur toutes les
+                  plus-values, peu importe la durée de détention.
                 </li>
                 <li>
                   <strong>Plafond PEA : 150 000 €</strong> de versements (pas

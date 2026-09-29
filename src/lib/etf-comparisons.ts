@@ -146,15 +146,15 @@ const MSCI_WORLD_VS_SP500: ETFComparison = {
   },
 
   verdict:
-    "MSCI World pour la diversification mondiale automatique. S&P 500 pour la concentration US ciblée avec des frais plus bas. Attention : le MSCI World est déjà composé à ~70 % d'actions américaines — la différence réelle est souvent plus faible qu'on ne l'imagine.",
+    "MSCI World pour la diversification mondiale automatique. S&P 500 pour la concentration US ciblée avec des frais plus bas. Attention : le MSCI World est déjà composé d'environ 72 % d'actions américaines (72,14 % au 31/08/2026 selon MSCI) — la différence réelle est souvent plus faible qu'on ne l'imagine.",
 
   intro:
-    "MSCI World et S&P 500 sont les deux indices les plus utilisés pour un DCA en ETF. Ils sont souvent présentés comme opposés alors qu'ils se chevauchent largement : le MSCI World contient environ 70 % d'actions américaines, la quasi-totalité de la composition du S&P 500 s'y retrouve. Comprendre cette nuance est la clé du choix.",
+    "MSCI World et S&P 500 sont les deux indices les plus utilisés pour un DCA en ETF. Ils sont souvent présentés comme opposés alors qu'ils se chevauchent largement : le MSCI World contient environ 72 % d'actions américaines (72,14 % au 31/08/2026 selon MSCI), la quasi-totalité de la composition du S&P 500 s'y retrouve. Comprendre cette nuance est la clé du choix.",
 
   keyDifferences: [
     { criterion: "Nombre de sociétés", leftValue: "~1 500", rightValue: "500" },
     { criterion: "Couverture géographique", leftValue: "23 pays développés", rightValue: "États-Unis uniquement" },
-    { criterion: "Poids des États-Unis", leftValue: "~70 %", rightValue: "100 %" },
+    { criterion: "Poids des États-Unis", leftValue: "~72 % (31/08/2026)", rightValue: "100 %" },
     // Fourchettes recalées sur les ETF de la table de vérité (28/09/2026) :
     // MSCI World de 0,20 % (WPEA, DCAM, IWDA) à 0,38 % (CW8, EWLD) — l'ancien
     // « 0,12 % » ne correspondait à aucun ETF cité ; S&P 500 de 0,07 % (CSPX,
@@ -176,7 +176,7 @@ const MSCI_WORLD_VS_SP500: ETFComparison = {
       profile: "Investisseur convaincu de la domination US long-terme",
       winner: "right",
       explanation:
-        "Si vous pensez que les États-Unis continueront à surperformer, un S&P 500 seul est plus cohérent et moins cher. Les 70 % d'US dans le MSCI World sont déjà présents — choisir le S&P 500 pur est un pari assumé.",
+        "Si vous pensez que les États-Unis continueront à surperformer, un S&P 500 seul est plus cohérent et moins cher. Les quelque 72 % d'actions américaines du MSCI World sont déjà présents — choisir le S&P 500 pur est un pari assumé.",
     },
     {
       profile: "Budget très serré (sensibilité TER)",
@@ -193,7 +193,7 @@ const MSCI_WORLD_VS_SP500: ETFComparison = {
       explanation:
         // Citait AEEM, qui n'est PAS éligible au PEA (reporting Amundi 31/08/2026).
         // L'équivalent PEA est PAEEM — table de vérité ETF, 28/09/2026.
-        "Le MSCI World reste très exposé aux US (~70 %), mais intègre aussi Japon, Royaume-Uni, France, Allemagne, Suisse, Canada, Australie. Ajouter un ETF émergents en complément est souvent la stratégie de diversification finale — PAEEM dans un PEA ; AEEM, lui, n'y est pas éligible.",
+        "Le MSCI World reste très exposé aux US (environ 72 % au 31/08/2026), mais intègre aussi Japon, Royaume-Uni, France, Allemagne, Suisse, Canada, Australie. Ajouter un ETF émergents en complément est souvent la stratégie de diversification finale — PAEEM dans un PEA ; AEEM, lui, n'y est pas éligible.",
     },
   ],
 
@@ -203,7 +203,7 @@ const MSCI_WORLD_VS_SP500: ETFComparison = {
   faq: [
     {
       q: "Peut-on combiner MSCI World et S&P 500 dans son portefeuille ?",
-      a: "Techniquement oui, mais l'utilité est limitée — le MSCI World contient déjà ~70 % de S&P 500. Ajouter un S&P 500 à côté d'un MSCI World revient à surpondérer les États-Unis, ce qui peut être une stratégie assumée (double-down sur les US) mais pas une vraie diversification. Mieux vaut choisir l'un ou l'autre, ou ajouter des marchés émergents si on veut diversifier.",
+      a: "Techniquement oui, mais l'utilité est limitée — le MSCI World contient déjà environ 72 % d'actions américaines (72,14 % au 31/08/2026 selon MSCI). Ajouter un S&P 500 à côté d'un MSCI World revient à surpondérer les États-Unis, ce qui peut être une stratégie assumée (double-down sur les US) mais pas une vraie diversification. Mieux vaut choisir l'un ou l'autre, ou ajouter des marchés émergents si on veut diversifier.",
     },
     {
       q: "Quel est le meilleur ETF MSCI World éligible PEA ?",
@@ -314,7 +314,7 @@ const CW8_VS_ESE: ETFComparison = {
       profile: "Vous êtes sensible aux frais cumulés",
       winner: "right",
       explanation:
-        `Sur 20 ans à 200 €/mois, 0,24 % de TER en moins représente environ ${ecartCapital(0.38, 0.14)} € de capital final en plus. Si vous êtes à l'aise avec la concentration US (~70 % du CW8 de toute façon), ESE est le moins cher des deux. Dans un PEA, PSP5 (0,12 %) et SPEA (0,10 %) répliquent le même S&P 500 pour encore moins.`,
+        `Sur 20 ans à 200 €/mois, 0,24 % de TER en moins représente environ ${ecartCapital(0.38, 0.14)} € de capital final en plus. Si vous êtes à l'aise avec la concentration US (environ 72 % du CW8 de toute façon), ESE est le moins cher des deux. Dans un PEA, PSP5 (0,12 %) et SPEA (0,10 %) répliquent le même S&P 500 pour encore moins.`,
     },
     {
       profile: "Vous voulez combiner les deux",
@@ -466,7 +466,7 @@ const VWCE_VS_CW8: ETFComparison = {
     },
     {
       q: "Pourquoi VWCE n'est-il pas éligible PEA ?",
-      a: "Un ETF est éligible au PEA s'il détient au moins 75 % d'actions de sociétés européennes. VWCE est physique et détient réellement des actions majoritairement non européennes (notamment américaines) : il ne remplit pas le critère. CW8 le remplit autrement : il détient un panier d'actions européennes et échange sa performance, par un swap, contre celle du MSCI World. Mais être synthétique ne suffit pas — les ETF S&P 500, Nasdaq-100 et émergents « Swap » d'Amundi (500, ANX, AEEM) le sont aussi, et ne sont pas éligibles.",
+      a: "Un ETF est éligible au PEA s'il détient plus de 75 % d'actions de sociétés de l'UE ou de l'EEE (l'Espace économique européen). VWCE est physique et détient réellement des actions majoritairement non européennes (notamment américaines) : il ne remplit pas le critère. CW8 le remplit autrement : il détient un panier d'actions européennes et échange sa performance, par un swap, contre celle du MSCI World. Mais être synthétique ne suffit pas — les ETF S&P 500, Nasdaq-100 et émergents « Swap » d'Amundi (500, ANX, AEEM) le sont aussi, et ne sont pas éligibles.",
     },
     {
       q: "Faut-il avoir peur du risque de change avec VWCE ?",
@@ -538,7 +538,7 @@ const CW8_VS_WPEA: ETFComparison = {
     distribution: "Capitalisant",
     currency: "EUR",
     peaEligible: "Oui",
-    strongPoint: "TER presque deux fois inférieur au CW8 · ≈ 2,1 Md€ d'encours fin août 2026",
+    strongPoint: "TER presque deux fois inférieur au CW8 · plus de 1 Md€ d'encours",
     weakPoint: "ETF récent (lancé en mars 2024) — historique plus court que CW8",
   },
 
@@ -678,7 +678,7 @@ const WPEA_VS_DCAM: ETFComparison = {
     distribution: "Capitalisant",
     currency: "EUR",
     peaEligible: "Oui",
-    strongPoint: "Le plus ancien des deux (lancé en mars 2024) · le plus gros encours (≈ 2,1 Md€ fin août 2026)",
+    strongPoint: "Le plus ancien des deux (lancé en mars 2024) · le plus gros encours",
     weakPoint: "Aucun avantage de frais ni d'indice sur DCAM : l'écart est pratique, pas financier",
   },
 
@@ -693,12 +693,12 @@ const WPEA_VS_DCAM: ETFComparison = {
     distribution: "Capitalisant",
     currency: "EUR",
     peaEligible: "Oui",
-    strongPoint: "≈ 1,4 Md€ d'encours en dix-huit mois (fin août 2026) · fonds de droit français",
+    strongPoint: "Plus de 1 Md€ d'encours en dix-huit mois · fonds de droit français",
     weakPoint: "Le plus récent (mars 2025) — historique de réplication plus court",
   },
 
   verdict:
-    "Égalité sur tout ce qui fait la performance : même indice MSCI World, même TER de 0,20 %, même réplication synthétique, même éligibilité PEA — et deux parts sous 10 €, donc aucune différence de souplesse pour un petit versement mensuel. Ce qui les sépare est secondaire : WPEA a un an d'historique de plus et un encours plus gros (≈ 2,1 Md€ contre ≈ 1,4 Md€ fin août 2026). Le vrai départage est chez votre courtier : prenez celui qu'il propose avec les frais d'ordre les plus bas, et gardez-le.",
+    "Égalité sur tout ce qui fait la performance : même indice MSCI World, même TER de 0,20 %, même réplication synthétique, même éligibilité PEA — et deux parts sous 10 €, donc aucune différence de souplesse pour un petit versement mensuel. Ce qui les sépare est secondaire : WPEA a un an d'historique de plus et un encours plus gros (les deux dépassent le milliard d'euros ; les montants exacts diffèrent selon les sources). Le vrai départage est chez votre courtier : prenez celui qu'il propose avec les frais d'ordre les plus bas, et gardez-le.",
 
   intro:
     "C'est le duel le plus récent du PEA : iShares a lancé WPEA en 2024, face aux ETF MSCI World d'Amundi facturés 0,38 %, et Amundi a lancé DCAM en mars 2025 — même indice, même 0,20 %. Pour l'investisseur, c'est une excellente nouvelle : la concurrence a divisé les frais par près de deux par rapport au CW8 historique (0,38 %). Reste à choisir entre deux jumeaux.",
@@ -709,7 +709,9 @@ const WPEA_VS_DCAM: ETFComparison = {
     { criterion: "Émetteur", leftValue: "iShares (BlackRock)", rightValue: "Amundi (Crédit Agricole)" },
     { criterion: "Lancement", leftValue: "Mars 2024 (cotation à Paris en avril)", rightValue: "Mars 2025" },
     { criterion: "Prix de part", leftValue: "Sous 10 €", rightValue: "Sous 10 € — aucun écart utile" },
-    { criterion: "Encours (fin août 2026)", leftValue: "≈ 2,1 Md€", rightValue: "≈ 1,4 Md€" },
+    // 29/09/2026 : « ≈ 2,1 Md€ / ≈ 1,4 Md€ » — la table et justETF divergent
+    // (encours-a-trancher) : arrondi, sans chiffre précis.
+    { criterion: "Encours", leftValue: "Plus de 1 Md€ (le plus gros)", rightValue: "Plus de 1 Md€" },
     { criterion: "Domicile du fonds", leftValue: "Irlande", rightValue: "France" },
     { criterion: "Réplication", leftValue: "Synthétique", rightValue: "Synthétique" },
     { criterion: "Éligibilité PEA", leftValue: "Oui", rightValue: "Oui" },
@@ -870,7 +872,7 @@ const IWDA_VS_CW8: ETFComparison = {
   faq: [
     {
       q: "IWDA peut-il être logé dans un PEA ?",
-      a: "Non. IWDA est en réplication physique : il détient majoritairement des actions non européennes (~70 % US), ce qui le rend incompatible avec les règles du PEA. Seuls les ETF World à réplication synthétique (CW8, WPEA, DCAM, EWLD…) sont éligibles PEA.",
+      a: "Non. IWDA est en réplication physique : il détient majoritairement des actions non européennes (environ 72 % d'actions américaines), ce qui le rend incompatible avec les règles du PEA. Seuls les ETF World à réplication synthétique (CW8, WPEA, DCAM, EWLD…) sont éligibles PEA.",
     },
     {
       q: "Le TER plus bas d'IWDA ne compense-t-il jamais la fiscalité ?",
@@ -983,7 +985,7 @@ const ESE_VS_PSP5: ETFComparison = {
   ],
 
   analysis:
-    `Ce match illustre la notion de seuil de pertinence des frais. Passer de 0,38 % à 0,20 % (CW8 → WPEA) économise ~${ecartCapital(0.38, 0.2)} € sur 20 ans : ça vaut une décision. Passer de 0,14 % à 0,12 % en économise ~${ecartCapital(0.14, 0.12)} € : c'est réel, mais du même ordre de grandeur que quelques années de frais d'ordre, un spread défavorable répété, ou un mois de retard à investir. Autrement dit : choisissez vite, investissez tôt — l'erreur coûteuse serait de passer trois mois à hésiter entre deux excellents ETF. Rappel utile : le S&P 500 en PEA passe par la réplication synthétique (les actions américaines ne sont pas éligibles en direct), mécanisme encadré par UCITS. Et si vous hésitez encore entre S&P 500 et MSCI World, c'est une décision plus structurante que ESE vs PSP5 — le World contient déjà ~70 % de S&P 500.`,
+    `Ce match illustre la notion de seuil de pertinence des frais. Passer de 0,38 % à 0,20 % (CW8 → WPEA) économise ~${ecartCapital(0.38, 0.2)} € sur 20 ans : ça vaut une décision. Passer de 0,14 % à 0,12 % en économise ~${ecartCapital(0.14, 0.12)} € : c'est réel, mais du même ordre de grandeur que quelques années de frais d'ordre, un spread défavorable répété, ou un mois de retard à investir. Autrement dit : choisissez vite, investissez tôt — l'erreur coûteuse serait de passer trois mois à hésiter entre deux excellents ETF. Rappel utile : le S&P 500 en PEA passe par la réplication synthétique (les actions américaines ne sont pas éligibles en direct), mécanisme encadré par UCITS. Et si vous hésitez encore entre S&P 500 et MSCI World, c'est une décision plus structurante que ESE vs PSP5 — le World contient déjà environ 72 % d'actions américaines.`,
 
   faq: [
     {
@@ -1004,7 +1006,7 @@ const ESE_VS_PSP5: ETFComparison = {
     },
     {
       q: "S&P 500 ou MSCI World pour mon PEA ?",
-      a: "Question plus importante que ESE vs PSP5 ! Le MSCI World est composé à ~70 % de S&P 500 mais ajoute le Japon, l'Europe, le Canada… Le S&P 500 pur est un pari assumé sur la poursuite de la domination américaine. Pour la simplicité maximale d'un débutant, le World est souvent recommandé — voir notre comparatif MSCI World vs S&P 500.",
+      a: "Question plus importante que ESE vs PSP5 ! Le MSCI World est composé d'environ 72 % d'actions américaines (72,14 % au 31/08/2026 selon MSCI) mais ajoute le Japon, l'Europe, le Canada… Le S&P 500 pur est un pari assumé sur la poursuite de la domination américaine. Pour la simplicité maximale d'un débutant, le World est souvent recommandé — voir notre comparatif MSCI World vs S&P 500.",
     },
   ],
 

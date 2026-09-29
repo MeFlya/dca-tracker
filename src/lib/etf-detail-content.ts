@@ -56,7 +56,7 @@ Ses frais (0,38 % par an) sont les plus élevés des MSCI World éligibles PEA d
 
   // WPEA — ajouté le 28/09/2026, faits tirés de la table de vérité uniquement.
   WPEA: {
-    whatItTracks: `Le WPEA réplique l'indice MSCI World — les grandes et moyennes entreprises des pays développés, sans les pays émergents — dans le cadre du PEA. C'est un fonds iShares (BlackRock) lancé le 26 mars 2024 et coté à Paris depuis le 3 avril 2024. Son encours atteignait environ 2,1 milliards d'euros fin août 2026.
+    whatItTracks: `Le WPEA réplique l'indice MSCI World — les grandes et moyennes entreprises des pays développés, sans les pays émergents — dans le cadre du PEA. C'est un fonds iShares (BlackRock) lancé le 26 mars 2024 et coté à Paris depuis le 3 avril 2024. Son encours dépasse le milliard d'euros (les montants exacts diffèrent selon les sources, d'où l'arrondi).
 
 Comme le CW8, il passe par une réplication synthétique (swap) : le fonds détient un panier d'actions qui le rend éligible au PEA, et un contrat d'échange avec une banque lui verse la performance du MSCI World. Même indice, même enveloppe, mais des frais de 0,20 % par an contre 0,38 % pour le CW8.
 
@@ -80,7 +80,7 @@ Il est capitalisant : les dividendes sont réinvestis dans le fonds. Une part va
 
   // PUST — ajouté le 28/09/2026, faits tirés de la table de vérité uniquement.
   PUST: {
-    whatItTracks: `Le PUST (Amundi PEA Nasdaq-100) réplique l'indice Nasdaq-100 — les 100 plus grandes entreprises non financières cotées au Nasdaq, très orientées technologie — dans le cadre du PEA. Son encours atteignait environ 1,2 milliard d'euros au 31 août 2026.
+    whatItTracks: `Le PUST (Amundi PEA Nasdaq-100) réplique l'indice Nasdaq-100 — les 100 plus grandes entreprises non financières cotées au Nasdaq, très orientées technologie — dans le cadre du PEA. Son encours dépasse le milliard d'euros (les montants exacts diffèrent selon les sources, d'où l'arrondi).
 
 Comme les autres ETF qui logent un indice américain dans le PEA, il passe par une réplication synthétique (swap) : le fonds détient un panier d'actions qui le rend éligible, et un contrat d'échange lui verse la performance du Nasdaq-100. Ses frais sont de 0,30 % par an ; il est capitalisant.
 
@@ -88,7 +88,9 @@ Ce n'est pas le seul Nasdaq-100 éligible au PEA. Et l'ANX, l'autre Nasdaq-100 d
     whyChooseIt: [
       "Éligible PEA, sur le Nasdaq-100",
       "Capitalisant — les dividendes sont réinvestis automatiquement",
-      "Encours d'environ 1,2 milliard d'euros (31 août 2026)",
+      // 29/09/2026 : « environ 1,2 milliard d'euros » — la table et justETF
+      // divergent (encours-a-trancher) : arrondi sans chiffre précis.
+      "Encours de plus de 1 milliard d'euros",
     ],
     watchOut: [
       "Indice très concentré : une centaine de valeurs, dominées par quelques géants de la technologie",
@@ -103,7 +105,7 @@ Ce n'est pas le seul Nasdaq-100 éligible au PEA. Et l'ANX, l'autre Nasdaq-100 d
 
   // DCAM — ajouté le 28/09/2026, faits tirés de la table de vérité uniquement.
   DCAM: {
-    whatItTracks: `Le DCAM (Amundi PEA Monde) réplique l'indice MSCI World — les grandes et moyennes entreprises des pays développés, sans les pays émergents — dans le cadre du PEA. Lancé le 4 mars 2025, il comptait environ 1,4 milliard d'euros d'encours au 31 août 2026.
+    whatItTracks: `Le DCAM (Amundi PEA Monde) réplique l'indice MSCI World — les grandes et moyennes entreprises des pays développés, sans les pays émergents — dans le cadre du PEA. Lancé le 4 mars 2025, il compte déjà plus de 1 milliard d'euros d'encours (les montants exacts diffèrent selon les sources, d'où l'arrondi).
 
 C'est le même émetteur que le CW8 (Amundi) et le même indice, pour des frais de 0,20 % par an au lieu de 0,38 %. Il est capitalisant : les dividendes sont réinvestis dans le fonds.
 

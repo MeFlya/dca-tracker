@@ -382,8 +382,8 @@ export default function AboutPage() {
                 <strong>
                   Je ne te donnerai jamais de conseil personnalisé.
                 </strong>{" "}
-                Je ne suis ni CGP, ni CIF. Pour ça, il y a des professionnels
-                agréés AMF.
+                Je ne suis ni CGP, ni CIF. Pour ça, il y a des conseillers en
+                investissements financiers, immatriculés à l&apos;ORIAS.
               </span>
             </li>
             <li className="flex gap-3 text-sm text-gray-700 leading-relaxed">
@@ -516,8 +516,9 @@ export default function AboutPage() {
             et informatif. Il ne constitue pas un conseil en investissement
             financier personnalisé. Les performances passées ne préjugent pas des
             performances futures. Investir comporte un risque de perte en
-            capital. Consultez un conseiller en gestion de patrimoine (CGP) ou un
-            CIF agréé AMF avant toute décision d&apos;investissement.
+            capital. Consultez un conseiller en gestion de patrimoine (CGP) ayant
+            le statut de conseiller en investissements financiers (CIF),
+            immatriculé à l&apos;ORIAS, avant toute décision d&apos;investissement.
           </p>
         </div>
       </div>

@@ -23,8 +23,10 @@ export type IndexTracker = {
   isin?: string;
   ter: string;
   replication: "Synthétique" | "Physique";
-  /** Enveloppe principale. */
-  envelope: "PEA + CTO" | "CTO / AV";
+  /** Enveloppe principale. « Non commercialisé (EEE) » : ETF américain sans
+   *  DIC PRIIPs, qu'un particulier de l'EEE ne peut plus acheter depuis le
+   *  01/01/2018 (AMF) — l'afficher « CTO / AV » laissait croire le contraire. */
+  envelope: "PEA + CTO" | "CTO / AV" | "Non commercialisé (EEE)";
   pea: boolean;
   note: string;
   /** Met en avant la ligne (le choix recommandé pour la majorité). */
@@ -51,7 +53,8 @@ export type IndexGuide = {
   keyPoints: string[];
   faq: { q: string; a: string }[];
   related: { label: string; href: string }[];
-  sources: { label: string; url: string; publisher?: string }[];
+  /** `note` : précision affichée sous la source (date de consultation…). */
+  sources: { label: string; url: string; publisher?: string; note?: string }[];
   /**
    * Pré-remplissage du simulateur depuis le CTA de la page.
    * - feesPct : factuel (TER du tracker PEA de référence)
@@ -88,11 +91,18 @@ const MSCI_WORLD: IndexGuide = {
     // CW8) — et rien ne prouve qu'il n'y en a pas d'autres.
     "Le MSCI World est l'indice le plus utilisé pour un DCA en ETF : ~1 300 entreprises des 23 pays développés, en un seul fonds. Plusieurs ETF le répliquent en PEA — avec des frais qui font une vraie différence sur le long terme. Voici comment trancher.",
   whatItIs: [
-    "Le MSCI World suit environ 1 500 grandes et moyennes entreprises réparties sur 23 pays développés (États-Unis, Japon, Royaume-Uni, France, Allemagne, Suisse, Canada…). Acheter un ETF MSCI World, c'est s'exposer en un seul ordre à l'économie mondiale développée.",
+    // 29/09/2026 : « environ 1 500 » entreprises contredisait le sous-titre
+    // (~1 300). Fiche MSCI au 31/08/2026 : 1 280 constituants, 23 pays
+    // développés (fait msci-world-composition).
+    "Le MSCI World suit environ 1 300 grandes et moyennes entreprises (1 280 au 31 août 2026, selon la fiche de l'indice) réparties sur 23 pays développés (États-Unis, Japon, Royaume-Uni, France, Allemagne, Suisse, Canada…). Acheter un ETF MSCI World, c'est s'exposer en un seul ordre à l'économie mondiale développée.",
     // 28/09/2026 : ajout de GPEA (table de vérité : FR0014017NX3, MSCI ACWI,
     // 0,30 %, fonds créé le 06/07/2026). Le texte laissait croire qu'en PEA,
     // les émergents ne s'ajoutaient qu'avec une deuxième ligne.
-    "Attention à une idée reçue : le MSCI World est composé à environ 70 % d'actions américaines. Ce n'est donc pas un « anti-S&P 500 » — c'est un S&P 500 élargi au reste du monde développé. Il n'inclut PAS les marchés émergents (Chine, Inde, Brésil). Pour les couvrir aussi : un FTSE All-World (VWCE, hors PEA), un ETF émergents en complément (PAEEM en PEA — pas AEEM, qui n'y est pas éligible), ou, toujours en PEA, GPEA (Amundi PEA Global), qui suit un autre indice — le MSCI ACWI, monde entier émergents inclus — pour 0,30 % de frais. Fonds créé en juillet 2026 : il n'a donc presque aucun historique.",
+    // 29/09/2026 : « environ 70 % » → 72,14 % au 31/08/2026 (fiche MSCI, fait
+    // msci-world-poids-pays). « Un S&P 500 élargi » retiré : la poche
+    // américaine du MSCI World n'est pas le S&P 500 (autre indice, autres
+    // règles de sélection).
+    "Attention à une idée reçue : le MSCI World est composé à environ 72 % d'actions américaines (72,14 % au 31 août 2026, selon la fiche de l'indice). Ce n'est donc pas un « anti-S&P 500 » : les grandes sociétés américaines y dominent, complétées par celles du reste du monde développé. Il n'inclut PAS les marchés émergents (Chine, Inde, Brésil). Pour les couvrir aussi : un FTSE All-World (VWCE, hors PEA), un ETF émergents en complément (PAEEM en PEA — pas AEEM, qui n'y est pas éligible), ou, toujours en PEA, GPEA (Amundi PEA Global), qui suit un autre indice — le MSCI ACWI, monde entier émergents inclus — pour 0,30 % de frais. Fonds créé en juillet 2026 : il n'a donc presque aucun historique.",
   ],
   trackers: [
     {
@@ -124,7 +134,10 @@ const MSCI_WORLD: IndexGuide = {
       replication: "Synthétique",
       envelope: "PEA + CTO",
       pea: true,
-      note: "Lancé en mars 2024 et coté à Paris depuis avril 2024 : même indice que le CW8 pour des frais presque deux fois plus bas (0,20 % contre 0,38 %). Encours d'environ 2,1 milliards d'euros fin août 2026, part sous 10 €.",
+      // 29/09/2026 : encours chiffré (≈ 2,1 Md€) retiré — la table et justETF
+      // divergent (part ou fonds ?, fait encours-a-trancher). Les deux
+      // s'accordent sur le classement WPEA > DCAM, qui reste.
+      note: "Lancé en mars 2024 et coté à Paris depuis avril 2024 : même indice que le CW8 pour des frais presque deux fois plus bas (0,20 % contre 0,38 %). Encours plus important que celui de DCAM, part sous 10 €.",
       recommended: true,
     },
     {
@@ -139,7 +152,8 @@ const MSCI_WORLD: IndexGuide = {
       replication: "Synthétique",
       envelope: "PEA + CTO",
       pea: true,
-      note: "Lancé par Amundi en mars 2025, au même TER que WPEA (0,20 %). Encours d'environ 1,4 milliard d'euros fin août 2026, part sous 10 € : pratique pour un DCA mensuel de petits montants.",
+      // 29/09/2026 : encours chiffré (≈ 1,4 Md€) retiré, même raison que WPEA.
+      note: "Lancé par Amundi en mars 2025, au même TER que WPEA (0,20 %), avec un encours plus petit. Part sous 10 € : pratique pour un DCA mensuel de petits montants.",
     },
     {
       ticker: "IWDA",
@@ -165,7 +179,9 @@ const MSCI_WORLD: IndexGuide = {
       replication: "Physique",
       envelope: "CTO / AV",
       pea: false,
-      note: "Va plus loin que le MSCI World : il inclut AUSSI les marchés émergents (~3 700 sociétés). Non éligible PEA. En PEA, l'équivalent « monde entier » est GPEA (MSCI ACWI, 0,30 %), beaucoup plus récent.",
+      // 29/09/2026 : « ~3 700 sociétés » → justETF compte 3 759 positions au
+      // 31/08/2026 (fait non-pea-monde) : « plus de 3 700 » est exact.
+      note: "Va plus loin que le MSCI World : il inclut AUSSI les marchés émergents (plus de 3 700 positions au 31 août 2026). Non éligible PEA. En PEA, l'équivalent « monde entier » est GPEA (MSCI ACWI, 0,30 %), beaucoup plus récent.",
     },
   ],
   verdict: [
@@ -190,8 +206,15 @@ const MSCI_WORLD: IndexGuide = {
     },
   ],
   keyPoints: [
-    "Même indice = même performance brute. Sur le long terme, c'est le TER qui creuse l'écart, pas le nom de l'émetteur.",
-    "Les ETF MSCI World éligibles PEA de ce guide (CW8, WPEA, DCAM) sont en réplication synthétique (swap) — c'est ce qui permet l'éligibilité PEA. Le risque de contrepartie est encadré à 10 % par la réglementation UCITS.",
+    // 29/09/2026 : « c'est le TER qui creuse l'écart » laissait croire que
+    // l'écart de TER se retrouve tel quel dans la performance. Le TER exclut
+    // notamment les frais de swap : c'est l'écart de suivi qui mesure l'écart
+    // réel (fait ter-definition).
+    "Même indice = même performance avant frais. Ce qui sépare ensuite deux ETF, c'est leur écart de suivi (tracking difference) : le TER en est la part la plus visible, mais pas la seule — les frais de swap, par exemple, n'y figurent pas.",
+    // 29/09/2026 : « encadré à 10 % » était incomplet — 10 % par contrepartie
+    // quand c'est un établissement de crédit, 5 % sinon (CMF art. R214-21,
+    // fait ucits-contrepartie-10pc). Source ajoutée ci-dessous.
+    "Les ETF MSCI World éligibles PEA de ce guide (CW8, WPEA, DCAM) sont en réplication synthétique (swap) — c'est ce qui permet l'éligibilité PEA. Le risque de contrepartie est plafonné par la réglementation : un fonds ne peut pas être exposé à plus de 10 % de son actif sur une même banque contrepartie (5 % pour une contrepartie qui n'est pas un établissement de crédit).",
     "Un seul ETF MSCI World suffit pour démarrer. Inutile de cumuler CW8 + WPEA : c'est le même indice.",
   ],
   faq: [
@@ -219,7 +242,10 @@ const MSCI_WORLD: IndexGuide = {
     },
     {
       q: "Pourquoi IWDA n'est-il pas éligible PEA ?",
-      a: "IWDA est un ETF à réplication physique : il détient réellement les actions américaines et internationales, ce qui le rend incompatible avec les règles du PEA, qui exigent de détenir au moins 75 % d'actions européennes. Les ETF MSCI World éligibles y parviennent en détenant un panier européen dont ils échangent la performance contre celle de l'indice (swap). IWDA se loge en compte-titres ou assurance-vie ; en PEA, le même indice passe par WPEA, DCAM ou CW8.",
+      // 29/09/2026 : « au moins 75 % d'actions européennes » → la règle est
+      // « plus de 75 % » en actions de sociétés de l'UE ou de l'EEE (CMF art.
+      // L221-31, fait pea-regle-75) : le Royaume-Uni et la Suisse n'en sont pas.
+      a: "IWDA est un ETF à réplication physique : il détient réellement les actions américaines et internationales, ce qui le rend incompatible avec les règles du PEA. Pour y être éligible, un fonds doit investir plus de 75 % de son actif en actions de sociétés ayant leur siège dans l'Union européenne ou l'Espace économique européen — le Royaume-Uni et la Suisse, pourtant européens, n'en font pas partie. Les ETF MSCI World éligibles y parviennent en détenant un panier d'actions de ces pays dont ils échangent la performance contre celle de l'indice (swap). IWDA se loge en compte-titres ou assurance-vie ; en PEA, le même indice passe par WPEA, DCAM ou CW8.",
     },
   ],
   related: [
@@ -233,8 +259,16 @@ const MSCI_WORLD: IndexGuide = {
     // 28/09/2026 : libellés alignés sur les noms exacts (la source iShares
     // portait le nom d'IWDA alors qu'elle renvoyait à WPEA).
     { label: "Amundi MSCI World Swap UCITS ETF (CW8) et Amundi PEA Monde (DCAM) — fiches officielles", url: "https://www.amundietf.fr/fr/particuliers", publisher: "Amundi ETF" },
-    { label: "iShares MSCI World Swap PEA UCITS ETF (WPEA) — fiche officielle", url: "https://www.ishares.com/fr/individual/fr", publisher: "BlackRock — iShares" },
+    // 29/09/2026 : ishares.com/fr/individual/fr redirigeait vers une 404
+    // (blackrock.com/fr/particuliers/fr). Remplacé par la fiche produit de
+    // WPEA, vérifiée (ISIN IE0002XZSHO1, TER 0,20 %).
+    { label: "iShares MSCI World Swap PEA UCITS ETF (WPEA) — fiche officielle", url: "https://www.blackrock.com/fr/particuliers/products/335178/ishares-msci-world-swap-pea-ucits-etf", publisher: "BlackRock — iShares", note: "Consultée le 28/09/2026." },
     { label: "MSCI World Index — méthodologie", url: "https://www.msci.com/indexes/index/990100", publisher: "MSCI Inc." },
+    // 29/09/2026 : sources des chiffres de composition (1 280 sociétés,
+    // 72,14 % d'États-Unis), de la règle des 75 % et du plafond de contrepartie.
+    { label: "MSCI World Index — fiche de l'indice (données au 31/08/2026)", url: "https://www.msci.com/documents/10199/255599/msci-world-index.pdf", publisher: "MSCI Inc.", note: "Nombre de sociétés et poids des pays. Consultée le 28/09/2026." },
+    { label: "Code monétaire et financier, art. L221-31 — titres éligibles au PEA", url: "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000051218125", publisher: "Légifrance", note: "Plus de 75 % de l'actif en actions de sociétés de l'UE ou de l'EEE. Consulté le 28/09/2026." },
+    { label: "Code monétaire et financier, art. R214-21 — risque de contrepartie d'un OPCVM", url: "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000027797309", publisher: "Légifrance", note: "10 % de l'actif par contrepartie établissement de crédit, 5 % dans les autres cas. Consulté le 28/09/2026." },
     { label: "Plan d'Épargne en Actions — éligibilité", url: "https://www.service-public.fr/particuliers/vosdroits/F2385", publisher: "service-public.fr" },
   ],
   publishedAt: "2026-06-02",
@@ -287,7 +321,10 @@ const SP500: IndexGuide = {
       replication: "Synthétique",
       envelope: "PEA + CTO",
       pea: true,
-      note: "Le S&P 500 éligible PEA le moins cher de notre sélection (0,10 %). Suit le S&P 500 classique, par swap. Fonds récent : lancé le 29 mai 2025.",
+      // 29/09/2026 : la petite taille du fonds était signalée sur /guide-5-…
+      // et /meilleurs-etf-debutants, pas ici, où SPEA porte le badge. Aucun
+      // montant d'encours : les sources divergent (encours-a-trancher).
+      note: "Le S&P 500 éligible PEA le moins cher de notre sélection (0,10 %). Suit le S&P 500 classique, par swap. Fonds récent (lancé le 29 mai 2025) et encore petit : d'après justETF, son encours est très inférieur à celui de PSP5 au 31/08/2026, et un petit fonds est plus exposé au risque de fermeture.",
       recommended: true,
     },
     {
@@ -331,7 +368,10 @@ const SP500: IndexGuide = {
       replication: "Synthétique",
       envelope: "PEA + CTO",
       pea: true,
-      note: "Ne suit PAS le S&P 500 classique mais le S&P 500 Screened (filtre ESG) — anciennement « Amundi PEA S&P 500 ESG ». Plus cher (0,25 %) : son seul argument est le filtre.",
+      // 29/09/2026 : « le S&P 500 Screened » donné comme nom d'indice retiré —
+      // la table dit « S&P 500 Screened », justETF « S&P 500 Scored &
+      // Screened+ » (fait etf-pea-pe500) : non tranché, à lire dans le DIC.
+      note: "Ne suit PAS le S&P 500 classique mais une version filtrée sur des critères ESG — anciennement « Amundi PEA S&P 500 ESG ». Le nom exact de son indice figure dans son DIC. Plus cher (0,25 %) : son seul argument est le filtre.",
     },
     {
       ticker: "CSPX",
@@ -369,7 +409,7 @@ const SP500: IndexGuide = {
     },
     {
       label: "Attention au nom commercial",
-      text: "PE500 ne suit pas le S&P 500 mais le S&P 500 Screened, une version filtrée (ESG), pour 0,25 % de frais. Et PSP5 et PE500 sont deux fonds distincts, avec deux ISIN distincts : vérifiez l'ISIN avant de passer l'ordre.",
+      text: "PE500 ne suit pas le S&P 500 mais une version filtrée sur des critères ESG, pour 0,25 % de frais. Et PSP5 et PE500 sont deux fonds distincts, avec deux ISIN distincts : vérifiez l'ISIN avant de passer l'ordre.",
     },
     {
       label: "Hors PEA (compte-titres)",
@@ -377,7 +417,10 @@ const SP500: IndexGuide = {
     },
   ],
   keyPoints: [
-    "Le S&P 500 est déjà inclus à ~70 % dans un MSCI World. Choisir le S&P 500 pur, c'est parier sur la poursuite de la domination américaine.",
+    // 29/09/2026 : « le S&P 500 est déjà inclus à ~70 % dans un MSCI World »
+    // confondait la poche américaine du MSCI World avec le S&P 500. Fiche
+    // MSCI au 31/08/2026 : États-Unis 72,14 % (fait msci-world-poids-pays).
+    "Un MSCI World contient déjà environ 72 % d'actions américaines (72,14 % au 31 août 2026). Choisir le S&P 500 pur, c'est parier sur la poursuite de la domination américaine.",
     "En PEA, un ETF S&P 500 passe par la réplication synthétique (swap) : les actions américaines ne sont pas éligibles en direct. Le risque de contrepartie est encadré par la réglementation UCITS.",
     "Concentration sur un seul pays = volatilité un peu plus élevée qu'un indice mondial. À assumer en connaissance de cause.",
   ],
@@ -386,7 +429,7 @@ const SP500: IndexGuide = {
       q: "Quel est le meilleur ETF S&P 500 pour un PEA ?",
       // 28/09/2026 : désignait ESE (« très liquide, disponible partout ») et
       // PSP5 comme « le TER absolu le plus bas » — faux depuis SPEA (0,10 %).
-      a: "Sur les frais, SPEA (iShares, 0,10 %) est le moins cher de notre sélection, devant PSP5 (Amundi, 0,12 %) et ESE (BNP Paribas, 0,14 %). Les trois suivent le S&P 500 classique ; SPEA est aussi le plus récent (lancé en mai 2025). PE500 (0,25 %) suit une version filtrée ESG, le S&P 500 Screened. Entre les trois premiers, l'écart de frais est faible.",
+      a: "Sur les frais, SPEA (iShares, 0,10 %) est le moins cher de notre sélection, devant PSP5 (Amundi, 0,12 %) et ESE (BNP Paribas, 0,14 %). Les trois suivent le S&P 500 classique ; SPEA est aussi le plus récent (lancé en mai 2025) et encore petit, donc plus exposé au risque de fermeture qu'un fonds installé comme PSP5. PE500 (0,25 %) suit une version du S&P 500 filtrée sur des critères ESG. Entre les trois premiers, l'écart de frais est faible.",
     },
     {
       q: "Peut-on vraiment mettre un S&P 500 dans un PEA ?",
@@ -398,7 +441,7 @@ const SP500: IndexGuide = {
     },
     {
       q: "S&P 500 ou MSCI World pour débuter ?",
-      a: "Le MSCI World est plus diversifié (23 pays, dont déjà ~70 % de S&P 500). Le S&P 500 est plus concentré sur les US mais a historiquement mieux performé sur la dernière décennie. Pour un débutant qui veut la simplicité maximale, le MSCI World est souvent recommandé ; le S&P 500 est un pari assumé sur les États-Unis.",
+      a: "Le MSCI World est plus diversifié (23 pays développés, dont environ 72 % d'actions américaines au 31 août 2026). Le S&P 500 est plus concentré sur les US mais a historiquement mieux performé sur la dernière décennie. Pour un débutant qui veut la simplicité maximale, le MSCI World est souvent recommandé ; le S&P 500 est un pari assumé sur les États-Unis.",
     },
   ],
   related: [
@@ -411,8 +454,13 @@ const SP500: IndexGuide = {
   sources: [
     { label: "BNP Paribas Easy S&P 500 — fiche", url: "https://www.bnpparibas-am.fr/particulier/", publisher: "BNP Paribas AM" },
     { label: "Amundi PEA S&P 500 et PEA S&P 500 Screened — fiches", url: "https://www.amundietf.fr/fr/particuliers", publisher: "Amundi ETF" },
-    { label: "iShares S&P 500 Swap PEA UCITS ETF (SPEA) — fiche", url: "https://www.ishares.com/fr/individual/fr", publisher: "BlackRock — iShares" },
+    // 29/09/2026 : lien iShares mort (redirection vers une 404) remplacé par la
+    // fiche produit de SPEA, vérifiée (ISIN IE000DQLYVB9, TER 0,10 %).
+    { label: "iShares S&P 500 Swap PEA UCITS ETF (SPEA) — fiche", url: "https://www.blackrock.com/fr/particuliers/products/342916/ishares-s-p-500-swap-pea-ucits-etf", publisher: "BlackRock — iShares", note: "Consultée le 28/09/2026." },
+    { label: "iShares S&P 500 Swap PEA UCITS ETF EUR (Acc) — fiche justETF (IE000DQLYVB9)", url: "https://www.justetf.com/fr/etf-profile.html?isin=IE000DQLYVB9", publisher: "justETF", note: "Date de lancement et taille du fonds. Consultée le 28/09/2026." },
     { label: "S&P 500 — méthodologie de l'indice", url: "https://www.spglobal.com/spdji/fr/indices/equity/sp-500/", publisher: "S&P Dow Jones Indices" },
+    { label: "MSCI World Index — fiche de l'indice (données au 31/08/2026)", url: "https://www.msci.com/documents/10199/255599/msci-world-index.pdf", publisher: "MSCI Inc.", note: "Poids des États-Unis dans le MSCI World. Consultée le 28/09/2026." },
+    { label: "Code monétaire et financier, art. R214-21 — risque de contrepartie d'un OPCVM", url: "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000027797309", publisher: "Légifrance", note: "Plafond du risque de contrepartie d'un ETF synthétique : 10 % de l'actif par établissement de crédit, 5 % sinon. Consulté le 28/09/2026." },
     { label: "Plan d'Épargne en Actions — éligibilité", url: "https://www.service-public.fr/particuliers/vosdroits/F2385", publisher: "service-public.fr" },
   ],
   publishedAt: "2026-06-02",
@@ -443,8 +491,13 @@ const NASDAQ: IndexGuide = {
   eyebrow: "Guide ETF · indice tech",
   // 28/09/2026 : « l'accès passe presque exclusivement par Amundi » retiré —
   // d'autres Nasdaq-100 éligibles PEA existent (la table cite PNAS).
+  // 29/09/2026 : « les 100 plus grandes valeurs technologiques américaines »
+  // était faux deux fois — l'indice prend les 100 plus grandes sociétés NON
+  // FINANCIÈRES cotées au Nasdaq, tous secteurs confondus, et laisse de côté
+  // les grandes tech cotées au NYSE. Aligné sur la définition du paragraphe
+  // suivant.
   subtitle:
-    "Le Nasdaq 100 regroupe les 100 plus grandes valeurs technologiques américaines. Plus concentré et plus volatil que le S&P 500. En PEA, on y accède par des ETF synthétiques (swap). Voici le guide.",
+    "Le Nasdaq 100 regroupe les 100 plus grandes sociétés non financières cotées au Nasdaq, tous secteurs confondus — la technologie y pèse lourd. Plus concentré et plus volatil que le S&P 500. En PEA, on y accède par des ETF synthétiques (swap). Voici le guide.",
   whatItIs: [
     "Le Nasdaq 100 réunit les 100 plus grandes entreprises non-financières cotées au Nasdaq, très majoritairement technologiques (Apple, Microsoft, Nvidia, Amazon, Meta, Alphabet, Tesla…). C'est l'indice de la « tech » américaine.",
     "Conséquence : un potentiel de performance supérieur sur les phases de croissance tech, mais une volatilité nettement plus forte que le S&P 500 ou le MSCI World, et une concentration sectorielle extrême. À réserver à une part de votre portefeuille, pas à la totalité.",
@@ -463,7 +516,9 @@ const NASDAQ: IndexGuide = {
       replication: "Synthétique",
       envelope: "PEA + CTO",
       pea: true,
-      note: "Le Nasdaq-100 classique d'Amundi en PEA, par swap. Encours d'environ 1,2 milliard d'euros fin août 2026. D'autres lignes Nasdaq-100 éligibles PEA existent (PNAS par exemple) : nous ne les détaillons pas tant que leurs données ne sont pas vérifiées.",
+      // 29/09/2026 : encours chiffré (≈ 1,2 Md€) retiré — table 1,17 Md€,
+      // justETF 1 255 M€ (fait encours-a-trancher) : écart non tranché.
+      note: "Le Nasdaq-100 classique d'Amundi en PEA, par swap. D'autres lignes Nasdaq-100 éligibles PEA existent (PNAS par exemple) : nous ne les détaillons pas tant que leurs données ne sont pas vérifiées.",
       recommended: true,
     },
     // 28/09/2026 : PNAS et PANX RETIRÉS du tableau. Leurs lignes affirmaient
@@ -489,14 +544,19 @@ const NASDAQ: IndexGuide = {
       ticker: "QQQ",
       // 28/09/2026 : TER 0,20 % → 0,18 % (baisse du 22/12/2025, d'après la
       // table) ; nom exact et ISIN ajoutés.
+      // 29/09/2026 : « difficilement accessible… réservé aux profils avancés
+      // en CTO » était faux — sans DIC PRIIPs, il ne peut plus être
+      // commercialisé auprès d'un particulier de l'EEE depuis le 01/01/2018,
+      // quel que soit son niveau (AMF, fait non-pea-us-sans-dic). etf-config.ts
+      // le disait déjà : les deux textes se contredisaient.
       name: "Invesco QQQ Trust, Series 1",
       issuer: "Invesco",
       isin: "US46090E1038",
       ter: "0,18 %",
       replication: "Physique",
-      envelope: "CTO / AV",
+      envelope: "Non commercialisé (EEE)",
       pea: false,
-      note: "L'ETF Nasdaq-100 le plus connu au monde, mais coté aux États-Unis : difficilement accessible aux particuliers européens (réglementation PRIIPs). Réservé aux profils avancés en CTO.",
+      note: "L'ETF Nasdaq-100 le plus connu au monde, mais domicilié aux États-Unis et sans document d'informations clés (DIC) européen : depuis le 1er janvier 2018, il ne peut plus être commercialisé auprès des particuliers de l'Espace économique européen, et un courtier européen en refuse en principe l'achat à un client non professionnel. Non éligible PEA. En compte-titres, l'équivalent accessible est CNDX.",
     },
   ],
   verdict: [
@@ -504,17 +564,17 @@ const NASDAQ: IndexGuide = {
       // 28/09/2026 : « essentiellement le seul choix sérieux » retiré, ainsi
       // que la part « fractionnée » PNAS à ~5 € (non vérifiée).
       label: "Pour un PEA",
-      text: "PUST (Amundi, 0,30 %) réplique le Nasdaq-100 classique et c'est la ligne de ce guide dont nous avons vérifié l'ISIN, le TER et l'encours. D'autres Nasdaq-100 éligibles PEA existent : comparez leur TER et leur indice exact avant de choisir.",
+      text: "PUST (Amundi, 0,30 %) réplique le Nasdaq-100 classique et c'est la ligne de ce guide dont nous avons vérifié l'ISIN, le TER et l'éligibilité au PEA. D'autres Nasdaq-100 éligibles PEA existent : comparez leur TER et leur indice exact avant de choisir.",
     },
     {
       // 28/09/2026 : l'exemple PANX (non vérifié) est remplacé par un cas de
       // la table, PE500, qui suit le S&P 500 Screened et non le S&P 500.
       label: "Attention au nom commercial",
-      text: "Le nom commercial ne suffit pas : un ETF peut suivre une version filtrée de l'indice qu'il évoque. C'est le cas côté S&P 500, où PE500 suit le S&P 500 Screened. Vérifiez le nom exact de l'indice dans le document d'information clé (DIC).",
+      text: "Le nom commercial ne suffit pas : un ETF peut suivre une version filtrée de l'indice qu'il évoque. C'est le cas côté S&P 500, où PE500 suit une version du S&P 500 filtrée sur des critères ESG. Vérifiez le nom exact de l'indice dans le document d'information clé (DIC).",
     },
     {
       label: "Hors PEA (compte-titres)",
-      text: "CNDX (iShares, physique, 0,30 %). Le QQQ américain (0,18 %) est plus connu mais difficilement accessible aux particuliers européens — en CTO, CNDX est la voie simple.",
+      text: "CNDX (iShares, physique, 0,30 %). Le QQQ américain (0,18 %) est plus connu, mais faute de DIC européen, il ne peut pas être commercialisé auprès des particuliers de l'Espace économique européen : en CTO, CNDX est la voie accessible.",
     },
   ],
   keyPoints: [
@@ -529,19 +589,23 @@ const NASDAQ: IndexGuide = {
       q: "Quel est le meilleur ETF Nasdaq 100 pour un PEA ?",
       // 28/09/2026 : « quasiment le seul » et la part PNAS « même fonds, ~5 € »
       // retirés (faux pour le premier, non vérifié pour le second).
-      a: "PUST (Amundi PEA Nasdaq-100, TER 0,30 %, ISIN FR0011871110) réplique le Nasdaq-100 classique en PEA, avec un encours d'environ 1,2 milliard d'euros fin août 2026. Ce n'est pas la seule ligne Nasdaq-100 éligible PEA (PNAS en est une autre) : à indice identique, c'est le TER qui les départage.",
+      // 29/09/2026 : encours chiffré retiré (écart table / justETF non tranché).
+      a: "PUST (Amundi PEA Nasdaq-100, TER 0,30 %, ISIN FR0011871110) réplique le Nasdaq-100 classique en PEA. Ce n'est pas la seule ligne Nasdaq-100 éligible PEA (PNAS en est une autre) : à indice identique, c'est le TER qui les départage.",
     },
     {
       q: "Tous les ETF « Nasdaq » éligibles PEA suivent-ils le Nasdaq-100 ?",
-      a: "Pas forcément. Le nom commercial ne suffit pas : un ETF peut suivre une version filtrée de l'indice qu'il évoque. Côté S&P 500, par exemple, PE500 suit le S&P 500 Screened (filtre ESG), pas le S&P 500. PUST, lui, suit le Nasdaq-100 classique. Avant d'acheter, le nom exact de l'indice figure dans le document d'information clé (DIC).",
+      a: "Pas forcément. Le nom commercial ne suffit pas : un ETF peut suivre une version filtrée de l'indice qu'il évoque. Côté S&P 500, par exemple, PE500 suit une version du S&P 500 filtrée sur des critères ESG, pas le S&P 500 lui-même. PUST, lui, suit le Nasdaq-100 classique. Avant d'acheter, le nom exact de l'indice figure dans le document d'information clé (DIC).",
     },
     {
       q: "Le Nasdaq 100 est-il un bon choix pour débuter ?",
       a: "Comme unique support, non : il est très concentré sur la tech américaine et beaucoup plus volatil qu'un MSCI World ou un S&P 500. Il convient mieux en complément (satellite) d'un cœur de portefeuille diversifié, pour une part limitée (10-20 %).",
     },
     {
-      q: "Pourquoi le QQQ n'est-il pas facilement accessible en France ?",
-      a: "Le QQQ (Invesco) est coté aux États-Unis et n'a pas de document d'information clé (KID) conforme à la réglementation européenne PRIIPs. La plupart des courtiers européens ne le proposent donc pas aux particuliers. En CTO, l'équivalent accessible est le CNDX (iShares).",
+      // 29/09/2026 : « pas facilement accessible », « la plupart des courtiers
+      // européens ne le proposent donc pas » minimisaient une interdiction de
+      // commercialisation (AMF, fait non-pea-us-sans-dic).
+      q: "Pourquoi ne peut-on pas acheter le QQQ en France ?",
+      a: "Le QQQ (Invesco) est un ETF domicilié aux États-Unis qui ne publie pas le document d'informations clés (DIC) exigé par le règlement européen PRIIPs. Depuis le 1er janvier 2018, un tel produit ne peut plus être commercialisé auprès des particuliers de l'Espace économique européen : un courtier européen refuse en principe son achat à un client non professionnel, quel que soit son niveau d'expérience. Des parts achetées avant 2018 peuvent en revanche être revendues. En compte-titres, l'équivalent accessible est le CNDX (iShares) ; en PEA, PUST.",
     },
   ],
   related: [
@@ -552,8 +616,17 @@ const NASDAQ: IndexGuide = {
     { label: "Simuler mon DCA sur le Nasdaq", href: "/simulateur" },
   ],
   sources: [
-    { label: "Amundi PEA Nasdaq-100 UCITS ETF — fiche officielle", url: "https://www.amundietf.fr/fr/particuliers/products/equity/amundi-pea-nasdaq100-ucits-etf-acc/fr0011871110", publisher: "Amundi ETF" },
-    { label: "iShares Nasdaq 100 UCITS ETF — fiche", url: "https://www.ishares.com/fr/individual/fr", publisher: "BlackRock — iShares" },
+    // 29/09/2026 : la fiche Amundi (…/products/equity/…) renvoyait une 404 et
+    // la page produit actuelle d'amundietf.fr affiche un autre fonds aux
+    // robots : remplacée par le reporting mensuel officiel de PUST au
+    // 31/08/2026, version « non professionnels » (…/RETAIL/…) — la version
+    // …/INSTITUTIONNEL/… est « destinée exclusivement aux investisseurs
+    // professionnels ». Vérifiée : ISIN FR0011871110, données au 31/08/2026,
+    // « éligible au Plan d'Epargne en Actions ». Lien iShares mort remplacé
+    // par la fiche produit de CNDX (IE00B53SZB19).
+    { label: "Amundi PEA Nasdaq-100 UCITS ETF Acc — reporting mensuel au 31/08/2026", url: "https://www.amundietf.fr/pdfDocuments/monthly-factsheet/FR0011871110/FRA/FRA/RETAIL/ETF/20260831", publisher: "Amundi ETF", note: "Document officiel de l'émetteur (PDF). Consulté le 28/09/2026." },
+    { label: "iShares Nasdaq 100 UCITS ETF (CNDX) — fiche", url: "https://www.blackrock.com/fr/particuliers/products/253741/ishares-nasdaq-100-ucits-etf", publisher: "BlackRock — iShares", note: "Consultée le 28/09/2026." },
+    { label: "Application du règlement PRIIPs : quel sort pour les produits packagés américains ? (journal de bord du médiateur, 2023)", url: "https://www.amf-france.org/fr/actualites-publications/dossiers-thematiques/les-dossiers-du-moment/application-du-reglement-priips-quel-sort-pour-les-produits-packages-americains-souscrits-avant-son", publisher: "Autorité des marchés financiers (AMF)", note: "Pourquoi un ETF américain sans DIC, comme le QQQ, n'est plus commercialisé auprès des particuliers depuis 2018. Consulté le 28/09/2026." },
     { label: "Nasdaq-100 — composition de l'indice", url: "https://www.nasdaq.com/market-activity/quotes/nasdaq-ndx-index", publisher: "Nasdaq" },
     { label: "Plan d'Épargne en Actions — éligibilité", url: "https://www.service-public.fr/particuliers/vosdroits/F2385", publisher: "service-public.fr" },
   ],
