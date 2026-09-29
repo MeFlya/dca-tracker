@@ -104,8 +104,10 @@ export const clerkLocalization = {
       ...frFR.signIn?.start,
       title: "Connexion",
       titleCombined: "Connexion",
-      subtitle: "Retrouvez votre stratégie et votre suivi.",
-      subtitleCombined: "Retrouvez votre stratégie et votre suivi.",
+      // Vide : la page dit déjà « Connectez-vous pour retrouver votre
+      // stratégie et votre suivi » juste au-dessus.
+      subtitle: "",
+      subtitleCombined: "",
     },
     passwordCompromised: {
       ...frFR.signIn?.passwordCompromised,
