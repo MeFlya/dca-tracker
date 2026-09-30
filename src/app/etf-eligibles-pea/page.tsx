@@ -156,7 +156,7 @@ const PRESENTES_ELIGIBLES_ICI = ETF_NON_ELIGIBLES.filter((f) => f.presenteEligib
 
 const RAISON: Record<RaisonHorsPea, string> = {
   "swap-hors-pea":
-    "Réplication synthétique (swap), et pourtant non éligible\u00a0: le reporting mensuel d'Amundi du 31 août 2026 laisse vide sa ligne «\u00a0Enveloppe fiscale\u00a0», que ceux de CW8, PAEEM et PUST remplissent par «\u00a0Eligible au PEA\u00a0».",
+    "Réplication synthétique (swap), et pourtant non éligible\u00a0: le reporting mensuel d'Amundi du 31 août 2026, dans sa version pour professionnels, indique «\u00a0Enveloppe fiscale\u00a0: -\u00a0», sans aucune mention du PEA, là où celui de CW8 affiche «\u00a0Enveloppe fiscale\u00a0: Eligible au PEA\u00a0». La page du fonds chez Amundi indique «\u00a0Eligibilité au PEA\u00a0: Non\u00a0».",
   physique:
     "Réplication physique\u00a0: le fonds détient lui-même les actions de son indice, et ce ne sont pas, à plus de 75\u00a0%, des actions de sociétés de l'Union européenne ou de l'Espace économique européen, comme l'exige le PEA.",
   // Ce qui l'exclut du PEA, c'est d'être un fonds américain (fait
@@ -503,9 +503,10 @@ export default function EtfEligiblesPeaPage() {
             <p>
               L&apos;inverse ne tient pas&nbsp;: être synthétique ne rend pas
               éligible. <Mnemoniques fonds={SWAP_HORS_PEA} /> utilisent un swap et
-              ne sont pas éligibles&nbsp;; leur reporting Amundi du 31 août 2026
-              laisse vide la ligne «&nbsp;Enveloppe fiscale&nbsp;», que celui de
-              CW8 remplit par «&nbsp;Eligible au PEA&nbsp;».
+              ne sont pas éligibles&nbsp;; leur reporting Amundi du 31 août 2026,
+              dans sa version pour professionnels, indique «&nbsp;Enveloppe
+              fiscale&nbsp;: -&nbsp;», sans aucune mention du PEA, là où celui de
+              CW8 affiche «&nbsp;Enveloppe fiscale&nbsp;: Eligible au PEA&nbsp;».
               {PAIRES_AMUNDI.length > 0 && (
                 <>
                   {" "}Pour{" "}
@@ -563,13 +564,19 @@ export default function EtfEligiblesPeaPage() {
             <>
               <strong className="text-gray-900">Lisez l&apos;éligibilité chez l&apos;émetteur</strong>,
               sur la page du fonds et dans son reporting mensuel, le point que
-              l&apos;émetteur publie chaque mois. Chez Amundi, c&apos;est la ligne
-              «&nbsp;Enveloppe fiscale&nbsp;» qui tranche&nbsp;: au 31 août 2026,
-              elle indiquait «&nbsp;Eligible au PEA&nbsp;» pour CW8, PAEEM et PUST,
-              et restait vide pour <Mnemoniques fonds={SWAP_HORS_PEA} />. La ligne
-              «&nbsp;Éligibilité&nbsp;» du même document ne prouve rien&nbsp;: elle
-              affiche «&nbsp;Compte-titres, Assurance-vie&nbsp;» pour tous ces
-              fonds, éligibles au PEA compris.
+              l&apos;émetteur publie chaque mois. Chez Amundi, la page du fonds
+              l&apos;affiche en clair&nbsp;: «&nbsp;Eligibilité au PEA&nbsp;:
+              Oui&nbsp;» pour CW8 et PAEEM, «&nbsp;Non&nbsp;» pour{" "}
+              <Mnemoniques fonds={SWAP_HORS_PEA} /> (pages consultées le 30
+              septembre 2026). Dans le reporting, c&apos;est la ligne
+              «&nbsp;Enveloppe fiscale&nbsp;» qui tranche, et elle ne figure que
+              dans la version pour professionnels, pas dans celle pour
+              particuliers&nbsp;: au 31 août 2026, elle indiquait «&nbsp;Eligible
+              au PEA&nbsp;» pour CW8 et PAEEM, et «&nbsp;-&nbsp;» pour les fonds
+              non éligibles, dont le document ne mentionne le PEA nulle part. La
+              ligne «&nbsp;Éligibilité&nbsp;» ne prouve rien&nbsp;: elle affiche
+              «&nbsp;Compte-titres, Assurance-vie&nbsp;» aussi bien pour CW8 et
+              PAEEM, éligibles au PEA, que pour les fonds qui ne le sont pas.
             </>,
             <>
               <strong className="text-gray-900">Recoupez avec une source indépendante de l&apos;émetteur</strong>&nbsp;:
@@ -642,11 +649,12 @@ export default function EtfEligiblesPeaPage() {
       </section>
 
       {/* ── Sources ──────────────────────────────────────────────────────── */}
-      {/* Textes officiels et fiche justETF de chaque fonds éligible (faits
+      {/* Textes officiels, documents Amundi (fait swap-non-eligible, 30/09/2026)
+          et fiche justETF de chaque fonds éligible (faits
           etf-pea-*, consultés le 28/09/2026). L'adresse justETF se construit
           sur l'ISIN : c'est celle que citent les faits, pour les treize. */}
       <SourcesReferences
-        intro={`Chaque fonds a été vérifié le ${DATE_VERIF} sur les documents de son émetteur, puis recoupé sur justETF, Boursorama et Euronext. Ci-dessous, les textes officiels cités et la fiche justETF de chaque fonds éligible.`}
+        intro={`Chaque fonds a été vérifié le ${DATE_VERIF} sur les documents de son émetteur, puis recoupé sur justETF, Boursorama et Euronext. Ci-dessous, les textes officiels cités, les documents d'Amundi qui tranchent l'éligibilité de 500, ANX et AEEM, et la fiche justETF de chaque fonds éligible.`}
         sources={[
           {
             label: "Code monétaire et financier — article L221-31",
@@ -691,6 +699,70 @@ export default function EtfEligiblesPeaPage() {
             url: "https://www.amundietf.fr/fr/particuliers/produits/equity/amundi-pea-nasdaq100-ucits-etf-acc/fr0011871110",
             publisher: "Amundi ETF",
             note: "Consultée le 30 septembre 2026.",
+          },
+          // 30/09/2026 : les documents d'Amundi qui établissent l'éligibilité
+          // (fait swap-non-eligible). Reportings : la version pour
+          // professionnels, datée, seule à porter la ligne « Enveloppe
+          // fiscale » ; celle pour particuliers ne l'a pas.
+          {
+            label: "Amundi S&P 500 Swap UCITS ETF EUR Acc (500) — reporting mensuel au 31 août 2026, version pour professionnels",
+            url: "https://www.amundietf.fr/pdfDocuments/monthly-factsheet/LU1681048804/FRA/FRA/INSTITUTIONNEL/ETF/20260831",
+            publisher: "Amundi ETF",
+            note: "«\u00a0Enveloppe fiscale\u00a0: -\u00a0», aucune mention du PEA dans le document. Consulté le 30 septembre 2026.",
+          },
+          {
+            label: "Amundi Nasdaq-100 Swap UCITS ETF EUR Acc (ANX) — reporting mensuel au 31 août 2026, version pour professionnels",
+            url: "https://www.amundietf.fr/pdfDocuments/monthly-factsheet/LU1681038243/FRA/FRA/INSTITUTIONNEL/ETF/20260831",
+            publisher: "Amundi ETF",
+            note: "«\u00a0Enveloppe fiscale\u00a0: -\u00a0», aucune mention du PEA dans le document. Consulté le 30 septembre 2026.",
+          },
+          {
+            label: "Amundi MSCI Emerging Markets Swap UCITS ETF EUR Acc (AEEM) — reporting mensuel au 31 août 2026, version pour professionnels",
+            url: "https://www.amundietf.fr/pdfDocuments/monthly-factsheet/LU1681045370/FRA/FRA/INSTITUTIONNEL/ETF/20260831",
+            publisher: "Amundi ETF",
+            note: "«\u00a0Enveloppe fiscale\u00a0: -\u00a0», aucune mention du PEA dans le document. Consulté le 30 septembre 2026.",
+          },
+          {
+            label: "Amundi MSCI World Swap UCITS ETF EUR Acc (CW8) — reporting mensuel au 31 août 2026, version pour professionnels",
+            url: "https://www.amundietf.fr/pdfDocuments/monthly-factsheet/LU1681043599/FRA/FRA/INSTITUTIONNEL/ETF/20260831",
+            publisher: "Amundi ETF",
+            note: "«\u00a0Enveloppe fiscale\u00a0: Eligible au PEA\u00a0». La ligne «\u00a0Éligibilité\u00a0» y indique pourtant «\u00a0Compte-titres, Assurance-vie\u00a0», comme pour 500, ANX et AEEM. Consulté le 30 septembre 2026.",
+          },
+          {
+            label: "Amundi PEA Emergent (MSCI Emerging) ESG Transition UCITS ETF Acc (PAEEM) — reporting mensuel au 31 août 2026, version pour professionnels",
+            url: "https://www.amundietf.fr/pdfDocuments/monthly-factsheet/FR0013412020/FRA/FRA/INSTITUTIONNEL/ETF/20260831",
+            publisher: "Amundi ETF",
+            note: "«\u00a0Enveloppe fiscale\u00a0: Eligible au PEA\u00a0». La ligne «\u00a0Éligibilité\u00a0» y indique pourtant «\u00a0Compte-titres, Assurance-vie\u00a0», comme pour 500, ANX et AEEM. Consulté le 30 septembre 2026.",
+          },
+          {
+            label: "Amundi S&P 500 Swap UCITS ETF EUR Acc (500) — page du fonds",
+            url: "https://www.amundietf.fr/fr/particuliers/produits/equity/amundi-sp-500-swap-ucits-etf-eur-acc/lu1681048804",
+            publisher: "Amundi ETF",
+            note: "«\u00a0Eligibilité au PEA\u00a0: Non\u00a0». Consultée le 30 septembre 2026.",
+          },
+          {
+            label: "Amundi Nasdaq-100 Swap UCITS ETF EUR Acc (ANX) — page du fonds",
+            url: "https://www.amundietf.fr/fr/particuliers/produits/equity/amundi-nasdaq100-swap-ucits-etf-eur-acc/lu1681038243",
+            publisher: "Amundi ETF",
+            note: "«\u00a0Eligibilité au PEA\u00a0: Non\u00a0». Consultée le 30 septembre 2026.",
+          },
+          {
+            label: "Amundi MSCI Emerging Markets Swap UCITS ETF EUR Acc (AEEM) — page du fonds",
+            url: "https://www.amundietf.fr/fr/particuliers/produits/equity/amundi-msci-emerging-markets-swap-ucits-etf-eur-acc/lu1681045370",
+            publisher: "Amundi ETF",
+            note: "«\u00a0Eligibilité au PEA\u00a0: Non\u00a0». Consultée le 30 septembre 2026.",
+          },
+          {
+            label: "Amundi MSCI World Swap UCITS ETF EUR Acc (CW8) — page du fonds",
+            url: "https://www.amundietf.fr/fr/particuliers/produits/equity/amundi-msci-world-swap-ucits-etf-eur-acc/lu1681043599",
+            publisher: "Amundi ETF",
+            note: "«\u00a0Eligibilité au PEA\u00a0: Oui\u00a0». Consultée le 30 septembre 2026.",
+          },
+          {
+            label: "Amundi PEA Emergent (MSCI Emerging) ESG Transition UCITS ETF Acc (PAEEM) — page du fonds",
+            url: "https://www.amundietf.fr/fr/particuliers/produits/equity/amundi-pea-emergent-msci-emerging-esg-transition-ucits-etf-acc/fr0013412020",
+            publisher: "Amundi ETF",
+            note: "«\u00a0Eligibilité au PEA\u00a0: Oui\u00a0». Consultée le 30 septembre 2026.",
           },
           ...ELIGIBLES_TRIES.map((f) => ({
               label: `justETF — ${f.displaySymbol} (${f.isin})`,

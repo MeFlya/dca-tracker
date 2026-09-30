@@ -258,8 +258,9 @@ const MSCI_WORLD: IndexGuide = {
     {
       q: "Le MSCI World inclut-il les marchés émergents ?",
       // 28/09/2026 : présentait AEEM comme « éligible PEA » — faux d'après le
-      // reporting Amundi du 31/08/2026 (compte-titres et assurance-vie
-      // seulement). L'ETF émergents éligible PEA de la table est PAEEM.
+      // reporting Amundi du 31/08/2026 (version pour professionnels :
+      // « Enveloppe fiscale : - »). L'ETF émergents éligible PEA de la table
+      // est PAEEM.
       a: "Non. Le MSCI World ne couvre que les 23 pays développés. Pour inclure la Chine, l'Inde, le Brésil, etc., trois voies : un ETF FTSE All-World (VWCE, non éligible PEA) ; en PEA, un ETF émergents en complément — PAEEM (Amundi PEA Emergent, 0,30 %), et non AEEM, qui n'est pas éligible PEA ; ou, toujours en PEA, GPEA (Amundi PEA Global, 0,30 %), qui suit le MSCI ACWI, monde entier émergents inclus. GPEA a été créé en juillet 2026 : très peu de recul.",
     },
     {

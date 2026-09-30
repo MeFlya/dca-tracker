@@ -52,7 +52,9 @@ export const metadata: Metadata = {
 // Ce qui était faux, d'après la table de vérité ETF du 28/09/2026 (documents
 // des émetteurs recoupés avec justETF, Boursorama et Euronext) :
 //   · « 500 — Amundi S&P 500 », présenté « ✓ PEA éligible » : il ne l'est pas
-//     (reporting Amundi du 31/08/2026 : « Compte-titres, Assurance-vie »).
+//     (reporting Amundi du 31/08/2026, version pour professionnels :
+//     « Enveloppe fiscale : - » ; page Amundi du fonds : « Eligibilité au
+//     PEA : Non »).
 //     Remplacé par SPEA, le S&P 500 éligible PEA le moins cher de la table.
 //   · « TER le plus bas de notre sélection (0,15 %) » : c'était le TER d'un
 //     ETF hors PEA. Dans la sélection actuelle, le plus bas est SPEA à 0,10 %.

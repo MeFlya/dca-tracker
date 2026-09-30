@@ -7,7 +7,8 @@
 // (émetteurs d'un côté, justETF / Boursorama / Euronext de l'autre). Il
 // présentait 500, ANX et AEEM comme éligibles au PEA — « seule solution »,
 // « unique ETF PEA-éligible » — alors que les reportings Amundi du 31/08/2026
-// les donnent « Compte-titres, Assurance-vie ». PCEU était décrit sur le mauvais
+// (version pour professionnels) donnent « Enveloppe fiscale : - » (voir la note
+// du 30/09/2026 en tête d'etf-config.ts). PCEU était décrit sur le mauvais
 // indice (STOXX Europe 600 au lieu du MSCI Europe). Les classements invérifiables
 // (« n°1 européen », « le moins cher d'Europe », « le plus grand émetteur ») ont
 // été retirés : on n'a vérifié que notre sélection, pas le marché entier.
@@ -218,13 +219,14 @@ Surtout, un particulier résidant dans l'Union européenne ne peut en principe p
   // Corrigé le 28/09/2026 : la fiche en faisait « la seule solution
   // PEA-éligible » et « le seul moyen d'investir sur le S&P 500 » dans un PEA.
   // Double faute d'après la table de vérité : ce fonds n'est PAS éligible PEA
-  // (reporting Amundi du 31/08/2026 : « Compte-titres, Assurance-vie »), et
-  // PSP5, SPEA et ESE le sont. L'ancien commentaire (contenu « hérité de SP5,
-  // même fonds simplement renommé ») n'est pas confirmé par la table ; retiré.
+  // (reporting Amundi du 31/08/2026, version pour professionnels : « Enveloppe
+  // fiscale : - »), et PSP5, SPEA et ESE le sont. L'ancien commentaire
+  // (contenu « hérité de SP5, même fonds simplement renommé ») n'est pas
+  // confirmé par la table ; retiré.
   "500": {
     whatItTracks: `Le 500 réplique le S&P 500, l'indice des 500 plus grandes entreprises américaines cotées, par réplication synthétique : l'ETF ne détient pas directement les actions américaines, il conclut un contrat d'échange (swap) avec une contrepartie bancaire qui lui verse la performance de l'indice. Ses frais sont de 0,15 % par an.
 
-Il n'est PAS éligible au PEA. Le reporting d'Amundi au 31 août 2026 laisse vide sa ligne « Enveloppe fiscale », que celui de CW8 remplit par « Eligible au PEA ». Pour le S&P 500 dans un PEA, les équivalents sont le PSP5 (Amundi PEA S&P 500, 0,12 %), le SPEA (iShares, 0,10 %) et l'ESE (BNP Paribas Easy, 0,14 %).
+Il n'est PAS éligible au PEA : la page du fonds chez Amundi indique « Eligibilité au PEA : Non », et son reporting mensuel du 31 août 2026, dans sa version pour professionnels, « Enveloppe fiscale : - », sans aucune mention du PEA, là où celui de CW8 affiche « Enveloppe fiscale : Eligible au PEA ». Pour le S&P 500 dans un PEA, les équivalents sont le PSP5 (Amundi PEA S&P 500, 0,12 %), le SPEA (iShares, 0,10 %) et l'ESE (BNP Paribas Easy, 0,14 %).
 
 Le S&P 500 est l'indice de référence de la gestion d'actifs mondiale. Il couvre environ 80 % de la capitalisation boursière américaine et surpondère fortement la technologie : les dix premières positions (Apple, Microsoft, Nvidia, Amazon, Meta, Alphabet, Tesla, Berkshire Hathaway, JPMorgan, Broadcom) représentent plus de 35 % de l'indice.`,
     whyChooseIt: [
@@ -233,7 +235,7 @@ Le S&P 500 est l'indice de référence de la gestion d'actifs mondiale. Il couvr
       "Frais de 0,15 % par an",
     ],
     watchOut: [
-      "NON éligible au PEA — compte-titres ou assurance-vie seulement. Pour le S&P 500 en PEA : PSP5 (0,12 %), SPEA (0,10 %) ou ESE (0,14 %)",
+      "NON éligible au PEA — il se loge en compte-titres ou en assurance-vie. Pour le S&P 500 en PEA : PSP5 (0,12 %), SPEA (0,10 %) ou ESE (0,14 %)",
       "Hors PEA, pas le moins cher de notre sélection : CSPX et VUSA suivent le S&P 500 pour 0,07 %",
       // 30/09/2026 : plafond complété (R214-21 : 5 % hors établissement de crédit).
       "Réplication synthétique\u00a0: risque de contrepartie résiduel, plafonné par la réglementation européenne des fonds (UCITS) à 10\u00a0% de l'actif par contrepartie quand c'est un établissement de crédit, 5\u00a0% sinon",
@@ -268,11 +270,12 @@ Le S&P 500 couvre environ 80 % de la capitalisation boursière américaine et su
   // ANX — corrigé le 28/09/2026 : la fiche le présentait comme « la seule
   // solution » et « l'unique ETF PEA-éligible » sur le Nasdaq-100. Faux d'après
   // la table de vérité : ANX n'est PAS éligible PEA (reporting Amundi du
-  // 31/08/2026 : « Compte-titres, Assurance-vie ») ; PUST, lui, l'est.
+  // 31/08/2026, version pour professionnels : « Enveloppe fiscale : - ») ;
+  // PUST, lui, l'est.
   ANX: {
     whatItTracks: `L'ANX réplique le Nasdaq-100, l'indice des 100 plus grandes entreprises non financières du Nasdaq, massivement orienté technologie (Apple, Microsoft, Nvidia, Amazon, Meta, Alphabet, Tesla, Broadcom, Costco, Netflix). Il passe par une réplication synthétique (swap) et coûte 0,23 % par an.
 
-Il n'est PAS éligible au PEA : le reporting d'Amundi au 31 août 2026 laisse vide sa ligne « Enveloppe fiscale », que celui de CW8 remplit par « Eligible au PEA ». Pour le Nasdaq-100 dans un PEA, l'équivalent de notre sélection est le PUST (Amundi PEA Nasdaq-100, 0,30 %) — et ce n'est pas le seul Nasdaq-100 éligible.
+Il n'est PAS éligible au PEA : la page du fonds chez Amundi indique « Eligibilité au PEA : Non », et son reporting mensuel du 31 août 2026, dans sa version pour professionnels, « Enveloppe fiscale : - », sans aucune mention du PEA, là où celui de CW8 affiche « Enveloppe fiscale : Eligible au PEA ». Pour le Nasdaq-100 dans un PEA, l'équivalent de notre sélection est le PUST (Amundi PEA Nasdaq-100, 0,30 %) — et ce n'est pas le seul Nasdaq-100 éligible.
 
 Le Nasdaq-100 a fortement progressé sur les vingt dernières années, mais c'est aussi l'un des indices les plus volatils. Ses corrections peuvent être brutales : -35 % en 2022, -80 % sur la bulle internet de 2000–2003.`,
     whyChooseIt: [
@@ -282,7 +285,7 @@ Le Nasdaq-100 a fortement progressé sur les vingt dernières années, mais c'es
       "Frais de 0,23 % par an",
     ],
     watchOut: [
-      "NON éligible au PEA — compte-titres ou assurance-vie seulement. Pour le Nasdaq-100 en PEA : PUST (0,30 %)",
+      "NON éligible au PEA — il se loge en compte-titres ou en assurance-vie. Pour le Nasdaq-100 en PEA : PUST (0,30 %)",
       "Volatilité très élevée — le Nasdaq-100 peut perdre 30–50 % lors des cycles baissiers. Horizon minimum recommandé : 10–15 ans",
       "Concentration sectorielle extrême : technologie ~60 %, sensible aux rotations de taux et aux changements de sentiment sur la croissance",
       "Réplication synthétique — risque de contrepartie, même si encadré réglementairement",
@@ -324,12 +327,13 @@ Les émergents offrent un potentiel de croissance long terme supérieur aux marc
   // LU1681045370). Corrigé le 28/09/2026 : la fiche le disait éligible PEA
   // (« une exception notable ») et « même fonds » que l'ex-PAEEM. Faux d'après
   // la table de vérité : AEEM n'est PAS éligible PEA (reporting Amundi du
-  // 31/08/2026) ; PAEEM est un autre fonds (FR0013412020), lui éligible. Le
-  // contenu « émergents dans le PEA » est parti sous PAEEM.
+  // 31/08/2026, version pour professionnels : « Enveloppe fiscale : - ») ;
+  // PAEEM est un autre fonds (FR0013412020), lui éligible. Le contenu
+  // « émergents dans le PEA » est parti sous PAEEM.
   AEEM: {
     whatItTracks: `L'AEEM réplique le MSCI Emerging Markets, l'indice de référence des marchés en développement. Il regroupe environ 1 400 entreprises dans 24 pays émergents : Chine (~27 %), Inde (~18 %), Taïwan (~15 %), Corée du Sud (~11 %), Brésil (~5 %), Arabie Saoudite, Afrique du Sud, etc. Il passe par une réplication synthétique (swap) et coûte 0,20 % par an.
 
-Il n'est PAS éligible au PEA : le reporting d'Amundi au 31 août 2026 laisse vide sa ligne « Enveloppe fiscale », que celui de CW8 remplit par « Eligible au PEA ». L'équivalent PEA est le PAEEM (Amundi PEA Emergent ESG Transition, 0,30 %) — un autre fonds, sur une variante de l'indice.
+Il n'est PAS éligible au PEA : la page du fonds chez Amundi indique « Eligibilité au PEA : Non », et son reporting mensuel du 31 août 2026, dans sa version pour professionnels, « Enveloppe fiscale : - », sans aucune mention du PEA, là où celui de CW8 affiche « Enveloppe fiscale : Eligible au PEA ». L'équivalent PEA est le PAEEM (Amundi PEA Emergent ESG Transition, 0,30 %) — un autre fonds, sur une variante de l'indice.
 
 Les émergents offrent un potentiel de croissance long terme supérieur aux marchés développés, mais avec une volatilité et des risques spécifiques plus importants (risque politique, risque de change, gouvernance d'entreprise, liquidité).`,
     whyChooseIt: [
@@ -338,7 +342,7 @@ Les émergents offrent un potentiel de croissance long terme supérieur aux marc
       "Complète un MSCI World en compte-titres ou en assurance-vie : développés + émergents",
     ],
     watchOut: [
-      "NON éligible au PEA — compte-titres ou assurance-vie seulement. Pour les émergents en PEA : PAEEM (0,30 %)",
+      "NON éligible au PEA — il se loge en compte-titres ou en assurance-vie. Pour les émergents en PEA : PAEEM (0,30 %)",
       "Volatilité nettement supérieure aux marchés développés — baisses plus profondes et récupérations plus lentes",
       "Forte exposition à la Chine (~27 %) : risques réglementaires, tensions géopolitiques et délistings potentiels",
       "Réplication synthétique avec risque de contrepartie, même encadré",

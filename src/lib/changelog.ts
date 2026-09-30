@@ -45,14 +45,16 @@ export const CHANGELOG: ChangelogEntry[] = [
   // cette erreur en tête. Sources : table de vérité ETF du 28/09/2026, fait
   // swap-non-eligible, commit ac4b0d5 (cheat sheet et email). « Les quatre
   // fonds Amundi » n'est pas écrit : la table ne cite pas de reporting pour
-  // JPNK.
+  // JPNK. Preuve Amundi reprise le 30/09/2026 (ligne « Enveloppe fiscale »,
+  // version pour professionnels, et page du fonds) : note en tête
+  // d'etf-config.ts.
   {
     date: "2026-09-28",
     kind: "correction",
     title: "Cinq ETF présentés comme éligibles au PEA ne l'étaient pas",
     body:
-      "Jusqu'au 28 septembre 2026, le catalogue du site présentait 500, ANX, AEEM et JPNK comme éligibles au PEA, et la page PEA ou CTO rangeait aussi IWDA parmi les ETF éligibles. Aucun ne l'est\u00a0: pour 500, ANX et AEEM, les reportings mensuels d'Amundi du 31 août 2026 laissent vide la ligne «\u00a0Enveloppe fiscale\u00a0», que celui de CW8 remplit par «\u00a0Eligible au PEA\u00a0». " +
-      "Jusqu'au 30 septembre 2026, le site citait comme preuve une autre ligne du même document, «\u00a0Éligibilité\u00a0: Compte-titres, Assurance-vie\u00a0»\u00a0: elle figure aussi sur les fonds éligibles au PEA et ne prouve rien. " +
+      "Jusqu'au 28 septembre 2026, le catalogue du site présentait 500, ANX, AEEM et JPNK comme éligibles au PEA, et la page PEA ou CTO rangeait aussi IWDA parmi les ETF éligibles. Aucun ne l'est\u00a0: pour 500, ANX et AEEM, la page de chaque fonds chez Amundi indique «\u00a0Eligibilité au PEA\u00a0: Non\u00a0», et leurs reportings mensuels du 31 août 2026, dans leur version pour professionnels, «\u00a0Enveloppe fiscale\u00a0: -\u00a0», sans aucune mention du PEA, là où celui de CW8 affiche «\u00a0Enveloppe fiscale\u00a0: Eligible au PEA\u00a0». " +
+      "Jusqu'au 30 septembre 2026, le site citait comme preuve une autre ligne de ces reportings, «\u00a0Éligibilité\u00a0: Compte-titres, Assurance-vie\u00a0»\u00a0: elle figure aussi sur CW8 et PAEEM, éligibles au PEA, et ne prouve rien. " +
       "Ces trois-là figuraient aussi dans la cheat sheet «\u00a05 ETF Premium pour PEA\u00a0», sur la page et dans l'email envoyé à chaque inscrit. " +
       "Chaque fonds a été revérifié sur les documents de son émetteur, puis recoupé sur justETF, Boursorama et Euronext. La cheat sheet ne contient plus que des fonds éligibles. " +
       "Depuis le 30 septembre 2026, la liste vérifiée, avec l'ISIN de chaque fonds et la raison de chaque exclusion, est publiée sur la page «\u00a0ETF éligibles au PEA\u00a0».",

@@ -235,7 +235,8 @@ const FAQ = [
     // Corrigé le 28/09/2026 d'après la table de vérité (émetteurs + justETF) :
     // l'Amundi 500 (LU1681048804) et AEEM (LU1681045370) étaient présentés
     // comme éligibles au PEA — ils ne le sont pas (reporting Amundi du
-    // 31/08/2026 : compte-titres et assurance-vie). « Imbattable côté frais »
+    // 31/08/2026, version pour professionnels : « Enveloppe fiscale : - »).
+    // « Imbattable côté frais »
     // et « l'un des rares ETF émergents éligibles » retirés : non vérifiables.
     a: `En PEA, les ETF MSCI World de notre sélection sont WPEA et DCAM (TER ${terAffiche(TER_MONDE_PEA_BAS)} %) et CW8 (TER ${terAffiche(TER)} %). IWDA, lui, n'est PAS éligible au PEA : il se loge en CTO. Pour ajouter une part d'actions américaines, les S&P 500 éligibles PEA de notre sélection sont SPEA (TER 0,10 %, le moins cher des trois), PSP5 (0,12 %) et ESE (0,14 %) ; l'Amundi S&P 500 « 500 » n'est pas éligible PEA. Pour les pays émergents, l'ETF éligible PEA est PAEEM (Amundi PEA Emergent ESG Transition, TER 0,30 %) ; AEEM ne l'est pas. Autre option : GPEA (Amundi PEA Global, MSCI ACWI, émergents inclus, TER 0,30 %), qui couvre le monde entier en une seule ligne.`,
   },

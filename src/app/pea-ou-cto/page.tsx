@@ -64,8 +64,9 @@ const ROWS = [
 // Ce qui était faux, d'après la table de vérité ETF du 28/09/2026 (documents
 // des émetteurs recoupés avec justETF, Boursorama et Euronext) :
 //   · Sous « ETF éligibles PEA » figuraient IWDA, 500, ANX et AEEM. Aucun des
-//     quatre n'est éligible (reporting Amundi du 31/08/2026 pour les trois
-//     Amundi : « Compte-titres, Assurance-vie »). Quatre lignes sur six.
+//     quatre n'est éligible (pour les trois Amundi : reporting du 31/08/2026,
+//     version pour professionnels, « Enveloppe fiscale : - » ; page Amundi du
+//     fonds, « Eligibilité au PEA : Non »). Quatre lignes sur six.
 //   · PCEU : « Amundi STOXX Europe 600 » à 0,07 % → Amundi PEA MSCI Europe,
 //     0,15 %.
 //   · « Seule option PEA pour le Nasdaq-100 » (ANX) : ANX n'est pas éligible,

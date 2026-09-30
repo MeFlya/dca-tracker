@@ -47,8 +47,10 @@ interface ETFRow {
 // des émetteurs recoupés avec justETF, Boursorama et Euronext) :
 //   · 500 (LU1681048804), ANX (LU1681038243) et AEEM (LU1681045370) étaient
 //     présentés comme éligibles PEA. Aucun ne l'est — le reporting Amundi du
-//     31/08/2026 indique « Compte-titres, Assurance-vie ». Trois lignes sur
-//     cinq d'une page intitulée « ETF pour PEA ».
+//     31/08/2026 (version pour professionnels) indique « Enveloppe fiscale :
+//     - » et la page Amundi du fonds « Eligibilité au PEA : Non » (preuve
+//     corrigée le 30/09/2026, voir etf-config.ts). Trois lignes sur cinq
+//     d'une page intitulée « ETF pour PEA ».
 //   · PCEU était décrit comme « Amundi STOXX Europe 600 », LU1681049328,
 //     0,07 %. C'est l'Amundi PEA MSCI Europe, FR0013412038, 0,15 %.
 //   · CW8 occupait la brique monde alors que WPEA et DCAM répliquent le même

@@ -195,8 +195,11 @@ function statutHorsPea(symbole: string, raison: RaisonHorsPea | null, sansDic: b
     return `${s} n'est pas éligible au PEA, et un courtier européen en refuse en principe l'achat à un particulier, même en compte-titres\u00a0: c'est un fonds américain, et ces fonds ne publient pas, en règle générale, le document d'informations clés (DIC) exigé en Europe.`;
   }
   switch (raison) {
+    // 30/09/2026 : la ligne « Enveloppe fiscale » ne figure que dans la
+    // version du reporting pour professionnels (lien sous la phrase,
+    // sources-etf.ts) ; celle pour particuliers ne l'a pas.
     case "swap-hors-pea":
-      return `${s} n'est pas éligible au PEA, malgré sa réplication synthétique\u00a0: le reporting mensuel d'Amundi du 31 août 2026 laisse vide sa ligne «\u00a0Enveloppe fiscale\u00a0», que celui de CW8 remplit par «\u00a0Eligible au PEA\u00a0».`;
+      return `${s} n'est pas éligible au PEA, malgré sa réplication synthétique\u00a0: le reporting mensuel d'Amundi du 31 août 2026, dans sa version pour professionnels, indique «\u00a0Enveloppe fiscale\u00a0: -\u00a0», sans aucune mention du PEA, là où celui de CW8 affiche «\u00a0Enveloppe fiscale\u00a0: Eligible au PEA\u00a0».`;
     case "physique":
       return `${s} n'est pas éligible au PEA\u00a0: il détient lui-même des actions de son indice, et elles ne sont pas, à plus de 75\u00a0%, des actions de sociétés de l'Union européenne ou de l'Espace économique européen, comme l'exige le PEA.`;
     default:
@@ -220,9 +223,10 @@ function raisonLongue(raison: RaisonHorsPea | null, sansDic: boolean): string {
   switch (raison) {
     case "swap-hors-pea":
       return (
-        "Sa réplication est synthétique, comme celle des ETF qui entrent dans un PEA, mais le reporting mensuel d'Amundi du 31 août 2026 laisse vide sa ligne " +
-        "«\u00a0Enveloppe fiscale\u00a0», que ceux de CW8, PAEEM et PUST remplissent par «\u00a0Eligible au PEA\u00a0»\u00a0: c'est le document de l'émetteur qui fait foi, pas le nom ni le mode de réplication. " +
-        "(La ligne «\u00a0Éligibilité\u00a0» du même document affiche «\u00a0Compte-titres, Assurance-vie\u00a0» pour tous ces fonds, éligibles compris\u00a0: elle ne tranche pas.)"
+        "Sa réplication est synthétique, comme celle des ETF qui entrent dans un PEA, mais le reporting mensuel d'Amundi du 31 août 2026, dans sa version pour professionnels, indique " +
+        "«\u00a0Enveloppe fiscale\u00a0: -\u00a0», sans aucune mention du PEA, là où ceux de CW8 et PAEEM, éligibles, affichent «\u00a0Enveloppe fiscale\u00a0: Eligible au PEA\u00a0». " +
+        "La page du fonds chez Amundi, dans sa version pour particuliers, indique «\u00a0Eligibilité au PEA\u00a0: Non\u00a0»\u00a0: c'est l'émetteur qui fait foi, pas le nom ni le mode de réplication. " +
+        "(La ligne «\u00a0Éligibilité\u00a0» du reporting affiche «\u00a0Compte-titres, Assurance-vie\u00a0» pour CW8 et PAEEM comme pour ce fonds\u00a0: elle ne tranche pas.)"
       );
     case "physique":
       return (

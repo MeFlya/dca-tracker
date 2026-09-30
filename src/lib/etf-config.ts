@@ -43,18 +43,25 @@ export const ETF_LIST: ETFConfig[] = [
   // Chaque nom, ISIN, TER, indice et statut PEA ci-dessous a été recoupé avec
   // la table de vérité du 28/09/2026 (émetteurs d'un côté, justETF /
   // Boursorama / Euronext de l'autre). Le catalogue présentait 500, ANX, AEEM
-  // et JPNK comme éligibles au PEA : les reportings Amundi du 31/08/2026 les
-  // donnent « Compte-titres, Assurance-vie ». Un lecteur qui recopiait l'ISIN
-  // pour son PEA passait un ordre sur un fonds que son courtier refuse.
+  // et JPNK comme éligibles au PEA : ils ne le sont pas (preuve ci-dessous).
+  // Un lecteur qui recopiait l'ISIN pour son PEA passait un ordre sur un
+  // fonds que son courtier refuse.
   // Le champ `symbol` des entrées existantes n'a PAS été touché : il alimente
   // les cours et les portefeuilles enregistrés des utilisateurs.
   //
   // ⚠️ Preuve à citer (30/09/2026) : dans un reporting Amundi, c'est la ligne
-  // « Enveloppe fiscale » qui tranche (« Eligible au PEA » pour CW8, PAEEM,
-  // PUST ; vide, « - », pour 500, ANX, AEEM, JPNK). La ligne « Éligibilité :
-  // Compte-titres, Assurance-vie », citée ici et dans le site jusqu'au
-  // 30/09, figure sur TOUS ces fonds, éligibles compris : elle ne prouve rien.
-  // Reportings du 31/08/2026 archivés dans private-assets/raw/geo/reportings/.
+  // « Enveloppe fiscale » qui tranche (« Eligible au PEA » pour CW8, EWLD,
+  // PAEEM, PUST ; « - » pour 500, ANX, AEEM, JPNK, dont le document ne
+  // mentionne le PEA nulle part). Cette ligne ne figure QUE dans la version
+  // pour professionnels (…/FRA/FRA/INSTITUTIONNEL/ETF/20260831) ; la version
+  // pour particuliers (…/RETAIL/…) ne l'a pas. Pour un particulier, la page
+  // du fonds sur amundietf.fr affiche « Eligibilité au PEA : Oui/Non » (« Non »
+  // pour 500, ANX, AEEM ; « Oui » pour CW8, PAEEM, relevé le 30/09/2026).
+  // La ligne « Éligibilité : Compte-titres, Assurance-vie », citée ici et dans
+  // le site du 28 au 30/09, figure aussi sur CW8, PAEEM et PUST, éligibles
+  // (EWLD, éligible, affiche « Eligibilité : - ») : elle ne prouve rien.
+  // Reportings du 31/08/2026 archivés dans private-assets/raw/geo/reportings/
+  // du dépôt principal ; adresses dans le fait swap-non-eligible.
 
   // ── MSCI World — marché développé mondial ─────────────────────────────────
 
@@ -167,11 +174,15 @@ export const ETF_LIST: ETFConfig[] = [
     displaySymbol: "500",
     indexLabel: "S&P 500",
     // Corrigé le 28/09/2026 : présenté comme « version PEA-éligible » et
-    // peaEligible: true. Faux — reporting Amundi du 31/08/2026 : « Éligibilité :
-    // Compte-titres, Assurance-vie ». Nom officiel d'après la table.
+    // peaEligible: true. Faux — reporting Amundi du 31/08/2026, version pour
+    // professionnels : « Enveloppe fiscale : - » ; page Amundi du fonds :
+    // « Eligibilité au PEA : Non ». Nom officiel d'après la table.
+    // 30/09/2026 : « (compte-titres ou assurance-vie seulement) » reprenait la
+    // ligne « Éligibilité » du reporting, qui ne tranche pas ; « seulement »
+    // retiré.
     name: "Amundi S&P 500 Swap UCITS ETF EUR Acc",
     description:
-      "Le S&P 500 par Amundi, en réplication synthétique, à 0,15 % de frais. NON éligible au PEA (compte-titres ou assurance-vie seulement). Pour le S&P 500 dans un PEA : PSP5 (Amundi, 0,12 %), SPEA (iShares, 0,10 %) ou ESE (BNP Paribas, 0,14 %).",
+      "Le S&P 500 par Amundi, en réplication synthétique, à 0,15 % de frais. NON éligible au PEA : il se loge en compte-titres ou en assurance-vie. Pour le S&P 500 dans un PEA : PSP5 (Amundi, 0,12 %), SPEA (iShares, 0,10 %) ou ESE (BNP Paribas, 0,14 %).",
     category: "Actions USA (S&P 500)",
     ter: 0.15,
     replicationMethod: "Synthétique (swap)",
@@ -283,12 +294,13 @@ export const ETF_LIST: ETFConfig[] = [
     displaySymbol: "ANX",
     indexLabel: "Nasdaq 100",
     // Corrigé le 28/09/2026 : présenté comme « seule solution PEA-éligible »
-    // et peaEligible: true. Double faute — reporting Amundi du 31/08/2026 :
-    // « Éligibilité : Compte-titres, Assurance-vie » ; et des lignes Nasdaq-100
+    // et peaEligible: true. Double faute — reporting Amundi du 31/08/2026,
+    // version pour professionnels : « Enveloppe fiscale : - » ; page Amundi du
+    // fonds : « Eligibilité au PEA : Non » ; et des lignes Nasdaq-100
     // éligibles PEA existent (PUST, PNAS). Nom officiel d'après la table.
     name: "Amundi Nasdaq-100 Swap UCITS ETF EUR Acc",
     description:
-      "Le Nasdaq-100 — les 100 plus grandes valeurs non financières du Nasdaq, très orientées technologie — par Amundi, en réplication synthétique, à 0,23 % de frais. NON éligible au PEA (compte-titres ou assurance-vie seulement). Pour le Nasdaq-100 dans un PEA : PUST (Amundi PEA Nasdaq-100, 0,30 %).",
+      "Le Nasdaq-100 — les 100 plus grandes valeurs non financières du Nasdaq, très orientées technologie — par Amundi, en réplication synthétique, à 0,23 % de frais. NON éligible au PEA : il se loge en compte-titres ou en assurance-vie. Pour le Nasdaq-100 dans un PEA : PUST (Amundi PEA Nasdaq-100, 0,30 %).",
     category: "Actions Tech USA (Nasdaq-100)",
     ter: 0.23,
     replicationMethod: "Synthétique (swap)",
@@ -342,13 +354,15 @@ export const ETF_LIST: ETFConfig[] = [
     // Commentaire corrigé le 28/09/2026 : il présentait AEEM comme
     // « ex-Lyxor PAEEM ». Faux d'après la table : PAEEM est un AUTRE fonds
     // (FR0013412020, éligible PEA) ; AEEM (LU1681045370) ne l'est pas —
-    // reporting Amundi du 31/08/2026 : « Compte-titres, Assurance-vie ».
+    // reporting Amundi du 31/08/2026, version pour professionnels :
+    // « Enveloppe fiscale : - » ; page Amundi du fonds : « Eligibilité au
+    // PEA : Non ».
     symbol: "AEEM.PA",
     displaySymbol: "AEEM",
     indexLabel: "Marchés émergents",
     name: "Amundi MSCI Emerging Markets Swap UCITS ETF EUR Acc",
     description:
-      "Les marchés émergents (Chine, Inde, Taïwan, Corée du Sud, Brésil…) via l'indice MSCI Emerging Markets, en réplication synthétique, à 0,20 % de frais. NON éligible au PEA (compte-titres ou assurance-vie seulement). Pour les émergents dans un PEA : PAEEM (Amundi PEA Emergent, 0,30 %).",
+      "Les marchés émergents (Chine, Inde, Taïwan, Corée du Sud, Brésil…) via l'indice MSCI Emerging Markets, en réplication synthétique, à 0,20 % de frais. NON éligible au PEA : il se loge en compte-titres ou en assurance-vie. Pour les émergents dans un PEA : PAEEM (Amundi PEA Emergent, 0,30 %).",
     category: "Actions marchés émergents",
     ter: 0.2,
     replicationMethod: "Synthétique (swap)",

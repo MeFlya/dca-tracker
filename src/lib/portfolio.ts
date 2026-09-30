@@ -629,9 +629,10 @@ export const PORTFOLIO_PRESETS: PortfolioPreset[] = [
     allocation: [{ displaySymbol: "CW8", weight: 100 }],
   },
   // Corrigé le 28/09/2026 : les deux préréglages « émergents » utilisaient
-  // AEEM, qui n'est PAS éligible PEA (reporting Amundi du 31/08/2026 :
-  // « Compte-titres, Assurance-vie »). Remplacé par PAEEM, l'équivalent
-  // éligible PEA d'après la table de vérité ETF — le site est centré sur le PEA.
+  // AEEM, qui n'est PAS éligible PEA (reporting Amundi du 31/08/2026, version
+  // pour professionnels : « Enveloppe fiscale : - »). Remplacé par PAEEM,
+  // l'équivalent éligible PEA d'après la table de vérité ETF — le site est
+  // centré sur le PEA.
   {
     id: "world-em-80-20",
     name: "Monde + émergents (80/20)",

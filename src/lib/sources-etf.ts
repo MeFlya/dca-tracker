@@ -15,6 +15,9 @@
 // · Fiche de l'émetteur : PUST seulement (fait etf-pea-pust). Les pages
 //   produit d'Amundi et d'iShares se rendent en JavaScript : on ne fabrique
 //   pas une adresse sur un modèle.
+// · Reporting de l'émetteur : 500, ANX et AEEM (fait swap-non-eligible,
+//   30/09/2026), la version pour professionnels, datée : c'est la seule qui
+//   porte la ligne « Enveloppe fiscale » que la fiche cite comme preuve.
 // · Fiche justETF : l'adresse exacte que citent les faits etf-pea-*,
 //   non-pea-monde et encours-a-trancher, source de recoupement de la table de
 //   vérité du 28/09/2026. Écrite en toutes lettres, pas construite sur
@@ -43,6 +46,22 @@ export const FICHE_ETF: Record<string, FicheCitee> = {
   PUST: {
     libelle: "fiche Amundi ETF",
     url: "https://www.amundietf.fr/fr/particuliers/produits/equity/amundi-pea-nasdaq100-ucits-etf-acc/fr0011871110",
+  },
+  // 30/09/2026 : le document que cite la phrase de statut de ces trois fiches
+  // (« Enveloppe fiscale : - »). La version pour particuliers
+  // (…/RETAIL/…) n'a pas cette ligne : un lecteur qui l'ouvrait ne trouvait
+  // pas la preuve. Adresses datées : le document ne change pas le mois suivant.
+  "500": {
+    libelle: "reporting Amundi du 31 août 2026 (version pour professionnels)",
+    url: "https://www.amundietf.fr/pdfDocuments/monthly-factsheet/LU1681048804/FRA/FRA/INSTITUTIONNEL/ETF/20260831",
+  },
+  ANX: {
+    libelle: "reporting Amundi du 31 août 2026 (version pour professionnels)",
+    url: "https://www.amundietf.fr/pdfDocuments/monthly-factsheet/LU1681038243/FRA/FRA/INSTITUTIONNEL/ETF/20260831",
+  },
+  AEEM: {
+    libelle: "reporting Amundi du 31 août 2026 (version pour professionnels)",
+    url: "https://www.amundietf.fr/pdfDocuments/monthly-factsheet/LU1681045370/FRA/FRA/INSTITUTIONNEL/ETF/20260831",
   },
   WPEA: justEtf("https://www.justetf.com/fr/etf-profile.html?isin=IE0002XZSHO1"),
   SPEA: justEtf("https://www.justetf.com/fr/etf-profile.html?isin=IE000DQLYVB9"),
