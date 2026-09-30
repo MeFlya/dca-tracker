@@ -18,8 +18,15 @@ interface EmailCaptureProps {
 }
 
 const HEADLINE = "5 ETF Premium pour PEA — la cheat sheet 2026";
+// 30/09/2026 : la promesse annonçait « Le PDF récap : indice répliqué, TER,
+// 3 modèles d'allocation prêts à l'emploi ». L'email envoyé (buildHtml dans
+// src/lib/email-provider.ts) n'a aucun PDF : c'est un tableau dans le corps du
+// message — 5 ETF avec ISIN, indice et TER — et les exemples d'allocation sont
+// sur la page du guide, à laquelle il renvoie. On décrit ce qui part, pas plus.
+// « les 5 ETF éligibles au PEA » (relecture du 30/09/2026) laissait croire
+// qu'il n'en existe que cinq ; le site en vérifie davantage (ETF_PEA_VERIFIES).
 const SUBLINE =
-  "Le PDF récap : indice répliqué, TER, 3 modèles d'allocation prêts à l'emploi. Livré gratuitement par email.";
+  "Par email, gratuitement\u00a0: un tableau de 5 ETF éligibles au PEA, avec ISIN, indice suivi et frais (TER), et le lien vers le guide qui détaille 3 exemples d'allocation.";
 
 export function EmailCapture({
   variant = "section",
@@ -191,7 +198,7 @@ function SuccessState({
       >
         <div className="max-w-md mx-auto px-4 text-center">
           <CheckCircleIcon className="mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-gray-900">Cheat sheet envoyée ✅</h2>
+          <h2 className="text-xl font-bold text-gray-900">Cheat sheet envoyée</h2>
           <p className="mt-2 text-sm text-gray-500 leading-relaxed">
             Vérifiez votre boîte mail dans les 2 prochaines minutes.
             Pas reçue ? Pensez à regarder dans les spams ou la
@@ -211,7 +218,7 @@ function SuccessState({
     >
       <CheckCircleIcon />
       <div>
-        <p className="text-sm font-semibold text-gray-900">Cheat sheet envoyée ✅</p>
+        <p className="text-sm font-semibold text-gray-900">Cheat sheet envoyée</p>
         <p className="mt-0.5 text-sm text-gray-500 leading-snug">
           Vérifiez votre boîte mail (et les spams).
         </p>

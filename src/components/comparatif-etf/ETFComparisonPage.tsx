@@ -7,6 +7,16 @@ import { ArticleByline } from "@/components/ui/ArticleByline";
 import { IssuerLogoMark } from "@/components/ui/IssuerLogoMark";
 import { AuroraSweep } from "@/components/ui/AuroraSweep";
 import { RenvoiProduit } from "@/components/products/RenvoiProduit";
+import { FICHE_ETF, FICHE_MSCI_WORLD, SOURCE_ENCOURS, type FicheCitee } from "@/lib/sources-etf";
+import {
+  FRAIS_ORDRE_ETF_PEA,
+  GRILLES_CONSULTEES_LE,
+  fraisOrdreEtf,
+  gammeDeLEtf,
+  type FraisOrdreEtfPea,
+} from "@/lib/brokers";
+import { HYPOTHESES_COMPARATIFS } from "@/lib/ecart-frais";
+import { DATE_VERIFICATION_PEA, dateEnToutesLettres } from "@/lib/etf-pea-verifies";
 
 function PEAPill({ value }: { value: string }) {
   const normalized = value.toLowerCase();
@@ -143,6 +153,29 @@ export function ETFComparisonPage({ comparison }: { comparison: ETFComparison })
   const [enPea, horsPea] = estPea(comparison.left)
     ? [comparison.left, comparison.right]
     : [comparison.right, comparison.left];
+  // ─── Sources et frais d'ordre (30/09/2026) ─────────────────────────────────
+  // Relevé du 29/09/2026 : les pages que citent les assistants IA lient la
+  // fiche de chaque fonds et nomment les courtiers. Les nôtres disaient
+  // « vérifié » sans montrer où, et « le vrai départage est chez votre
+  // courtier » sans dire ce qu'il coûte.
+  // Fiches : seulement celles dont l'adresse exacte est connue (sources-etf.ts).
+  const fiches = [comparison.left, comparison.right]
+    .filter((side) => side.type === "ETF")
+    .flatMap((side) => {
+      const fiche = FICHE_ETF[side.heading];
+      return fiche ? [{ symbole: side.heading, fiche }] : [];
+    });
+  const parleDuMsciWorld = [comparison.left, comparison.right].some(
+    (side) => side.heading === "MSCI World" || side.coverage.startsWith("MSCI World"),
+  );
+  const aUnEncours = comparison.keyDifferences.some((row) => row.criterion === "Encours");
+  // Tableau des frais d'ordre : seulement quand les deux côtés sont des ETF
+  // éligibles au PEA. Face à un fonds hors PEA (IWDA, VWCE), l'ordre se passe
+  // en compte-titres, où les trois grilles ne sont pas celles-là (pas de
+  // plafond légal, autres bourses) : on ne les a pas relevées, on n'affiche rien.
+  const fraisOrdreVisibles = comparison.left.type === "ETF" && estPea(comparison.left) && estPea(comparison.right);
+  const montantOrdre = HYPOTHESES_COMPARATIFS.monthlyAmount;
+
   const accrocheGuide = enveloppeEnJeu
     ? `Choisir entre ${nommer(comparison.left)} et ${nommer(comparison.right)}, c'est aussi choisir l'enveloppe\u00a0: ` +
       `${nommer(horsPea)} n'entre pas dans un PEA, ${nommer(enPea)} oui. ` +
@@ -201,20 +234,23 @@ export function ETFComparisonPage({ comparison }: { comparison: ETFComparison })
         description={comparison.metaDescription}
       />
 
-      <p className="text-base text-gray-600 leading-relaxed mb-10">
-        {comparison.intro}
-      </p>
-
-      {/* Verdict callout */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary-600 to-blue-700 p-6 mb-10 text-white">
+      {/* Verdict AVANT l'introduction (30/09/2026). Il arrivait au 100e mot,
+          après un paragraphe de contexte : les pages que citent les assistants
+          IA donnent la réponse d'abord. « Verdict en 2 phrases » devient
+          « Verdict » : plusieurs en comptent trois ou quatre. */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary-600 to-blue-700 p-6 mb-8 text-white">
         <AuroraSweep className="via-white/30" />
         <div className="relative">
           <p className="text-xs font-bold uppercase tracking-wider mb-2 text-primary-200">
-            Verdict en 2 phrases
+            Verdict
           </p>
           <p className="text-base leading-relaxed">{comparison.verdict}</p>
         </div>
       </div>
+
+      <p className="text-base text-gray-600 leading-relaxed mb-10">
+        {comparison.intro}
+      </p>
 
       {/* Side-by-side cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10 relative">
@@ -230,7 +266,7 @@ export function ETFComparisonPage({ comparison }: { comparison: ETFComparison })
       <h2 className="text-xl font-bold text-gray-900 mb-4">
         Différences clés point par point
       </h2>
-      <div className="overflow-x-auto rounded-2xl border border-gray-100 mb-10">
+      <div className="overflow-x-auto rounded-2xl border border-gray-100 mb-3">
         <table className="w-full text-sm">
           <thead className="bg-gray-50">
             <tr>
@@ -250,6 +286,39 @@ export function ETFComparisonPage({ comparison }: { comparison: ETFComparison })
           </tbody>
         </table>
       </div>
+
+      {/* Date et sources de ce qui précède (30/09/2026). Hors recherche
+          interne : c'est une note de méthode, pas un passage à trouver. */}
+      <p data-nosearch="" className="mb-10 text-xs text-gray-500 leading-relaxed">
+        {comparison.left.type === "ETF"
+          ? "ISIN, frais (TER) et éligibilité au PEA vérifiés le "
+          : "Frais (TER) des ETF cités vérifiés le "}
+        {dateEnToutesLettres(DATE_VERIFICATION_PEA)} sur les documents des émetteurs, recoupés
+        sur justETF, Boursorama et Euronext.
+        {aUnEncours && <> {SOURCE_ENCOURS}</>}
+        {(fiches.length > 0 || parleDuMsciWorld) && <> Sources&nbsp;: </>}
+        {fiches.map(({ symbole, fiche }, i) => (
+          <span key={symbole}>
+            {i > 0 && " · "}
+            {symbole}, <LienSource fiche={fiche} />
+          </span>
+        ))}
+        {parleDuMsciWorld && (
+          <>
+            {fiches.length > 0 && " · "}
+            <LienSource fiche={FICHE_MSCI_WORLD} />
+          </>
+        )}
+        {(fiches.length > 0 || parleDuMsciWorld) && "."}
+      </p>
+
+      {fraisOrdreVisibles && (
+        <FraisOrdreParCourtier
+          montant={montantOrdre}
+          gauche={comparison.left.heading}
+          droite={comparison.right.heading}
+        />
+      )}
 
       {/* Use cases */}
       <h2 className="text-xl font-bold text-gray-900 mb-4">
@@ -429,6 +498,164 @@ export function ETFComparisonPage({ comparison }: { comparison: ETFComparison })
         l&apos;émetteur avant tout investissement.
       </p>
     </article>
+  );
+}
+
+/**
+ * Lien vers une source externe. Même patron que <SourcesReferences /> :
+ * nouvel onglet, `noopener`, et surtout pas de `nofollow` — citer une source,
+ * c'est assumer le lien.
+ */
+function LienSource({ fiche }: { fiche: FicheCitee }) {
+  return (
+    <a
+      href={fiche.url}
+      target="_blank"
+      rel="noopener"
+      className="text-gray-600 underline underline-offset-2 hover:text-primary-700"
+    >
+      {fiche.libelle}
+    </a>
+  );
+}
+
+/**
+ * Frais d'un ordre d'achat dans un PEA chez trois courtiers (30/09/2026).
+ *
+ * Le verdict de plusieurs duels renvoie au courtier ; ce tableau dit ce qu'il
+ * coûte, grille officielle à l'appui. Il décrit, il ne classe pas : ordre
+ * alphabétique (celui de FRAIS_ORDRE_ETF_PEA), pas de colonne « notre avis ».
+ * Deux colonnes seulement, pour tenir à 375 px sans défilement.
+ * Les montants sont calculés sur les règles de chaque grille, pour le
+ * versement des hypothèses de la page : ils suivent si l'hypothèse change.
+ */
+function FraisOrdreParCourtier({
+  montant,
+  gauche,
+  droite,
+}: {
+  montant: number;
+  gauche: string;
+  droite: string;
+}) {
+  // 30/09/2026 : l'introduction disait « coûte autant…, sauf offre réservée à
+  // une gamme d'ETF » sans dire laquelle ni pour quel fonds — alors que WPEA
+  // est dans la gamme Boursomarkets de BoursoBank et DCAM ou CW8 non. Elle
+  // nomme désormais l'exception, calculée sur les gammes de brokers.ts, et le
+  // tableau donne alors le frais de chaque ETF sur la ligne du courtier.
+  const aUneException = (c: FraisOrdreEtfPea) =>
+    Boolean(gammeDeLEtf(c, gauche)) !== Boolean(gammeDeLEtf(c, droite));
+  const exceptions = FRAIS_ORDRE_ETF_PEA.filter(aUneException);
+  const gammes = FRAIS_ORDRE_ETF_PEA.flatMap((c) => (c.gamme ? [{ courtier: c.nom, gamme: c.gamme }] : []));
+
+  return (
+    <section aria-labelledby="frais-ordre-courtier" className="mb-10">
+      <h2 id="frais-ordre-courtier" className="text-xl font-bold text-gray-900 mb-2">
+        Frais d&apos;un ordre sur ces ETF selon le courtier
+      </h2>
+      <p className="text-sm text-gray-600 leading-relaxed mb-4">
+        {exceptions.length > 0 ? (
+          <>
+            Chez un même courtier, un ordre sur {gauche} coûte en général autant qu&apos;un ordre
+            sur {droite}, sauf quand l&apos;un des deux fait partie d&apos;une gamme à frais réduits.
+            {exceptions.map((c) => {
+              const dedans = gammeDeLEtf(c, gauche) ? gauche : droite;
+              const dehors = dedans === gauche ? droite : gauche;
+              const gamme = gammeDeLEtf(c, dedans)!;
+              return (
+                <span key={c.slug}>
+                  {" "}C&apos;est le cas chez {c.nom}&nbsp;: au {dateEnToutesLettres(gamme.constateLe)},{" "}
+                  {dedans} fait partie de sa {gamme.nom}, {dehors} non.
+                </span>
+              );
+            })}
+          </>
+        ) : (
+          <>
+            Pour un achat de {montant}&nbsp;€, un ordre sur {gauche} coûte autant qu&apos;un ordre
+            sur {droite} chez chacun de ces courtiers
+            {gammes.length > 0 && (
+              <>
+                &nbsp;: au {dateEnToutesLettres(gammes[0].gamme.constateLe)}, ni l&apos;un ni l&apos;autre
+                ne fait partie de{" "}
+                {gammes.map(({ courtier, gamme }, i) => (
+                  <span key={courtier}>
+                    {i > 0 && " ou de "}la {gamme.nom} de {courtier}
+                  </span>
+                ))}
+              </>
+            )}
+            .
+          </>
+        )}{" "}
+        Voici ce que coûte un achat de {montant}&nbsp;€
+        dans un PEA, d&apos;après la grille officielle de chaque courtier, consultée le{" "}
+        {dateEnToutesLettres(GRILLES_CONSULTEES_LE)}. Dans un PEA, la loi plafonne ces frais à
+        0,5&nbsp;% du montant de l&apos;ordre (
+        <a
+          href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000043790337"
+          target="_blank"
+          rel="noopener"
+          className="underline underline-offset-2 hover:text-primary-700"
+        >
+          article D221-111-1 du code monétaire et financier
+        </a>
+        ).
+      </p>
+      <div className="overflow-x-auto rounded-2xl border border-gray-100">
+        <table className="w-full text-sm">
+          <thead className="bg-gray-50">
+            <tr>
+              <th scope="col" className="text-left px-4 py-3 font-semibold text-gray-500">Courtier</th>
+              <th scope="col" className="text-left px-4 py-3 font-semibold text-gray-500">
+                Achat de {montant}&nbsp;€ en PEA
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100">
+            {FRAIS_ORDRE_ETF_PEA.map((c) => (
+              <tr key={c.slug}>
+                <td className="px-4 py-3 align-top">
+                  <Link href={`/comparatif/${c.slug}`} className="font-semibold text-gray-900 hover:text-primary-700">
+                    {c.nom}
+                  </Link>
+                  <span className="block text-xs text-gray-500">{c.offre}</span>
+                  <a
+                    href={c.grille.url}
+                    target="_blank"
+                    rel="noopener"
+                    className="block mt-1 text-xs text-gray-500 underline underline-offset-2 hover:text-primary-700"
+                  >
+                    {c.grille.libelle}
+                  </a>
+                </td>
+                <td className="px-4 py-3 align-top">
+                  {aUneException(c) ? (
+                    // Un ETF du duel est dans la gamme, l'autre non : un frais par ETF.
+                    [gauche, droite].map((symbole) => {
+                      const gamme = gammeDeLEtf(c, symbole);
+                      return (
+                        <span key={symbole} className="block font-medium text-gray-900">
+                          {symbole}&nbsp;: {fraisOrdreEtf(c, symbole, montant)}
+                          {gamme && <span className="font-normal text-gray-500"> ({gamme.nom})</span>}
+                        </span>
+                      );
+                    })
+                  ) : (
+                    <span className="font-medium text-gray-900">{fraisOrdreEtf(c, gauche, montant)}</span>
+                  )}
+                  <span className="block mt-1 text-xs text-gray-500 leading-relaxed">{c.precision}</span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p className="mt-2 text-xs text-gray-500">
+        Classés par ordre alphabétique. Hors écart entre prix d&apos;achat et de vente, et hors
+        frais de l&apos;ETF (TER), déjà déduits de sa performance.
+      </p>
+    </section>
   );
 }
 

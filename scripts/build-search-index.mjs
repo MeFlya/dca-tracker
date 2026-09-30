@@ -183,6 +183,11 @@ const PAGES_DYNAMIQUES = {
   "/backtest": {
     source: "src/app/backtest/page.tsx",
     s: [
+      // h2 id="exemples-deja-calcules" de la page (30/09/2026). Ses chiffres
+      // sont calculés au rendu : le passage les décrit sans les recopier.
+      // Relecture du 30/09/2026 : le sigle TRI est expliqué ici comme sur la
+      // page, et le repère de 2022 est le même que celui de la page.
+      { h: "Exemples déjà calculés", x: "Trois DCA mensuels rejoués sur les cours réels du MSCI World en euros, jusqu'au dernier mois publié : départ en janvier 2010, en janvier 2020 juste avant le krach du COVID, et en janvier 2022 juste avant une année de baisse. Total versé, valeur finale, gain, rendement annuel (taux de rendement interne, ou TRI) et pire écart sous le total versé, en texte et en tableau, avec la date des cours et leur source." },
       // h2 de BacktestClient.tsx.
       { h: "Scénarios populaires", x: "DCA depuis 2010, DCA depuis le COVID, DCA depuis 2022, dix ans glissants." },
       // Ni l'un ni l'autre n'est un titre sur la page (« Période libre » est un
@@ -193,9 +198,16 @@ const PAGES_DYNAMIQUES = {
   },
 };
 
-/** Chaîne JS littérale ("…" ou `…`) → texte. */
+/**
+ * Chaîne JS littérale ("…" ou `…`) → texte. Les \uXXXX d'abord (30/09/2026) :
+ * les questions de /backtest écrivent l'espace insécable « \u00a0? », que la
+ * règle générale changeait en « u00a0? » dans l'index et dans l'ancre.
+ */
 function litteral(s) {
-  return s.replace(/\\n/g, " ").replace(/\\(.)/g, "$1");
+  return s
+    .replace(/\\u([0-9a-fA-F]{4})/g, (_, h) => String.fromCharCode(parseInt(h, 16)))
+    .replace(/\\n/g, " ")
+    .replace(/\\(.)/g, "$1");
 }
 
 /**
@@ -315,7 +327,16 @@ function texteBrut(el, affiche) {
   return s;
 }
 
-const sansFleche = (s) => espaces(s.replace(/[▾▸▴►▼▲›»]/g, " "));
+// Les flèches seulement (30/09/2026). La classe retirait aussi « » » et « › »,
+// qui sont des guillemets fermants, pas des flèches : le H2 de
+// /etf-eligibles-pea « Pourquoi un ETF « monde » ou « S&P 500 » peut entrer
+// dans un PEA » sortait « Pourquoi un ETF « monde ou « S&P 500 peut… », et
+// sept titres de l'index avaient un guillemet ouvrant orphelin. Le site
+// n'emploie « » » ni « › » comme flèche nulle part. Les ancres n'en changent
+// pas : ancre() remplace déjà toute ponctuation par un tiret (vérifié sur le
+// build du 30/09/2026 : 7 titres corrigés, 0 ancre modifiée). Même classe que
+// texteTitre() dans src/lib/search/ancre.ts.
+const sansFleche = (s) => espaces(s.replace(/[▾▸▴►▼▲]/g, " "));
 
 /**
  * Titre tel qu'affiché, sans la flèche des questions de FAQ ni les icônes

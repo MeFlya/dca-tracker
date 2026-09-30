@@ -31,23 +31,33 @@ export const ETF_DETAIL_CONTENT: Record<string, ETFDetailContent> = {
   // CW8 — corrigé le 28/09/2026 : il se disait « un des ETF monde les moins
   // chers éligibles PEA ». Faux dans notre propre catalogue : WPEA et DCAM
   // suivent le même MSCI World dans le PEA pour 0,20 %, contre 0,38 %.
+  // 30/09/2026 : « environ 1 500 actions », « États-Unis environ 65 % » et
+  // « Europe autour de 20 % » contredisaient la fiche MSCI au 31/08/2026
+  // (1 280 constituants ; États-Unis 72,14 %, Japon 5,78 %, Royaume-Uni
+  // 3,53 % — faits msci-world-composition et msci-world-poids-pays). Le poids
+  // de « l'Europe » n'y figure pas : retiré plutôt qu'estimé.
+  // 30/09/2026 (relecture) : « plafonné à 10 % de l'actif net » oubliait la
+  // moitié de l'article R214-21 du code monétaire et financier : 10 % de
+  // l'actif par contrepartie quand c'est un établissement de crédit, 5 %
+  // sinon (fait ucits-contrepartie-10pc). Même phrase que le guide MSCI World.
+  // Et « bénéficiez de la fiscalité… » était une injonction : la ligne décrit.
   CW8: {
-    whatItTracks: `Le CW8 réplique l'indice MSCI World, un indice de référence mondial qui regroupe environ 1 500 actions de grandes et moyennes capitalisations dans 23 pays développés. Les États-Unis représentent la plus grande part (environ 65 %), suivis de l'Europe (autour de 20 %) et du Japon (environ 6 %). Cet indice exclut les marchés émergents comme la Chine, l'Inde ou le Brésil.
+    whatItTracks: `Le CW8 réplique l'indice MSCI World, un indice de référence mondial qui regroupe environ 1 300 actions de grandes et moyennes capitalisations (1 280 au 31 août 2026) dans 23 pays développés. Les États-Unis en représentent 72,14 % au 31 août 2026 selon MSCI, devant le Japon (5,78 %) et le Royaume-Uni (3,53 %). Cet indice exclut les marchés émergents comme la Chine, l'Inde ou le Brésil.
 
-Amundi utilise une réplication synthétique par swap pour répliquer cet indice tout en rendant l'ETF éligible au Plan d'Épargne en Actions (PEA). Concrètement, le fonds ne détient pas directement les actions du MSCI World, mais conclut un contrat d'échange (swap) avec une contrepartie bancaire qui s'engage à délivrer la performance de l'indice. Le risque de contrepartie est réglementairement plafonné à 10 % de l'actif net.
+Amundi utilise une réplication synthétique par swap pour répliquer cet indice tout en rendant l'ETF éligible au Plan d'Épargne en Actions (PEA). Concrètement, le fonds ne détient pas directement les actions du MSCI World, mais conclut un contrat d'échange (swap) avec une contrepartie bancaire qui s'engage à délivrer la performance de l'indice. Le risque de contrepartie est plafonné par la réglementation\u00a0: au titre de ces contrats, il ne peut pas dépasser 10\u00a0% de l'actif du fonds sur une même contrepartie quand c'est un établissement de crédit, 5\u00a0% dans les autres cas.
 
 Les dividendes versés par les entreprises de l'indice ne sont pas distribués aux porteurs de parts : ils sont réinvestis automatiquement dans le fonds, augmentant mécaniquement la valeur de la part (politique capitalisante). C'est particulièrement efficace sur le long terme grâce à l'effet des intérêts composés.
 
 Ses frais (0,38 % par an) sont les plus élevés des MSCI World éligibles PEA de notre sélection : le WPEA (iShares) et le DCAM (Amundi) suivent le même indice, dans la même enveloppe, pour 0,20 %.`,
     whyChooseIt: [
-      "Éligible PEA — bénéficiez de la fiscalité avantageuse du plan d'épargne en actions après 5 ans de détention",
+      "Éligible PEA — la fiscalité du plan d'épargne en actions s'applique après 5 ans de détention",
       "Politique capitalisante — les dividendes sont réinvestis sans intervention, idéal pour l'investissement passif long terme",
     ],
     watchOut: [
       "Frais de 0,38 % par an : près du double du WPEA et du DCAM (0,20 %), qui suivent le même MSCI World dans le PEA",
       "Réplication synthétique (swap) : introduit un risque de contrepartie résiduel, même s'il est encadré réglementairement",
       "Pas d'exposition aux marchés émergents (Chine, Inde, Brésil…) qui représentent une part croissante de l'économie mondiale",
-      "Forte concentration sur les actions américaines (~65 %), ce qui peut amplifier l'impact d'une correction aux États-Unis",
+      "Forte concentration sur les actions américaines (72,14 % de l'indice au 31 août 2026 selon MSCI), ce qui peut amplifier l'impact d'une correction aux États-Unis",
     ],
     suitableFor:
       "Pour un investisseur qui veut un ETF monde capitalisant éligible PEA, en DCA sur le long terme sans gestion active. Sur le même indice et dans la même enveloppe, WPEA et DCAM coûtent 0,20 % au lieu de 0,38 %.",
@@ -225,7 +235,8 @@ Le S&P 500 est l'indice de référence de la gestion d'actifs mondiale. Il couvr
     watchOut: [
       "NON éligible au PEA — compte-titres ou assurance-vie seulement. Pour le S&P 500 en PEA : PSP5 (0,12 %), SPEA (0,10 %) ou ESE (0,14 %)",
       "Hors PEA, pas le moins cher de notre sélection : CSPX et VUSA suivent le S&P 500 pour 0,07 %",
-      "Réplication synthétique : risque de contrepartie résiduel, encadré à 10 % de l'actif net par la réglementation UCITS",
+      // 30/09/2026 : plafond complété (R214-21 : 5 % hors établissement de crédit).
+      "Réplication synthétique\u00a0: risque de contrepartie résiduel, plafonné par la réglementation européenne des fonds (UCITS) à 10\u00a0% de l'actif par contrepartie quand c'est un établissement de crédit, 5\u00a0% sinon",
       "Exposition 100 % américaine, très sensible aux valorisations de la tech US",
     ],
     suitableFor:
@@ -442,7 +453,8 @@ Le RS2K capitalise les dividendes (peu nombreux dans le segment small caps de to
     watchOut: [
       "Volatilité nettement supérieure aux large caps : drawdowns plus profonds (-30 à -40 % en cas de crise contre -20 à -30 % pour le S&P 500), récupérations plus lentes",
       "Sous-performance des 5 dernières années : depuis 2020, le Russell 2000 a sous-performé le S&P 500 de plus de 30 points cumulés. Le \"small cap premium\" est un pari long terme, pas un free lunch sur 5 ans",
-      "Réplication synthétique : risque de contrepartie résiduel encadré à 10 % de l'actif net par la réglementation UCITS",
+      // 30/09/2026 : plafond complété (R214-21 : 5 % hors établissement de crédit).
+      "Réplication synthétique\u00a0: risque de contrepartie résiduel, plafonné par la réglementation européenne des fonds (UCITS) à 10\u00a0% de l'actif par contrepartie quand c'est un établissement de crédit, 5\u00a0% sinon",
       "Frais de 0,35 % par an, contre 0,10 à 0,14 % pour les ETF S&P 500 éligibles PEA (SPEA, PSP5, ESE) — pèse davantage sur la performance long terme",
       "Composition sectorielle déséquilibrée par rapport au S&P 500 : sous-représentation tech, surreprésentation des financières régionales et de l'industrie — peut amplifier les cycles économiques",
     ],

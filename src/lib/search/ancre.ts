@@ -17,7 +17,11 @@ export function ancre(s: string): string {
     .replace(/-+$/, "");
 }
 
-/** Texte d'un titre tel que l'index le lit : sans la flèche des FAQ. */
+/**
+ * Texte d'un titre tel que l'index le lit : sans la flèche des FAQ.
+ * Depuis le 30/09/2026, les guillemets « » » et « › » restent (voir
+ * sansFleche() dans le script) ; l'ancre calculée est la même avec ou sans.
+ */
 export function texteTitre(el: Element): string {
-  return (el.textContent ?? "").replace(/[▾▸▴►▼▲›»]/g, " ").replace(/\s+/g, " ").trim();
+  return (el.textContent ?? "").replace(/[▾▸▴►▼▲]/g, " ").replace(/\s+/g, " ").trim();
 }

@@ -9,16 +9,12 @@ import {
   formatFiscalEur,
   PEA_DEPOSIT_CAP_EUR,
 } from "@/lib/fiscal/pea-cto";
-import { TER_REFERENCE_SIMULATEUR } from "@/lib/etf-config";
+import { DEFAULTS_CALCULATEUR } from "./defaults";
 
 // ─── Defaults ────────────────────────────────────────────────────────────────
 
-const DEFAULTS = {
-  monthlyAmount: 200,
-  durationYears: 20,
-  annualReturnPct: 7,
-  annualFeesPct: TER_REFERENCE_SIMULATEUR, // même référence que le simulateur (28/09/2026)
-};
+// Partagées avec l'exemple de la page (30/09/2026) : voir defaults.ts.
+const DEFAULTS = DEFAULTS_CALCULATEUR;
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
@@ -181,7 +177,13 @@ function WinnerHero({
 }) {
   const peaWins = comparison.peaAdvantageEur > 0;
   const advantageEur = Math.abs(comparison.peaAdvantageEur);
-  const advantagePct = Math.abs(comparison.peaAdvantagePct);
+  // 30/09/2026 : « + 7.8 % » (point décimal, espace simple) alors que
+  // l'exemple de la page écrit le même écart « +7,8 % ». Même format des deux
+  // côtés : virgule, une décimale, espace insécable avant le signe.
+  const advantagePct = Math.abs(comparison.peaAdvantagePct).toLocaleString("fr-FR", {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  });
 
   return (
     <div className="relative rounded-2xl bg-slate-950 p-6 overflow-hidden">
@@ -218,13 +220,15 @@ function WinnerHero({
                 {formatFiscalEur(advantageEur)}
               </span>
             </h3>
+            {/* 30/09/2026 : « vs » et « juste en choisissant le bon support
+                fiscal » (jargon, et un choix dicté) → une comparaison. */}
             <p className="text-slate-300 text-sm">
               Soit{" "}
               <span className="font-semibold text-white">
-                + {advantagePct.toFixed(1)} %
+                +{advantagePct}&nbsp;%
               </span>{" "}
-              de net après impôt vs l&apos;autre compte. Pour la même
-              stratégie, juste en choisissant le bon support fiscal.
+              de net après impôt par rapport à l&apos;autre enveloppe, pour la
+              même stratégie.
             </p>
           </>
         )}
@@ -270,7 +274,7 @@ function AccountCard({
       <div className="space-y-1.5 text-sm border-t border-slate-100 pt-3">
         <Row label="Plus-values brutes" value={formatFiscalEur(result.capitalGain)} />
         <Row
-          label={`Impôt (${(result.taxRate * 100).toFixed(1).replace(".", ",")} %)`}
+          label={`Impôt (${(result.taxRate * 100).toFixed(1).replace(".", ",")}\u00a0%)`}
           value={`− ${formatFiscalEur(result.taxDue)}`}
           valueClass="text-red-600"
         />
@@ -326,6 +330,8 @@ function CapWarning({
       <p className="text-xs font-bold text-amber-600 uppercase tracking-wider mb-2 flex items-center gap-1.5">
         ⚠️ Plafond PEA dépassé
       </p>
+      {/* 30/09/2026 : « La combinaison optimale est de… » prescrivait ; la
+          phrase dit ce que calcule le bloc (optimalMix dans fiscal/pea-cto.ts). */}
       <p className="text-sm text-gray-700 leading-relaxed mb-4">
         Vous avez versé{" "}
         <span className="font-semibold tabular-nums">
@@ -335,8 +341,8 @@ function CapWarning({
         <span className="font-semibold text-amber-600 tabular-nums">
           {formatFiscalEur(overflow)}
         </span>{" "}
-        au-delà du plafond du PEA (150 000 €). La combinaison optimale est
-        de remplir le PEA puis de placer l&apos;excédent en CTO.
+        au-delà du plafond du PEA (150 000 €). Le calcul ci-dessous remplit
+        le PEA jusqu&apos;au plafond et place l&apos;excédent en CTO.
       </p>
 
       <div className="rounded-xl bg-slate-50 border border-slate-200/70 p-4 mb-3">

@@ -5,9 +5,10 @@ import { ETF_COMPARISON_LIST } from "@/lib/etf-comparisons";
 import { GLOSSARY_TERM_LIST } from "@/lib/glossary-terms";
 import { PRODUCT_LIST } from "@/lib/products";
 import { INDEX_GUIDES } from "@/lib/etf-index-guides";
-import { BACKTEST_STORY_LIST, storyUpdatedAt } from "@/lib/backtest-stories";
+import { BACKTEST_STORY_LIST, storyUpdatedAt, backtestUpdatedAt } from "@/lib/backtest-stories";
 import { getDatasetMeta } from "@/lib/backtest";
 import { MAJ_LISTE_PEA, URL_LISTE_PEA } from "@/lib/etf-pea-verifies";
+import { FICHES_ETF_MAJ_LE } from "@/lib/sources-etf";
 
 export const dynamic = "force-static";
 
@@ -45,6 +46,13 @@ const REV = {
   // cheat sheet corrigée, frais par défaut du simulateur alignés sur le moteur,
   // « ce qu'auraient donné » sur les vrais cours, tableau année par année
   etf: "2026-09-28",
+  // /meilleurs-etf-debutants, /calculateur-fiscal-pea-cto, /pea-ou-cto :
+  // révisées le 30/09/2026 après le relevé des citations IA du 29/09. Même
+  // date que leur byline. Les fiches ETF et les comparatifs portent leur
+  // propre date. Relecture du 30/09/2026 : le commentaire disait « la réponse
+  // d'abord » pour les trois, ce que le sous-titre de /pea-ou-cto ne faisait
+  // pas ; la date, elle, reste juste (la page a bien été modifiée ce jour-là).
+  reponseDabord: "2026-09-30",
   // taux fiscaux 2026
   methodologie: "2026-08-03",
   // capture du Dashboard corrigée, prix unifiés
@@ -58,6 +66,10 @@ const REV = {
   glossaireDca: "2026-05-09",
   // /glossaire/interets-composes et /communaute
   inchangeesDepuisAvril: "2026-04-24",
+  // /simulateur : introduction avec un exemple calculé par le moteur, rendue
+  // dans <main> sans JavaScript (30/09/2026). Même date que sa byline
+  // (SIMULATEUR_REVISE_LE dans la page).
+  simulateur: "2026-09-30",
 } as const;
 
 /** La plus récente de plusieurs dates YYYY-MM-DD (l'ordre lexical suffit). */
@@ -79,8 +91,10 @@ export async function GET(): Promise<NextResponse> {
 
   const pages: PageEntry[] = [
     { url: base,                               changeFreq: "weekly",  priority: 1.0,  lastmod: REV.etf },
-    { url: `${base}/simulateur`,               changeFreq: "weekly",  priority: 0.9,  lastmod: REV.etf },
-    { url: `${base}/backtest`,                 changeFreq: "monthly", priority: 0.85, lastmod: plusRecente(REV.etf, SERIE) },
+    { url: `${base}/simulateur`,               changeFreq: "weekly",  priority: 0.9,  lastmod: REV.simulateur },
+    // Exemples publiés et FAQ ajoutés le 30/09/2026 : la date est celle de la
+    // byline de la page, qui suit aussi le rafraîchissement de la série.
+    { url: `${base}/backtest`,                 changeFreq: "monthly", priority: 0.85, lastmod: backtestUpdatedAt() },
     ...BACKTEST_STORY_LIST.map((s) => ({
       url: `${base}/${s.slug}`,
       changeFreq: "monthly",
@@ -94,7 +108,7 @@ export async function GET(): Promise<NextResponse> {
       // bloc « ce qu'auraient donné N €/mois » calculé sur la série publiée
       lastmod: plusRecente(REV.etf, SERIE),
     })),
-    { url: `${base}/meilleurs-etf-debutants`,  changeFreq: "monthly", priority: 0.9,  lastmod: REV.etf },
+    { url: `${base}/meilleurs-etf-debutants`,  changeFreq: "monthly", priority: 0.9,  lastmod: REV.reponseDabord },
     ...Object.values(INDEX_GUIDES).map((g) => ({
       url: `${base}/${g.slug}`,
       changeFreq: "monthly",
@@ -103,12 +117,12 @@ export async function GET(): Promise<NextResponse> {
     })),
     { url: `${base}/strategie-dca`,            changeFreq: "monthly", priority: 0.9,  lastmod: REV.etf },
     { url: `${base}/interets-composes`,        changeFreq: "monthly", priority: 0.85, lastmod: REV.etf },
-    { url: `${base}/pea-ou-cto`,               changeFreq: "monthly", priority: 0.85, lastmod: REV.etf },
+    { url: `${base}/pea-ou-cto`,               changeFreq: "monthly", priority: 0.85, lastmod: REV.reponseDabord },
     // Liste vérifiée des ETF éligibles au PEA (29/09/2026) : sa date vient de
     // son module de données, la même que celle de la byline.
     { url: `${base}${URL_LISTE_PEA}`,          changeFreq: "monthly", priority: 0.9,  lastmod: MAJ_LISTE_PEA },
     { url: `${base}/guide-5-etf-pea-premium`,  changeFreq: "monthly", priority: 0.9,  lastmod: REV.etf },
-    { url: `${base}/calculateur-fiscal-pea-cto`, changeFreq: "monthly", priority: 0.9, lastmod: REV.etf },
+    { url: `${base}/calculateur-fiscal-pea-cto`, changeFreq: "monthly", priority: 0.9, lastmod: REV.reponseDabord },
     { url: `${base}/allocation-portefeuille`,  changeFreq: "monthly", priority: 0.85, lastmod: REV.etf },
     { url: `${base}/investir-en-etf`,          changeFreq: "monthly", priority: 0.85, lastmod: REV.etf },
     { url: `${base}/comparer-etf`,             changeFreq: "weekly",  priority: 0.8,  lastmod: REV.etf },
@@ -158,7 +172,8 @@ export async function GET(): Promise<NextResponse> {
       url: `${base}/etf/${etf.displaySymbol}`,
       changeFreq: "weekly",
       priority: 0.7,
-      lastmod: REV.etf,
+      // Même date que la byline des fiches (sources-etf.ts).
+      lastmod: FICHES_ETF_MAJ_LE,
     })),
   ];
 

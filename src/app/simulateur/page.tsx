@@ -7,6 +7,9 @@ import { runSimulation, formatEur, SCENARIO_DELTA } from "@/lib/simulator";
 import { paramsFromSearch } from "@/lib/simulation-params";
 import { ArticleByline } from "@/components/ui/ArticleByline";
 import { RenvoiProduit } from "@/components/products/RenvoiProduit";
+import { ETF_LIST } from "@/lib/etf-config";
+import { REGION_RETURN_SOURCES, HISTORICAL_RETURNS_PERIOD } from "@/lib/portfolio";
+import { dateEnToutesLettres } from "@/lib/etf-pea-verifies";
 
 // ─── FAQ : ce que les concurrents placés devant ont, et que cette page n'avait pas ─
 //
@@ -25,6 +28,36 @@ import { RenvoiProduit } from "@/components/products/RenvoiProduit";
 // ce que fait l'outil, jamais ce que le lecteur devrait faire de son argent.
 const DEFAUTS = paramsFromSearch(new URLSearchParams()).input;
 const pct = (v: number) => v.toLocaleString("fr-FR", { maximumFractionDigits: 2 });
+/** « 7 % », « 0,38 % » — espace insécable avant le signe. */
+const pc = (v: number) => `${pct(v)}\u00a0%`;
+
+// ─── Exemple de l'introduction (30/09/2026) ─────────────────────────────────
+//
+// Un relevé du 29/09 (30 questions posées à trois assistants) : les pages
+// d'outils citées donnent un résultat chiffré dès leurs premières lignes ; la
+// nôtre n'en donnait aucun avant l'outil. L'introduction montre donc le
+// résultat des réglages par défaut, CALCULÉ ici par le moteur (jamais recopié),
+// sans inflation comme le résultat affiché à l'arrivée sur la page. Il ne
+// dépend pas de l'URL : c'est l'exemple de référence, pas la simulation en cours.
+const EXEMPLE = runSimulation({ ...DEFAUTS, annualInflationPct: undefined });
+/** Le fonds dont les frais servent de défaut (TER_REFERENCE_SIMULATEUR), nommé seulement s'il correspond. */
+const FONDS_FRAIS_DEFAUT = ETF_LIST.find(
+  (e) => e.displaySymbol === "CW8" && e.ter === DEFAUTS.annualFeesPct,
+);
+/** Repère publié : MSCI World en euros, dividendes nets réinvestis (fiche MSCI, voir portfolio.ts). */
+const REPERE = REGION_RETURN_SOURCES.monde;
+/** « 29/12/2000 » → « 29 décembre 2000 ». */
+const dateLongue = (jjmmaaaa: string) => {
+  const [j, m, a] = jjmmaaaa.split("/");
+  return dateEnToutesLettres(`${a}-${m}-${j}`);
+};
+
+/**
+ * Dernière révision du texte de la page (byline, dateModified) : l'introduction
+ * du 30/09/2026. Le sitemap déclare la même date (REV.simulateur) — à changer
+ * ensemble.
+ */
+const SIMULATEUR_REVISE_LE = "2026-09-30";
 
 const FAQ_SIMULATEUR = [
   {
@@ -97,8 +130,21 @@ export const metadata: Metadata = {
 };
 
 // Reading searchParams here marks the route as dynamic, which is what we want —
-// the simulator output depends on the URL params. Bots get the real numbers
-// in the initial HTML instead of "Chargement de la simulation…".
+// the simulator output depends on the URL params.
+//
+// ⚠️ Pas de loading.tsx dans ce dossier (supprimé le 30/09/2026). Ce commentaire
+// affirmait que les robots recevaient les vrais chiffres dans le HTML initial :
+// c'était vrai, mais APRÈS le pied de page. loading.tsx enveloppait la page
+// dans une frontière Suspense ; la page attendant l'abonnement et l'URL, Next
+// envoyait d'abord le squelette dans <main> (« Chargement du simulateur… »),
+// puis le vrai contenu dans un <div hidden> en fin de document, que seul le
+// JavaScript remet en place. Les robots d'IA, qui ne l'exécutent pas, ne
+// lisaient donc rien (relevé du 29/09/2026). Sans frontière au-dessus de la
+// page, le document attend la page et le h1, l'introduction, le résultat, le
+// tableau et la FAQ sont dans <main>. Le prix : pas de squelette pendant une
+// navigation vers cette page, le temps que le serveur réponde. On n'isole pas
+// l'abonnement dans une frontière plus petite : il est passé à
+// SimulatorPageClient, qui porte aussi le résultat et le tableau.
 type Props = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
@@ -138,6 +184,13 @@ export default async function SimulateurPage({ searchParams }: Props) {
   const { input, base } = initialOutput;
   const gains = base.finalValue - base.totalInvested;
   const multiplier = base.totalInvested > 0 ? base.finalValue / base.totalInvested : 1;
+  // Virgule décimale (30/09/2026) : depuis la suppression de loading.tsx, ce
+  // repli est dans le <main> que lisent les robots, et il écrivait « frais
+  // 0.38 %/an » et « × 2.0 ». Même format que SimulatorHero.
+  const multiplicateur = multiplier.toLocaleString("fr-FR", {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  });
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -157,9 +210,48 @@ export default async function SimulateurPage({ searchParams }: Props) {
               contenait nulle part. La promesse vit dans le sous-titre. */}
           Simulateur DCA : combien vaudra votre investissement en ETF ?
         </h1>
-        <p className="text-gray-600 text-lg max-w-2xl">
-          Ajustez les curseurs — votre projection se met à jour en temps réel.
-          Basé sur la mécanique des intérêts composés et les données historiques ETF.
+        {/* Introduction réécrite le 30/09/2026 : ce que fait l'outil, puis un
+            résultat calculé par le moteur, dans les cent premiers mots. Elle
+            disait « basé sur […] les données historiques ETF » : faux, le
+            simulateur applique un rendement constant choisi par l'utilisateur
+            (c'est le backtest qui rejoue des cours réels). */}
+        <p className="text-gray-700 text-lg leading-relaxed max-w-3xl">
+          Ce simulateur gratuit et sans inscription calcule ce que devient un
+          versement mensuel en ETF, avec les intérêts composés et les frais
+          annuels de l&apos;ETF déduits du rendement. Exemple avec ses réglages
+          par défaut&nbsp;: {formatEur(EXEMPLE.input.monthlyAmount)} par mois pendant{" "}
+          {EXEMPLE.input.durationYears} ans, soit{" "}
+          {formatEur(EXEMPLE.base.totalInvested)} versés, à{" "}
+          {pc(EXEMPLE.input.annualReturnPct)} par an avant frais et{" "}
+          {pc(EXEMPLE.input.annualFeesPct)} de frais annuels
+          {FONDS_FRAIS_DEFAUT ? ` (ceux de ${FONDS_FRAIS_DEFAUT.displaySymbol})` : ""},
+          donnent un capital estimé de{" "}
+          <strong className="text-gray-900">{formatEur(EXEMPLE.base.finalValue)}</strong>.
+        </p>
+        <p className="text-gray-600 leading-relaxed max-w-3xl mt-3">
+          Ce rendement est une hypothèse de travail, pas une prévision. Le
+          simulateur l&apos;encadre de deux scénarios, à{" "}
+          {pc(EXEMPLE.conservative.annualReturnPct)} et{" "}
+          {pc(EXEMPLE.optimistic.annualReturnPct)} par an&nbsp;:{" "}
+          {formatEur(EXEMPLE.conservative.finalValue)} et{" "}
+          {formatEur(EXEMPLE.optimistic.finalValue)}. Pour repère, le{" "}
+          {REPERE.referenceIndex} en euros, dividendes nets réinvestis, a
+          rapporté {pc(REPERE.annualizedPct)} par an du{" "}
+          {dateLongue(HISTORICAL_RETURNS_PERIOD.start)} au{" "}
+          {dateLongue(HISTORICAL_RETURNS_PERIOD.end)}, selon la{" "}
+          <a
+            href={REPERE.sourceUrl}
+            target="_blank"
+            rel="noopener"
+            className="text-primary-700 font-medium hover:underline"
+          >
+            fiche officielle de MSCI
+          </a>
+          . L&apos;impôt n&apos;est pas compté&nbsp;: le{" "}
+          <Link href="/calculateur-fiscal-pea-cto" className="text-primary-700 font-medium hover:underline">
+            calculateur fiscal PEA/CTO
+          </Link>{" "}
+          le chiffre à part, aux taux de 2026.
         </p>
       </div>
 
@@ -177,22 +269,22 @@ export default async function SimulateurPage({ searchParams }: Props) {
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-amber-900">
             <div className="bg-white/60 rounded-lg p-3">
-              <span className="font-semibold">Versement :</span>{" "}
-              {input.monthlyAmount.toLocaleString("fr-FR")} €/mois pendant{" "}
+              <span className="font-semibold">Versement&nbsp;:</span>{" "}
+              {input.monthlyAmount.toLocaleString("fr-FR")}&nbsp;€/mois pendant{" "}
               {input.durationYears} ans
             </div>
             <div className="bg-white/60 rounded-lg p-3">
-              <span className="font-semibold">Hypothèses :</span> rendement{" "}
-              {input.annualReturnPct} %/an · frais {input.annualFeesPct} %/an
+              <span className="font-semibold">Hypothèses&nbsp;:</span> rendement{" "}
+              {pc(input.annualReturnPct)}/an · frais {pc(input.annualFeesPct)}/an
             </div>
             <div className="bg-white/60 rounded-lg p-3">
-              <span className="font-semibold">Capital investi :</span>{" "}
+              <span className="font-semibold">Capital investi&nbsp;:</span>{" "}
               {formatEur(base.totalInvested)}
             </div>
             <div className="bg-white/60 rounded-lg p-3">
-              <span className="font-semibold">Valeur finale estimée :</span>{" "}
+              <span className="font-semibold">Valeur finale estimée&nbsp;:</span>{" "}
               <span className="text-emerald-700">{formatEur(base.finalValue)}</span>
-              {" "}· gains {formatEur(gains)} · × {multiplier.toFixed(1)}
+              {" "}· gains {formatEur(gains)} · ×&nbsp;{multiplicateur}
             </div>
           </div>
         </div>
@@ -224,7 +316,7 @@ export default async function SimulateurPage({ searchParams }: Props) {
         <div className="mb-6">
           <ArticleByline
             publishedAt="2026-04-18"
-            updatedAt="2026-09-28"
+            updatedAt={SIMULATEUR_REVISE_LE}
             readingMinutes={4}
             url="/simulateur"
             headline={TITLE}

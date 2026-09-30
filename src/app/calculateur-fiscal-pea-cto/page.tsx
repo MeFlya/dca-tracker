@@ -1,13 +1,71 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CalculatorClient } from "./CalculatorClient";
+import { DEFAULTS_CALCULATEUR } from "./defaults";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { Disclaimer } from "@/components/ui/Disclaimer";
+import { ArticleByline } from "@/components/ui/ArticleByline";
+import { runSimulation } from "@/lib/simulator";
+import {
+  computeFiscalComparison,
+  formatFiscalEur,
+  PFU_RATE,
+  SOCIAL_CHARGES_RATE,
+  TAUX_VERIFIES_LE,
+  tauxAffiche,
+} from "@/lib/fiscal/pea-cto";
+import { ecartFiscal, impotCTO, impotPEA } from "@/lib/impot-affiche";
+import { dateEnToutesLettres } from "@/lib/etf-pea-verifies";
+import { ETF_LIST } from "@/lib/etf-config";
 
 const TITLE = "Calculateur fiscal PEA vs CTO — Comparez l'impôt sur vos ETF";
 const DESCRIPTION =
   "Combien d'impôt sur votre DCA ETF en PEA ou en CTO ? Calculateur instantané : règle des 5 ans, plafond 150 000 €, PFU 31,4 %, prélèvements sociaux. Gratuit, sans inscription.";
 const CANONICAL = "/calculateur-fiscal-pea-cto";
+
+// ─── Taux affichés : lus dans le moteur, jamais écrits (30/09/2026) ─────────
+//
+// Relevé du 29/09/2026 : les assistants IA citent sur cette question des
+// pages qui donnent les taux dès le titre (« 31,4 % ou 18,6 % »). La nôtre
+// donnait le premier taux au 225e mot. La réponse ouvre désormais la page, et
+// chaque taux vient de fiscal/pea-cto.ts : la prochaine loi de finances la
+// mettra à jour toute seule. L'année affichée est celle de la vérification
+// (TAUX_VERIFIES_LE), pas l'année en cours : on ne date pas un taux qu'on n'a
+// pas relu.
+const PS = tauxAffiche(SOCIAL_CHARGES_RATE); // « 18,6 »
+const PFU = tauxAffiche(PFU_RATE); // « 31,4 »
+const IR = tauxAffiche(PFU_RATE - SOCIAL_CHARGES_RATE); // « 12,8 »
+const ANNEE_TAUX = TAUX_VERIFIES_LE.slice(0, 4);
+const DATE_TAUX = dateEnToutesLettres(TAUX_VERIFIES_LE);
+
+/** Plus-values types du tableau d'écart. Des hypothèses, pas des résultats : l'impôt, lui, est calculé. */
+const PLUS_VALUES_TYPES = [10_000, 25_000, 50_000, 100_000];
+
+/** 10000 → « 10 000 », séparateur des montants du site. */
+const milliers = (v: number) => String(v).replace(/\B(?=(\d{3})+(?!\d))/g, "\u00a0");
+
+// Exemple concret : le calcul par défaut du calculateur, par le même moteur.
+const EXEMPLE_SIM = runSimulation(DEFAULTS_CALCULATEUR).base;
+const EXEMPLE = computeFiscalComparison({
+  totalInvested: EXEMPLE_SIM.totalInvested,
+  finalValue: EXEMPLE_SIM.finalValue,
+  holdingYears: DEFAULTS_CALCULATEUR.durationYears,
+});
+const EXEMPLE_TER = DEFAULTS_CALCULATEUR.annualFeesPct.toLocaleString("fr-FR", { minimumFractionDigits: 2 });
+/**
+ * Le fonds dont les frais servent de valeur de départ, nommé seulement s'il
+ * correspond (30/09/2026). La phrase écrivait « ceux de CW8 » en dur : le jour
+ * où la valeur de départ ne serait plus le TER de CW8, elle deviendrait fausse
+ * sans que rien ne casse. Même règle que l'introduction du simulateur.
+ */
+const FONDS_EXEMPLE = ETF_LIST.find(
+  (e) => e.displaySymbol === "CW8" && e.ter === DEFAULTS_CALCULATEUR.annualFeesPct,
+);
+/** Écart en % de net, au format du calculateur (CalculatorClient) : une décimale, virgule. */
+const EXEMPLE_ECART_PCT = EXEMPLE.peaAdvantagePct.toLocaleString("fr-FR", {
+  minimumFractionDigits: 1,
+  maximumFractionDigits: 1,
+});
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -25,7 +83,10 @@ export const metadata: Metadata = {
 const FAQ = [
   {
     q: "PEA ou CTO : lequel paie le moins d'impôts ?",
-    a: "Sur l'investissement long-terme en ETF (≥ 5 ans), le PEA paie nettement moins : 18,6 % de prélèvements sociaux uniquement, contre 31,4 % de PFU sur le CTO. La différence est importante : pour 50 000 € de plus-values sur 20 ans, vous économisez environ 6 400 € en PEA. Le PEA est donc le compte à privilégier en premier, dans la limite de son plafond de versement (150 000 €).",
+    // 30/09/2026 : taux et écart lus dans le moteur (l'écart « environ 6 400 € »
+    // était écrit à la main) ; « le compte à privilégier » décrivait un choix
+    // à la place du lecteur — la phrase dit ce que coûte chaque enveloppe.
+    a: `Sur un investissement en ETF détenu plus de 5 ans, le PEA coûte moins d'impôt\u00a0: ${PS}\u00a0% de prélèvements sociaux seulement, contre ${PFU}\u00a0% de PFU sur un CTO. Sur 50\u00a0000\u00a0€ de plus-values, l'écart est de ${ecartFiscal(50_000)}\u00a0€ d'impôt. Cet avantage vaut dans la limite du plafond de versements du PEA (150\u00a0000\u00a0€), et pour les seuls titres éligibles.`,
   },
   {
     q: "Comment fonctionne la règle des 5 ans du PEA ?",
@@ -34,7 +95,9 @@ const FAQ = [
     // l'ouverture, pas au premier versement ». La date d'ouverture fiscale EST
     // celle du premier versement ; un PEA ouvert sans versement ne prend pas
     // date. /investir-200-euros-mois-etf disait déjà la bonne règle.
-    a: "Tant que le plan a moins de 5 ans, un retrait entraîne en principe sa clôture, et le gain est imposé à 31,4 % (12,8 % d'impôt sur le revenu + 18,6 % de prélèvements sociaux), comme sur un CTO. Une fois les 5 ans passés, le gain n'est plus soumis à l'impôt sur le revenu : un retrait ne supporte que les prélèvements sociaux (18,6 %). Le délai de 5 ans part de la date du premier versement, pas de la signature du contrat : c'est pourquoi il est conseillé d'ouvrir un PEA tôt et d'y verser une petite somme, même si vous n'investissez pas tout de suite. La loi ne fixe pas de versement minimum ; certains courtiers en demandent un à l'ouverture.",
+    // 30/09/2026 : « il est conseillé d'ouvrir un PEA tôt » était un conseil ;
+    // la phrase décrit l'effet d'une ouverture précoce (fait FISC-PEA-05).
+    a: "Tant que le plan a moins de 5 ans, un retrait entraîne en principe sa clôture, et le gain est imposé à 31,4 % (12,8 % d'impôt sur le revenu + 18,6 % de prélèvements sociaux), comme sur un CTO. Une fois les 5 ans passés, le gain n'est plus soumis à l'impôt sur le revenu : un retrait ne supporte que les prélèvements sociaux (18,6 %). Le délai de 5 ans part de la date du premier versement, pas de la signature du contrat : un PEA ouvert tôt, avec une petite somme, «\u00a0prend date\u00a0» même si le reste n'est investi que plus tard. La loi ne fixe pas de versement minimum ; certains courtiers en demandent un à l'ouverture.",
   },
   {
     q: "Quel est le plafond de versement du PEA ?",
@@ -45,7 +108,10 @@ const FAQ = [
     // 29/09/2026 (fait FISC-PEA-02, BOFiP + service-public) : « plafond séparé
     // de 225 000 € » était faux. 225 000 € est le plafond CUMULÉ PEA + PEA-PME :
     // avec 150 000 € déjà versés sur le PEA, il reste 75 000 € pour le PEA-PME.
-    a: "Une fois le plafond de 150 000 € atteint, vos versements supplémentaires doivent aller sur un autre compte. Le CTO est le choix le plus simple. Vous pouvez aussi explorer le PEA-PME, dont le plafond est commun avec le PEA : 225 000 € de versements au total sur les deux plans, soit 75 000 € de plus une fois le PEA rempli, avec un choix d'ETF éligibles plus restreint. L'assurance-vie est une autre piste (cadre fiscal différent, frais plus élevés). Notre calculateur affiche automatiquement la combinaison optimale PEA + CTO quand vos versements dépassent 150 000 €.",
+    // 30/09/2026 : « Le CTO est le choix le plus simple » et « la combinaison
+    // optimale » tranchaient à la place du lecteur ; la réponse décrit les
+    // options et ce que fait le calculateur.
+    a: "Une fois le plafond de 150 000 € atteint, vos versements supplémentaires doivent aller sur un autre compte. Le CTO n'a pas de plafond. Le PEA-PME est une autre option, dont le plafond est commun avec le PEA : 225 000 € de versements au total sur les deux plans, soit 75 000 € de plus une fois le PEA rempli, avec un choix d'ETF éligibles plus restreint. L'assurance-vie en est une troisième (cadre fiscal différent, frais plus élevés). Quand vos versements dépassent 150 000 €, notre calculateur affiche aussi le résultat d'un PEA rempli jusqu'au plafond, complété par un CTO.",
   },
   {
     q: "Quelle différence entre PFU et option pour l'IR ?",
@@ -128,7 +194,59 @@ export default function CalculateurFiscalPage() {
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3 leading-tight">
             PEA ou CTO : combien d&apos;impôt sur votre DCA ETF ?
           </h1>
-          <p className="text-lg text-gray-600 leading-relaxed max-w-2xl">
+
+          {/* Article + auteur + dateModified (30/09/2026) : la page n'avait
+              que WebApplication et FAQPage, sans date ni signature. */}
+          <ArticleByline
+            publishedAt="2026-04-28"
+            updatedAt="2026-09-30"
+            url={CANONICAL}
+            headline={TITLE}
+            description={DESCRIPTION}
+            className="mb-5"
+          />
+
+          {/* La réponse d'abord (30/09/2026) : les deux taux dans la première
+              phrase, puis leur date de vérification et leurs sources. */}
+          <p className="text-lg text-gray-700 leading-relaxed max-w-2xl">
+            En {ANNEE_TAUX}, un gain retiré d&apos;un <strong>PEA de plus de 5 ans</strong>{" "}
+            ne supporte que les prélèvements sociaux, <strong>{PS}&nbsp;%</strong>. Sur un{" "}
+            <strong>compte-titres (CTO)</strong>, une plus-value paie le prélèvement forfaitaire
+            unique (PFU) de <strong>{PFU}&nbsp;%</strong>&nbsp;: {IR}&nbsp;% d&apos;impôt sur le
+            revenu et {PS}&nbsp;% de prélèvements sociaux. L&apos;écart est donc de {IR}&nbsp;points
+            sur chaque euro de gain.
+          </p>
+          <p className="text-xs text-gray-500 leading-relaxed max-w-2xl mt-2">
+            Taux vérifiés le {DATE_TAUX} sur{" "}
+            <a
+              href="https://www.service-public.gouv.fr/particuliers/vosdroits/F21618"
+              target="_blank"
+              rel="noopener"
+              className="underline underline-offset-2 hover:text-gray-700"
+            >
+              service-public.gouv.fr (plus-values sur valeurs mobilières)
+            </a>
+            ,{" "}
+            <a
+              href="https://www.service-public.gouv.fr/particuliers/vosdroits/F2329"
+              target="_blank"
+              rel="noopener"
+              className="underline underline-offset-2 hover:text-gray-700"
+            >
+              service-public.gouv.fr (prélèvements sociaux)
+            </a>{" "}
+            et{" "}
+            <a
+              href="https://www.impots.gouv.fr/particulier/questions/jai-un-plan-depargne-en-actions-pea-les-retraits-sont-ils-imposables"
+              target="_blank"
+              rel="noopener"
+              className="underline underline-offset-2 hover:text-gray-700"
+            >
+              impots.gouv.fr (retraits d&apos;un PEA)
+            </a>
+            .
+          </p>
+          <p className="text-base text-gray-600 leading-relaxed max-w-2xl mt-4">
             Entrez votre stratégie d&apos;investissement, on calcule en temps
             réel le net après impôt sur PEA et sur CTO — règle des 5 ans,
             plafond 150 000 €, PFU et prélèvements sociaux compris.
@@ -158,6 +276,54 @@ export default function CalculateurFiscalPage() {
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
               Comprendre la fiscalité PEA vs CTO en 60 secondes
             </h2>
+
+            {/* Tableau d'écart (30/09/2026) : quatre plus-values types, l'impôt
+                calculé par impot-affiche.ts sur les taux du moteur. Trois
+                colonnes de montants : il tient à 375 px dans son conteneur. */}
+            <div className="overflow-x-auto rounded-2xl border border-slate-200/70 mb-3">
+              <table className="w-full text-xs sm:text-sm">
+                <caption className="sr-only">
+                  Impôt dû sur une plus-value selon l&apos;enveloppe, taux {ANNEE_TAUX}
+                </caption>
+                <thead className="bg-slate-50">
+                  <tr>
+                    <th scope="col" className="text-left px-2.5 sm:px-4 py-3 font-semibold text-gray-600">Plus-value</th>
+                    <th scope="col" className="text-right px-2.5 sm:px-4 py-3 font-semibold text-gray-600">
+                      PEA de plus de 5&nbsp;ans ({PS}&nbsp;%)
+                    </th>
+                    <th scope="col" className="text-right px-2.5 sm:px-4 py-3 font-semibold text-gray-600">
+                      CTO (PFU {PFU}&nbsp;%)
+                    </th>
+                    <th scope="col" className="text-right px-2.5 sm:px-4 py-3 font-semibold text-gray-600">Écart</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {PLUS_VALUES_TYPES.map((gain) => (
+                    <tr key={gain}>
+                      <th scope="row" className="text-left px-2.5 sm:px-4 py-3 font-medium text-gray-900 tabular-nums whitespace-nowrap">
+                        {milliers(gain)}&nbsp;€
+                      </th>
+                      <td className="text-right px-2.5 sm:px-4 py-3 text-gray-700 tabular-nums whitespace-nowrap">
+                        {impotPEA(gain)}&nbsp;€
+                      </td>
+                      <td className="text-right px-2.5 sm:px-4 py-3 text-gray-700 tabular-nums whitespace-nowrap">
+                        {impotCTO(gain)}&nbsp;€
+                      </td>
+                      <td className="text-right px-2.5 sm:px-4 py-3 font-semibold text-primary-700 tabular-nums whitespace-nowrap">
+                        {ecartFiscal(gain)}&nbsp;€
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="text-xs text-gray-500 leading-relaxed mb-6">
+              Impôt dû sur la plus-value, taux {ANNEE_TAUX} vérifiés le {DATE_TAUX}. CTO au PFU, sans
+              l&apos;option pour le barème de l&apos;impôt sur le revenu. PEA de plus de 5&nbsp;ans&nbsp;:
+              un plan ouvert avant 2018 garde d&apos;anciens taux sur la part du gain acquise avant cette
+              date et, s&apos;il avait moins de 5&nbsp;ans au 1er&nbsp;janvier 2018, sur le gain de ses
+              5&nbsp;premières années.
+            </p>
             <div className="prose prose-sm max-w-none text-gray-700 leading-relaxed space-y-4">
               <p>
                 Quand vous vendez vos ETF en plus-value, l&apos;État prélève
@@ -169,14 +335,16 @@ export default function CalculateurFiscalPage() {
               </p>
               <ul className="space-y-2 list-disc pl-5">
                 <li>
+                  {/* 30/09/2026 : « le compte fiscalement le plus avantageux »
+                      (superlatif) → la comparaison, chiffrée juste au-dessus. */}
                   <strong>PEA après 5 ans</strong> : seuls les prélèvements
-                  sociaux s&apos;appliquent (18,6 %). C&apos;est le compte
-                  fiscalement le plus avantageux pour le DCA ETF long-terme.
+                  sociaux s&apos;appliquent (18,6 %). Sur un DCA en ETF de long
+                  terme, c&apos;est ce qui le rend moins imposé que le CTO.
                 </li>
                 <li>
                   <strong>PEA avant 5 ans</strong> : si vous clôturez avant
                   les 5 ans, vous payez le PFU complet à 31,4 %. Dans ce cas, le
-                  PEA n&apos;a plus d&apos;intérêt fiscal vs CTO.
+                  PEA n&apos;a plus d&apos;intérêt fiscal par rapport au CTO.
                 </li>
                 <li>
                   {/* 29/09/2026 (FISC-PS-02) : 18,6 % est le TOTAL des
@@ -195,26 +363,38 @@ export default function CalculateurFiscalPage() {
             </div>
           </div>
 
+          {/* Exemple concret — CALCULÉ depuis le 30/09/2026. Il était écrit à
+              la main (102 000 €, 54 000 € de gains, 6 912 € d'écart), sans
+              frais, alors que le calculateur s'ouvre avec 0,38 % de frais et
+              affichait un autre écart : deux réponses à une même question. Il
+              reprend désormais les valeurs de départ du calculateur. */}
           <div className="rounded-2xl border border-slate-200/70 bg-slate-50 p-6">
             <h3 className="font-bold text-gray-900 mb-2">Exemple concret</h3>
             <p className="text-sm text-gray-700 leading-relaxed mb-3">
-              200 €/mois × 20 ans = 48 000 € versés. À 7 %/an net, le
-              portefeuille atteint environ <strong>102 000 €</strong>, soit{" "}
-              <strong>54 000 € de plus-values</strong>.
+              {DEFAULTS_CALCULATEUR.monthlyAmount}&nbsp;€/mois ×{" "}
+              {DEFAULTS_CALCULATEUR.durationYears}&nbsp;ans ={" "}
+              {formatFiscalEur(EXEMPLE.pea.totalInvested)} versés. À{" "}
+              {DEFAULTS_CALCULATEUR.annualReturnPct}&nbsp;%/an avant frais, avec{" "}
+              {EXEMPLE_TER}&nbsp;% de frais annuels (
+              {FONDS_EXEMPLE ? `ceux de ${FONDS_EXEMPLE.displaySymbol}, ` : ""}valeur de départ du
+              calculateur), le portefeuille atteint{" "}
+              <strong>{formatFiscalEur(EXEMPLE.pea.grossFinalValue)}</strong>, soit{" "}
+              <strong>{formatFiscalEur(EXEMPLE.pea.capitalGain)} de plus-values</strong>.
             </p>
             <ul className="text-sm text-gray-700 space-y-1.5">
               <li>
-                <strong>En PEA</strong> (≥ 5 ans) : 54 000 € × 18,6 % ={" "}
-                <strong>10 044 €</strong> d&apos;impôt → net{" "}
-                <strong>91 956 €</strong>
+                <strong>En PEA</strong> (≥ 5 ans) : {formatFiscalEur(EXEMPLE.pea.capitalGain)} × {PS}&nbsp;% ={" "}
+                <strong>{formatFiscalEur(EXEMPLE.pea.taxDue)}</strong> d&apos;impôt → net{" "}
+                <strong>{formatFiscalEur(EXEMPLE.pea.netFinalValue)}</strong>
               </li>
               <li>
-                <strong>En CTO</strong> : 54 000 € × 31,4 % ={" "}
-                <strong>16 956 €</strong> d&apos;impôt → net{" "}
-                <strong>85 044 €</strong>
+                <strong>En CTO</strong> : {formatFiscalEur(EXEMPLE.cto.capitalGain)} × {PFU}&nbsp;% ={" "}
+                <strong>{formatFiscalEur(EXEMPLE.cto.taxDue)}</strong> d&apos;impôt → net{" "}
+                <strong>{formatFiscalEur(EXEMPLE.cto.netFinalValue)}</strong>
               </li>
               <li className="pt-1.5 border-t border-slate-200/70 mt-1.5 font-semibold text-primary-700">
-                → Avantage PEA : <strong>+6 912 €</strong> (+ 8 % de net)
+                → Avantage PEA : <strong>+{formatFiscalEur(EXEMPLE.peaAdvantageEur)}</strong> (+
+                {EXEMPLE_ECART_PCT}&nbsp;% de net)
               </li>
             </ul>
           </div>

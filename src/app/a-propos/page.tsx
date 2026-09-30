@@ -48,10 +48,22 @@ export default function AboutPage() {
     image: `${siteUrl}/team/mael-faleyras.jpg`,
     url: `${siteUrl}/a-propos`,
     email: "hello@dcatracker.fr",
+    // 30/09/2026 : la page émettait un second bloc Organization (fondateur,
+    // date de création) en plus de celui du layout, présent sur toutes les
+    // pages — deux Organization sur /a-propos pour la même entité. Le bloc
+    // propre à la page est retiré ; ce qu'il ajoutait (identifiant, date de
+    // création) passe ici, rattaché à l'auteur.
+    // ⚠️ Ne pas réintroduire « sans affiliation » dans une description
+    // d'Organization : c'est une affirmation en données structurées, reprise
+    // telle quelle par les moteurs, et elle cesse d'être vraie dès
+    // l'activation d'un partenariat courtier. Le modèle économique est décrit
+    // en détail sur /transparence.
     worksFor: {
       "@type": "Organization",
+      "@id": `${siteUrl}#organization`,
       name: "DCA Tracker",
       url: siteUrl,
+      foundingDate: "2025",
     },
     knowsAbout: [
       "Dollar Cost Averaging",
@@ -71,23 +83,6 @@ export default function AboutPage() {
     // Permet à Google de relier l'auteur à son audience publique
     // (Knowledge Graph + signal d'expertise).
     sameAs: ["https://x.com/mael_invest"],
-  };
-
-  const organizationSchema = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "@id": `${siteUrl}#organization`,
-    name: "DCA Tracker",
-    url: siteUrl,
-    founder: { "@id": `${siteUrl}/a-propos#person` },
-    foundingDate: "2025",
-    // ⚠️ Ne pas réintroduire « sans affiliation » ici : c'est une affirmation
-    // en données structurées, donc reprise telle quelle par les moteurs, et
-    // elle cesse d'être vraie dès l'activation d'un partenariat courtier.
-    // Le modèle économique est décrit en détail sur /transparence.
-    description:
-      "Simulateur et tracker DCA ETF pour investisseurs particuliers français. Outil indépendant, bootstrappé, au financement public.",
-    email: "hello@dcatracker.fr",
   };
 
   return (
@@ -525,7 +520,6 @@ export default function AboutPage() {
 
       {/* ── JSON-LD ────────────────────────────────────────────────────── */}
       <JsonLd data={personSchema} />
-      <JsonLd data={organizationSchema} />
     </>
   );
 }

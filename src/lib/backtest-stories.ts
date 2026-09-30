@@ -79,8 +79,11 @@ const fmtIrr = (r: BacktestResult) =>
  * le COVID » (alors qu'en mars 2020 le portefeuille était à −9,9 % sous le
  * versé), et la page 2022 citait « −8,1 % » comme le creux de 2022 — c'était
  * celui d'avril 2025.
+ *
+ * Exportée le 30/09/2026 : /backtest cite le pire écart des trois exemples
+ * publiés, et doit le mesurer exactement comme ces pages.
  */
-function pireEcart(r: BacktestResult): { pct: number; mois: string } | null {
+export function pireEcart(r: BacktestResult): { pct: number; mois: string } | null {
   let pire = { e: 0, mois: "" };
   for (const p of r.series) {
     const e = p.invested > 0 ? p.value / p.invested - 1 : 0;
@@ -536,4 +539,79 @@ export function getBacktestStory(slug: string): ComputedStory {
     endMonth,
   });
   return { def, result, endMonth };
+}
+
+// ─── /backtest : exemples publiés et « pire moment pour commencer » ─────────
+//
+// Ajouté le 30/09/2026. Un relevé du 29/09 (30 questions posées à trois
+// assistants) a montré que /backtest ne donnait à lire, sans JavaScript, ni
+// résultat ni date : seulement « Premium » et « Débloquer ». La page publie
+// désormais les trois histoires ci-dessus et répond à « quel a été le pire
+// moment pour commencer un DCA sur le MSCI World ? ». Les deux se calculent
+// ici, sur la série publiée, jamais à la main.
+
+/** Dernière révision du TEXTE de /backtest (la série a sa propre date). */
+const BACKTEST_OUTIL_REVISE_LE = "2026-09-30";
+
+/**
+ * Date de révision de /backtest (byline, dateModified, sitemap) : ses exemples
+ * courent jusqu'au dernier mois publié, comme ceux des histoires.
+ */
+export function backtestUpdatedAt(): string {
+  const serie = getDatasetMeta().fetchedAt;
+  return serie > BACKTEST_OUTIL_REVISE_LE ? serie : BACKTEST_OUTIL_REVISE_LE;
+}
+
+export type PireDepart = {
+  /** Mois de départ du DCA le plus éprouvé (YYYY-MM). */
+  depart: string;
+  /** Pire écart sous le total versé de ce DCA, et son mois. */
+  creux: { pct: number; mois: string; valeur: number; verse: number };
+  /** Le même DCA au dernier mois publié. */
+  resultat: BacktestResult;
+  /** Nombre de départs mensuels rejoués, et combien finissent sous le versé. */
+  nbDeparts: number;
+  nbEnPerte: number;
+  /** Premier et dernier mois de la série. */
+  debutSerie: string;
+  finSerie: string;
+};
+
+/**
+ * Rejoue un DCA partant de chaque mois de la série jusqu'au dernier mois
+ * publié, et retient le départ dont le pire écart sous le total versé est le
+ * plus profond — la mesure de pireEcart(), pas maxDrawdown (voir plus haut).
+ *
+ * Ce « pire » est celui de la SÉRIE, qui commence en janvier 2008 : le sommet
+ * d'octobre 2007 n'y figure pas, un départ plus tôt aurait pu faire pire. Le
+ * pourcentage ne dépend pas du montant mensuel (tous les versements sont
+ * égaux) ; `monthlyAmount` ne sert qu'aux montants affichés.
+ */
+export function pireDepartSurLaSerie(monthlyAmount: number): PireDepart {
+  const { min, max } = getAvailableRange();
+  let pire: { depart: string; pct: number; mois: string; r: BacktestResult } | null = null;
+  let nbDeparts = 0;
+  let nbEnPerte = 0;
+  for (let depart = min; depart < max; depart = moisSuivant(depart)) {
+    const r = runBacktest({ monthlyAmount, startMonth: depart, endMonth: max });
+    nbDeparts++;
+    if (r.finalValue < r.totalInvested) nbEnPerte++;
+    const p = pireEcart(r);
+    if (p && (!pire || p.pct > pire.pct)) pire = { depart, pct: p.pct, mois: p.mois, r };
+  }
+  if (!pire) {
+    throw new Error("backtest-stories : aucun départ de la série n'est passé sous le total versé.");
+  }
+  const { depart, pct, mois, r } = pire;
+  const point = r.series.find((p) => p.month === mois);
+  if (!point) throw new Error(`backtest-stories : mois ${mois} absent de la série rejouée.`);
+  return {
+    depart,
+    creux: { pct, mois, valeur: point.value, verse: point.invested },
+    resultat: r,
+    nbDeparts,
+    nbEnPerte,
+    debutSerie: min,
+    finSerie: max,
+  };
 }

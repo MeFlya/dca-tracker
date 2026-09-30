@@ -10,6 +10,14 @@ const DESCRIPTION =
   "Combien investir par mois pour sa retraite en ETF : tableaux par âge de départ, règle des 4 % et la rente en euros d'aujourd'hui, pas en euros futurs.";
 const CANONICAL = "/simulateur-retraite";
 
+// Dates de l'Article (30/09/2026) : le JSON-LD n'en avait aucune, alors que
+// c'est la fraîcheur que lisent moteurs et assistants. Publication : premier
+// commit de la page (19/04/2026). Modification : réécriture des projections du
+// 28/09/2026, la date que déclare aussi le sitemap (REV.etf) — à changer
+// ensemble.
+const PUBLIE_LE = "2026-04-19";
+const REVISE_LE = "2026-09-28";
+
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
@@ -170,6 +178,8 @@ export default function SimulateurRetraitePage() {
           headline: TITLE,
           description: DESCRIPTION,
           url: `${siteUrl}${CANONICAL}`,
+          datePublished: PUBLIE_LE,
+          dateModified: REVISE_LE,
           author: { "@type": "Organization", name: "DCA Tracker" },
           publisher: { "@type": "Organization", name: "DCA Tracker", url: siteUrl },
         }}

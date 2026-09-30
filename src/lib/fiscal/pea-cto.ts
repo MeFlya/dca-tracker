@@ -179,6 +179,18 @@ export const BAREMES_CAPITAL: Record<
   },
 };
 
+/**
+ * Date à laquelle les taux de BAREMES_CAPITAL ont été relus sur les textes et
+ * les fiches officielles (LFSS 2026 art. 12, CGI art. 200 A, service-public
+ * F2329 et F21618, impots.gouv.fr), YYYY-MM-DD.
+ *
+ * Ajoutée le 30/09/2026 : /calculateur-fiscal-pea-cto affiche « taux vérifiés
+ * le … » à côté des taux. À changer avec le barème, et seulement quand on l'a
+ * réellement relu — une date de vérification qu'on avance sans relire est un
+ * chiffre inventé.
+ */
+export const TAUX_VERIFIES_LE = "2026-09-28";
+
 /** Premier millésime connu du barème. Avant, le PFU n'existait pas : un calcul
  *  sur une année antérieure serait faux, l'appelant doit le refuser. */
 export const PREMIERE_ANNEE_BAREME = 2018;

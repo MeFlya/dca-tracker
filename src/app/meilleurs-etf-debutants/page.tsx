@@ -9,6 +9,8 @@ import { SourcesReferences } from "@/components/ui/SourcesReferences";
 import { EtapeSuivante } from "@/components/ui/EtapeSuivante";
 import { formatTer } from "@/lib/utils";
 import { ecartCapital, HYPOTHESES_COMPARATIFS } from "@/lib/ecart-frais";
+import { DATE_VERIFICATION_PEA, ETF_PEA_VERIFIES, dateEnToutesLettres } from "@/lib/etf-pea-verifies";
+import { PFU_RATE, SOCIAL_CHARGES_RATE, tauxAffiche } from "@/lib/fiscal/pea-cto";
 
 // CTR (audit 07/2026) : le title mettait en avant IWDA/VWCE (non éligibles
 // PEA — hors intent du débutant FR) et contredisait la meta. Title aligné
@@ -84,6 +86,13 @@ interface Pick {
   detail?: { href: string; label: string };
 }
 
+// 30/09/2026 — étiquettes : « Notre choix n°1 », « Le choix n°1 pour un
+// débutant en PEA » et « Alternative PEA » classaient WPEA devant DCAM comme
+// une consigne, alors que les deux sont à égalité sur l'indice et les frais, et
+// que le site n'a pas le statut de conseiller en investissements financiers.
+// Le mode IA de Google cite cette page en première source : elle y aurait
+// « recommandé » un fonds. L'étiquette dit désormais ce qu'est le fonds.
+// L'ordre des cartes et leurs données ne changent pas.
 const TOP_PICKS: Pick[] = [
   {
     symbol: "WPEA",
@@ -92,10 +101,10 @@ const TOP_PICKS: Pick[] = [
     pea: true,
     replication: "Synthétique (swap)",
     index: "MSCI World (grandes et moyennes capitalisations des pays développés)",
-    verdict: "Le choix n°1 pour un débutant en PEA",
+    verdict: "MSCI World éligible au PEA, à 0,20 % par an, à égalité avec DCAM",
     verdictClass: "bg-primary-50 border-primary-100 text-primary-800",
     tagClass: "bg-primary-600 text-white",
-    tag: "Notre choix n°1",
+    tag: "MSCI World en PEA · iShares",
     why: [
       "0,20 % de frais contre 0,38 % pour CW8 : le même indice, presque deux fois moins cher",
       "Éligible PEA — après 5 ans, seuls les prélèvements sociaux de 18,6 % s'appliquent aux gains",
@@ -119,7 +128,7 @@ const TOP_PICKS: Pick[] = [
     verdict: "L'équivalent d'Amundi, au même prix",
     verdictClass: "bg-blue-50 border-blue-100 text-blue-800",
     tagClass: "bg-blue-600 text-white",
-    tag: "Alternative PEA",
+    tag: "MSCI World en PEA · Amundi",
     why: [
       "Même indice et même TER (0,20 %) que WPEA",
       "Part sous 10 € : adaptée aux petits versements mensuels",
@@ -176,6 +185,59 @@ function aUneFiche(symbol: string): boolean {
   return getETFBySymbol(symbol) !== undefined;
 }
 
+// ─── ISIN, frais et statut PEA : lus, pas recopiés (30/09/2026) ─────────────
+//
+// Le tableau récapitulatif écrivait ses TER à la main et n'avait pas d'ISIN —
+// or c'est l'ISIN, pas le nom, qui identifie le fonds dans l'écran d'ordre, et
+// les pages que citent les assistants IA le donnent. On le lit dans le
+// catalogue (etf-config.ts) ou, pour SPEA qui n'y est pas, dans la liste
+// vérifiée (etf-pea-verifies.ts). Un mnémonique introuvable casse le build
+// plutôt que d'afficher une case vide.
+function fonds(symbol: string): { isin: string; ter: number; pea: boolean } {
+  const catalogue = getETFBySymbol(symbol);
+  if (catalogue?.isin) return { isin: catalogue.isin, ter: catalogue.ter, pea: catalogue.peaEligible };
+  const verifie = ETF_PEA_VERIFIES.find((f) => f.displaySymbol === symbol);
+  if (verifie) return { isin: verifie.isin, ter: verifie.ter, pea: true };
+  throw new Error(`meilleurs-etf-debutants : ${symbol} n'est ni dans le catalogue ni dans la liste vérifiée.`);
+}
+
+// 30/09/2026 — la colonne « Idéal pour » est retirée : « Premier ETF en PEA »
+// désignait WPEA et DCAM comme le fonds à prendre (une consigne, pas une
+// description), et le reste répétait les colonnes Couverture et PEA. L'ISIN
+// passe sous le mnémonique : en colonne à part, il portait le tableau à 478 px
+// dans un conteneur de 341 px à 375 px de large.
+const TABLEAU = [
+  { symbol: "WPEA", cover: "Pays développés (MSCI World)" },
+  { symbol: "DCAM", cover: "Pays développés (MSCI World)" },
+  { symbol: "SPEA", cover: "500 grandes entreprises américaines" },
+  { symbol: "VWCE", cover: "Développés + émergents (FTSE All-World)" },
+  { symbol: "CW8", cover: "Pays développés (MSCI World)" },
+].map((row) => ({ ...row, ...fonds(row.symbol) }));
+
+// Réponse d'ouverture : celle de la meta description, avec ses chiffres.
+const WPEA_F = fonds("WPEA");
+const DCAM_F = fonds("DCAM");
+const CW8_F = fonds("CW8");
+const DATE_VERIF = dateEnToutesLettres(DATE_VERIFICATION_PEA);
+
+/** 0.2 → « 0,20 % », avec l'espace insécable que formatTer ne met pas avant le signe. */
+const terAffiche = (ter: number) => formatTer(ter).replace(" %", "\u00a0%");
+
+// Taux lus dans le moteur fiscal (30/09/2026) : les phrases réécrites ce jour
+// ne recopient plus 18,6 % et 31,4 % à la main.
+const PS = tauxAffiche(SOCIAL_CHARGES_RATE);
+const PFU = tauxAffiche(PFU_RATE);
+
+// Fourchette de frais des ETF éligibles au PEA vérifiés, lue dans la liste
+// (30/09/2026) : elle remplace « Visez moins de 0,5 % », une consigne sans
+// source, et le « 13 ETF … de 0,10 % à 0,38 % » recopié dans la FAQ.
+const TER_PEA = ETF_PEA_VERIFIES.map((f) => f.ter);
+const FOURCHETTE_PEA = {
+  nombre: ETF_PEA_VERIFIES.length,
+  min: terAffiche(Math.min(...TER_PEA)),
+  max: terAffiche(Math.max(...TER_PEA)),
+};
+
 const CRITERIA = [
   {
     title: "Frais (TER)",
@@ -185,7 +247,7 @@ const CRITERIA = [
     // sourcés. Le 1,5 % devient une hypothèse d'illustration et l'écart est
     // CALCULÉ par le moteur (ecartCapital, faits BT-24 et BT-26). Le TER est
     // prélevé au jour le jour sur l'actif, pas « chaque année » (ter-definition).
-    body: `Le TER (Total Expense Ratio, ou frais courants) est prélevé au jour le jour sur l'actif du fonds : la performance affichée en est déjà nette. Sur la durée, l'écart pèse lourd : avec ${HYPOTHESES_COMPARATIFS.monthlyAmount} € par mois pendant ${HYPOTHESES_COMPARATIFS.durationYears} ans et un rendement brut hypothétique de ${HYPOTHESES_COMPARATIFS.annualReturnPct} % par an, des frais de 1,5 % par an au lieu de 0,20 % laissent environ ${ecartCapital(1.5, 0.2)} € de moins. Visez moins de 0,5 % pour un ETF passif.`,
+    body: `Le TER (Total Expense Ratio, ou frais courants) est prélevé au jour le jour sur l'actif du fonds : la performance affichée en est déjà nette. Sur la durée, l'écart pèse lourd : avec ${HYPOTHESES_COMPARATIFS.monthlyAmount} € par mois pendant ${HYPOTHESES_COMPARATIFS.durationYears} ans et un rendement brut hypothétique de ${HYPOTHESES_COMPARATIFS.annualReturnPct} % par an, des frais de 1,5 % par an au lieu de 0,20 % laissent environ ${ecartCapital(1.5, 0.2)} € de moins. Les ${FOURCHETTE_PEA.nombre} ETF éligibles au PEA que nous avons vérifiés coûtent de ${FOURCHETTE_PEA.min} à ${FOURCHETTE_PEA.max} par an.`,
   },
   {
     title: "Diversification",
@@ -195,24 +257,33 @@ const CRITERIA = [
   {
     title: "Éligibilité PEA",
     icon: "🏛️",
-    body: "Pour les résidents français, le PEA est l'enveloppe fiscale la plus avantageuse. Après 5 ans, vos plus-values sont exonérées d'impôt sur le revenu (seuls les 18,6 % de prélèvements sociaux s'appliquent vs 31,4 % en flat tax sur CTO).",
+    // 30/09/2026 : « l'enveloppe fiscale la plus avantageuse » était un
+    // superlatif ; la comparaison chiffrée dit la même chose sans classer.
+    body: `Pour un résident français, le PEA prélève moins sur les gains qu'un compte-titres ordinaire (CTO)\u00a0: après 5 ans, les plus-values y sont exonérées d'impôt sur le revenu et ne supportent que ${PS}\u00a0% de prélèvements sociaux, contre ${PFU}\u00a0% de prélèvement forfaitaire unique (PFU, ou «\u00a0flat tax\u00a0») sur un CTO. En contrepartie, il n'accepte que des ETF éligibles.`,
   },
   {
     title: "Politique de distribution",
     icon: "🔄",
-    body: "Un ETF capitalisant réinvestit automatiquement les dividendes. C'est optimal pour le DCA long terme : les dividendes s'ajoutent à votre capital et composent sans intervention ni friction fiscale annuelle.",
+    // 30/09/2026 : « C'est optimal pour le DCA long terme » classait ; la
+    // phrase décrit le mécanisme.
+    body: "Un ETF capitalisant réinvestit automatiquement les dividendes. Sur un DCA de long terme, ils s'ajoutent ainsi à votre capital et composent sans intervention ni friction fiscale annuelle.",
   },
   {
     title: "Liquidité",
     icon: "📊",
-    body: "La liquidité détermine à quel prix vous pouvez acheter ou vendre. Un ETF très liquide a un faible écart acheteur/vendeur (spread). Sur des montants modestes, préférez les ETF à fort volume quotidien.",
+    // 30/09/2026 : « préférez les ETF à fort volume » était une consigne ; la
+    // phrase dit ce que coûte l'écart.
+    body: "La liquidité détermine à quel prix vous pouvez acheter ou vendre. Un ETF très liquide a un faible écart acheteur/vendeur (spread). Cet écart est un coût implicite, payé à l'achat comme à la vente, en plus des frais du courtier.",
   },
 ];
 
 const FAQ = [
   {
-    q: "Quel est le meilleur ETF pour commencer en bourse avec un petit budget ?",
-    a: "Un ETF MSCI World éligible PEA à 0,20 % de frais : WPEA (iShares) ou DCAM (Amundi). Tous deux sont capitalisants et leur part coûte moins de 10 €, ce qui permet d'investir de petites sommes chaque mois. CW8 réplique le même indice, mais à 0,38 %.",
+    // 30/09/2026 : la question promettait « le meilleur ETF » et la réponse
+    // désignait deux fonds à prendre. Elle dit maintenant ce qui les distingue
+    // parmi ceux que nous avons vérifiés : leurs frais.
+    q: "Quel ETF pour commencer en bourse avec un petit budget ?",
+    a: `Parmi les ETF que nous avons vérifiés, les ETF MSCI World éligibles au PEA les moins chers sont WPEA (iShares) et DCAM (Amundi), à ${terAffiche(WPEA_F.ter)} de frais par an. Tous deux sont capitalisants et leur part coûte moins de 10\u00a0€, ce qui permet d'investir de petites sommes chaque mois. CW8 réplique le même indice, mais à ${terAffiche(CW8_F.ter)}.`,
   },
   {
     q: "Faut-il choisir CW8, WPEA ou DCAM ?",
@@ -224,7 +295,9 @@ const FAQ = [
   },
   {
     q: "Un seul ETF suffit-il pour un portefeuille débutant ?",
-    a: "Oui, et c'est souvent la meilleure approche. Un ETF monde — WPEA ou DCAM (MSCI World) en PEA, VWCE (FTSE All-World) en compte-titres — offre une diversification mondiale suffisante pour un investisseur particulier. Ajouter des ETF crée de la complexité et du risque de chevauchement (overlap) sans améliorer nécessairement la diversification. Commencez simple, puis complexifiez si vous avez des raisons précises de le faire.",
+    // 30/09/2026 : « la meilleure approche » (superlatif) et « Commencez
+    // simple » (consigne) retirés ; le constat reste.
+    a: "Oui. Un ETF monde — WPEA ou DCAM (MSCI World) en PEA, VWCE (FTSE All-World) en compte-titres — offre une diversification mondiale suffisante pour un investisseur particulier. Ajouter des ETF crée de la complexité et du risque de chevauchement (overlap) sans améliorer nécessairement la diversification. Rien n'empêche d'en ajouter un plus tard, pour une raison précise.",
   },
   {
     q: "Peut-on investir en ETF avec 50 € par mois ?",
@@ -241,11 +314,18 @@ const FAQ = [
     // dans le dossier de vérification (même défaut que le « 90 % des
     // investisseurs » retiré au commit b9292fa). La fourchette de TER citée
     // est celle des ETF vérifiés (fait selection-pea-fourchette-ter).
-    a: "Un ETF passif suit mécaniquement un indice (MSCI World, S&P 500) sans chercher à le battre. Un fonds actif essaie de sélectionner des titres pour surperformer l'indice. Pour y parvenir, il doit d'abord regagner ses propres frais de gestion — ceux des 13 ETF éligibles au PEA que nous avons vérifiés vont de 0,10 % à 0,38 % par an — et rien ne garantit qu'il y arrive. Comparez toujours les frais courants indiqués dans le document d'informations clés (DIC) des deux produits.",
+    // 30/09/2026 : fourchette lue dans la liste vérifiée (FOURCHETTE_PEA) ;
+    // « Comparez toujours… » devient un renvoi vers le document qui fait foi.
+    a: `Un ETF passif suit mécaniquement un indice (MSCI World, S&P 500) sans chercher à le battre. Un fonds actif essaie de sélectionner des titres pour surperformer l'indice. Pour y parvenir, il doit d'abord regagner ses propres frais de gestion — ceux des ${FOURCHETTE_PEA.nombre} ETF éligibles au PEA que nous avons vérifiés vont de ${FOURCHETTE_PEA.min} à ${FOURCHETTE_PEA.max} par an — et rien ne garantit qu'il y arrive. Les frais courants de chaque produit figurent dans son document d'informations clés (DIC).`,
   },
   {
     q: "Comment acheter mon premier ETF ?",
-    a: "1) Ouvrez un PEA chez un courtier en ligne (BoursoBank, Trade Republic, Fortuneo). 2) Effectuez un virement. 3) Recherchez l'ETF par son ISIN (ex. IE0002XZSHO1 pour WPEA) : c'est lui, pas le nom, qui identifie le fonds. 4) Passez un ordre au marché ou à cours limité. Le premier ordre prend généralement moins de 5 minutes.",
+    // 30/09/2026 : « Ouvrez un PEA chez… (BoursoBank, Trade Republic,
+    // Fortuneo) » faisait de trois courtiers une consigne d'achat. Les étapes
+    // restent, décrites ; les courtiers sont ceux que décrit notre comparatif,
+    // par ordre alphabétique. « Le premier ordre prend généralement moins de
+    // 5 minutes » est retiré : aucune mesure derrière.
+    a: `1) Ouvrir un compte chez un courtier en ligne\u00a0: un PEA pour un ETF éligible comme WPEA, un compte-titres pour les autres. Notre comparatif des courtiers en décrit trois, BoursoBank, Fortuneo et Trade Republic. 2) Y virer de l'argent. 3) Rechercher l'ETF par son ISIN (ex. ${WPEA_F.isin} pour WPEA)\u00a0: c'est lui, pas le nom, qui identifie le fonds. 4) Passer un ordre, au marché (exécuté au prix du moment) ou à cours limité (exécuté seulement au prix fixé ou mieux).`,
   },
 ];
 
@@ -270,10 +350,12 @@ export default function MeilleursETFDebutantsPage() {
         })),
       }} />
 
+      {/* Fil d'ariane (30/09/2026) : « Meilleurs ETF débutants » gardait le
+          superlatif retiré du h1 ; il reprend la question de la page. */}
       <BreadcrumbSchema
         items={[
           { name: "Accueil", url: "/" },
-          { name: "Meilleurs ETF débutants" },
+          { name: "Quel ETF pour débuter" },
         ]}
       />
 
@@ -281,30 +363,49 @@ export default function MeilleursETFDebutantsPage() {
       <nav aria-label="Fil d'ariane" className="flex items-center gap-2 text-sm text-gray-500 mb-8">
         <Link href="/" className="hover:text-gray-600 transition-colors">Accueil</Link>
         <span aria-hidden>/</span>
-        <span className="text-gray-600" aria-current="page">Meilleurs ETF débutants</span>
+        <span className="text-gray-600" aria-current="page">Quel ETF pour débuter</span>
       </nav>
 
+      {/* 30/09/2026 — la réponse d'abord. Le h1 disait « Meilleurs ETF pour
+          débutants » (un superlatif, et pas la question posée) ; il reprend la
+          question du titre. Le premier ETF nommé arrivait au 426e mot, après
+          un renvoi vers le guide Premium : la page ouvre désormais sur la
+          réponse de la meta description, chiffrée et datée, et le renvoi
+          descend après le tableau récapitulatif. */}
       <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">
-        Meilleurs ETF pour débutants : notre sélection pour 2026
+        Quel ETF choisir pour débuter en bourse en France&nbsp;?
       </h1>
-      <p className="text-lg text-gray-500 mb-4 leading-relaxed">
-        Vous voulez investir en bourse mais vous ne savez pas quel ETF
-        choisir ? Pas de jargon superflu : voici les ETF que nous
-        recommandons aux débutants en France, avec les critères de
-        sélection et les points d&apos;attention pour chacun.
+      {/* 30/09/2026 (relecture) : « dans notre sélection vérifiée, les moins
+          chers sur cet indice » était faux au sens strict — IWDA, vérifié le
+          même jour, suit aussi le MSCI World à 0,20 %, mais hors PEA. La
+          comparaison se limite donc aux fonds éligibles. PEA et ISIN sont
+          expliqués à leur première apparition. */}
+      <p className="text-lg text-gray-700 mb-3 leading-relaxed">
+        Un seul ETF suffit pour débuter&nbsp;: un ETF MSCI World éligible au PEA
+        (plan d&apos;épargne en actions), qui réunit environ 1&nbsp;300 grandes et
+        moyennes entreprises de 23 pays développés. Parmi les ETF éligibles au PEA
+        que nous avons vérifiés, les moins chers sur cet indice sont{" "}
+        <strong>WPEA</strong> (iShares) et <strong>DCAM</strong> (Amundi), à{" "}
+        {terAffiche(WPEA_F.ter)} de frais par an&nbsp;; CW8 suit le même indice pour{" "}
+        {terAffiche(CW8_F.ter)}. Leur code ISIN, qui identifie le fonds quel que soit
+        son nom commercial&nbsp;: {WPEA_F.isin} pour WPEA, {DCAM_F.isin} pour DCAM.
+      </p>
+      <p className="text-sm text-gray-500 mb-4 leading-relaxed">
+        Frais, ISIN et éligibilité au PEA vérifiés le {DATE_VERIF} sur les documents
+        des émetteurs, recoupés sur justETF, Boursorama et Euronext (
+        <a href="#sources-heading" className="underline underline-offset-2 hover:text-gray-700">
+          sources en fin de page
+        </a>
+        ).
       </p>
       <p className="text-base text-gray-500 mb-6 leading-relaxed">
-        Une fois à l&apos;aise avec cette short-list, notre{" "}
-        <Link href="/guide-5-etf-pea-premium" className="text-primary-700 font-medium hover:underline">
-          guide 5 ETF Premium pour PEA
-        </Link>
-        {" "}propose une sélection plus avancée, avec critères de tri et
-        allocations types.
+        Ci-dessous&nbsp;: les 5 critères qui comptent, notre sélection de 4 ETF
+        avec les points d&apos;attention de chacun, et comment commencer.
       </p>
 
       <ArticleByline
         publishedAt="2026-04-20"
-        updatedAt="2026-09-28"
+        updatedAt="2026-09-30"
         readingMinutes={11}
         url="/meilleurs-etf-debutants"
         headline={TITLE}
@@ -313,10 +414,14 @@ export default function MeilleursETFDebutantsPage() {
 
       {/* ── Section 1: Disclaimer ──────────────────────────────────────────── */}
       <div className="disclaimer-banner mb-10">
-        <strong>Avertissement :</strong> cette sélection est informative et ne
+        {/* 30/09/2026 (fait cif-conditions-amf) : un conseiller n'est pas
+            « agréé » ; c'est son association professionnelle qui l'est par
+            l'AMF. Le conseiller, lui, est immatriculé à l'ORIAS. */}
+        <strong>Avertissement&nbsp;:</strong> cette sélection est informative et ne
         constitue pas un conseil en investissement personnalisé. Tout
-        investissement en bourse comporte un risque de perte en capital.
-        Consultez un conseiller financier agréé avant toute décision.
+        investissement en bourse comporte un risque de perte en capital. Pour une
+        décision adaptée à votre situation, consultez un conseiller en
+        investissements financiers (CIF) immatriculé à l&apos;ORIAS.
       </div>
 
       {/* ── Section 2: Critères de sélection ─────────────────────────────── */}
@@ -326,14 +431,13 @@ export default function MeilleursETFDebutantsPage() {
         </h2>
         <p className="text-gray-600 leading-relaxed mb-4">
           Avant de présenter notre sélection, voici les critères qui
-          guident nos recommandations — et qui permettent d&apos;évaluer
+          la guident — et qui permettent d&apos;évaluer
           n&apos;importe quel ETF par soi-même.
         </p>
         <p className="text-gray-600 leading-relaxed mb-6">
-          Le premier critère, et de loin le plus impactant, est le cadre
-          fiscal :{" "}
+          Le premier critère est le cadre fiscal&nbsp;:{" "}
           <Link href="/pea-ou-cto" className="text-primary-700 font-medium hover:underline">
-            PEA ou CTO
+            PEA ou compte-titres (CTO)
           </Link>
           {" "}conditionne l&apos;univers d&apos;ETF accessibles avant même la
           question du TER ou de l&apos;indice répliqué. Pour les fonds que nous
@@ -423,9 +527,10 @@ export default function MeilleursETFDebutantsPage() {
                 </div>
               </div>
 
-              {/* Verdict */}
+              {/* Points forts — « Pourquoi on le recommande » jusqu'au
+                  30/09/2026 : la liste décrit le fonds, elle ne le prescrit pas. */}
               <p className="text-sm font-semibold text-gray-800 mb-3">
-                Pourquoi on le recommande
+                Ses points forts
               </p>
               <ul className="space-y-1 mb-4">
                 {etf.why.map((w) => (
@@ -473,9 +578,11 @@ export default function MeilleursETFDebutantsPage() {
 
         {/* Maillage vers les duels détaillés (audit 07/2026) — ancres
             descriptives vers les pages money en position page 2. */}
+        {/* 30/09/2026 : « Nos duels détaillés tranchent » promettait de
+            choisir à la place du lecteur ; ils comparent. */}
         <p className="text-sm text-gray-600 leading-relaxed mt-6 rounded-xl bg-slate-50 border border-slate-200/70 px-4 py-3">
-          Vous hésitez entre deux World éligibles PEA ? Nos duels détaillés
-          tranchent :{" "}
+          Vous hésitez entre deux MSCI World éligibles au PEA&nbsp;? Nos duels
+          détaillés les comparent point par point&nbsp;:{" "}
           <Link href="/comparatif-etf/cw8-vs-wpea" className="text-primary-700 font-medium hover:underline">
             CW8 vs WPEA (le verdict frais)
           </Link>{" "}
@@ -505,23 +612,16 @@ export default function MeilleursETFDebutantsPage() {
           <table className="w-full text-sm border-collapse">
             <thead>
               <tr className="bg-gray-50">
-                <th className="text-left px-4 py-3 font-semibold text-gray-500 border-b border-gray-100">ETF</th>
-                <th className="text-center px-3 py-3 font-semibold text-gray-500 border-b border-gray-100">TER</th>
-                <th className="text-center px-3 py-3 font-semibold text-gray-500 border-b border-gray-100">PEA</th>
-                <th className="text-center px-3 py-3 font-semibold text-gray-500 border-b border-gray-100">Couverture</th>
-                <th className="text-center px-3 py-3 font-semibold text-gray-500 border-b border-gray-100">Idéal pour</th>
+                <th className="text-left px-3 sm:px-4 py-3 font-semibold text-gray-500 border-b border-gray-100">ETF et ISIN</th>
+                <th className="text-center px-2 sm:px-3 py-3 font-semibold text-gray-500 border-b border-gray-100">TER</th>
+                <th className="text-center px-2 sm:px-3 py-3 font-semibold text-gray-500 border-b border-gray-100">PEA</th>
+                <th className="text-center px-2 sm:px-3 py-3 font-semibold text-gray-500 border-b border-gray-100">Couverture</th>
               </tr>
             </thead>
             <tbody>
-              {[
-                { symbol: "WPEA", ter: "0,20 %", pea: true,  cover: "Pays développés (MSCI World)", ideal: "Premier ETF en PEA" },
-                { symbol: "DCAM", ter: "0,20 %", pea: true,  cover: "Pays développés (MSCI World)", ideal: "Premier ETF en PEA" },
-                { symbol: "SPEA", ter: "0,10 %", pea: true,  cover: "500 grandes entreprises américaines", ideal: "S&P 500 en PEA" },
-                { symbol: "VWCE", ter: "0,14 %", pea: false, cover: "Développés + émergents (FTSE All-World)", ideal: "Monde entier en CTO" },
-                { symbol: "CW8",  ter: "0,38 %", pea: true,  cover: "Pays développés (MSCI World)", ideal: "Même indice que WPEA, plus cher" },
-              ].map((row, i) => (
+              {TABLEAU.map((row, i) => (
                 <tr key={row.symbol} className={i % 2 === 0 ? "bg-white" : "bg-gray-50/50"}>
-                  <td className="px-4 py-3 font-bold text-gray-900 border-b border-gray-50">
+                  <td className="px-3 sm:px-4 py-3 font-bold text-gray-900 border-b border-gray-50">
                     {aUneFiche(row.symbol) ? (
                       <Link href={`/etf/${row.symbol}`} className="hover:text-primary-600 transition-colors">
                         {row.symbol}
@@ -529,21 +629,32 @@ export default function MeilleursETFDebutantsPage() {
                     ) : (
                       row.symbol
                     )}
+                    <span className="block font-mono text-[11px] font-normal text-gray-500 whitespace-nowrap">{row.isin}</span>
                   </td>
-                  <td className="px-3 py-3 text-center text-gray-700 border-b border-gray-50">{row.ter}</td>
-                  <td className="px-3 py-3 text-center border-b border-gray-50">
+                  <td className="px-2 sm:px-3 py-3 text-center text-gray-700 border-b border-gray-50 whitespace-nowrap">{formatTer(row.ter)}</td>
+                  <td className="px-2 sm:px-3 py-3 text-center border-b border-gray-50 whitespace-nowrap">
                     {row.pea
                       ? <span className="text-gain-default font-semibold">✓ Oui</span>
                       : <span className="text-gray-500">Non</span>
                     }
                   </td>
-                  <td className="px-3 py-3 text-center text-gray-600 border-b border-gray-50 text-xs">{row.cover}</td>
-                  <td className="px-3 py-3 text-center text-gray-600 border-b border-gray-50 text-xs">{row.ideal}</td>
+                  <td className="px-2 sm:px-3 py-3 text-center text-gray-600 border-b border-gray-50 text-xs">{row.cover}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
+        {/* Renvoi vers le guide Premium, descendu du haut de page (30/09/2026) :
+            il occupait les 100 premiers mots, avant toute réponse. Ici, il suit
+            la short-list qu'il prolonge. */}
+        <p className="text-sm text-gray-600 leading-relaxed mt-6">
+          Une fois à l&apos;aise avec cette short-list, notre{" "}
+          <Link href="/guide-5-etf-pea-premium" className="text-primary-700 font-medium hover:underline">
+            guide 5 ETF Premium pour PEA
+          </Link>
+          {" "}propose une sélection plus avancée, avec critères de tri et
+          allocations types.
+        </p>
       </section>
 
       {/* ── Section 5: Comment commencer ──────────────────────────────────── */}
@@ -558,27 +669,32 @@ export default function MeilleursETFDebutantsPage() {
             stratégie DCA
           </Link>
           {" "}— versements mensuels fixes, quel que soit le niveau du marché —
-          reste l&apos;approche la plus simple et la plus robuste à tenir dans
-          la durée.
+          est une approche simple à tenir dans la durée.
         </p>
+        {/* 30/09/2026 : les trois étapes donnaient des ordres (« ouvrez un PEA
+            en premier », « Pour un PEA, WPEA ou DCAM », « Programmez un
+            virement »). Elles décrivent maintenant ce que chaque option
+            implique, avec les taux du moteur fiscal et les frais du catalogue.
+            « L'automatisation supprime le biais comportemental » est retiré :
+            une affirmation sans source, en jargon. */}
         <div className="space-y-4">
           {[
             {
               n: "1",
               title: "Choisir votre enveloppe : PEA ou CTO",
-              body: "Si vous résidez en France et visez un horizon 5+ ans, ouvrez un PEA en premier. La fiscalité après 5 ans (18,6 % vs 31,4 %) justifie presque toujours ce choix pour les ETF monde.",
+              body: `Pour un résident français dont l'horizon dépasse 5 ans, le PEA prélève moins sur les gains\u00a0: ${PS}\u00a0% de prélèvements sociaux après 5 ans, contre ${PFU}\u00a0% sur un compte-titres. Il n'accepte en revanche que des ETF éligibles, comme WPEA, DCAM ou CW8 pour le MSCI World.`,
               link: { href: "/pea-ou-cto", label: "Comprendre la différence PEA / CTO →" },
             },
             {
               n: "2",
               title: "Choisir votre ETF de départ",
-              body: "Un seul ETF suffit pour commencer. Pour un PEA, WPEA ou DCAM : le MSCI World à 0,20 %, contre 0,38 % pour CW8. Pour un CTO, VWCE ajoute les pays émergents. Inutile de diversifier davantage au départ.",
+              body: `Un seul ETF suffit pour commencer. En PEA, WPEA et DCAM suivent le MSCI World pour ${terAffiche(WPEA_F.ter)} de frais par an, contre ${terAffiche(CW8_F.ter)} pour CW8. En compte-titres, VWCE ajoute les pays émergents.`,
               link: { href: "/comparer-etf", label: "Comparer tous les ETF disponibles →" },
             },
             {
               n: "3",
               title: "Définir et automatiser votre versement mensuel",
-              body: "Décidez d'un montant que vous pouvez maintenir durablement. Programmez un virement automatique le jour de votre salaire. L'automatisation supprime le biais comportemental — et vous évite de procrastiner.",
+              body: "Le montant qui compte est celui que l'on peut maintenir durablement. Un virement automatique, programmé le jour du salaire, évite d'avoir à se décider chaque mois, y compris quand les marchés baissent.",
               link: { href: "/simulateur", label: "Simuler ma stratégie DCA →" },
             },
           ].map((step) => (
@@ -699,7 +815,7 @@ export default function MeilleursETFDebutantsPage() {
           {[
             { href: "/strategie-dca",     title: "La stratégie DCA expliquée",       desc: "Comment investir régulièrement et lisser le risque de marché." },
             { href: "/interets-composes", title: "Les intérêts composés",             desc: "Visualiser la puissance du temps et des rendements réinvestis." },
-            { href: "/pea-ou-cto",        title: "PEA ou CTO pour vos ETF ?",        desc: "L'impact fiscal concret et la recommandation selon votre profil." },
+            { href: "/pea-ou-cto",        title: "PEA ou CTO pour vos ETF ?",        desc: "L'impact fiscal concret, et quelle enveloppe selon la situation." },
             { href: "/investir-en-etf",   title: "Comment investir en ETF",           desc: "Le guide pas à pas pour passer votre premier ordre en bourse." },
           ].map((link) => (
             <Link

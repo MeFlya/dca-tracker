@@ -12,6 +12,7 @@ import { getETFBySymbol } from "@/lib/etf-config";
 import { runSimulation } from "@/lib/simulator";
 import { capitalPour, gainsPour, HYPOTHESES_COMPARATIFS } from "@/lib/ecart-frais";
 import { ecartFiscal, impotCTO, impotPEA } from "@/lib/impot-affiche";
+import { PFU_RATE, SOCIAL_CHARGES_RATE, TAUX_VERIFIES_LE, tauxAffiche } from "@/lib/fiscal/pea-cto";
 
 const TITLE = "PEA ou CTO en 2026 : comparatif fiscal complet pour vos ETF";
 const DESCRIPTION =
@@ -31,7 +32,10 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: TITLE,
-    description: "PEA ou CTO pour vos ETF ? Comparatif fiscal, ETF éligibles et recommandation concrète.",
+    // 30/09/2026 : « et recommandation concrète » décrivait une section qui
+    // n'existe plus (« Notre recommandation », devenue « En résumé ») — une
+    // erreur sur le contenu de la page, et la promesse d'un conseil.
+    description: "PEA ou CTO pour vos ETF ? Comparatif fiscal, ETF éligibles et quelle enveloppe selon la situation.",
   },
 };
 
@@ -46,8 +50,13 @@ const ROWS = [
   // fonds : plus de 75 % d'actions de sociétés de l'UE ou de l'EEE.
   { label: "ETF éligibles",          pea: "Plus de 75 % d'actions UE/EEE (ETF monde via swap)", cto: "Monde entier" },
   { label: "Retraits",               pea: "Libres après 5 ans",      cto: "Toujours libres"         },
-  { label: "Durée idéale",           pea: "Long terme (≥ 5 ans)",    cto: "Toute durée"             },
-  { label: "Idéal pour",            pea: "DCA MSCI World long terme", cto: "ETF US, diversification" },
+  // 30/09/2026 : « Durée idéale » et « Idéal pour » jugeaient à la place du
+  // lecteur, et « ETF US » était inexact — un ETF domicilié aux États-Unis,
+  // sans document d'informations clés, est inaccessible aux particuliers de
+  // l'UE (voir CNDX plus bas). Les lignes décrivent l'horizon et ce que chaque
+  // compte accepte.
+  { label: "Horizon",                pea: "Long terme (≥ 5 ans)",    cto: "Toute durée"             },
+  { label: "Usage type",             pea: "ETF éligibles, long terme", cto: "ETF non éligibles au PEA" },
 ];
 
 // ─── LISTES REFAITES LE 28/09/2026 ───────────────────────────────────────────
@@ -77,7 +86,9 @@ interface EtfLigne {
 }
 
 const ETF_PEA: EtfLigne[] = [
-  { symbol: "WPEA",  name: "iShares MSCI World Swap PEA",             ter: "0,20 %", note: "MSCI World — le moins cher de notre sélection sur cet indice, à égalité avec DCAM" },
+  // 30/09/2026 : « le moins cher de notre sélection sur cet indice » oubliait
+  // IWDA, listé plus bas au même TER (0,20 %) mais non éligible.
+  { symbol: "WPEA",  name: "iShares MSCI World Swap PEA",             ter: "0,20 %", note: "MSCI World — parmi les ETF éligibles vérifiés, le moins cher sur cet indice, à égalité avec DCAM" },
   { symbol: "DCAM",  name: "Amundi PEA Monde (MSCI World)",           ter: "0,20 %", note: "MSCI World — même indice et même TER que WPEA, part sous 10 €" },
   { symbol: "CW8",   name: "Amundi MSCI World Swap",                  ter: "0,38 %", note: "MSCI World en réplication synthétique — même indice que WPEA et DCAM, presque deux fois plus cher. EWLD est sa part distribuante" },
   { symbol: "SPEA",  name: "iShares S&P 500 Swap PEA",                ter: "0,10 %", note: "S&P 500 — PSP5 (Amundi, 0,12 %) et ESE (BNP Paribas, 0,14 %) sont aussi éligibles" },
@@ -120,6 +131,24 @@ const GAIN_EXEMPLE =
     runSimulation({ ...HYPOTHESES_COMPARATIFS, annualFeesPct: TER_EXEMPLE }).base.totalGain / 100,
   ) * 100;
 
+// ─── Sous-titre : la réponse d'abord (30/09/2026) ───────────────────────────
+//
+// Le sitemap date cette page de la passe « la réponse d'abord, chiffrée, datée
+// et sourcée », mais le sous-titre ne répondait pas (« Voici tout ce qu'il faut
+// savoir ») : les taux n'arrivaient qu'avec le tableau. Il donne maintenant les
+// deux taux, lus dans fiscal/pea-cto.ts, leur date de vérification, et les deux
+// contreparties du PEA. Le compte-titres n'accepte pas « tous » les ETF : un
+// fonds américain sans document d'informations clés reste inaccessible (CNDX
+// plus bas), d'où « aussi les ETF non éligibles au PEA ».
+const SOUS_TITRE =
+  `En ${TAUX_VERIFIES_LE.slice(0, 4)}, les gains retirés d'un plan d'épargne en actions (PEA) de plus de 5\u00a0ans ` +
+  `ne supportent que ${tauxAffiche(SOCIAL_CHARGES_RATE)}\u00a0% de prélèvements sociaux, contre ` +
+  `${tauxAffiche(PFU_RATE)}\u00a0% de prélèvement forfaitaire unique (PFU) sur un compte-titres ordinaire (CTO), ` +
+  `quelle que soit la durée de détention. En contrepartie, le PEA plafonne les versements à 150\u00a0000\u00a0€ ` +
+  `et n'accepte que des ETF éligibles, comme WPEA, DCAM ou CW8 pour le MSCI World\u00a0; le CTO n'a pas de ` +
+  `plafond et accepte aussi les ETF non éligibles au PEA. Taux vérifiés le ` +
+  `${dateEnToutesLettres(TAUX_VERIFIES_LE)}, sources en fin de page.`;
+
 const FAQ = [
   {
     q: "Peut-on avoir à la fois un PEA et un CTO ?",
@@ -143,7 +172,7 @@ const FAQ = [
   },
   {
     q: "Le PEA est-il adapté si j'investis plus de 150 000 € ?",
-    a: "Au-delà du plafond de versements de 150 000 €, vous ne pouvez plus alimenter votre PEA. Les gains continuent de croître, mais tout versement supplémentaire doit se faire via un CTO. La stratégie classique : maximiser le PEA d'abord, puis ouvrir un CTO.",
+    a: "Au-delà du plafond de versements de 150 000 €, vous ne pouvez plus alimenter votre PEA. Les gains continuent de croître, mais tout versement supplémentaire doit se faire via un CTO. Les deux se combinent\u00a0: le PEA jusqu'à son plafond, le CTO au-delà.",
   },
 ];
 
@@ -171,12 +200,12 @@ export default function PEAouCTOPage() {
         icon={Landmark}
         eyebrow="Fiscalité"
         title="PEA ou CTO : quelle enveloppe pour investir en ETF ?"
-        subtitle="Avant d'acheter votre premier ETF, vous devrez choisir une enveloppe fiscale. Ce choix a un impact direct sur vos impôts — et sur les ETF auxquels vous avez accès. Voici tout ce qu'il faut savoir."
+        subtitle={SOUS_TITRE}
       />
 
       <ArticleByline
         publishedAt="2026-04-12"
-        updatedAt="2026-09-29"
+        updatedAt="2026-09-30"
         readingMinutes={12}
         url="/pea-ou-cto"
         headline={TITLE}
@@ -380,7 +409,11 @@ export default function PEAouCTOPage() {
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div className="rounded-2xl border border-primary-100 bg-primary-50/40 p-5">
-            <p className="text-xs font-semibold uppercase tracking-wider text-primary-600 mb-3">Choisissez le PEA si…</p>
+            {/* 30/09/2026 (relecture) : « Choisissez le PEA si… » et
+                « Choisissez le CTO si… » gardaient l'impératif que la section
+                « En résumé » venait de quitter. Les encadrés décrivent quand
+                chaque compte correspond. */}
+            <p className="text-xs font-semibold uppercase tracking-wider text-primary-600 mb-3">Le PEA correspond si…</p>
             <ul className="space-y-2.5">
               {[
                 "Vous investissez à long terme (≥ 5 ans)",
@@ -396,7 +429,7 @@ export default function PEAouCTOPage() {
             </ul>
           </div>
           <div className="rounded-2xl border border-gray-200 bg-gray-50/40 p-5">
-            <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-3">Choisissez le CTO si…</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-3">Le CTO correspond si…</p>
             <ul className="space-y-2.5">
               {[
                 "Vous voulez des ETF non éligibles au PEA (VWCE, IWDA, CSPX…)",
@@ -414,36 +447,53 @@ export default function PEAouCTOPage() {
         </div>
       </section>
 
-      {/* ── Section 5: Recommandation ──────────────────────────────────── */}
+      {/* ── Section 5: En résumé ─────────────────────────────────────────── */}
+      {/* 30/09/2026 — relecture : la section s'appelait « Notre recommandation »
+          et donnait des ordres (« Ouvrez un PEA… », « Ne touchez pas à votre
+          PEA… »). Sur un site qui n'a pas le statut de conseiller en
+          investissements financiers, c'est la forme d'un conseil personnalisé.
+          Le fond ne change pas : chaque point décrit ce qui correspond à une
+          situation, au conditionnel. Taux lus dans fiscal/pea-cto.ts. */}
       <section className="mb-14">
         <h2 className="text-2xl font-bold text-gray-900 mb-4">
-          Notre recommandation
+          En résumé&nbsp;: quelle enveloppe selon la situation
         </h2>
         <div className="rounded-2xl border border-gray-200 bg-gradient-to-br from-slate-50 to-white p-6">
           <p className="text-gray-700 leading-relaxed mb-4">
-            Pour la <strong>majorité des investisseurs DCA français</strong> qui
-            souhaitent investir sur le long terme avec des versements mensuels :
+            Pour investir en ETF sur le long terme, par versements mensuels, voici ce
+            qui correspond à chaque situation&nbsp;:
           </p>
           <ol className="space-y-3 mb-4">
             <li className="flex gap-3 text-sm text-gray-700">
               <span className="shrink-0 w-6 h-6 rounded-full bg-primary-600 text-white text-xs flex items-center justify-center font-bold">1</span>
               <span>
-                Ouvrez un <strong>PEA</strong> —{" "}
+                Si votre horizon dépasse cinq ans, l&apos;enveloppe qui correspond est
+                le <strong>PEA</strong>&nbsp;: passé ce délai, les gains n&apos;y
+                supportent que {tauxAffiche(SOCIAL_CHARGES_RATE)}&nbsp;% de
+                prélèvements sociaux. Les courtiers se départagent sur leurs frais (
                 <Link href="/comparatif" className="text-primary-700 font-medium hover:underline">
-                  comparez les courtiers PEA
-                </Link>{" "}
-                (Trade Republic, BoursoBank, Fortuneo) — et commencez à investir sur{" "}
-                un MSCI World éligible : <strong>WPEA ou DCAM</strong> (0,20 %),
-                plutôt que CW8 (0,38 %) pour de nouveaux achats.
+                  comparatif des courtiers PEA
+                </Link>
+                &nbsp;: BoursoBank, Fortuneo, Trade Republic). Pour de nouveaux achats
+                sur le MSCI World, <strong>WPEA et DCAM</strong> coûtent 0,20&nbsp;% par
+                an, contre 0,38&nbsp;% pour CW8, sur le même indice.
               </span>
             </li>
             <li className="flex gap-3 text-sm text-gray-700">
               <span className="shrink-0 w-6 h-6 rounded-full bg-primary-600 text-white text-xs flex items-center justify-center font-bold">2</span>
-              <span>Si vous voulez des ETF non éligibles au PEA (VWCE, IWDA, CSPX…) ou si vous avez dépassé 150 000 €, <strong>ajoutez un CTO</strong> en complément.</span>
+              <span>
+                Si vous visez des ETF non éligibles au PEA (VWCE, IWDA, CSPX…) ou si
+                vos versements dépassent le plafond de 150&nbsp;000&nbsp;€, c&apos;est
+                le <strong>CTO</strong> qui prend le relais, en complément du PEA.
+              </span>
             </li>
             <li className="flex gap-3 text-sm text-gray-700">
               <span className="shrink-0 w-6 h-6 rounded-full bg-gray-400 text-white text-xs flex items-center justify-center font-bold">3</span>
-              <span>Ne touchez pas à votre PEA pendant 5 ans pour bénéficier de l&apos;avantage fiscal maximum.</span>
+              <span>
+                L&apos;avantage fiscal du PEA suppose de ne rien retirer pendant cinq
+                ans&nbsp;: avant, un retrait entraîne en principe la clôture du plan, et
+                le gain est imposé à {tauxAffiche(PFU_RATE)}&nbsp;%.
+              </span>
             </li>
           </ol>
           <p className="text-xs text-gray-500">
@@ -460,15 +510,15 @@ export default function PEAouCTOPage() {
           <Link href="/comparatif-etf/cw8-vs-wpea" className="text-primary-700 font-medium hover:underline">
             CW8 vs WPEA pour PEA
           </Link>
-          {" "}chiffre l&apos;impact du TER sur 20 ans et tranche selon votre
-          situation (ouverture, encours existant, simplicité).
+          {" "}chiffre l&apos;impact du TER sur 20 ans et compare les deux selon
+          la situation (ouverture d&apos;un plan, encours existant, simplicité).
         </p>
       </section>
 
       {/* ── CTA simulateur ─────────────────────────────────────────────── */}
       {/* data-nosearch (recherche interne, 28/09/2026) : un appel à l'action
           n'est pas un contenu ; sans titre à lui, il se collait au passage
-          « Notre recommandation ». */}
+          « Notre recommandation » (devenu « En résumé » le 30/09/2026). */}
       <div data-nosearch="" className="rounded-2xl bg-gradient-to-br from-primary-600 to-primary-800 p-7 mb-14 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
         <div>
           <p className="text-white font-semibold text-lg mb-1">

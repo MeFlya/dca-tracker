@@ -220,7 +220,11 @@ const MSCI_WORLD: IndexGuide = {
     // 29/09/2026 : « encadré à 10 % » était incomplet — 10 % par contrepartie
     // quand c'est un établissement de crédit, 5 % sinon (CMF art. R214-21,
     // fait ucits-contrepartie-10pc). Source ajoutée ci-dessous.
-    "Les ETF MSCI World éligibles PEA de ce guide (CW8, WPEA, DCAM) sont en réplication synthétique (swap) — c'est ce qui permet l'éligibilité PEA. Le risque de contrepartie est plafonné par la réglementation : un fonds ne peut pas être exposé à plus de 10 % de son actif sur une même banque contrepartie (5 % pour une contrepartie qui n'est pas un établissement de crédit).",
+    // 30/09/2026 : la phrase disait « une même banque contrepartie (5 % pour
+    // une contrepartie qui n'est pas un établissement de crédit) » — une
+    // banque qui n'est pas un établissement de crédit, elle se contredisait.
+    // Alignée sur la formulation de /etf-eligibles-pea, fidèle à R214-21.
+    "Les ETF MSCI World éligibles PEA de ce guide (CW8, WPEA, DCAM) sont en réplication synthétique (swap) — c'est ce qui permet l'éligibilité PEA. Le risque de contrepartie est plafonné par la réglementation : au titre de ces contrats, il ne peut pas dépasser 10 % de l'actif du fonds sur une même contrepartie quand c'est un établissement de crédit, 5 % dans les autres cas.",
     "Un seul ETF MSCI World suffit pour démarrer. Inutile de cumuler CW8 + WPEA : c'est le même indice.",
   ],
   // 29/09/2026 : 1 169 impressions en 90 jours (Search Console au 28/09), et
@@ -290,7 +294,8 @@ const MSCI_WORLD: IndexGuide = {
     { label: "Plan d'Épargne en Actions — éligibilité", url: "https://www.service-public.fr/particuliers/vosdroits/F2385", publisher: "service-public.fr" },
   ],
   publishedAt: "2026-06-02",
-  updatedAt: "2026-09-28",
+  // 30/09/2026 : phrase sur le plafond de contrepartie corrigée (keyPoints).
+  updatedAt: "2026-09-30",
   readingMinutes: 7,
 };
 

@@ -172,7 +172,7 @@ export function ScenarioComparison({ isPremium, input }: { isPremium: boolean; i
                 {diffEur >= 0 ? "+" : ""}{formatEur(diffEur)}
               </p>
               <p className={`text-xs mt-1 font-medium ${bIsBetter ? "text-emerald-500" : "text-orange-500"}`}>
-                {diffPct >= 0 ? "+" : ""}{diffPct.toFixed(1)} %
+                {diffPct >= 0 ? "+" : ""}{diffPct.toLocaleString("fr-FR", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}&nbsp;%
               </p>
             </div>
           </div>

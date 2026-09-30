@@ -447,11 +447,11 @@ export default function InteretsComposesPage() {
 
       <SourcesReferences
         sources={[
-          {
-            label: "Notion d'intérêts composés — éducation financière",
-            url: "https://www.amf-france.org/fr/espace-epargnants/comprendre-les-produits-financiers",
-            publisher: "Autorité des marchés financiers (AMF)",
-          },
+          // 30/09/2026 : source AMF retirée. Son URL
+          // (/espace-epargnants/comprendre-les-produits-financiers) répond 404,
+          // et aucune page AMF vérifiée ne traite des intérêts composés sous ce
+          // libellé : un lien mort présenté comme source ne vaut pas mieux
+          // qu'une absence de source.
           {
             label: "MSCI World Index — Factsheet officielle",
             url: "https://www.msci.com/indexes/index/990100",

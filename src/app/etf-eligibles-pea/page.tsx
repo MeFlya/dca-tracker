@@ -680,11 +680,13 @@ export default function EtfEligiblesPeaPage() {
             publisher: "AMF — journal de bord de la médiatrice, 9 mars 2023",
             note: "Fonds américains sans DIC\u00a0: plus commercialisés auprès des particuliers de l'EEE depuis le 1er janvier 2018. Consulté le 28 septembre 2026.",
           },
+          // 30/09/2026 : …/particuliers/products/… répondait 404 (adresse du
+          // fait etf-pea-pust, fausse) ; …/particuliers/produits/… répond 200.
           {
             label: "Amundi PEA Nasdaq-100 UCITS ETF Acc (PUST) — fiche produit",
-            url: "https://www.amundietf.fr/fr/particuliers/products/equity/amundi-pea-nasdaq100-ucits-etf-acc/fr0011871110",
+            url: "https://www.amundietf.fr/fr/particuliers/produits/equity/amundi-pea-nasdaq100-ucits-etf-acc/fr0011871110",
             publisher: "Amundi ETF",
-            note: "Consultée le 28 septembre 2026.",
+            note: "Consultée le 30 septembre 2026.",
           },
           ...ELIGIBLES_TRIES.map((f) => ({
               label: `justETF — ${f.displaySymbol} (${f.isin})`,

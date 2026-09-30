@@ -64,6 +64,15 @@ const TABLE_DE_VERITE = new Set([
   "VUSA", "CNDX", "QQQ", "C3M",
 ]);
 
+/**
+ * Le fonds figure-t-il dans la table de vérité ? Exporté le 30/09/2026 pour
+ * les fiches /etf/[symbole] : elles n'écrivent « vérifié le 28 septembre
+ * 2026 » que pour un fonds réellement contrôlé ce jour-là (pas SPY).
+ */
+export function estDansLaTable(symbole: string): boolean {
+  return TABLE_DE_VERITE.has(symbole);
+}
+
 function dansLaTable(symbole: string): void {
   if (!TABLE_DE_VERITE.has(symbole)) {
     throw new Error(

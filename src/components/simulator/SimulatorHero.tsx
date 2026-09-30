@@ -28,6 +28,12 @@ export function SimulatorHero({ output, mode = "rapid" }: Props) {
   // Round + format with French comma — guards against float drift like
   // 7.149999999999999 % when the value comes from a blended portfolio.
   const returnFmt = input.annualReturnPct.toFixed(2).replace(".", ",");
+  // Même virgule pour le multiplicateur (30/09/2026) : ce bloc est rendu dans
+  // le HTML initial que lisent les robots, qui y trouvaient « × 2.0 ».
+  const multiplierFmt = multiplier.toLocaleString("fr-FR", {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  });
 
   return (
     // bg-slate-950 (Premium identity), radial glow primary derrière le
@@ -60,7 +66,7 @@ export function SimulatorHero({ output, mode = "rapid" }: Props) {
         <p className="text-slate-400 text-sm mb-3">
           En investissant{" "}
           <span className="font-semibold text-white">
-            {input.monthlyAmount.toLocaleString("fr-FR")} €/mois
+            {input.monthlyAmount.toLocaleString("fr-FR")}&nbsp;€/mois
           </span>{" "}
           pendant{" "}
           <span className="font-semibold text-white">{input.durationYears} ans</span>
@@ -82,13 +88,13 @@ export function SimulatorHero({ output, mode = "rapid" }: Props) {
         <p className="text-slate-400 text-sm mb-6">
           {mode === "portfolio" ? (
             <>
-              Scénario central : moyenne historique des indices (
+              Scénario central&nbsp;: moyenne historique des indices (
               {HISTORICAL_RETURNS_PERIOD.start} → {HISTORICAL_RETURNS_PERIOD.end}
               ), {returnFmt}&nbsp;%/an avant frais, hypothèse et non prévision
             </>
           ) : (
             <>
-              Scénario central : hypothèse de {returnFmt}&nbsp;%/an avant
+              Scénario central&nbsp;: hypothèse de {returnFmt}&nbsp;%/an avant
               frais, pas une prévision
             </>
           )}
@@ -98,7 +104,7 @@ export function SimulatorHero({ output, mode = "rapid" }: Props) {
         <div className="grid grid-cols-3 gap-3">
           <Stat label="Capital investi" value={formatEur(base.totalInvested)} />
           <Stat label="Gains générés" value={`+ ${formatEur(gains)}`} highlight />
-          <Stat label="Multiplicateur" value={`× ${multiplier.toFixed(1)}`} highlight />
+          <Stat label="Multiplicateur" value={`×\u00a0${multiplierFmt}`} highlight />
         </div>
       </div>
 

@@ -43,6 +43,19 @@ interface SimulatorResultsProps {
   output: SimulatorOutput;
 }
 
+// Nombres à la française (30/09/2026) : ces cartes sont désormais dans le
+// HTML initial de /simulateur, celui que lisent les robots, qui y trouvaient
+// « 6.62 %/an » et « 0.38 % ». Les taux saisis (7,5 %, 2,5 %…) passent aussi
+// par ici, avec au plus 2 décimales comme le formulaire.
+function nombreFr(n: number, decimales?: number): string {
+  return n.toLocaleString(
+    "fr-FR",
+    decimales === undefined
+      ? { maximumFractionDigits: 2 }
+      : { minimumFractionDigits: decimales, maximumFractionDigits: decimales }
+  );
+}
+
 function ScenarioCard({
   scenario,
   isMain,
@@ -69,7 +82,7 @@ function ScenarioCard({
           {scenario.label}
         </span>
         <span className="text-xs text-gray-500">
-          {scenario.annualReturnPct} %/an brut
+          {nombreFr(scenario.annualReturnPct)}&nbsp;%/an brut
         </span>
       </div>
 
@@ -142,19 +155,19 @@ export function SimulatorResults({ output }: SimulatorResultsProps) {
           label="Valeur estimée"
           value={formatEur(base.finalValue)}
           accent="primary"
-          sub={`Rendement net : ${netReturn.toFixed(2)} %/an`}
+          sub={`Rendement net\u00a0: ${nombreFr(netReturn, 2)}\u00a0%/an`}
         />
         <StatCard
           label="Gains potentiels"
           value={formatEur(base.totalGain)}
           accent="gain"
-          sub={`+${base.gainPercent.toFixed(1)} % sur capital investi`}
+          sub={`${formatPct(base.gainPercent)} sur capital investi`}
         />
         {base.inflationAdjustedValue !== undefined ? (
           <StatCard
             label="Valeur réelle estimée"
             value={formatEur(base.inflationAdjustedValue)}
-            sub={`Après inflation ${input.annualInflationPct} %/an`}
+            sub={`Après inflation ${nombreFr(input.annualInflationPct ?? 0)}\u00a0%/an`}
           />
         ) : (
           <StatCard
@@ -202,7 +215,7 @@ export function SimulatorResults({ output }: SimulatorResultsProps) {
               • Versement de <strong>{formatEur(input.monthlyAmount)}</strong> en début de mois, capitalisé mensuellement
             </li>
             <li>
-              • Rendement net = <strong>{input.annualReturnPct} % − {input.annualFeesPct} % (frais TER) = {netReturn.toFixed(2)} %/an</strong>
+              • Rendement net = <strong>{nombreFr(input.annualReturnPct)}&nbsp;% − {nombreFr(input.annualFeesPct)}&nbsp;% (frais TER) = {nombreFr(netReturn, 2)}&nbsp;%/an</strong>
             </li>
             <li>
               • Scénario conservateur / optimiste : <strong>±2 points de pourcentage</strong> par rapport au scénario de base
@@ -211,11 +224,16 @@ export function SimulatorResults({ output }: SimulatorResultsProps) {
               • Rendement constant sur toute la durée (simplification — les marchés sont volatils)
             </li>
             <li>
-              • Basé sur la mécanique des intérêts composés — le même modèle mathématique qui sous-tend l&apos;historique du MSCI World (~7–8 %/an sur 30 ans)
+              {/* 30/09/2026 : cette ligne citait « ~7–8 %/an sur 30 ans » pour le
+                  MSCI World, sans source ni date. Invisible des robots tant que la
+                  page se chargeait en JavaScript, elle est dans le HTML initial
+                  depuis la suppression de loading.tsx : le repère sourcé est celui
+                  de l'en-tête (REGION_RETURN_SOURCES), pas un chiffre de mémoire. */}
+              • Basé sur la mécanique des intérêts composés&nbsp;: un rendement constant appliqué chaque mois, pas les cours réels (le backtest, lui, rejoue les cours historiques)
             </li>
             {input.annualInflationPct && (
               <li>
-                • Valeur réelle calculée en déflatant par <strong>{input.annualInflationPct} %/an</strong> sur {input.durationYears} ans
+                • Valeur réelle calculée en déflatant par <strong>{nombreFr(input.annualInflationPct)}&nbsp;%/an</strong> sur {input.durationYears} ans
               </li>
             )}
           </ul>

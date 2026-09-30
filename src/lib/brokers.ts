@@ -235,6 +235,11 @@ const TRADE_REPUBLIC: BrokerData = {
 //     dcaFitTitle, dcaFitBody, bestFor, notIdealFor, feeExample, faq ;
 //   · src/app/comparatif/page.tsx (carte BoursoBank de « Comment choisir ») ;
 //   · src/app/meilleurs-etf-debutants/page.tsx (FAQ « 50 € par mois ») ;
+//   · plus bas dans ce fichier, FRAIS_ORDRE_ETF_PEA (tableau des comparatifs
+//     d'ETF, 30/09/2026) : minimum, précision, date de la brochure ET liste
+//     des ETF de la gamme Boursomarkets (WPEA au 30/09/2026 ; si la gamme
+//     passe à Amundi, WPEA en sort et DCAM, CW8 ou PSP5 peuvent y entrer :
+//     relire la fiche Boursorama de chaque ETF des duels) ;
 //   · grep -rn '200 €' src | grep -i bourso   pour ne rien oublier.
 // Le slug reste « boursorama-bourse » : changer l'URL casserait les liens.
 const BOURSORAMA: BrokerData = {
@@ -436,6 +441,182 @@ const FORTUNEO: BrokerData = {
     },
   ],
 };
+
+// ─── Frais d'un ordre d'ETF dans un PEA, courtier par courtier ───────────────
+//
+// Ajouté le 30/09/2026 pour les comparatifs d'ETF. Leur verdict dit que « le
+// vrai départage est chez votre courtier » ; le relevé du 29/09/2026 montre
+// que les pages citées par les assistants IA nomment alors les courtiers, et
+// que les nôtres renvoyaient le lecteur chercher seul. Le tableau qui en sort
+// décrit une grille, il ne classe rien : ordre alphabétique, aucun « meilleur ».
+//
+// Les RÈGLES tarifaires sont des faits (grilles citées au-dessus de chaque
+// fiche, consultées le 28/09/2026 ; faits tr-frais-ordre, bourso-pea-courtage-etf,
+// bourso-montant-minimum-ordre, fortuneo-courtage-pea, synthese-frais-ordre-pea).
+// Le montant d'un ordre donné, lui, se CALCULE sur ces règles : la page passe
+// le versement de ses hypothèses (200 € aujourd'hui), et si l'hypothèse
+// change, le frais suit.
+//
+// ⚠️ BoursoBank : à revérifier après le 5 octobre 2026, comme le reste de la
+// fiche (voir le commentaire au-dessus de BOURSORAMA).
+//
+// 30/09/2026 — gammes à frais réduits. Le tableau disait « un ordre sur WPEA
+// coûte autant qu'un ordre sur DCAM, sauf offre réservée à une gamme », sans
+// dire qui en profite. Or c'était le cas même des duels : la fiche Boursorama
+// de WPEA porte le logo « Produit Boursomarkets » (0 € à l'achat), celles de
+// DCAM, CW8, ESE, PSP5 et SPEA non (relu le 30/09/2026). Chaque courtier
+// déclare donc sa gamme ET les ETF du site qu'on y a constatés, datés : la
+// page calcule le frais ETF par ETF et nomme l'exception au lieu de la taire.
+
+/** Date de consultation des trois grilles, YYYY-MM-DD. */
+export const GRILLES_CONSULTEES_LE = "2026-09-28";
+
+/** Offre d'un courtier réservée à certains ETF (Boursomarkets chez BoursoBank). */
+export interface GammeFraisReduits {
+  /** « gamme Boursomarkets » */
+  nom: string;
+  /**
+   * Mnémoniques des ETF du site constatés dans la gamme, un par un, sur une
+   * page du courtier. Un ETF absent de la liste est facturé au tarif normal :
+   * n'y ajouter qu'un fonds vérifié, jamais un fonds « probablement » inclus.
+   */
+  symboles: readonly string[];
+  /** Date du constat, YYYY-MM-DD. */
+  constateLe: string;
+  /** Frais d'un ordre d'achat sur un ETF de la gamme, pour ce montant. */
+  frais: (montant: number) => string;
+}
+
+export interface FraisOrdreEtfPea {
+  /** Fiche /comparatif/<slug>. */
+  slug: string;
+  nom: string;
+  /** Formule ou mode d'achat auquel s'applique le frais. */
+  offre: string;
+  /** Document officiel qui fixe le tarif. */
+  grille: { libelle: string; url: string };
+  /**
+   * Frais d'un ordre d'achat d'ETF coté sur Euronext, dans un PEA, pour ce
+   * montant — hors gamme à frais réduits.
+   */
+  frais: (montant: number) => string;
+  /** Gamme à frais réduits du courtier, s'il en a une. */
+  gamme?: GammeFraisReduits;
+  /** Ce qui change le coût, sans rien recommander. */
+  precision: string;
+}
+
+/** La gamme à frais réduits de ce courtier dont fait partie cet ETF, ou null. */
+export function gammeDeLEtf(courtier: FraisOrdreEtfPea, symbole: string): GammeFraisReduits | null {
+  return courtier.gamme?.symboles.includes(symbole) ? courtier.gamme : null;
+}
+
+/** Frais d'un ordre d'achat de cet ETF chez ce courtier : tarif de la gamme s'il en fait partie. */
+export function fraisOrdreEtf(courtier: FraisOrdreEtfPea, symbole: string, montant: number): string {
+  return (gammeDeLEtf(courtier, symbole) ?? courtier).frais(montant);
+}
+
+/** 0.7 → « 0,70 € ». Deux décimales : ce sont des frais facturés au centime. */
+function euros(v: number): string {
+  return `${v.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}\u00a0€`;
+}
+
+/** Plafond légal des frais d'ordre dans un PEA : 0,5 % du montant (CMF art. D221-111-1). */
+const PLAFOND_ORDRE_PEA = 0.005;
+
+/**
+ * BoursoBank : montant minimum d'un ordre d'achat d'ETF, Boursomarkets ou non
+ * (brochure du 04/09/2026, p. 23 ; fait bourso-montant-minimum-ordre). Une
+ * seule valeur pour le frais, la gamme et la précision.
+ */
+const BOURSO_MINIMUM_ORDRE_ETF = 200;
+const BOURSO_SOUS_LE_MINIMUM = `Ordre impossible sous ${BOURSO_MINIMUM_ORDRE_ETF}\u00a0€`;
+
+/** Fortuneo : montant d'achat à partir duquel joue l'offre FreeTrade Amundi (fait fortuneo-freetrade-amundi). */
+const FORTUNEO_SEUIL_FREETRADE_AMUNDI = 500;
+
+export const FRAIS_ORDRE_ETF_PEA: FraisOrdreEtfPea[] = [
+  {
+    slug: "boursorama-bourse",
+    nom: "BoursoBank",
+    offre: "forfait Découverte",
+    grille: {
+      libelle: "brochure tarifaire au 4 septembre 2026",
+      url: "https://www.boursobank.com/content/brochure_tarifaire/boursorama_bt.pdf",
+    },
+    // 1,99 € jusqu'à 500 €, puis 0,60 % ; plafond de 0,5 % en PEA ; 200 €
+    // minimum par ordre d'ETF (brochure du 04/09/2026, p. 20 et 23).
+    frais: (m) => {
+      if (m < BOURSO_MINIMUM_ORDRE_ETF) return BOURSO_SOUS_LE_MINIMUM;
+      const tarif = m <= 500 ? 1.99 : m * 0.006;
+      const plafond = m * PLAFOND_ORDRE_PEA;
+      return plafond < tarif
+        ? `${euros(plafond)} (${euros(tarif)} ramenés au plafond légal de 0,5\u00a0%)`
+        : euros(tarif);
+    },
+    // Boursomarkets : 0 € à l'achat, même minimum (brochure p. 20 ; fait
+    // bourso-boursomarkets-etf, émetteur partenaire iShares). Constat du
+    // 30/09/2026 sur boursorama.com, fiche par fiche : WPEA porte le logo
+    // « Produit Boursomarkets » ; DCAM, CW8, ESE, PSP5 et SPEA ne le portent
+    // pas (SPEA est pourtant un iShares : on ne déduit rien de l'émetteur).
+    // À relire après le 5/10/2026 (changement de partenaire annoncé).
+    gamme: {
+      nom: "gamme Boursomarkets",
+      symboles: ["WPEA"],
+      constateLe: "2026-09-30",
+      frais: (m) => (m < BOURSO_MINIMUM_ORDRE_ETF ? BOURSO_SOUS_LE_MINIMUM : "0\u00a0€ à l'achat"),
+    },
+    // 30/09/2026 : « BoursoBank a annoncé des changements » affirmait un fait
+    // que seules la presse et un blog rapportent (bourso-changement-oct-2026,
+    // « a-verifier ») : attribué, et sans ses chiffres, comme dans la fiche.
+    precision:
+      "0\u00a0€ à l'achat sur les ETF de la gamme Boursomarkets, dont l'émetteur partenaire est iShares au 30 septembre 2026\u00a0; " +
+      `les autres ETF suivent le tarif du forfait. ${BOURSO_MINIMUM_ORDRE_ETF}\u00a0€ minimum par ordre d'ETF. ` +
+      "Selon la presse, BoursoBank changerait en octobre 2026 l'émetteur de cette gamme et ce minimum\u00a0; " +
+      "au 30 septembre 2026, ni sa brochure tarifaire ni sa page Boursomarkets ne l'indiquent.",
+  },
+  {
+    slug: "fortuneo",
+    nom: "Fortuneo",
+    offre: "tarif Starter",
+    grille: {
+      libelle: "conditions tarifaires au 6 août 2026",
+      url: "https://www.fortuneo.fr/files/tarifs_fortuneo.pdf",
+    },
+    // 0 € pour le 1er ordre du mois jusqu'à 500 €, sinon 0,35 % (p. 10).
+    // 30/09/2026 : l'offre FreeTrade Amundi (fait fortuneo-freetrade-amundi,
+    // jusqu'au 31/12/2026) rend gratuits les achats de 500 € et plus sur une
+    // sélection d'ETF Amundi, dont la liste n'a pas été relue ETF par ETF.
+    // Sous 500 €, elle ne change rien ; au-delà, ce tableau afficherait
+    // 0,35 % là où certains ETF du duel coûtent 0 €. Le build s'arrête plutôt
+    // que de publier ce chiffre : relire la sélection et la déclarer en gamme.
+    frais: (m) => {
+      if (m >= FORTUNEO_SEUIL_FREETRADE_AMUNDI) {
+        throw new Error(
+          `brokers.ts : ordre de ${FORTUNEO_SEUIL_FREETRADE_AMUNDI} € ou plus chez Fortuneo — l'offre FreeTrade Amundi n'est pas modélisée. ` +
+            "Relisez la sélection d'ETF Amundi concernés et déclarez-la dans le champ gamme.",
+        );
+      }
+      // Sous le seuil ci-dessus, donc toujours dans la tranche « 1er ordre du mois ≤ 500 € ».
+      return `0\u00a0€ si c'est le 1er ordre du mois, sinon ${euros(m * 0.0035)}`;
+    },
+    precision: "Pas de plan d'investissement programmé sur ETF\u00a0: chaque ordre se passe à la main.",
+  },
+  {
+    slug: "trade-republic",
+    nom: "Trade Republic",
+    offre: "ordre ponctuel ou plan programmé",
+    grille: {
+      libelle: "grille tarifaire publique, mise à jour le 30 juin 2026",
+      url: "https://traderepublic.com/fr-fr?openModal=pricing-scheme",
+    },
+    // 1 € par ordre ponctuel quel que soit le montant ; plan programmé sans
+    // frais d'achat (faits tr-frais-ordre, tr-plan-epargne-frais).
+    frais: () => `${euros(1)} par ordre ponctuel, 0\u00a0€ par plan programmé`,
+    precision:
+      "Dans le PEA, le centre d'aide ne dit pas si les plans achètent des fractions de parts\u00a0: à vérifier dans l'application.",
+  },
+];
 
 // ─── Registry ─────────────────────────────────────────────────────────────────
 

@@ -128,6 +128,13 @@ export function formatEur(value: number): string {
   }).format(value);
 }
 
+// Virgule décimale et espace insécable (30/09/2026) : depuis que /simulateur
+// est rendu côté serveur, ce pourcentage est dans le HTML que lisent les
+// robots, qui y trouvaient « +103.7 % ».
 export function formatPct(value: number): string {
-  return `${value > 0 ? "+" : ""}${value.toFixed(1)} %`;
+  const nombre = value.toLocaleString("fr-FR", {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  });
+  return `${value > 0 ? "+" : ""}${nombre}\u00a0%`;
 }

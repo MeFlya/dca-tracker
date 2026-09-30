@@ -119,7 +119,8 @@ export function GainsDonutChart({ base }: GainsDonutChartProps) {
         <div className="pt-3 border-t border-gray-50 flex items-baseline justify-between">
           <span className="text-xs text-gray-500">Multiplicateur</span>
           <span className="text-sm font-bold text-gain-dark tabular-nums">
-            ×{(finalValue / totalInvested).toFixed(2)}
+            {/* Virgule décimale (30/09/2026), comme le multiplicateur de l'en-tête. */}
+            ×&nbsp;{(finalValue / totalInvested).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </span>
         </div>
       )}
@@ -170,7 +171,7 @@ function LegendRow({
           />
         </div>
         <p className="text-[10px] text-gray-500 mt-0.5 tabular-nums text-right">
-          {pct.toFixed(1)} %
+          {pct.toLocaleString("fr-FR", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}&nbsp;%
         </p>
       </div>
     </div>

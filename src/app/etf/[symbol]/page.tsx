@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { ETF_LIST, getETFBySymbol } from "@/lib/etf-config";
+import { ETF_LIST, getETFBySymbol, type ETFConfig } from "@/lib/etf-config";
 import type { AccountType } from "@/lib/broker-config";
 import { getETFDetailContent } from "@/lib/etf-detail-content";
 import { getMarketDataProvider, isDemo, libelleFournisseur } from "@/lib/market-data";
@@ -14,6 +14,51 @@ import { IssuerLogoMark } from "@/components/ui/IssuerLogoMark";
 import { RegionMark } from "@/components/ui/RegionMark";
 import { cn } from "@/lib/utils";
 import { lienListePea } from "@/lib/etf-pea-verifies";
+import { ArticleByline } from "@/components/ui/ArticleByline";
+import { JsonLd } from "@/components/ui/JsonLd";
+import { reponseFiche } from "@/lib/reponse-fiche-etf";
+import { FICHE_ETF, FICHES_ETF_MAJ_LE } from "@/lib/sources-etf";
+
+// ─── Dates de publication des fiches (30/09/2026) ──────────────────────────
+//
+// Pour la byline et le JSON-LD Article, ajoutés ce jour-là (les fiches n'en
+// avaient pas : ni date, ni auteur). Relevées dans git, fiche par fiche : le
+// commit qui a créé l'URL /etf/<mnémonique>. Le commit du 23/04/2026
+// (mnémoniques Lyxor renommés) a créé IWDA, 500, AEEM, JPNK et C3M ; WPEA,
+// DCAM, PSP5, PUST et PAEEM sont entrés au catalogue le 28/09/2026. PAEEM :
+// une fiche de ce nom a existé du 18 au 23/04/2026, puis l'URL a redirigé
+// vers AEEM, un autre fonds, jusqu'au 28/09 — la fiche actuelle date de là.
+// Un ETF ajouté au catalogue sans sa date casse le build, plutôt que de
+// publier une date inventée.
+const PUBLIEE_LE: Record<string, string> = {
+  CW8: "2026-04-18",
+  VWCE: "2026-04-18",
+  CSPX: "2026-04-18",
+  SPY: "2026-04-18",
+  VUSA: "2026-04-18",
+  ANX: "2026-04-18",
+  QQQ: "2026-04-18",
+  PCEU: "2026-04-18",
+  RS2K: "2026-04-18",
+  IWDA: "2026-04-23",
+  "500": "2026-04-23",
+  AEEM: "2026-04-23",
+  JPNK: "2026-04-23",
+  C3M: "2026-04-23",
+  WPEA: "2026-09-28",
+  DCAM: "2026-09-28",
+  PSP5: "2026-09-28",
+  PUST: "2026-09-28",
+  PAEEM: "2026-09-28",
+};
+for (const e of ETF_LIST) {
+  if (!PUBLIEE_LE[e.displaySymbol]) {
+    throw new Error(
+      `etf/[symbol]/page.tsx : pas de date de publication pour ${e.displaySymbol}. ` +
+        "Relevez-la dans git (commit qui crée l'entrée) et ajoutez-la à PUBLIEE_LE.",
+    );
+  }
+}
 
 // ─── Static generation ───────────────────────────────────────────────────────
 
@@ -34,34 +79,8 @@ export async function generateMetadata({
   const etf = getETFBySymbol(symbol);
   if (!etf) return { title: "ETF introuvable" };
 
-  // CTR (analyse GSC juin 2026) : la requête ticker nu ("cw8" : 143 imp/mois,
-  // pos 14) ne cliquait pas sur l'ancien title technique ("— Nom complet :
-  // analyse et simulation DCA"). Nouveau pattern : ticker + indice d'abord,
-  // puis l'intention de recherche (frais, avis, alternatives) au lieu des
-  // specs sèches (ISIN/réplication → reléguées au corps de page).
-  // Gabarit volontairement court : `indexLabel` peut être long (« Obligations
-  // EUR (court terme) »), et c'est lui qui faisait dépasser 60 caractères sur
-  // C3M, AEEM et PCEU. Le millésime est porté par la meta description.
-  const title = `ETF ${etf.displaySymbol} (${etf.indexLabel}) : frais et avis`;
-  // Description refaite le 28/09/2026. L'ancienne (197 à 240 caractères, donc
-  // tronquée par Google sur les 19 fiches) posait « Faut-il l'acheter en
-  // 2026 ? » — une promesse de conseil que le site ne peut pas tenir sans
-  // statut CIF — et disait « réservé au CTO » pour SPY et QQQ, qu'un
-  // particulier de l'UE ne peut pas acheter du tout (pas de DIC, voir
-  // sansDicUE). Gabarit court, sans le nom complet (jusqu'à 60 caractères) :
-  // le ticker et l'indice suffisent à reconnaître le fonds.
-  const ter = etf.ter.toLocaleString("fr-FR", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 4,
-  });
-  const enveloppe = etf.sansDicUE
-    ? "sans DIC, inaccessible aux particuliers de l'UE"
-    : etf.peaEligible
-      ? "éligible PEA"
-      : "hors PEA";
-  const description =
-    `${etf.displaySymbol} (${etf.indexLabel}) : ${ter} % de frais, ${enveloppe}, ` +
-    `${etf.distributionPolicy.toLowerCase()}. ISIN, limites, équivalents et DCA simulé avec ses frais.`;
+  const title = titreFiche(etf);
+  const description = descriptionFiche(etf);
 
   return {
     title,
@@ -80,6 +99,44 @@ export async function generateMetadata({
       description,
     },
   };
+}
+
+// Sorties de generateMetadata le 30/09/2026, INCHANGÉES : la page s'en sert
+// aussi pour le JSON-LD Article (headline, description), qui doit dire la même
+// chose que le <title> et la meta.
+function titreFiche(etf: ETFConfig): string {
+  // CTR (analyse GSC juin 2026) : la requête ticker nu ("cw8" : 143 imp/mois,
+  // pos 14) ne cliquait pas sur l'ancien title technique ("— Nom complet :
+  // analyse et simulation DCA"). Nouveau pattern : ticker + indice d'abord,
+  // puis l'intention de recherche (frais, avis, alternatives) au lieu des
+  // specs sèches (ISIN/réplication → reléguées au corps de page).
+  // Gabarit volontairement court : `indexLabel` peut être long (« Obligations
+  // EUR (court terme) »), et c'est lui qui faisait dépasser 60 caractères sur
+  // C3M, AEEM et PCEU. Le millésime est porté par la meta description.
+  return `ETF ${etf.displaySymbol} (${etf.indexLabel}) : frais et avis`;
+}
+
+function descriptionFiche(etf: ETFConfig): string {
+  // Description refaite le 28/09/2026. L'ancienne (197 à 240 caractères, donc
+  // tronquée par Google sur les 19 fiches) posait « Faut-il l'acheter en
+  // 2026 ? » — une promesse de conseil que le site ne peut pas tenir sans
+  // statut CIF — et disait « réservé au CTO » pour SPY et QQQ, qu'un
+  // particulier de l'UE ne peut pas acheter du tout (pas de DIC, voir
+  // sansDicUE). Gabarit court, sans le nom complet (jusqu'à 60 caractères) :
+  // le ticker et l'indice suffisent à reconnaître le fonds.
+  const ter = etf.ter.toLocaleString("fr-FR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 4,
+  });
+  const enveloppe = etf.sansDicUE
+    ? "sans DIC, inaccessible aux particuliers de l'UE"
+    : etf.peaEligible
+      ? "éligible PEA"
+      : "hors PEA";
+  return (
+    `${etf.displaySymbol} (${etf.indexLabel}) : ${ter} % de frais, ${enveloppe}, ` +
+    `${etf.distributionPolicy.toLowerCase()}. ISIN, limites, équivalents et DCA simulé avec ses frais.`
+  );
 }
 
 // ─── Page ────────────────────────────────────────────────────────────────────
@@ -102,6 +159,8 @@ export default async function ETFDetailPage({
 
   const otherETFs = ETF_LIST.filter((e) => e.displaySymbol !== etf.displaySymbol);
   const lienPea = lienListePea(etf.displaySymbol);
+  const reponse = reponseFiche(etf);
+  const ficheSource = FICHE_ETF[etf.displaySymbol];
 
   const etfAccountType: AccountType = etf.peaEligible ? "PEA" : "CTO";
 
@@ -196,6 +255,68 @@ export default async function ETFDetailPage({
           {quote?.exchange && <MetricCell label="Bourse" value={quote.exchange} />}
         </div>
       </header>
+
+      {/* ── Signature, date et JSON-LD Article (30/09/2026) ────────────── */}
+      <ArticleByline
+        publishedAt={PUBLIEE_LE[etf.displaySymbol]}
+        updatedAt={FICHES_ETF_MAJ_LE}
+        url={`/etf/${etf.displaySymbol}`}
+        headline={titreFiche(etf)}
+        description={descriptionFiche(etf)}
+        className="mb-4"
+      />
+
+      {/* ── La réponse d'abord (30/09/2026) ─────────────────────────────────
+          Première phrase : le statut PEA — avec l'ISIN et le TER pour un
+          fonds éligible ; pour un fonds qui ne l'est pas, les équivalents
+          vérifiés de même indice (règle 4 de la table), dits comme une
+          correspondance, pas comme un conseil. Tout est lu dans les données
+          vérifiées : voir reponse-fiche-etf.ts. */}
+      <div className="mb-6">
+        <p className="text-base text-gray-800 leading-relaxed">
+          <strong className="font-semibold text-gray-900">{reponse.statut}</strong>
+          {reponse.equivalents && (
+            <>
+              {" "}{reponse.equivalents.intro}{" "}
+              {reponse.equivalents.fonds.map((f, i) => (
+                <span key={f.symbole}>
+                  {i > 0 && (i === reponse.equivalents!.fonds.length - 1 ? " et " : ", ")}
+                  <Link href={f.href} className="font-semibold text-primary-700 hover:underline">
+                    {f.symbole}
+                  </Link>{" "}
+                  ({f.ter})
+                </span>
+              ))}
+              {/* « d'indice » ou « approchée » (VWCE, émergents) : 30/09/2026. */}
+              &nbsp;: {reponse.equivalents.correspondance}, pas une recommandation.
+            </>
+          )}
+          {reponse.sansEquivalent && <> {reponse.sansEquivalent}</>}
+          {reponse.precisions.map((p) => (
+            <span key={p}> {p}</span>
+          ))}
+        </p>
+        <p className="mt-2 text-xs text-gray-500 leading-relaxed">
+          {reponse.verification}{" "}
+          <Link href={reponse.lienListe} className="underline underline-offset-2 hover:text-gray-700">
+            Liste vérifiée des ETF éligibles au PEA
+          </Link>
+          {ficheSource && (
+            <>
+              {" · "}
+              <a
+                href={ficheSource.url}
+                target="_blank"
+                rel="noopener"
+                className="underline underline-offset-2 hover:text-gray-700"
+              >
+                {ficheSource.libelle}
+              </a>
+            </>
+          )}
+          .
+        </p>
+      </div>
 
       {/* ── Description courte ─────────────────────────────────────────── */}
       <p className="text-base text-gray-600 leading-relaxed mb-10 border-l-4 border-primary-200 pl-5">
@@ -307,6 +428,43 @@ export default async function ETFDetailPage({
           </p>
         </div>
       )}
+
+      {/* ── FAQ (30/09/2026) ────────────────────────────────────────────────
+          Deux ou trois questions, calculées sur les données vérifiées
+          (reponse-fiche-etf.ts) : l'éligibilité, les frais, l'équivalent PEA
+          ou les autres ETF du même indice. <details> ouverts, comme sur les
+          comparatifs : une réponse repliée est une réponse qu'on ne lit pas. */}
+      <section aria-labelledby="faq-etf" className="mb-10">
+        <JsonLd
+          data={{
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: reponse.faq.map(({ q, a }) => ({
+              "@type": "Question",
+              name: q,
+              acceptedAnswer: { "@type": "Answer", text: a },
+            })),
+          }}
+        />
+        <h2 id="faq-etf" className="text-lg font-semibold text-gray-900 mb-4">
+          Questions fréquentes sur {etf.displaySymbol}
+        </h2>
+        <div className="space-y-3">
+          {reponse.faq.map(({ q, a }) => (
+            <details
+              key={q}
+              open
+              className="group rounded-xl border border-gray-100 bg-white p-4 open:bg-gray-50/50"
+            >
+              <summary className="cursor-pointer list-none flex items-center justify-between gap-3">
+                <span className="text-sm font-semibold text-gray-900">{q}</span>
+                <span className="text-gray-500 group-open:rotate-180 transition-transform" aria-hidden>▾</span>
+              </summary>
+              <p className="mt-3 text-sm text-gray-600 leading-relaxed">{a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
 
       {/* ── Renvoi vers le guide (29/09/2026) ──────────────────────────────
           Seulement sur les fiches d'ETF éligibles au PEA : le guide est bâti
