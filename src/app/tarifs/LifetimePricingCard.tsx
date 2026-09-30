@@ -26,6 +26,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
 import { track } from "@/lib/analytics";
+import { figerOrigineDeLAchat } from "@/lib/origine-achat";
 
 export function LifetimePricingCard() {
   // Flag exposé au build (NEXT_PUBLIC_…). À ne pas confondre avec
@@ -56,6 +57,9 @@ function LifetimeCardInner() {
 
   async function handleClick() {
     if (!isSignedIn) {
+      // 30/09/2026 — origine figée avant l'inscription, pour qu'elle
+      // survive à l'aller-retour (voir src/lib/origine-achat.ts).
+      figerOrigineDeLAchat();
       window.location.href = `/sign-up?redirect_url=${encodeURIComponent("/tarifs")}`;
       return;
     }
@@ -65,6 +69,8 @@ function LifetimeCardInner() {
       const res = await fetch("/api/stripe/checkout-lifetime", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        // `origine` finit dans les métadonnées du paiement Stripe (30/09/2026).
+        body: JSON.stringify({ origine: figerOrigineDeLAchat() }),
       });
       const data = await res.json();
       if (data.url) {

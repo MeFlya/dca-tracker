@@ -25,7 +25,7 @@ export default function ConfidentialitePage() {
       <h1 className="text-3xl font-bold text-gray-900 mb-2">
         Politique de confidentialité
       </h1>
-      <p className="text-sm text-gray-500 mb-8">Dernière mise à jour : 29 avril 2026</p>
+      <p className="text-sm text-gray-500 mb-8">Dernière mise à jour : 30 septembre 2026</p>
 
       <LegalArticle>
 
@@ -92,7 +92,11 @@ export default function ConfidentialitePage() {
             <strong>jamais collectées par DCA Tracker</strong> — gérées
             directement par Stripe (norme PCI-DSS) ;
           </li>
-          <li>identifiant client Stripe, statut d&apos;abonnement, dates de période.</li>
+          <li>identifiant client Stripe, statut d&apos;abonnement, dates de période ;</li>
+          <li>
+            la page du site d&apos;où vient l&apos;achat (son adresse seule, ou le
+            nom du site qui vous a envoyé), transmise à Stripe avec la commande.
+          </li>
         </ul>
 
         <h3>3.4 Données techniques</h3>
@@ -146,6 +150,13 @@ export default function ConfidentialitePage() {
               <tr>
                 <td>Envoi de la cheat sheet et emails produit (lead magnet)</td>
                 <td>Consentement explicite (art. 6.1.a) — désinscription en 1 clic</td>
+              </tr>
+              <tr>
+                <td>
+                  Savoir quelles pages du site amènent les achats (page d&apos;origine
+                  jointe à la commande, voir 3.3)
+                </td>
+                <td>Intérêt légitime (art. 6.1.f)</td>
               </tr>
               <tr>
                 <td>Mesure d&apos;audience anonyme (Vercel Web Analytics)</td>

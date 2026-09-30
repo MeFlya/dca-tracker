@@ -7,6 +7,11 @@
 // Une fois payé, l'utilisateur doit passer Premium "à vie" — la mécanique
 // Clerk metadata pour ce flag est encore à câbler dans le webhook
 // `checkout.session.completed` (à faire quand le LTD sera prêt à shipper).
+//
+// 30/09/2026 — metadata.origine : la page du site d'où vient l'acheteur, posée
+// sur la session ET sur le PaymentIntent (payment_intent_data), lisible dans
+// Stripe > Paiements > un paiement > Métadonnées. Formes possibles et lecture :
+// src/lib/origine-achat.ts.
 
 export const dynamic = "force-dynamic";
 
@@ -14,8 +19,9 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import { stripe } from "@/lib/stripe";
 import { NextResponse } from "next/server";
 import { log } from "@/lib/logger";
+import { nettoyerOrigine } from "@/lib/origine-achat";
 
-export async function POST() {
+export async function POST(req: Request) {
   if (process.env.ENABLE_LIFETIME_DEAL !== "true") {
     return NextResponse.json(
       { error: "Lifetime deal n'est pas actif." },
@@ -43,6 +49,11 @@ export async function POST() {
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://dcatracker.fr";
 
+  // Corps facultatif : un onglet resté ouvert depuis avant le 30/09/2026
+  // n'envoie rien — l'origine vaut alors « inconnue », le paiement reste possible.
+  const corps = (await req.json().catch(() => null)) as { origine?: unknown } | null;
+  const origine = nettoyerOrigine(corps?.origine);
+
   const priv = user.privateMetadata as Record<string, unknown>;
   let customerId = priv?.stripeCustomerId as string | undefined;
 
@@ -63,7 +74,8 @@ export async function POST() {
     line_items: [{ price: priceId, quantity: 1 }],
     success_url: `${siteUrl}/payment/success?plan=lifetime&session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${siteUrl}/payment/cancel`,
-    metadata: { clerkUserId: userId, productKind: "lifetime" },
+    metadata: { clerkUserId: userId, productKind: "lifetime", origine },
+    payment_intent_data: { metadata: { origine } },
     allow_promotion_codes: true,
     locale: "fr",
   });
@@ -72,6 +84,7 @@ export async function POST() {
     userId,
     customer: customerId,
     session: session.id,
+    origine,
   });
   return NextResponse.json({ url: session.url });
 }

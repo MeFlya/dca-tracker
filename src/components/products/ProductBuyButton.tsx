@@ -4,9 +4,16 @@
 // Pas de compte requis (checkout invité) — Stripe collecte l'email.
 // Si le produit n'a pas encore de prix Stripe configuré (available=false),
 // on affiche un état "bientôt disponible" au lieu d'un bouton qui échoue.
+//
+// 30/09/2026 — la demande de paiement emporte `origine` : la page du site d'où
+// vient l'acheteur (dernier renvoi cliqué, sinon référent). L'API la pose dans
+// les métadonnées Stripe ; voir src/lib/origine-achat.ts pour la lire. Elle est
+// figée au clic pour qu'un second essai après annulation sur Stripe ne parte
+// pas avec « externe:checkout.stripe.com ».
 
 import { useState } from "react";
 import { track } from "@/lib/analytics";
+import { figerOrigineDeLAchat } from "@/lib/origine-achat";
 
 interface Props {
   productId: string;
@@ -48,7 +55,7 @@ export function ProductBuyButton({
       const res = await fetch("/api/products/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId }),
+        body: JSON.stringify({ productId, origine: figerOrigineDeLAchat() }),
       });
       const data = await res.json();
       if (data.url) {

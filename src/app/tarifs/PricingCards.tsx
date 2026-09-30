@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
 import { track } from "@/lib/analytics";
+import { figerOrigineDeLAchat } from "@/lib/origine-achat";
 import { AuroraSweep } from "@/components/ui/AuroraSweep";
 
 type Feature = { label: string; included: boolean };
@@ -125,6 +126,11 @@ function CheckoutButton({
       // qui n'a converti personne, et un plan présélectionné qui n'est pas
       // celui qu'il avait choisi.
       const retour = `/tarifs?billing=${billing}&checkout=premium#premium`;
+      // 30/09/2026 — l'origine de l'achat est figée AVANT l'inscription :
+      // au retour, le référent serait la page d'inscription (ou le domaine de
+      // Clerk, ou celui de Google), plus la page qui a amené le visiteur ici.
+      // Voir src/lib/origine-achat.ts.
+      figerOrigineDeLAchat();
       window.location.href = `/sign-up?redirect_url=${encodeURIComponent(retour)}`;
       return;
     }
@@ -137,7 +143,9 @@ function CheckoutButton({
       const res = await fetch("/api/stripe/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ planId: "premium", billing }),
+        // `origine` finit dans les métadonnées de l'abonnement Stripe
+        // (30/09/2026) — voir src/lib/origine-achat.ts.
+        body: JSON.stringify({ planId: "premium", billing, origine: figerOrigineDeLAchat() }),
       });
       const data = await res.json();
       if (data.url) {

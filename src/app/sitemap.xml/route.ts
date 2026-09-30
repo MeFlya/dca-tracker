@@ -59,6 +59,9 @@ const REV = {
   produits: "2026-09-29",
   // Vercel Web Analytics remplace Plausible (mention dans la page)
   analytics: "2026-08-23",
+  // /confidentialite : page d'origine jointe aux achats (3.3 et 4). Même date
+  // que « Dernière mise à jour » affichée dans la page (30/09/2026).
+  confidentialite: "2026-09-30",
   // entrée de changelog sur la régression de série du 2 août ; partenariats
   affiliation: "2026-08-04",
   cgv: "2026-06-11",
@@ -141,7 +144,7 @@ export async function GET(): Promise<NextResponse> {
     { url: `${base}/changelog`,                changeFreq: "monthly", priority: 0.4,  lastmod: REV.affiliation },
     { url: `${base}/mentions-legales`,         changeFreq: "yearly",  priority: 0.3,  lastmod: REV.analytics },
     { url: `${base}/cgv`,                      changeFreq: "yearly",  priority: 0.3,  lastmod: REV.cgv },
-    { url: `${base}/confidentialite`,          changeFreq: "yearly",  priority: 0.3,  lastmod: REV.analytics },
+    { url: `${base}/confidentialite`,          changeFreq: "yearly",  priority: 0.3,  lastmod: REV.confidentialite },
     { url: `${base}/simulateur-retraite`,      changeFreq: "monthly", priority: 0.9,  lastmod: REV.etf },
     { url: `${base}/communaute`,               changeFreq: "weekly",  priority: 0.6,  lastmod: REV.inchangeesDepuisAvril },
     { url: `${base}/glossaire`,                changeFreq: "monthly", priority: 0.7,  lastmod: REV.glossaireHub },

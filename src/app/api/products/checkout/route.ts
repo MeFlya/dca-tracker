@@ -12,6 +12,12 @@
 // - metadata.productId : utilisé par le webhook pour déclencher la
 //   livraison par email (le webhook abo ignore ces sessions car elles
 //   n'ont pas de session.subscription).
+// - metadata.origine (30/09/2026) : la page du site d'où vient l'acheteur,
+//   pour savoir quelle page amène chaque vente — Vercel gratuit n'enregistre
+//   pas les événements personnalisés, le paiement est la seule trace fiable.
+//   Posée sur la session ET sur le PaymentIntent (payment_intent_data), pour
+//   qu'elle apparaisse dans Stripe > Paiements > un paiement > Métadonnées.
+//   Le webhook ne la lit pas. Formes possibles et lecture : src/lib/origine-achat.ts.
 
 export const dynamic = "force-dynamic";
 
@@ -20,9 +26,16 @@ import { NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { getProduct, getProductPriceId } from "@/lib/products";
 import { log } from "@/lib/logger";
+import { nettoyerOrigine } from "@/lib/origine-achat";
 
 export async function POST(req: Request) {
-  const { productId } = (await req.json()) as { productId?: string };
+  const { productId, origine: origineRecue } = (await req.json()) as {
+    productId?: string;
+    origine?: unknown;
+  };
+  // Chaîne courte et propre, ou « inconnue » : le navigateur peut envoyer
+  // n'importe quoi, et ce texte finit dans le tableau de bord Stripe.
+  const origine = nettoyerOrigine(origineRecue);
   const product = productId ? getProduct(productId) : null;
   if (!product) {
     return NextResponse.json({ error: "Produit inconnu" }, { status: 400 });
@@ -59,7 +72,8 @@ export async function POST(req: Request) {
     line_items: [{ price: priceId, quantity: 1 }],
     success_url: `${siteUrl}/produits/merci?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${siteUrl}/produits/${product.slug}`,
-    metadata: { productId: product.id },
+    metadata: { productId: product.id, origine },
+    payment_intent_data: { metadata: { origine } },
     invoice_creation: {
       enabled: true,
       invoice_data: {
@@ -88,6 +102,7 @@ export async function POST(req: Request) {
     productId: product.id,
     session: session.id,
     guest: !customerId,
+    origine,
   });
 
   return NextResponse.json({ url: session.url });

@@ -1,3 +1,13 @@
+// Checkout Stripe de l'abonnement Premium (7 jours d'essai).
+//
+// 30/09/2026 — metadata.origine : la page du site d'où vient l'abonné, pour
+// savoir quelle page amène chaque vente (Vercel gratuit n'enregistre pas les
+// événements personnalisés). Posée sur la session ET sur l'abonnement
+// (subscription_data) : l'essai ne crée pas de paiement au checkout, c'est donc
+// sur l'abonnement qu'on la lit (Stripe > Clients > Abonnements > Métadonnées).
+// Le webhook ne lit que clerkUserId, inchangé. Formes possibles et lecture :
+// src/lib/origine-achat.ts.
+
 export const dynamic = "force-dynamic";
 
 import { auth, currentUser } from "@clerk/nextjs/server";
@@ -5,6 +15,7 @@ import { stripe } from "@/lib/stripe";
 import { PLANS } from "@/lib/plans";
 import { NextResponse } from "next/server";
 import { log } from "@/lib/logger";
+import { nettoyerOrigine } from "@/lib/origine-achat";
 
 export async function POST(req: Request) {
   const { userId } = await auth();
@@ -17,10 +28,14 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Utilisateur introuvable" }, { status: 404 });
   }
 
-  const { planId, billing } = (await req.json()) as {
+  const { planId, billing, origine: origineRecue } = (await req.json()) as {
     planId: "premium";
     billing: "monthly" | "yearly";
+    origine?: unknown;
   };
+  // Chaîne courte et propre, ou « inconnue » (le navigateur peut envoyer
+  // n'importe quoi).
+  const origine = nettoyerOrigine(origineRecue);
 
   if (planId !== "premium") {
     return NextResponse.json({ error: "Plan invalide" }, { status: 400 });
@@ -64,9 +79,9 @@ export async function POST(req: Request) {
     cancel_url: `${siteUrl}/payment/cancel`,
     subscription_data: {
       trial_period_days: TRIAL_DAYS,
-      metadata: { clerkUserId: userId },
+      metadata: { clerkUserId: userId, origine },
     },
-    metadata: { clerkUserId: userId },
+    metadata: { clerkUserId: userId, origine },
     allow_promotion_codes: true,
     locale: "fr",
   });
@@ -77,6 +92,7 @@ export async function POST(req: Request) {
     customer: customerId,
     session: session.id,
     trial_days: TRIAL_DAYS,
+    origine,
   });
   return NextResponse.json({ url: session.url });
 }

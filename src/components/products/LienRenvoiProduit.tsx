@@ -12,11 +12,17 @@
 // ⚠️ Au 29/09/2026, track() n'envoie rien : les événements personnalisés
 // demandent le plan Pro de Vercel (voir EVENEMENTS_PERSONNALISES_ACTIFS dans
 // analytics.ts). L'appel est posé pour le jour où le drapeau passe à `true`.
+//
+// 30/09/2026 — le clic met aussi la page de côté (sessionStorage, chemin seul)
+// pour qu'elle parte avec le paiement, dans metadata.origine de la session
+// Stripe : c'est la mesure qui fonctionne sans le plan Pro. Détail et lecture
+// du résultat dans src/lib/origine-achat.ts.
 
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { track } from "@/lib/analytics";
+import { memoriserPageDOrigine } from "@/lib/origine-achat";
 
 export function LienRenvoiProduit({
   href,
@@ -35,12 +41,13 @@ export function LienRenvoiProduit({
     <Link
       href={href}
       className={className}
-      onClick={() =>
+      onClick={() => {
+        memoriserPageDOrigine(page);
         track({
           name: "product_renvoi_click",
           props: { product_id: produitId, page },
-        })
-      }
+        });
+      }}
     >
       {children}
     </Link>
