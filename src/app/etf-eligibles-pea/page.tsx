@@ -156,7 +156,7 @@ const PRESENTES_ELIGIBLES_ICI = ETF_NON_ELIGIBLES.filter((f) => f.presenteEligib
 
 const RAISON: Record<RaisonHorsPea, string> = {
   "swap-hors-pea":
-    "Réplication synthétique (swap), et pourtant non éligible\u00a0: le reporting mensuel d'Amundi du 31 août 2026 indique «\u00a0Éligibilité\u00a0: Compte-titres, Assurance-vie\u00a0».",
+    "Réplication synthétique (swap), et pourtant non éligible\u00a0: le reporting mensuel d'Amundi du 31 août 2026 laisse vide sa ligne «\u00a0Enveloppe fiscale\u00a0», que ceux de CW8, PAEEM et PUST remplissent par «\u00a0Eligible au PEA\u00a0».",
   physique:
     "Réplication physique\u00a0: le fonds détient lui-même les actions de son indice, et ce ne sont pas, à plus de 75\u00a0%, des actions de sociétés de l'Union européenne ou de l'Espace économique européen, comme l'exige le PEA.",
   // Ce qui l'exclut du PEA, c'est d'être un fonds américain (fait
@@ -504,7 +504,8 @@ export default function EtfEligiblesPeaPage() {
               L&apos;inverse ne tient pas&nbsp;: être synthétique ne rend pas
               éligible. <Mnemoniques fonds={SWAP_HORS_PEA} /> utilisent un swap et
               ne sont pas éligibles&nbsp;; leur reporting Amundi du 31 août 2026
-              indique «&nbsp;Éligibilité&nbsp;: Compte-titres, Assurance-vie&nbsp;».
+              laisse vide la ligne «&nbsp;Enveloppe fiscale&nbsp;», que celui de
+              CW8 remplit par «&nbsp;Eligible au PEA&nbsp;».
               {PAIRES_AMUNDI.length > 0 && (
                 <>
                   {" "}Pour{" "}
@@ -562,10 +563,13 @@ export default function EtfEligiblesPeaPage() {
             <>
               <strong className="text-gray-900">Lisez l&apos;éligibilité chez l&apos;émetteur</strong>,
               sur la page du fonds et dans son reporting mensuel, le point que
-              l&apos;émetteur publie chaque mois. Chez Amundi, ce reporting porte
-              une ligne «&nbsp;Éligibilité&nbsp;»&nbsp;: au 31 août 2026, elle
-              indiquait «&nbsp;Compte-titres, Assurance-vie&nbsp;» pour{" "}
-              <Mnemoniques fonds={SWAP_HORS_PEA} />, sans le PEA.
+              l&apos;émetteur publie chaque mois. Chez Amundi, c&apos;est la ligne
+              «&nbsp;Enveloppe fiscale&nbsp;» qui tranche&nbsp;: au 31 août 2026,
+              elle indiquait «&nbsp;Eligible au PEA&nbsp;» pour CW8, PAEEM et PUST,
+              et restait vide pour <Mnemoniques fonds={SWAP_HORS_PEA} />. La ligne
+              «&nbsp;Éligibilité&nbsp;» du même document ne prouve rien&nbsp;: elle
+              affiche «&nbsp;Compte-titres, Assurance-vie&nbsp;» pour tous ces
+              fonds, éligibles au PEA compris.
             </>,
             <>
               <strong className="text-gray-900">Recoupez avec une source indépendante de l&apos;émetteur</strong>&nbsp;:

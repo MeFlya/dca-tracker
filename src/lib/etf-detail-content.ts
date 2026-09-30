@@ -224,7 +224,7 @@ Surtout, un particulier résidant dans l'Union européenne ne peut en principe p
   "500": {
     whatItTracks: `Le 500 réplique le S&P 500, l'indice des 500 plus grandes entreprises américaines cotées, par réplication synthétique : l'ETF ne détient pas directement les actions américaines, il conclut un contrat d'échange (swap) avec une contrepartie bancaire qui lui verse la performance de l'indice. Ses frais sont de 0,15 % par an.
 
-Il n'est PAS éligible au PEA. Le reporting d'Amundi au 31 août 2026 est explicite : « Éligibilité : Compte-titres, Assurance-vie ». Pour le S&P 500 dans un PEA, les équivalents sont le PSP5 (Amundi PEA S&P 500, 0,12 %), le SPEA (iShares, 0,10 %) et l'ESE (BNP Paribas Easy, 0,14 %).
+Il n'est PAS éligible au PEA. Le reporting d'Amundi au 31 août 2026 laisse vide sa ligne « Enveloppe fiscale », que celui de CW8 remplit par « Eligible au PEA ». Pour le S&P 500 dans un PEA, les équivalents sont le PSP5 (Amundi PEA S&P 500, 0,12 %), le SPEA (iShares, 0,10 %) et l'ESE (BNP Paribas Easy, 0,14 %).
 
 Le S&P 500 est l'indice de référence de la gestion d'actifs mondiale. Il couvre environ 80 % de la capitalisation boursière américaine et surpondère fortement la technologie : les dix premières positions (Apple, Microsoft, Nvidia, Amazon, Meta, Alphabet, Tesla, Berkshire Hathaway, JPMorgan, Broadcom) représentent plus de 35 % de l'indice.`,
     whyChooseIt: [
@@ -272,7 +272,7 @@ Le S&P 500 couvre environ 80 % de la capitalisation boursière américaine et su
   ANX: {
     whatItTracks: `L'ANX réplique le Nasdaq-100, l'indice des 100 plus grandes entreprises non financières du Nasdaq, massivement orienté technologie (Apple, Microsoft, Nvidia, Amazon, Meta, Alphabet, Tesla, Broadcom, Costco, Netflix). Il passe par une réplication synthétique (swap) et coûte 0,23 % par an.
 
-Il n'est PAS éligible au PEA : le reporting d'Amundi au 31 août 2026 indique « Éligibilité : Compte-titres, Assurance-vie ». Pour le Nasdaq-100 dans un PEA, l'équivalent de notre sélection est le PUST (Amundi PEA Nasdaq-100, 0,30 %) — et ce n'est pas le seul Nasdaq-100 éligible.
+Il n'est PAS éligible au PEA : le reporting d'Amundi au 31 août 2026 laisse vide sa ligne « Enveloppe fiscale », que celui de CW8 remplit par « Eligible au PEA ». Pour le Nasdaq-100 dans un PEA, l'équivalent de notre sélection est le PUST (Amundi PEA Nasdaq-100, 0,30 %) — et ce n'est pas le seul Nasdaq-100 éligible.
 
 Le Nasdaq-100 a fortement progressé sur les vingt dernières années, mais c'est aussi l'un des indices les plus volatils. Ses corrections peuvent être brutales : -35 % en 2022, -80 % sur la bulle internet de 2000–2003.`,
     whyChooseIt: [
@@ -329,7 +329,7 @@ Les émergents offrent un potentiel de croissance long terme supérieur aux marc
   AEEM: {
     whatItTracks: `L'AEEM réplique le MSCI Emerging Markets, l'indice de référence des marchés en développement. Il regroupe environ 1 400 entreprises dans 24 pays émergents : Chine (~27 %), Inde (~18 %), Taïwan (~15 %), Corée du Sud (~11 %), Brésil (~5 %), Arabie Saoudite, Afrique du Sud, etc. Il passe par une réplication synthétique (swap) et coûte 0,20 % par an.
 
-Il n'est PAS éligible au PEA : le reporting d'Amundi au 31 août 2026 indique « Éligibilité : Compte-titres, Assurance-vie ». L'équivalent PEA est le PAEEM (Amundi PEA Emergent ESG Transition, 0,30 %) — un autre fonds, sur une variante de l'indice.
+Il n'est PAS éligible au PEA : le reporting d'Amundi au 31 août 2026 laisse vide sa ligne « Enveloppe fiscale », que celui de CW8 remplit par « Eligible au PEA ». L'équivalent PEA est le PAEEM (Amundi PEA Emergent ESG Transition, 0,30 %) — un autre fonds, sur une variante de l'indice.
 
 Les émergents offrent un potentiel de croissance long terme supérieur aux marchés développés, mais avec une volatilité et des risques spécifiques plus importants (risque politique, risque de change, gouvernance d'entreprise, liquidité).`,
     whyChooseIt: [

@@ -48,6 +48,13 @@ export const ETF_LIST: ETFConfig[] = [
   // pour son PEA passait un ordre sur un fonds que son courtier refuse.
   // Le champ `symbol` des entrées existantes n'a PAS été touché : il alimente
   // les cours et les portefeuilles enregistrés des utilisateurs.
+  //
+  // ⚠️ Preuve à citer (30/09/2026) : dans un reporting Amundi, c'est la ligne
+  // « Enveloppe fiscale » qui tranche (« Eligible au PEA » pour CW8, PAEEM,
+  // PUST ; vide, « - », pour 500, ANX, AEEM, JPNK). La ligne « Éligibilité :
+  // Compte-titres, Assurance-vie », citée ici et dans le site jusqu'au
+  // 30/09, figure sur TOUS ces fonds, éligibles compris : elle ne prouve rien.
+  // Reportings du 31/08/2026 archivés dans private-assets/raw/geo/reportings/.
 
   // ── MSCI World — marché développé mondial ─────────────────────────────────
 
