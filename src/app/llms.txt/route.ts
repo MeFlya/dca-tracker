@@ -263,6 +263,7 @@ const SECTIONS: Section[] = [
       "/strategie-dca",
       "/investir-en-etf",
       "/pea-ou-cto",
+      "/fiscalite-pea-cto-2026",
       ...[100, 200, 300, 500].map((m) => `/investir-${m}-euros-mois-etf`),
     ],
   },

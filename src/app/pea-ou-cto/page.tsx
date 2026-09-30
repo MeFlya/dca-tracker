@@ -250,6 +250,15 @@ export default function PEAouCTOPage() {
           plus-values sont exonérées d&apos;impôt sur le revenu. Vous ne payez
           que les prélèvements sociaux à 18,6 % — contre 31,4 % en flat tax sur un
           CTO (12,8 % d&apos;impôt + 18,6 % de PS).
+          {/* Lien vers /fiscalite-pea-cto-2026 (30/09/2026) : la hausse de
+              1,4 point, ses dates selon le revenu et ce qui reste à 17,2 %. */}
+          {" "}Ces deux taux ont pris 1,4&nbsp;point avec la loi de financement
+          de la sécurité sociale pour 2026. Ce qui a changé, depuis quand et ce
+          qui reste à 17,2&nbsp;%&nbsp;:{" "}
+          <Link href="/fiscalite-pea-cto-2026" className="text-primary-700 font-medium hover:underline">
+            fiscalité du PEA et du CTO en 2026
+          </Link>
+          .
         </p>
         <div className="rounded-2xl bg-primary-50 border border-primary-100 p-5 mb-4">
           <p className="text-sm font-semibold text-primary-800 mb-2">Exemple concret</p>

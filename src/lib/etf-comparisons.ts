@@ -588,7 +588,7 @@ const CW8_VS_WPEA: ETFComparison = {
     `WPEA gagne sur les frais (0,20 % vs 0,38 %) pour la même exposition MSCI World et la même éligibilité PEA. Sur 20 ans à 200 €/mois et 7 %/an net, ces 0,18 % de TER en moins représentent environ ${ecartCapital(0.38, 0.2)} € de capital final supplémentaire. CW8 garde l'avantage de l'antériorité. Pour une ouverture de position en 2026, WPEA — comme DCAM, au même TER — coûte moins cher que CW8 pour une exposition identique.`,
 
   intro:
-    "Pendant des années, CW8 (Amundi MSCI World) a été l'ETF de référence pour s'exposer au monde développé dans un PEA français. En mars 2024, iShares a lancé WPEA — un MSCI World éligible au PEA, coté à Paris depuis avril 2024, à un TER presque deux fois plus bas. Deux ETF qui répliquent le même indice, avec des frais qui changent significativement la performance à long terme. Voici comment trancher.",
+    "Pendant des années, CW8 (Amundi MSCI World) a été l'ETF de référence pour s'exposer au monde développé dans un PEA français. En mars 2024, iShares a lancé WPEA — un MSCI World éligible au PEA, coté à Paris depuis avril 2024, aujourd'hui à un TER presque deux fois plus bas. Deux ETF qui répliquent le même indice, avec des frais qui changent significativement la performance à long terme. Voici comment trancher.",
 
   keyDifferences: [
     { criterion: "Indice répliqué", leftValue: "MSCI World", rightValue: "MSCI World (identique)" },
@@ -818,7 +818,7 @@ const WPEA_VS_DCAM: ETFComparison = {
   // aucune différence » et « basculez simplement vos achats futurs vers WPEA
   // ou DCAM » (une consigne d'achat nominative) retirés ; la phrase décrit.
   analysis:
-    "Ce duel montre ce que la concurrence fait aux frais. Jusqu'en 2024, les ETF MSCI World éligibles au PEA étaient facturés 0,38\u00a0% (CW8, EWLD). WPEA est arrivé à 0,20\u00a0%, puis DCAM au même tarif en 2025. Sur la performance, aucune différence significative n'est à attendre\u00a0: même indice, même mécanisme de swap encadré par la réglementation européenne des fonds (UCITS), même TER. Les écarts de suivi, entre chaque fonds et son indice, devraient se jouer au centième de point. Ce qui les départage est donc pratique\u00a0: la disponibilité de chaque ligne et les frais d'ordre chez votre courtier. Pour du CW8 acheté avant 2024, rien n'oblige à vendre, et un arbitrage dans le PEA ne déclenche pas d'impôt\u00a0; pour les nouveaux versements, CW8 coûte toujours 0,38\u00a0% par an, contre 0,20\u00a0% pour WPEA et DCAM, sur le même indice.",
+    "Ce duel montre ce que la concurrence fait aux frais. Jusqu'en 2024, les ETF MSCI World éligibles au PEA étaient facturés 0,38\u00a0% (CW8, EWLD). WPEA, lancé en 2024, est aujourd'hui à 0,20\u00a0%, comme DCAM, arrivé en 2025. Sur la performance, aucune différence significative n'est à attendre\u00a0: même indice, même mécanisme de swap encadré par la réglementation européenne des fonds (UCITS), même TER. Les écarts de suivi, entre chaque fonds et son indice, devraient se jouer au centième de point. Ce qui les départage est donc pratique\u00a0: la disponibilité de chaque ligne et les frais d'ordre chez votre courtier. Pour du CW8 acheté avant 2024, rien n'oblige à vendre, et un arbitrage dans le PEA ne déclenche pas d'impôt\u00a0; pour les nouveaux versements, CW8 coûte toujours 0,38\u00a0% par an, contre 0,20\u00a0% pour WPEA et DCAM, sur le même indice.",
 
   faq: [
     {

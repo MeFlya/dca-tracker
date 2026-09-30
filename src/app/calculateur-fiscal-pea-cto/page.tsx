@@ -322,7 +322,13 @@ export default function CalculateurFiscalPage() {
               l&apos;option pour le barème de l&apos;impôt sur le revenu. PEA de plus de 5&nbsp;ans&nbsp;:
               un plan ouvert avant 2018 garde d&apos;anciens taux sur la part du gain acquise avant cette
               date et, s&apos;il avait moins de 5&nbsp;ans au 1er&nbsp;janvier 2018, sur le gain de ses
-              5&nbsp;premières années.
+              5&nbsp;premières années. Ce qui a changé en 2026, et depuis quand selon le type de
+              revenu&nbsp;:{" "}
+              {/* Lien vers /fiscalite-pea-cto-2026 (30/09/2026). */}
+              <Link href="/fiscalite-pea-cto-2026" className="underline underline-offset-2 hover:text-gray-700">
+                fiscalité du PEA et du CTO en 2026
+              </Link>
+              .
             </p>
             <div className="prose prose-sm max-w-none text-gray-700 leading-relaxed space-y-4">
               <p>

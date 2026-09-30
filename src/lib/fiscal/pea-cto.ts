@@ -116,7 +116,11 @@ export const PEA_DEPOSIT_CAP_EUR = 150_000;
  *   - Produits de placement (dividendes, intérêts, gain net d'un retrait de
  *     PEA) : prélevés à la source (art. L. 136-7 CSS). Le taux de 18,6 % ne
  *     s'applique qu'à ceux perçus À PARTIR DU 1er JANVIER 2026 ; ceux de 2025
- *     restaient à 17,2 %.
+ *     restaient à 17,2 %. Exception : un dividende ou un intérêt de 2025 sur
+ *     lequel les prélèvements sociaux n'ont PAS été retenus au versement se
+ *     déclare et suit la règle des plus-values, 18,6 % (brochure IR 2026,
+ *     p. 124 ; BOSS, questions-réponses Q4). Le moteur ne calcule pas les
+ *     dividendes : sans effet sur ses montants.
  * Conséquence concrète : un retrait de PEA de 2025 supporte 17,2 %, une
  * plus-value de CTO de 2025 supporte 18,6 %. À partir de 2026, les deux
  * catégories ont le même barème.
@@ -185,9 +189,11 @@ export const BAREMES_CAPITAL: Record<
  * F2329 et F21618, impots.gouv.fr), YYYY-MM-DD.
  *
  * Ajoutée le 30/09/2026 : /calculateur-fiscal-pea-cto affiche « taux vérifiés
- * le … » à côté des taux. À changer avec le barème, et seulement quand on l'a
- * réellement relu — une date de vérification qu'on avance sans relire est un
- * chiffre inventé.
+ * le … » à côté des taux. /fiscalite-pea-cto-2026 et son image OG l'affichent
+ * aussi (« Vérifié le … », et date de consultation de ses sources) : la
+ * changer, c'est aussi relire les sources de cette page. À changer avec le
+ * barème, et seulement quand on l'a réellement relu — une date de vérification
+ * qu'on avance sans relire est un chiffre inventé.
  */
 export const TAUX_VERIFIES_LE = "2026-09-28";
 

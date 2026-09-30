@@ -53,6 +53,9 @@ const REV = {
   // d'abord » pour les trois, ce que le sous-titre de /pea-ou-cto ne faisait
   // pas ; la date, elle, reste juste (la page a bien été modifiée ce jour-là).
   reponseDabord: "2026-09-30",
+  // /fiscalite-pea-cto-2026 : publiée le 30/09/2026 (hausse des prélèvements
+  // sociaux, PFU à 31,4 %, ce qui reste à 17,2 %). Même date que sa byline.
+  fiscalite2026: "2026-09-30",
   // taux fiscaux 2026
   methodologie: "2026-08-03",
   // capture du Dashboard corrigée, prix unifiés
@@ -121,6 +124,7 @@ export async function GET(): Promise<NextResponse> {
     { url: `${base}/strategie-dca`,            changeFreq: "monthly", priority: 0.9,  lastmod: REV.etf },
     { url: `${base}/interets-composes`,        changeFreq: "monthly", priority: 0.85, lastmod: REV.etf },
     { url: `${base}/pea-ou-cto`,               changeFreq: "monthly", priority: 0.85, lastmod: REV.reponseDabord },
+    { url: `${base}/fiscalite-pea-cto-2026`,   changeFreq: "monthly", priority: 0.85, lastmod: REV.fiscalite2026 },
     // Liste vérifiée des ETF éligibles au PEA (29/09/2026) : sa date vient de
     // son module de données, la même que celle de la byline.
     { url: `${base}${URL_LISTE_PEA}`,          changeFreq: "monthly", priority: 0.9,  lastmod: MAJ_LISTE_PEA },

@@ -163,7 +163,8 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
 
   pea: {
     slug: "pea",
-    updatedAt: "2026-09-29",
+    // 30/09/2026 : lien vers /fiscalite-pea-cto-2026 dans « Pour aller plus loin ».
+    updatedAt: "2026-09-30",
     term: "PEA — Plan d'Épargne en Actions",
     shortDef:
       "Enveloppe fiscale française : après 5 ans, les gains ne supportent que 18,6 % de prélèvements sociaux au lieu de 31,4 %.",
@@ -212,6 +213,7 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
     ],
     related: [
       { href: "/pea-ou-cto", label: "PEA ou CTO : le comparatif complet" },
+      { href: "/fiscalite-pea-cto-2026", label: "Fiscalité du PEA en 2026 : ce qui a changé" },
       { href: "/etf-msci-world", label: "ETF MSCI World éligibles PEA" },
       { href: "/comparatif", label: "Chez quel courtier ouvrir un PEA ?" },
       { href: "/calculateur-fiscal-pea-cto", label: "Calculer l'écart fiscal sur votre cas" },
@@ -267,7 +269,14 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
 
   pfu: {
     slug: "pfu",
-    updatedAt: "2026-09-29",
+    // 30/09/2026 : lien vers /fiscalite-pea-cto-2026 ; « qui a relevé la CSG »
+    // → « qui a relevé les prélèvements sociaux de 1,4 point » (décision du
+    // 29/09/2026 : la hausse ne se décompose pas, l'administration la nomme
+    // autrement que « CSG ») ; dividendes et intérêts de 2025 : 30 % seulement
+    // si les prélèvements sociaux ont été retenus au versement (FISC-DIV-03,
+    // brochure IR 2026 p. 124, BOSS Q4) ; « LE levier […] sans aucun risque
+    // supplémentaire » → l'écart seul, sans superlatif ni promesse.
+    updatedAt: "2026-09-30",
     term: "PFU — Prélèvement Forfaitaire Unique (flat tax)",
     shortDef:
       "Imposition forfaitaire des revenus du capital : 31,4 % en 2026 sur les plus-values et dividendes d'un compte-titres (12,8 % d'impôt sur le revenu + 18,6 % de prélèvements sociaux).",
@@ -279,13 +288,13 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
       // de 31,4 % que depuis la LFSS 2026 — 30 % de 2018 à 2025 — et il n'est
       // pas universel : l'assurance-vie, le PEL et le CEL gardent 17,2 % de
       // prélèvements sociaux.
-      "Le Prélèvement Forfaitaire Unique — souvent appelé « flat tax » — s'applique depuis 2018 aux revenus du capital : plus-values de cession, dividendes, intérêts. Créé au taux global de 30 %, il est passé à 31,4 % avec la loi de financement de la Sécurité sociale pour 2026, qui a relevé la CSG : 12,8 % d'impôt sur le revenu et 18,6 % de prélèvements sociaux. Ce taux vaut pour les plus-values réalisées depuis 2025 et pour les dividendes et intérêts perçus depuis le 1er janvier 2026. Il ne vaut pas pour tout : l'assurance-vie, le PEL et le CEL, notamment, gardent 17,2 % de prélèvements sociaux.",
+      "Le Prélèvement Forfaitaire Unique — souvent appelé « flat tax » — s'applique depuis 2018 aux revenus du capital : plus-values de cession, dividendes, intérêts. Créé au taux global de 30 %, il est passé à 31,4 % avec la loi de financement de la sécurité sociale pour 2026, qui a relevé les prélèvements sociaux de 1,4 point : 12,8 % d'impôt sur le revenu et 18,6 % de prélèvements sociaux. Ce taux vaut pour les plus-values réalisées depuis 2025 et pour les dividendes et intérêts perçus depuis le 1er janvier 2026. Ceux de 2025 restent à 30 % si les prélèvements sociaux ont été retenus au versement, ce qui est le cas le plus courant ; sinon, ils supportent aussi 31,4 %. Il ne vaut pas pour tout : l'assurance-vie, le PEL et le CEL, notamment, gardent 17,2 % de prélèvements sociaux.",
       "C'est le régime par défaut des gains réalisés sur un compte-titres ordinaire. L'option pour le barème progressif de l'impôt sur le revenu reste possible si elle est plus avantageuse (revenus modestes), mais elle s'applique alors à l'ensemble des revenus du capital de l'année.",
     ],
     inPractice: [
       {
         title: "Le chiffre qui justifie le PEA",
-        text: "L'écart entre le PFU (31,4 %) et la fiscalité PEA après 5 ans (18,6 %) est LE levier d'optimisation d'un DCA français : 12,8 points sur la totalité des gains, sans aucun risque supplémentaire.",
+        text: "L'écart entre le PFU (31,4 %) et la fiscalité du PEA après 5 ans (18,6 %) est de 12,8 points sur la totalité des gains.",
       },
       {
         title: "Imposé seulement à la vente",
@@ -305,6 +314,7 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
       },
     ],
     related: [
+      { href: "/fiscalite-pea-cto-2026", label: "PFU et prélèvements sociaux : ce qui change en 2026" },
       { href: "/pea-ou-cto", label: "PEA ou CTO : l'impact fiscal complet" },
       { href: "/glossaire/pea", label: "Le PEA expliqué" },
       { href: "/calculateur-fiscal-pea-cto", label: "Calculer le PFU sur votre cas" },
