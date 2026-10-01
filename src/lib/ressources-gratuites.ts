@@ -25,8 +25,12 @@ export const MODELE_GRATUIT_TTL_JOURS = 30;
 
 /**
  * Lien « Faire une copie » de la version Google Sheets du modèle gratuit
- * (Drive de Maël, partagé « tous les utilisateurs disposant du lien :
- * lecteur »). Pas un secret : c'est le lien que reçoit chaque inscrit.
- * `null` tant que la feuille n'existe pas : l'email n'en parle alors pas.
+ * (Drive de Maël, « Modèle de suivi PEA (gratuit) - DCA Tracker », partagé
+ * « tous les utilisateurs qui ont le lien : lecteur »). Pas un secret : c'est
+ * le lien que reçoit chaque inscrit. Créée le 01/10/2026 depuis le .xlsx livré
+ * (sha1 f8e54804…), formule GOOGLEFINANCE collée en Par ETF E9:E18 — vérifiée :
+ * PE500, ETZ et PAEEM renvoient les bons fonds.
+ * Mettre `null` si la feuille disparaît : la page et l'email n'en parlent plus.
  */
-export const MODELE_GRATUIT_SHEETS_COPIE: string | null = null;
+export const MODELE_GRATUIT_SHEETS_COPIE: string | null =
+  "https://docs.google.com/spreadsheets/d/1bs7EQA0_qoaffcPVmxwpqvS25ubmIJU7Nmuc-t7Nwh0/copy";
