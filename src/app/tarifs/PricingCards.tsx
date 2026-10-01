@@ -409,7 +409,7 @@ export function PricingCards() {
       </div>
 
       <p className="text-center text-xs text-slate-400 mt-6">
-        7 jours d&apos;essai gratuit · TVA incluse · Annulation en 1 clic
+        7 jours d&apos;essai gratuit · TVA non applicable (art. 293 B du CGI) · Annulation en 1 clic
       </p>
     </section>
   );

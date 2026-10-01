@@ -116,8 +116,11 @@ const FAQ = [
     a: "Vos données de simulation ne sont jamais vendues à des tiers. L'hébergement est en Europe. La création de compte est optionnelle — vous pouvez simuler sans compte sur le plan Gratuit.",
   },
   {
-    q: "Le pricing inclut-il la TVA ?",
-    a: "Oui, tous les prix affichés sont TTC (TVA française de 20 % incluse).",
+    // 01/10/2026 : la réponse annonçait « TVA française de 20 % incluse ».
+    // Faux : l'activité est en franchise en base de TVA, et les factures
+    // Stripe portent « TVA non applicable, art. 293 B du CGI ».
+    q: "Les prix incluent-ils la TVA ?",
+    a: "Il n'y a pas de TVA à ajouter : l'activité est en franchise en base de TVA (TVA non applicable, article 293 B du Code général des impôts). Le prix affiché est le prix payé.",
   },
 ];
 
@@ -127,7 +130,7 @@ function CellValue({ value }: { value: boolean | string }) {
   if (value === true) {
     return (
       <span className="flex justify-center">
-        <svg className="w-4 h-4 text-gain-default" viewBox="0 0 16 16" fill="none" aria-label="Inclus">
+        <svg className="w-4 h-4 text-gain" viewBox="0 0 16 16" fill="none" aria-label="Inclus">
           <circle cx="8" cy="8" r="7" fill="currentColor" opacity="0.15" />
           <path d="M5 8l2.5 2.5L11 5.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
