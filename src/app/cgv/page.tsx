@@ -160,7 +160,7 @@ export default function CGVPage() {
           En complément des abonnements, DCA Tracker propose des{" "}
           <strong>produits numériques vendus en paiement unique</strong>{" "}
           (fichiers de suivi, guides — voir la page{" "}
-          <Link href="/produits">/produits</Link>) : prix TTC affiché sur
+          <Link href="/produits">/produits</Link>) : prix net affiché sur
           chaque fiche produit (TVA non applicable, article 293 B du CGI),
           paiement par carte via Stripe, sans création de compte obligatoire.
           La livraison est immédiate, par email, sous forme de liens de

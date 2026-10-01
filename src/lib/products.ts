@@ -3,8 +3,10 @@
 // Source de vérité data-driven : pitchs, bullets, FAQ et prix affichés
 // vivent ici. Les PRIX AFFICHÉS doivent correspondre aux prix Stripe
 // (créés dans le Dashboard, IDs en env vars).
-// Cockpit DCA : argumentaire DÉFINITIF (Cowork, 2026-06-11). Guide : pitch
-// aligné sur le PDF v1.0 le 29/09/2026 (voir le commentaire au-dessus de GUIDE).
+// Cockpit DCA : argumentaire DÉFINITIF (Cowork, 2026-06-11), captures du
+// classeur v2.0 le 01/10/2026. Guide : pitch aligné sur le PDF v1.0 le
+// 29/09/2026, captures et version passées à la v1.1 le 01/10/2026 (voir le
+// commentaire au-dessus de GUIDE).
 //
 // Positionnement (décision produit, ne pas dévier) : ces produits captent
 // les "non" au SaaS (les gens qui veulent du Excel/PDF, pas un abonnement).
@@ -12,6 +14,71 @@
 // en bas de /tarifs uniquement.
 
 export type ProductId = "template-suivi-dca" | "guide-demarrer-dca" | "bundle-dca";
+
+/**
+ * Une capture du produit réel, dans `public/produits/` (voir son README).
+ *
+ * ⚠️ DES CAPTURES DU VRAI FICHIER, jamais une maquette. Recadrer selon un
+ * rectangle contigu, encadrer en CSS, composer plusieurs vraies captures :
+ * oui. Retoucher un chiffre, effacer une ligne, recoller deux zones : non.
+ *
+ * `alt` est lu par les lecteurs d'écran ET par Google Images : décrire ce
+ * qu'on voit, pas répéter le nom du produit.
+ */
+export type Capture = {
+  src: string;
+  alt: string;
+  /** Dimensions RÉELLES du fichier : c'est ce qui évite que la page saute. */
+  width: number;
+  height: number;
+  /**
+   * Classeur : nom RÉEL de l'onglet (« Versement du mois »), qui sert aussi
+   * de libellé dans la visite. Guide : page du PDF (« p. 19 »).
+   */
+  repere?: string;
+  /** Guide : ce que montre la page, en quelques mots (légende sous la page). */
+  titre?: string;
+  /**
+   * Ce qu'on lit dans la capture. UNIQUEMENT des valeurs visibles dans
+   * l'image : refaire la légende chaque fois qu'on refait la capture.
+   */
+  legende?: string;
+  /**
+   * L'onglet entier, ouvert par le zoom quand la capture affichée est un
+   * recadrage (règle du README : l'onglet complet reste à un clic), et montré
+   * tel quel dans la visite. Sa `legende` (facultative) remplace alors celle
+   * du recadrage : elle peut citer ce que seul l'onglet entier montre.
+   */
+  complete?: { src: string; alt: string; width: number; height: number; legende?: string };
+  /**
+   * Recadrage contigu de la MÊME capture, servi sous 640 px (la capture
+   * entière y deviendrait une texture). Même `alt` : il doit montrer ce que
+   * l'alt décrit.
+   */
+  mobile?: { src: string; width: number; height: number };
+  /** Guide : page montrée en éventail derrière la couverture (hero, cartes). */
+  eventail?: boolean;
+  /** Guide : page absente de « Feuilleter » (le sommaire, déjà en HTML). */
+  horsFeuilleter?: boolean;
+  /**
+   * Guide : extrait lisible d'une page (rectangle contigu), montré en grand
+   * en tête de « Feuilleter » ; `complete` est la page entière.
+   */
+  extrait?: boolean;
+  /** Classeur : capture montrée sur les cartes (/produits, Voir aussi, appel final). */
+  vignette?: boolean;
+  /** Version du produit capturée (guide : "1.1"). À refaire si la page change. */
+  version?: string;
+};
+
+export type SommaireEntree = {
+  /** Numéro de chapitre, « E », lettre d'annexe ou « — », tel que dans le PDF. */
+  repere: string;
+  titre: string;
+  resume: string;
+  page: number;
+};
+export type SommairePartie = { partie: string; entrees: SommaireEntree[] };
 
 export type Product = {
   id: ProductId;
@@ -37,31 +104,60 @@ export type Product = {
     role: string;
     format: string;
   };
-  /** Prix affiché en euros TTC — DOIT matcher le prix Stripe. */
+  /** Prix payé en euros (TVA non applicable) — DOIT matcher le prix Stripe. */
   priceEur: number;
-  /** Prix barré (bundle) — somme des produits séparés. */
-  compareAtEur?: number;
+  /**
+   * Pack : produits inclus. Le prix barré n'est écrit nulle part : il se
+   * CALCULE à partir d'eux (`prixSepares`), pour rester la vraie somme des
+   * prix séparés (directive Omnibus) le jour où un prix unitaire change.
+   */
+  inclut?: ProductId[];
   /**
    * Note affichée sous le prix. Conformité directive Omnibus : uniquement
-   * des affirmations VRAIES (ex. vraie hausse de prix planifiée) — jamais
+   * des affirmations VRAIES (ex. une hausse de prix datée, puis tenue) — jamais
    * de prix barré fictif ni de fausse urgence.
    */
   priceNote?: string;
   /**
-   * Captures du produit réel, dans `public/produits/`.
+   * Captures du produit réel (voir `Capture`).
    *
    * ⚠️ DES CAPTURES DU VRAI FICHIER, jamais une maquette. Ce site vend la
    * vérifiabilité : un visuel reconstitué qui ne correspondrait pas à ce que
    * l'acheteur reçoit serait exactement le contraire de l'argument.
    *
-   * Tant que ce champ est absent, la page affiche un cadre vide de la même
-   * hauteur — ce qui est honnête mais coûte cher : on demande 19 € pour un
-   * fichier que personne ne peut voir. C'est l'état depuis le 11/06/2026.
-   *
-   * `alt` est lu par les lecteurs d'écran ET par Google Images : décrire ce
-   * qu'on voit, pas répéter le nom du produit.
+   * Ordre lu par les pages (ProductVisual, VisiteOnglets, Feuilleter) :
+   * - classeur : la 1re est le hero, puis une capture (ou plusieurs, même
+   *   `repere`) par onglet de la visite ;
+   * - guide : la 1re est la couverture, les suivantes les pages à feuilleter.
+   * Sans capture, la page n'affiche AUCUN cadre de repli (le Pack compose
+   * celles des produits qu'il inclut).
    */
-  screenshots?: { src: string; alt: string; width: number; height: number }[];
+  screenshots?: Capture[];
+  /**
+   * Mise en page du H1 en deux niveaux. Le texte rendu DOIT rester égal à
+   * `name` (référencement) : vérifié au chargement du module, plus bas.
+   */
+  titreHero?: {
+    principal: string;
+    complement: string;
+    /** `principal` en petit au-dessus, `complement` en grand (guide). */
+    principalEnPetit?: boolean;
+  };
+  /** Format en une ligne : surtitre du hero et des cartes. */
+  format: string;
+  /**
+   * Quatre faits du produit, chacun déjà écrit dans `features` ou `contents`
+   * (ou calculé). Jamais d'avis, de note ni de nombre d'acheteurs.
+   */
+  chiffresCles: { valeur: string; libelle: string }[];
+  /** Ligne sous les chiffres clés (guide : date de vérification, version). */
+  chiffresClesNote?: string;
+  /** Guide : sommaire réel du PDF. */
+  sommaire?: SommairePartie[];
+  /** Guide : nombre de pages, version du PDF vendu et date de vérification de ses chiffres. */
+  pages?: number;
+  version?: string;
+  dateVerification?: string;
 
   /** Tableau comparatif « eux vs nous » — section différenciation. */
   comparison?: {
@@ -96,26 +192,148 @@ export type Product = {
   deliverables: { label: string; fileKey?: string; sheetsCopy?: boolean }[];
 };
 
-// Prix (stratégie validée) : 19 € au lancement, puis VRAIE hausse à 24 €
-// à date annoncée — pas de prix barré fictif (directive Omnibus). Au moment
-// de la hausse : priceEur → 24, retirer priceNote, recalculer le bundle,
-// mettre à jour le « 19 € » de la metaDescription, et créer le nouveau
-// prix dans Stripe.
+// Prix : 19 €, sans hausse prévue (décision de Maël du 01/10/2026). La
+// mention « Prix de lancement — passera ensuite à 24 € », affichée sans
+// date depuis le lancement, est retirée le même jour : une hausse annoncée
+// sans échéance finit par ressembler à une fausse urgence. Si un prix change
+// un jour : `priceEur`, le prix Stripe, le « 19 € » de la metaDescription,
+// puis le prix du pack (son prix barré se recalcule seul, pas son prix).
+//
+// Faits du classeur, écrits UNE fois puis lus par `features`, `contents` et
+// les chiffres clés : journal de 1 000 lignes, 10 ETF au plus (onglet Par
+// ETF : 3 lignes d'exemple + 7 vides). Les 8 onglets sont `contents`, dans
+// l'ordre RÉEL des feuilles du classeur (vérifié le 01/10/2026 dans
+// workbook.xml) : la page les numérote 01 à 08 et la visite suit cet ordre.
+const TEMPLATE_LIGNES = 1000;
+const TEMPLATE_ETF_MAX = 10;
+/** « 1 000 » avec l'espace ordinaire des textes existants (meta inchangées). */
+const milliers = (n: number) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+
+/**
+ * Captures du classeur : toutes rendues à la même échelle depuis le PDF
+ * vectoriel d'Excel (230 ppp, soit 3,19 px par point : le texte des cellules,
+ * en Arial 10, y fait 32 px), donc un même facteur donne partout le même
+ * corps de texte. Visite : environ 12,5 px CSS ; zoom : environ 16 px. Une
+ * capture plus large que la scène (Par ETF, Projection, Frais) y est ramenée.
+ */
+export const largeurVisiteClasseur = (c: { width: number }) => Math.round(c.width * 0.39);
+export const largeurLectureClasseur = (c: { width: number }) => Math.round(c.width * 0.5);
+
+// Captures du 01/10/2026, classeur v2.0 (celui qui est livré : cases de
+// saisie bleues, TRI corrigé) : chaque zone exportée en PDF par Excel (Mac)
+// à échelle fixe, depuis une copie, puis rastérisée et recadrée sur son
+// contenu (README de public/produits/). Pas de bandeau de titre en v2.0 :
+// chaque onglet est montré depuis son titre, sauf le recadrage mobile.
+// Les légendes ne citent QUE des valeurs visibles dans l'image. Celles qui
+// dépendent de la date d'ouverture du fichier (TRI, âge du plan, jours avant
+// les 5 ans) sont datées : « Capture du 1er octobre 2026 ».
+const TEMPLATE_CAPTURES: Capture[] = [
+  {
+    src: "/produits/cockpit-v2-versement.png",
+    alt: "Onglet Versement du mois : 300 € à verser dans la case bleue, et pour chacun des trois ETF de l'exemple l'allocation cible, le poids actuel, le montant suggéré et le nombre de parts à acheter (0, 6 et 7)",
+    width: 2452,
+    height: 846,
+    repere: "Versement du mois",
+    // Seulement ce que montre le recadrage du hero (le total et les notes de
+    // lecture ne sont que dans l'onglet entier, ouvert par le zoom).
+    legende:
+      "Dans l'exemple pré-rempli : 300 € à verser. Le tableau propose 0 part de PE500, 6 d'ETZ et 7 de PAEEM. Calcul fait sur l'allocation que vous fixez, pas un conseil.",
+    complete: {
+      src: "/produits/cockpit-v2-versement-complet.png",
+      alt: "Onglet Versement du mois en entier : le tableau des ETF avec la ligne TOTAL, les notes de lecture et l'avertissement",
+      width: 2452,
+      height: 1574,
+      // Visite : la ligne TOTAL et la note de lecture, absentes du recadrage
+      // du hero (relecture DA du 01/10/2026 : la visite redisait la légende
+      // du hero mot pour mot).
+      legende:
+        "Dans l'exemple pré-rempli, sur les 300 € versés, 276,76 € achètent des parts entières (6 d'ETZ, 7 de PAEEM) ; le reliquat de 23,24 € reste en liquidités et sera réinvesti le mois prochain.",
+    },
+    // Du montant à verser à la colonne « Parts à acheter », lignes 1 à 3.
+    mobile: { src: "/produits/cockpit-v2-versement-mobile.png", width: 2011, height: 595 },
+  },
+  // Le TRI corrigé (5,5 % au lieu de 0,0 %) permet de montrer le haut du
+  // Dashboard d'un seul tenant : les six indicateurs, la répartition et son
+  // camembert. Onglet ouvert par défaut dans la visite, vignette des cartes
+  // du Cockpit, hero du Pack (`piecesDuPack`) et images de partage.
+  {
+    src: "/produits/cockpit-v2-dashboard.png",
+    alt: "Dashboard : six indicateurs (valeur du portefeuille 8 119,91 €, total versé frais inclus 7 465,43 €, plus-value latente +654,48 € soit +8,8 %, TRI annualisé 5,5 %, frais de courtage cumulés 173,13 €, 32 mois et 87 achats), puis la répartition par ETF face à la cible et son camembert",
+    width: 2586,
+    height: 1580,
+    repere: "Dashboard",
+    vignette: true,
+    // TRI et « 32 mois » se calculent à la date d'ouverture : d'où la date.
+    legende:
+      "Capture du 1er octobre 2026. Dans l'exemple pré-rempli : 7 465,43 € versés frais inclus, 8 119,91 € de valeur, 654,48 € de plus-value latente (+8,8 %) et un TRI annualisé de 5,5 %. PE500 pèse 55,0 % pour une cible de 50 %.",
+  },
+  {
+    src: "/produits/cockpit-v2-pea.png",
+    alt: "Onglet PEA : date d'ouverture, plafond légal et taux des prélèvements sociaux dans les cases bleues, puis plafond de versements utilisé à 5,0 % avec sa jauge, ancienneté du plan et cap des 5 ans, fiscalité estimée en cas de retrait",
+    width: 2365,
+    height: 1715,
+    repere: "PEA",
+    // L'image contient des valeurs liées à la date d'ouverture du fichier
+    // (« 2 an(s) et 8 mois », « encore 837 jour(s) ») : d'où la date.
+    legende:
+      "Capture du 1er octobre 2026. Plafond utilisé : 5,0 % (7 465,43 € de versements retenus). Cap des 5 ans le 15/01/2029. Prélèvements sociaux estimés sur la plus-value : 121,73 €.",
+  },
+  {
+    src: "/produits/cockpit-v2-par-etf.png",
+    alt: "Onglet Par ETF : pour chaque ETF, allocation cible, TER, cours, parts détenues, total investi, PRU, valeur, plus-value, performance, poids et écart à la cible",
+    width: 3698,
+    height: 1319,
+    repere: "Par ETF",
+    legende:
+      "PRU, valeur et performance de chaque ligne : +15,7 % pour PE500, +0,7 % pour ETZ, +2,5 % pour PAEEM. Dans Excel, le cours se saisit à la main ; dans Google Sheets, il est récupéré automatiquement.",
+  },
+  {
+    src: "/produits/cockpit-v2-projection.png",
+    alt: "Onglet Projection : hypothèses dans les cases bleues (capital de départ, versement, rendement, horizon), capital estimé à 25 ans, tableau des années 1 à 20 et courbe du capital face aux versements cumulés",
+    width: 3279,
+    height: 2280,
+    repere: "Projection",
+    legende:
+      "Avec 8 119,91 € de départ, 300 € par mois et un rendement hypothétique de 7 % par an, le capital estimé à 25 ans est de 278 983 €, dont 98 120 € versés. C'est une hypothèse que vous choisissez, pas une promesse.",
+  },
+  {
+    src: "/produits/cockpit-v2-frais.png",
+    alt: "Onglet Frais : hypothèses dans les cases bleues, coût des frais à 10, 20 et 30 ans, capital à 30 ans selon le TER de l'ETF et graphique du capital avec et sans frais",
+    width: 3701,
+    height: 1835,
+    repere: "Frais",
+    legende:
+      "Sur 30 ans, les frais de l'exemple coûteraient 21 821 €, soit 6,2 % du capital. À 0,50 % de TER au lieu de 0,10 %, le capital à 30 ans serait inférieur de 24 329 €.",
+  },
+];
+
+const TEMPLATE_CONTENTS: Product["contents"] = [
+  { title: "Mode d'emploi", detail: "La prise en main en 5 minutes : cases bleues = à remplir, tout le reste est automatique. Exemple pré-rempli à remplacer par vos données." },
+  // Les six cases du haut du Dashboard (capture du 01/10/2026) : la sixième
+  // est « Votre DCA », qui donne la durée et le nombre d'achats (l'ancienne
+  // liste se lisait comme sept éléments pour « 6 indicateurs »).
+  { title: "Dashboard", detail: "Les 6 indicateurs clés (valeur, total versé, plus-value, TRI, frais, et « Votre DCA » : durée et nombre d'achats), la répartition réelle face à la cible et deux graphiques — votre PEA en un coup d'œil." },
+  { title: "Versement du mois", detail: "Le calculateur de rééquilibrage par les flux : votre montant est réparti en parts entières par ETF pour revenir vers la cible." },
+  { title: "Transactions", detail: `Le journal de vos achats : ${milliers(TEMPLATE_LIGNES)} lignes pré-câblées, PRU frais inclus calculé automatiquement.` },
+  { title: "Par ETF", detail: `PRU, valeur actuelle, performance et poids réel vs cible pour chacun de vos ETF (jusqu'à ${TEMPLATE_ETF_MAX}).` },
+  { title: "PEA", detail: "Jauge du plafond de 150 000 €, compte à rebours des 5 ans, estimation des prélèvements sociaux (18,6 %) en cas de retrait." },
+  { title: "Projection", detail: "Intérêts composés paramétrables (versement, rendement, 1 à 40 ans) avec graphique capital vs versements." },
+  { title: "Frais", detail: "L'impact réel du courtage et du TER sur votre patrimoine à 10, 20 et 30 ans — en euros, pas en pourcentages abstraits." },
+];
+
 const TEMPLATE: Product = {
   id: "template-suivi-dca",
-  screenshots: [
-    {
-      src: "/produits/cockpit-versement-du-mois.png",
-      alt: "Onglet Versement du mois : 300 € à verser, et le tableau qui indique combien de parts de chaque ETF acheter pour revenir à l'allocation cible",
-      width: 1400,
-      height: 773,
-    },
-    {
-      src: "/produits/cockpit-dashboard.png",
-      alt: "Tableau de bord du Cockpit : valeur du portefeuille, plus-value, TRI annualisé, frais de courtage cumulés et répartition par ETF",
-      width: 1400,
-      height: 1303,
-    },
+  screenshots: TEMPLATE_CAPTURES,
+  titreHero: {
+    principal: "Cockpit DCA",
+    complement: "Tableau de bord PEA (Excel + Google Sheets)",
+  },
+  format: "Classeur Excel + Google Sheets",
+  chiffresCles: [
+    { valeur: String(TEMPLATE_CONTENTS.length), libelle: "onglets, du mode d'emploi aux frais" },
+    { valeur: TEMPLATE_LIGNES.toLocaleString("fr-FR").replace(/\s/g, " "), libelle: "lignes de transactions pré-câblées" },
+    { valeur: String(TEMPLATE_ETF_MAX), libelle: "ETF suivis au maximum" },
+    { valeur: "2", libelle: "formats : Excel et Google Sheets" },
   ],
   slug: "template-suivi-dca",
   name: "Cockpit DCA — Tableau de bord PEA (Excel + Google Sheets)",
@@ -129,7 +347,6 @@ const TEMPLATE: Product = {
     format: "Excel et Google\u00a0Sheets",
   },
   priceEur: 19,
-  priceNote: "Prix de lancement — passera ensuite à 24 €",
   priceIdEnv: "STRIPE_PRODUCT_TEMPLATE_PRICE_ID",
   metaTitle: "Cockpit DCA — Tableau de bord PEA (Excel + Google Sheets)",
   metaDescription:
@@ -143,22 +360,13 @@ const TEMPLATE: Product = {
     "Dashboard complet : valeur du portefeuille, total versé, plus-value €/%, TRI annualisé (XIRR), frais cumulés, répartition réelle vs cible — tout se met à jour seul",
     "« Versement du mois » : saisissez votre montant, il le répartit en parts entières par ETF pour revenir vers votre allocation cible",
     "Onglet PEA : jauge du plafond de 150 000 €, compte à rebours des 5 ans, estimation des prélèvements sociaux (18,6 %) si retrait",
-    "Journal de transactions : 1 000 lignes pré-câblées (date, ETF, parts, prix, frais), PRU frais inclus — rien ne casse quand vous ajoutez des lignes",
-    "Vue Par ETF : PRU, valeur actuelle, performance, poids réel vs cible — jusqu'à 10 ETF",
+    `Journal de transactions : ${milliers(TEMPLATE_LIGNES)} lignes pré-câblées (date, ETF, parts, prix, frais), PRU frais inclus — rien ne casse quand vous ajoutez des lignes`,
+    `Vue Par ETF : PRU, valeur actuelle, performance, poids réel vs cible — jusqu'à ${TEMPLATE_ETF_MAX} ETF`,
     "Projection : simulateur d'intérêts composés paramétrable (versement, rendement, horizon 1 à 40 ans) avec graphique capital vs versements",
     "Frais : ce que le courtage et le TER vous coûtent réellement sur 10, 20 et 30 ans, en euros",
     "Double format Google Sheets (cours automatiques) + Excel, exemple pré-rempli avec 3 ETF PEA réels, mode d'emploi 5 minutes, mises à jour incluses",
   ],
-  contents: [
-    { title: "Dashboard", detail: "Les 6 indicateurs clés (valeur, versé, plus-value, TRI, frais, répartition) + graphiques — votre PEA en un coup d'œil." },
-    { title: "Versement du mois", detail: "Le calculateur de rééquilibrage par les flux : votre montant est réparti en parts entières par ETF pour revenir vers la cible." },
-    { title: "Transactions", detail: "Le journal de vos achats : 1 000 lignes pré-câblées, PRU frais inclus calculé automatiquement." },
-    { title: "Par ETF", detail: "PRU, valeur actuelle, performance et poids réel vs cible pour chacun de vos ETF (jusqu'à 10)." },
-    { title: "PEA", detail: "Jauge du plafond de 150 000 €, compte à rebours des 5 ans, estimation des prélèvements sociaux (18,6 %) en cas de retrait." },
-    { title: "Projection", detail: "Intérêts composés paramétrables (versement, rendement, 1 à 40 ans) avec graphique capital vs versements." },
-    { title: "Frais", detail: "L'impact réel du courtage et du TER sur votre patrimoine à 10, 20 et 30 ans — en euros, pas en pourcentages abstraits." },
-    { title: "Mode d'emploi", detail: "La prise en main en 5 minutes : cases jaunes = à remplir, tout le reste est automatique. Exemple pré-rempli à remplacer par vos données." },
-  ],
+  contents: TEMPLATE_CONTENTS,
   forWho: [
     "Vous versez régulièrement sur un PEA et voulez une décision claire chaque mois — pas juste un constat",
     "Vous voulez votre vrai rendement (TRI annualisé), pas un « +X % » incomplet qui ignore vos dates de versement",
@@ -207,7 +415,7 @@ const TEMPLATE: Product = {
     },
     {
       q: "Je débute, c'est pour moi ?",
-      a: "Oui : mode d'emploi 5 minutes intégré, exemple pré-rempli à remplacer par vos données, cases jaunes = à remplir — tout le reste est automatique.",
+      a: "Oui : mode d'emploi 5 minutes intégré, exemple pré-rempli à remplacer par vos données, cases bleues = à remplir — tout le reste est automatique.",
     },
     {
       q: "Et si un cours automatique tombe en panne ?",
@@ -215,7 +423,7 @@ const TEMPLATE: Product = {
     },
     {
       q: "Pourquoi payer pour un tableur ?",
-      a: "Vous n'achetez pas un tableur : vous achetez 2 minutes par mois et une décision claire à chaque versement. L'équivalent d'un seul ordre de bourse en frais — une fois, à vie.",
+      a: "Vous n'achetez pas un tableur : vous achetez 2 minutes par mois et une décision claire à chaque versement, en un paiement unique, sans abonnement.",
     },
     {
       q: "Comment le fichier est-il livré ?",
@@ -242,18 +450,131 @@ const TEMPLATE: Product = {
 // ce que le guide refuse de dire (pas de conseil personnalisé).
 //
 // Nombre de pages et prix : écrits UNE fois. La meta, la liste « ce que vous
-// obtenez » et le renvoi de fin d'article les lisent ici — la v1.1 prévue
-// après le 5/10/2026 changera sans doute le premier, et trois « 63 » à
-// retrouver à la main, c'est un oubli garanti. Le prix, lui, doit rester
+// obtenez » et le renvoi de fin d'article les lisent ici : trois « 63 » à
+// retrouver à la main, c'est un oubli garanti (la v1.1 en a aussi 63). Le prix, lui, doit rester
 // égal au prix Stripe (`livePriceId`) : un « 19 € » recopié dans la meta
 // survivrait à sa hausse.
 const GUIDE_PAGES = 63;
 const GUIDE_PRIX = 19;
+// Version, date de vérification et nombre d'ETF vérifiés : écrits une fois
+// eux aussi, pour la même raison. Version 1.1 le 01/10/2026 : c'est le PDF
+// préparé pour la livraison (private-assets/raw/guide-demarrer-dca.pdf), dont
+// les pages sont montrées plus bas. Sa couverture garde « Chiffres vérifiés au
+// 28 septembre 2026 » et ajoute « mise à jour du 30 septembre 2026 ».
+const GUIDE_VERSION = "1.1";
+const GUIDE_MAJ = "30 septembre 2026";
+const GUIDE_DATE_VERIF = "28 septembre 2026";
+const GUIDE_ETF = 13;
+
+/**
+ * Sommaire du PDF, pages 2 et 3, relu contre le rendu des pages de la v1.1 le
+ * 01/10/2026 : mêmes numéros de page qu'en v1.0 ; seul le résumé de « Comment
+ * lire ce guide » a changé (il annonce ce qui change en version 1.1).
+ */
+const GUIDE_SOMMAIRE: SommairePartie[] = [
+  {
+    partie: "Avant de commencer",
+    entrees: [
+      { repere: "—", titre: "Comment lire ce guide", resume: "Le parcours, ce que le guide ne fait pas, ses chiffres et ce qui change en version 1.1", page: 4 },
+    ],
+  },
+  {
+    partie: "Partie 1 · Comprendre",
+    entrees: [
+      { repere: "1", titre: "Le DCA : ce qu'il fait, ce qu'il ne fait pas", resume: "Une discipline pour l'épargne tirée du salaire, pas une méthode pour battre le marché", page: 8 },
+      { repere: "2", titre: "Les ETF en dix minutes", resume: "Lire la fiche d'un ETF, savoir ce qu'il contient et ne pas se fier à son nom", page: 11 },
+      { repere: "3", titre: "Le temps, le rendement et le risque", resume: "200 € par mois sur 10, 20 ou 30 ans, l'hypothèse de 7 % et le risque année par année", page: 14 },
+    ],
+  },
+  {
+    partie: "Partie 2 · Choisir",
+    entrees: [
+      { repere: "4", titre: "Décision n° 1 : PEA, CTO ou les deux", resume: "Les sept règles du PEA, le coût de la sortie en 2026 et l'arbre pour trancher", page: 17 },
+      { repere: "5", titre: "Décision n° 2 : le courtier", resume: "Trois grilles officielles comparées, le coût d'un achat à votre montant, l'arbre n° 2", page: 21 },
+      { repere: "6", titre: "Décision n° 3 : l'ETF", resume: `L'exposition d'abord, le fonds ensuite : ${GUIDE_ETF} ETF éligibles au PEA vérifiés, et les pièges`, page: 26 },
+    ],
+  },
+  {
+    partie: "Partie 3 · Mettre en place",
+    entrees: [
+      { repere: "7", titre: "Étape 0 : l'épargne de précaution", resume: "Chiffrer votre matelas en mois de revenus, le placer sur un livret, jamais dans le PEA", page: 30 },
+      { repere: "8", titre: "Étape 1 : ouvrir le PEA et prendre date", resume: "Conditions, pièces, délais, questionnaire, et le versement qui lance les 5 ans", page: 31 },
+      { repere: "9", titre: "Étape 2 : passer votre premier ordre", resume: "Le bon type d'ordre, le bon moment, et sept étapes valables chez les trois courtiers", page: 33 },
+      { repere: "10", titre: "Étape 3 : automatiser", resume: "Le virement permanent d'abord, puis l'achat : plan programmé, Plan d'Épargne ou routine", page: 35 },
+      { repere: "11", titre: "Étape 4 : fixer votre montant", resume: "Un montant tenable, sa projection à 20 ans, et les minimums, frais et prix de la part", page: 37 },
+    ],
+  },
+  {
+    partie: "Partie 4 · Tenir",
+    entrees: [
+      { repere: "12", titre: "Les baisses, chiffrées", resume: "Les baisses de 2008 à 2025 en euros, le pire départ de la série, et pourquoi continuer", page: 39 },
+      { repere: "13", titre: "Le suivi minimal et la revue annuelle", resume: "Trois vérifications par mois, le vrai rendement, la revue annuelle et la déclaration", page: 42 },
+      { repere: "14", titre: "Rééquilibrer (ou pas)", resume: "Rien à faire avec un seul ETF ; avec deux lignes, les versements font le travail", page: 45 },
+      { repere: "15", titre: "Retirer après 5 ans", resume: "Retirer sans fermer le plan, ce que la banque retient, et l'arbre « j'ai besoin d'argent »", page: 46 },
+    ],
+  },
+  {
+    partie: "Les 7 erreurs les plus chères",
+    entrees: [
+      { repere: "E", titre: "Sept erreurs, classées par ce qu'elles coûtent", resume: "Ce que coûte chaque erreur, son signal d'alerte et sa parade", page: 49 },
+    ],
+  },
+  {
+    partie: "Annexes",
+    entrees: [
+      { repere: "A", titre: "Ma charte d'investisseur", resume: "Vos fondations, votre dispositif et vos règles de conduite, écrits à froid et signés", page: 52 },
+      { repere: "B", titre: "Mon plan de crise, écrit à l'avance", resume: "Les situations qui font abandonner un DCA, et ce que vous avez décidé d'y faire, à froid", page: 54 },
+      { repere: "C", titre: "Le calendrier annuel", resume: "Ce qu'il y a à faire chaque mois et à chaque saison, et une grille pour vos propres dates", page: 56 },
+      { repere: "D", titre: "Glossaire", resume: "Chaque terme technique du guide en une ou deux lignes, avec le chapitre qui l'explique", page: 58 },
+      { repere: "S", titre: "Sources et dates de vérification", resume: "Les documents de référence et leur version, et ce qu'il faut revérifier avant d'agir", page: 61 },
+    ],
+  },
+];
+
+// Pages rendues depuis le PDF v1.1 le 01/10/2026 (pymupdf, 1 600 × 2 265 :
+// la page A4 de 594,96 × 841,92 pt à 1 600 px de large). Mêmes numéros de
+// page qu'avec la v1.0 : le texte des pages 19, 39, 49 et 52 est identique
+// (seul le pied de page change : logo du site, « v1.1 ») ; la couverture est
+// refaite sur la base de marque (« Version 1.1 / mise à jour du 30 septembre
+// 2026 ») et le sommaire change d'une ligne de résumé.
+// Pages 22 (les courtiers) et 34 (le premier ordre) NON montrées : elles
+// restent à revérifier après le 5/10/2026 (annonce BoursoBank,
+// CHANGEMENTS.md), et la page de vente afficherait une grille périmée sous
+// « chiffres vérifiés ».
+const guidePage = (
+  fichier: string,
+  page: number,
+  titre: string,
+  alt: string,
+  options: Partial<Pick<Capture, "eventail" | "horsFeuilleter">> = {},
+): Capture => ({
+  src: `/produits/${fichier}.png`,
+  alt,
+  width: 1600,
+  height: 2265,
+  repere: `p. ${page}`,
+  titre,
+  version: GUIDE_VERSION,
+  ...options,
+});
 
 const GUIDE: Product = {
   id: "guide-demarrer-dca",
+  format: `PDF de ${GUIDE_PAGES} pages`,
+  chiffresCles: [
+    { valeur: String(GUIDE_PAGES), libelle: "pages, chaque source citée" },
+    { valeur: String(GUIDE_ETF), libelle: "ETF éligibles au PEA vérifiés un par un" },
+    { valeur: "3", libelle: "arbres de décision numérotés : enveloppe, courtier, exposition" },
+    { valeur: "7", libelle: "erreurs chiffrées en euros" },
+  ],
+  chiffresClesNote: `Chiffres vérifiés au ${GUIDE_DATE_VERIF} · version ${GUIDE_VERSION}`,
+  sommaire: GUIDE_SOMMAIRE,
+  pages: GUIDE_PAGES,
+  version: GUIDE_VERSION,
+  dateVerification: GUIDE_DATE_VERIF,
   slug: "guide-demarrer-dca",
   name: "Guide PDF — Démarrer le DCA en France",
+  titreHero: { principal: "Guide PDF", complement: "Démarrer le DCA en France", principalEnPetit: true },
   shortName: "Guide Démarrer le DCA",
   tagline: "De zéro à votre premier investissement, puis une routine mensuelle qui tient dans la durée.",
   // « Le guide » devant le lien : « Guide Démarrer le DCA » ne se lit pas en
@@ -271,36 +592,66 @@ const GUIDE: Product = {
   livePriceId: "price_1UL1rCLVB4yZ8CXvoFZG1wOj",
   screenshots: [
     {
-      src: "/produits/guide-couverture.png",
-      alt: "Couverture du guide « Démarrer le DCA en France », édition septembre 2026, chiffres vérifiés au 28 septembre 2026",
-      width: 1397,
-      height: 1977,
+      src: "/produits/guide-v1-1-couverture.png",
+      alt: `Couverture du guide « Démarrer le DCA en France », édition septembre 2026 : chiffres vérifiés au ${GUIDE_DATE_VERIF}, version ${GUIDE_VERSION} mise à jour du ${GUIDE_MAJ}`,
+      width: 1600,
+      height: 2265,
+      repere: "p. 1",
+      titre: "Couverture",
+      version: GUIDE_VERSION,
     },
+    // Le sommaire : en éventail dans le hero, pas dans « Feuilleter » (il
+    // est déjà sur la page en HTML).
+    guidePage(
+      "guide-v1-1-sommaire", 2, "Sommaire, parties 1 à 3",
+      "Sommaire du guide, page 2 : Comment lire ce guide, puis les parties Comprendre, Choisir et Mettre en place, chapitres 1 à 11 avec leurs numéros de page",
+      { eventail: true, horsFeuilleter: true },
+    ),
+    // Extrait lisible de la p. 19 (du titre au bas de l'encadré), rendu à
+    // 3 px par point : même rectangle de pixels qu'avec la v1.0, contenu
+    // identique au pixel près ; le zoom ouvre la page entière.
     {
-      src: "/produits/guide-courtiers.png",
-      alt: "Page du chapitre 5 : Trade Republic, BoursoBank et Fortuneo comparés d'après leurs grilles officielles, et le coût d'un achat d'ETF de 50 à 1 000 €",
-      width: 1397,
-      height: 1977,
+      src: "/produits/guide-v1-1-arbre-enveloppe-extrait.png",
+      alt: "Arbre de décision n° 1, page 19 : « Où loger votre DCA ? », cinq lignes, de « Si vous n'êtes pas fiscalement domicilié en France » à « Dans tous les autres cas : le PEA d'abord »",
+      width: 1543,
+      height: 1184,
+      repere: "p. 19",
+      titre: "Arbre de décision n° 1 : votre enveloppe",
+      version: GUIDE_VERSION,
+      extrait: true,
+      complete: {
+        src: "/produits/guide-v1-1-arbre-enveloppe.png",
+        alt: "Page 19 : l'encadré « À retenir — prendre date, même avec peu », l'arbre de décision n° 1 pour choisir votre enveloppe, puis le début de « Et le CTO ? »",
+        width: 1600,
+        height: 2265,
+      },
     },
-    {
-      src: "/produits/guide-charte.png",
-      alt: "Annexe A, la charte d'investisseur à remplir : épargne de précaution, enveloppe, courtier, ETF, montant mensuel et règles de conduite",
-      width: 1397,
-      height: 1977,
-    },
+    guidePage(
+      "guide-v1-1-baisses", 39, "Les baisses, chiffrées",
+      "Page 39 : ouverture du chapitre 12 « Les baisses, chiffrées » et le tableau des quatre baisses d'un ETF MSCI World en euros, de la crise financière au printemps 2025, avec leur délai de retour",
+    ),
+    guidePage(
+      "guide-v1-1-sept-erreurs", 49, "Sept erreurs, classées par ce qu'elles coûtent",
+      "Page 49 : les sept erreurs classées par ce qu'elles coûtent pour 200 € par mois, d'attendre le « bon moment » (environ 25 100 €) à investir son épargne de précaution",
+      { eventail: true },
+    ),
+    guidePage(
+      "guide-v1-1-charte", 52, "Annexe A : ma charte d'investisseur",
+      "Annexe A, page 52 : la charte d'investisseur à remplir, avec vos fondations (épargne de précaution, objectif), votre dispositif (enveloppe, courtier, ETF) et votre rythme",
+    ),
   ],
   metaTitle: "Guide PDF : Démarrer le DCA en France (PEA, ETF, courtiers)",
   metaDescription:
-    `Lancer un DCA en France pas à pas\u00a0: PEA ou CTO, 3 courtiers et 13 ETF vérifiés, baisses chiffrées, 7 erreurs à éviter. PDF de ${GUIDE_PAGES} pages, ${GUIDE_PRIX}\u00a0€.`,
+    `Lancer un DCA en France pas à pas\u00a0: PEA ou CTO, 3 courtiers et ${GUIDE_ETF} ETF vérifiés, baisses chiffrées, 7 erreurs à éviter. PDF de ${GUIDE_PAGES} pages, ${GUIDE_PRIX}\u00a0€.`,
   abstract: [
     "Tout ce qu'il faut pour démarrer un DCA existe gratuitement, éparpillé sur de nombreux sites qui se contredisent, et beaucoup ne sont pas à jour : fiscalité 2026, tarifs des courtiers. Ce guide assemble le parcours dans l'ordre, de « je ne sais pas par où commencer » à votre premier investissement, puis à une routine mensuelle.",
-    "Chaque chiffre est sourcé et daté, vérifié au 28 septembre 2026 : prélèvements sociaux à 18,6 %, grilles officielles de Trade Republic, BoursoBank et Fortuneo, 13 ETF éligibles au PEA vérifiés un par un, baisses passées chiffrées en euros. Il ne vous dit pas quoi acheter : il vous donne des critères, des arbres de décision et des outils à remplir.",
+    `Chaque chiffre est sourcé et daté, vérifié au ${GUIDE_DATE_VERIF} : prélèvements sociaux à 18,6 %, grilles officielles de Trade Republic, BoursoBank et Fortuneo, ${GUIDE_ETF} ETF éligibles au PEA vérifiés un par un, baisses passées chiffrées en euros. Il ne vous dit pas quoi acheter : il vous donne des critères, des arbres de décision et des outils à remplir.`,
   ],
   features: [
-    `PDF de ${GUIDE_PAGES} pages, chiffres vérifiés au 28 septembre 2026, chaque source citée`,
+    `PDF de ${GUIDE_PAGES} pages, chiffres vérifiés au ${GUIDE_DATE_VERIF}, chaque source citée`,
     "PEA ou CTO : les règles de 2026 et l'écart en euros, ramenés à quelques critères que vous appliquez à votre situation",
     "Trois courtiers (Trade Republic, BoursoBank, Fortuneo) comparés sur leurs grilles officielles, et le coût d'un achat selon votre montant",
-    "Les 13 ETF éligibles au PEA vérifiés (ISIN, frais), et les pièges : fonds non éligibles, versions plus chères du même indice",
+    `Les ${GUIDE_ETF} ETF éligibles au PEA vérifiés (ISIN, frais), et les pièges : fonds non éligibles, versions plus chères du même indice`,
     "Ouvrir le PEA, passer le premier ordre, automatiser : étapes numérotées, check-lists et fiches à remplir",
     "Les baisses de 2008 à 2025 chiffrées en euros, et les 7 erreurs les plus chères, chacune chiffrée avec ses hypothèses",
     "Trois arbres de décision, une charte d'investisseur et un plan de crise à remplir, un calendrier annuel",
@@ -349,17 +700,40 @@ const GUIDE: Product = {
 };
 
 // Prix bundle : 19 + 19 = 38 € séparés, pack à 33 € (prix Stripe créé le
-// 29/09/2026, price_1UL1t9LVB4yZ8CXvb69XgEnn). Ancienne note : recalculé après passage du Cockpit à 19 €
-// (lancement) → 19 + 19 = 38 € séparés, bundle à 33 € (~-13 %). Quand le
-// Cockpit repassera à 24 € : séparés 43 €, revoir le prix du pack.
+// 29/09/2026, price_1UL1t9LVB4yZ8CXvb69XgEnn), soit environ 13 % de moins.
+// Le Cockpit reste à 19 € : aucune hausse prévue (décision du 01/10/2026),
+// donc aucun recalcul du pack à prévoir.
+//
+// 01/10/2026 — le prix barré n'est plus écrit à la main (`compareAtEur: 38`) :
+// `prixSepares` le calcule à partir de `inclut`. Si un prix unitaire change
+// un jour, il suivra tout seul ; seul `priceEur` (et son prix Stripe) serait
+// à revoir.
+const BUNDLE_INCLUT: ProductId[] = ["guide-demarrer-dca", "template-suivi-dca"];
+const BUNDLE_DELIVERABLES: Product["deliverables"] = [
+  { label: "Guide PDF", fileKey: "guide-pdf" },
+  { label: "Cockpit DCA — fichier Excel (.xlsx)", fileKey: "template-xlsx" },
+  { label: "Cockpit DCA — version Google Sheets (copie en 1 clic)", sheetsCopy: true },
+];
+const BUNDLE_PRIX = 33;
+
 const BUNDLE: Product = {
   id: "bundle-dca",
   slug: "pack-demarrage-dca",
   name: "Pack Démarrage DCA — Guide + Cockpit",
   shortName: "Pack Démarrage DCA",
   tagline: "Comprendre, démarrer, piloter : le pack complet.",
-  priceEur: 33,
-  compareAtEur: 38, // 19 + 19 — recalculer si les prix unitaires changent
+  titreHero: { principal: "Pack Démarrage DCA", complement: "Guide + Cockpit" },
+  format: "PDF + classeur Excel et Google\u00a0Sheets",
+  inclut: BUNDLE_INCLUT,
+  // Tous calculés : jamais écrits. L'écart de prix n'y est plus : le prix
+  // barré et sa ligne d'explication le disent déjà.
+  chiffresCles: [
+    { valeur: String(BUNDLE_INCLUT.length), libelle: "produits complets, avec leurs mises à jour" },
+    { valeur: String(GUIDE_PAGES), libelle: "pages de guide, chaque source citée" },
+    { valeur: String(TEMPLATE_CONTENTS.length), libelle: "onglets de classeur, du mode d'emploi aux frais" },
+    { valeur: String(BUNDLE_DELIVERABLES.length), libelle: "liens livrés\u00a0: PDF, Excel, copie Google\u00a0Sheets" },
+  ],
+  priceEur: BUNDLE_PRIX,
   priceIdEnv: "STRIPE_PRODUCT_BUNDLE_PRICE_ID",
   livePriceId: "price_1UL1t9LVB4yZ8CXvb69XgEnn",
   metaTitle: "Pack Démarrage DCA : guide PDF + Cockpit DCA (suivi PEA)",
@@ -405,11 +779,7 @@ const BUNDLE: Product = {
       a: "Non — le guide est pédagogique et le Cockpit est un outil de suivi basé sur l'allocation que VOUS définissez. Aucune recommandation personnalisée : pour cela, consultez un conseiller en investissements financiers (CIF) immatriculé à l'ORIAS.",
     },
   ],
-  deliverables: [
-    { label: "Guide PDF", fileKey: "guide-pdf" },
-    { label: "Cockpit DCA — fichier Excel (.xlsx)", fileKey: "template-xlsx" },
-    { label: "Cockpit DCA — version Google Sheets (copie en 1 clic)", sheetsCopy: true },
-  ],
+  deliverables: BUNDLE_DELIVERABLES,
 };
 
 export const PRODUCTS: Record<ProductId, Product> = {
@@ -431,4 +801,33 @@ export function getProduct(idOrSlug: string): Product | null {
 /** Price ID Stripe du produit (null si non configuré → produit "bientôt dispo"). */
 export function getProductPriceId(product: Product): string | null {
   return process.env[product.priceIdEnv] ?? product.livePriceId ?? null;
+}
+
+/**
+ * Prix des produits inclus, achetés séparément : le seul prix barré permis
+ * (directive Omnibus : une référence réelle et explicite, pas un ancien prix).
+ * `null` pour un produit qui n'inclut rien.
+ */
+export function prixSepares(product: Product): number | null {
+  if (!product.inclut?.length) return null;
+  return product.inclut.reduce((somme, id) => somme + PRODUCTS[id].priceEur, 0);
+}
+
+/** Produits inclus dans un pack, dans l'ordre de `inclut`. */
+export function produitsInclus(product: Product): Product[] {
+  return (product.inclut ?? []).map((id) => PRODUCTS[id]);
+}
+
+// Garde-fous, évalués au chargement du module (donc au build et en dev) :
+// - le H1 mis en page (`titreHero`) doit dire exactement `name` ;
+// - le pack doit coûter moins que ses produits achetés séparément, sinon
+//   « de moins qu'en achats séparés » deviendrait faux.
+for (const p of PRODUCT_LIST) {
+  if (p.titreHero && `${p.titreHero.principal} — ${p.titreHero.complement}` !== p.name) {
+    throw new Error(`products.ts : titreHero de « ${p.id} » ne redonne pas son name.`);
+  }
+  const separes = prixSepares(p);
+  if (separes !== null && separes <= p.priceEur) {
+    throw new Error(`products.ts : le pack « ${p.id} » (${p.priceEur} €) n'est pas moins cher que ses produits séparés (${separes} €).`);
+  }
 }

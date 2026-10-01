@@ -123,9 +123,17 @@ if (!existsSync(RAW_DIR)) {
   process.exit(1);
 }
 
-const files = readdirSync(RAW_DIR).filter((f) => !f.startsWith("."));
-if (files.length === 0) {
-  console.error(`✖ Aucun fichier dans ${RAW_DIR}`);
+// 01/10/2026 : raw/ contient aussi des dossiers de travail (sources du guide,
+// classeur v2, audits). Le script les lisait comme des fichiers et s'arrêtait
+// sur EISDIR avant d'écrire quoi que ce soit. On ne chiffre plus que les
+// fichiers livrés, par leur nom exact (cf. PRODUCT_FILES de la route download
+// et le README de private-assets) : un fichier égaré dans raw/ ne finit pas
+// en .enc commité par accident.
+const FICHIERS_PRODUITS = ["template-suivi-dca.xlsx", "guide-demarrer-dca.pdf"];
+const files = FICHIERS_PRODUITS.filter((f) => existsSync(path.join(RAW_DIR, f)));
+const absents = FICHIERS_PRODUITS.filter((f) => !files.includes(f));
+if (absents.length) {
+  console.error(`✖ Fichier(s) produit introuvable(s) dans ${RAW_DIR} : ${absents.join(", ")}`);
   process.exit(1);
 }
 

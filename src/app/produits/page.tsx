@@ -1,13 +1,35 @@
 // Hub /produits — les produits digitaux en paiement unique.
 // Positionnement : capte les "non" au SaaS (les gens qui veulent du
 // Excel/PDF sans abonnement). Lien discret depuis le bas de /tarifs.
+//
+// Refonte du 01/10/2026 : vitrine dans la grammaire de /tarifs (section
+// sombre opaque puis section blanche), cartes avec de VRAIES vignettes du
+// produit et ses chiffres clés. Retirés : le badge « Meilleure valeur »
+// (superlatif autoproclamé), la phrase « Beaucoup commencent par le
+// template… » (aucune base) et le « 4,90 €/mois » écrit à la main.
+// Inchangés : metadata, JSON-LD CollectionPage, URL, texte du H1.
+//
+// Relecture du 01/10/2026 : retiré « TVA incluse » (faux : le vendeur est en
+// franchise de TVA, art. 293 B du CGI, voir CGV et mentions légales) et le
+// mini-point « Paiement unique » (le H1 le dit déjà).
+//
+// Relecture DA du 01/10/2026 : « Ressources » se lisait trois fois de suite
+// (fil d'Ariane, surtitre, H1) et « Satisfait ou remboursé 14 jours » trois
+// fois dans le premier écran et demi : retirés du surtitre et de la ligne
+// sous les cartes (restent le mini-point et la carte « Après le paiement »).
+// Le fil d'Ariane visible a désormais son BreadcrumbList, comme les pages
+// produit. Le <title> garde « Produits — … » (invariant du cahier, § 7.4) :
+// le passer à « Ressources » touche au référencement, c'est à Maël de trancher.
 
 import type { Metadata } from "next";
 import Link from "next/link";
-import { FileText, Table2, Package, Check } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+import { BreadcrumbSchema } from "@/components/ui/BreadcrumbSchema";
 import { JsonLd } from "@/components/ui/JsonLd";
+import { ApresPaiement, EnTeteBloc } from "@/components/products/blocs";
+import { FondSombre } from "@/components/products/FondSombre";
+import { ProductCard } from "@/components/products/ProductCard";
 import { PRODUCT_LIST } from "@/lib/products";
+import { PREMIUM_ESSAI_JOURS, PREMIUM_PRIX_MENSUEL_EUR } from "@/lib/plans";
 
 const TITLE = "Produits — Cockpit DCA (suivi PEA) & guide pour démarrer";
 const DESCRIPTION =
@@ -26,17 +48,15 @@ export const metadata: Metadata = {
   },
 };
 
-const ICONS: Record<string, LucideIcon> = {
-  "template-suivi-dca": Table2,
-  "guide-demarrer-dca": FileText,
-  "bundle-dca": Package,
-};
+const prixMensuel = `${PREMIUM_PRIX_MENSUEL_EUR.toFixed(2).replace(".", ",")} €/mois`;
 
 export default function ProduitsHubPage() {
   const siteUrl = "https://dcatracker.fr";
+  const unitaires = PRODUCT_LIST.filter((p) => !p.inclut?.length);
+  const packs = PRODUCT_LIST.filter((p) => p.inclut?.length);
 
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
+    <>
       <JsonLd
         data={{
           "@context": "https://schema.org",
@@ -46,91 +66,81 @@ export default function ProduitsHubPage() {
           url: `${siteUrl}/produits`,
         }}
       />
+      <BreadcrumbSchema items={[{ name: "Accueil", url: `${siteUrl}/` }, { name: "Ressources" }]} />
 
-      <nav aria-label="Fil d'ariane" className="flex items-center gap-2 text-sm text-gray-500 mb-8">
-        <Link href="/" className="hover:text-gray-600 transition-colors">Accueil</Link>
-        <span aria-hidden>/</span>
-        <span className="text-gray-600" aria-current="page">Produits</span>
-      </nav>
+      {/* ── Vitrine, fond sombre opaque (masque le fond du layout) ── */}
+      <section className="relative overflow-hidden bg-slate-950 pb-16 pt-10 md:pb-20 md:pt-12">
+        <FondSombre />
 
-      <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3 leading-tight">
-        Ressources en paiement unique
-      </h1>
-      <p className="text-lg text-gray-500 leading-relaxed mb-10">
-        Pas d&apos;abonnement, pas de compte requis : vous achetez, vous
-        recevez vos fichiers par email, ils sont à vous. Mises à jour incluses.
-      </p>
+        <div className="relative mx-auto mb-12 max-w-2xl px-4 text-center sm:px-6">
+          <nav
+            aria-label="Fil d'ariane"
+            className="mb-6 flex items-center justify-center gap-2 text-sm text-slate-400 md:mb-8"
+          >
+            <Link href="/" className="transition-colors hover:text-slate-200">Accueil</Link>
+            <span aria-hidden>/</span>
+            <span className="text-slate-200" aria-current="page">Ressources</span>
+          </nav>
+          <h1 className="mb-4 text-balance text-3xl font-bold leading-tight text-white md:text-4xl">
+            Ressources en paiement unique
+          </h1>
+          <p className="mb-6 text-pretty text-base leading-relaxed text-slate-300 sm:text-lg">
+            Pas d&apos;abonnement, pas de compte requis&nbsp;: vous achetez, vous
+            recevez vos fichiers par email, <strong className="text-white">ils sont à vous</strong>.
+            Mises à jour incluses.
+          </p>
+          <div className="hidden flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm sm:flex">
+            {["Livraison immédiate par email", "Satisfait ou remboursé 14\u00a0jours"].map((t) => (
+              <span key={t} className="inline-flex items-center gap-1.5 text-slate-300">
+                <span className="h-1 w-1 rounded-full bg-primary-400" aria-hidden />
+                {t}
+              </span>
+            ))}
+          </div>
+        </div>
 
-      <div className="space-y-4 mb-12">
-        {PRODUCT_LIST.map((p) => {
-          const Icon = ICONS[p.id] ?? FileText;
-          const isBundle = p.id === "bundle-dca";
-          return (
-            <Link
-              key={p.id}
-              href={`/produits/${p.slug}`}
-              className={`group block rounded-2xl border p-6 card-hover ${
-                isBundle
-                  ? "border-primary-200 bg-primary-50/40 ring-1 ring-primary-100"
-                  : "border-gray-100 bg-white"
-              }`}
-            >
-              <div className="flex items-start gap-4">
-                <div className="shrink-0 w-11 h-11 rounded-xl bg-primary-50 border border-primary-100 flex items-center justify-center text-primary-700">
-                  <Icon size={20} aria-hidden />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-baseline justify-between gap-3 flex-wrap mb-1">
-                    <p className="text-base font-bold text-gray-900 group-hover:text-primary-700 transition-colors">
-                      {p.shortName}
-                      {isBundle && (
-                        <span className="ml-2 text-[10px] font-bold uppercase tracking-wide text-primary-700 bg-primary-100 border border-primary-200 px-1.5 py-0.5 rounded">
-                          Meilleure valeur
-                        </span>
-                      )}
-                    </p>
-                    <p className="shrink-0 text-lg font-bold text-gray-900 tabular-nums">
-                      {p.priceEur} €
-                      {/* Omnibus : le barré doit être qualifié (somme des
-                          prix séparés, PAS un ancien prix). */}
-                      {p.compareAtEur && (
-                        <span className="ml-2 text-sm font-normal text-gray-400">
-                          <span className="line-through">{p.compareAtEur} €</span>{" "}
-                          séparément
-                        </span>
-                      )}
-                    </p>
-                  </div>
-                  <p className="text-sm text-gray-600 leading-relaxed mb-3">{p.tagline}</p>
-                  <ul className="space-y-1">
-                    {p.features.slice(0, 3).map((f) => (
-                      <li key={f} className="flex items-start gap-2 text-xs text-gray-500">
-                        <Check size={12} className="text-emerald-600 mt-0.5 shrink-0" strokeWidth={2.5} aria-hidden />
-                        <span>{f}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </Link>
-          );
-        })}
-      </div>
+        <div className="relative mx-auto grid max-w-5xl gap-6 px-4 sm:px-6 md:grid-cols-2">
+          {unitaires.map((p, i) => (
+            <ProductCard key={p.id} product={p} variante="sombre" priority={i < 2} />
+          ))}
+          {packs.map((p) => (
+            <div key={p.id} className="mt-4 md:col-span-2">
+              <ProductCard product={p} variante="sombre" misEnAvant />
+            </div>
+          ))}
+        </div>
 
-      {/* Transparence vs l'app */}
-      <div className="rounded-2xl border border-gray-200 bg-gray-50 p-6">
-        <p className="text-sm text-gray-600 leading-relaxed">
-          <strong>Quelle différence avec l&apos;application ?</strong> Ces
-          produits sont autonomes : un fichier que vous possédez, sans
-          abonnement. L&apos;app{" "}
-          <Link href="/tarifs" className="underline hover:text-gray-900">
-            DCA Tracker Premium
-          </Link>{" "}
-          automatise le suivi (saisie guidée, Monte Carlo, backtest, récap
-          fiscal) pour 4,90 €/mois. Beaucoup commencent par le template et
-          passent à l&apos;app plus tard — ou l&apos;inverse.
+        <p className="relative mt-8 px-4 text-center text-xs text-slate-400">
+          Prix net · TVA non applicable, art.&nbsp;293&nbsp;B du CGI
         </p>
-      </div>
-    </div>
+      </section>
+
+      {/* ── Lecture, fond blanc opaque. -mb-12 : recouvre la marge haute du
+          pied de page, où le fond du layout réapparaissait. ── */}
+      <section className="relative -mb-12 bg-white pb-28 pt-16 md:pb-32 md:pt-20">
+        <div className="px-4 sm:px-6">
+          <EnTeteBloc
+            titre="Après le paiement"
+            sousTitre="Les mêmes conditions pour les trois ressources."
+          />
+          <ApresPaiement />
+        </div>
+
+        <div className="mx-auto mt-16 max-w-3xl px-4 sm:px-6">
+          <div className="rounded-2xl border border-slate-200/70 bg-white p-6 shadow-card sm:p-8">
+            <h2 className="mb-3 text-xl font-bold text-gray-900">Quelle différence avec l&apos;application&nbsp;?</h2>
+            <p className="text-sm leading-relaxed text-gray-600">
+              Ces produits sont autonomes&nbsp;: un fichier que vous possédez, sans
+              abonnement. L&apos;app{" "}
+              <Link href="/tarifs" className="underline hover:text-gray-900">
+                DCA Tracker Premium
+              </Link>{" "}
+              automatise le suivi (saisie guidée, Monte Carlo, backtest, récap
+              fiscal) pour {prixMensuel}, avec {PREMIUM_ESSAI_JOURS}&nbsp;jours d&apos;essai.
+            </p>
+          </div>
+        </div>
+      </section>
+    </>
   );
 }

@@ -83,6 +83,15 @@ const nextConfig: NextConfig = {
         destination: "/investir-en-etf",
         permanent: true,
       },
+
+      // ── Captures produits v1 remplacées (2026-10-01) ───────────────────
+      // Cockpit v2.0 et guide v1.1 : les anciennes captures ont été publiques
+      // (Google Images, partages). Chacune pointe vers son équivalent v2.
+      { source: "/produits/cockpit-dashboard.png",         destination: "/produits/cockpit-v2-dashboard.png",   permanent: true },
+      { source: "/produits/cockpit-versement-du-mois.png", destination: "/produits/cockpit-v2-versement.png",   permanent: true },
+      { source: "/produits/guide-couverture.png",          destination: "/produits/guide-v1-1-couverture.png",  permanent: true },
+      { source: "/produits/guide-charte.png",              destination: "/produits/guide-v1-1-charte.png",      permanent: true },
+      { source: "/produits/guide-courtiers.png",           destination: "/produits/guide-v1-1-sommaire.png",    permanent: true },
     ];
   },
 

@@ -11,7 +11,9 @@
 
 import { createHmac, timingSafeEqual } from "node:crypto";
 
-const DEFAULT_TTL_DAYS = 7;
+/** Durée de validité d'un lien de téléchargement — lue aussi par les pages
+ *  produit (« liens valables 7 jours »), pour ne pas l'écrire deux fois. */
+export const DEFAULT_TTL_DAYS = 7;
 
 type TokenPayload = {
   /** Clé de fichier (cf. PRODUCT_FILES dans la route download). */
