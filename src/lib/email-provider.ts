@@ -4,7 +4,7 @@ import { sendEmail } from "./emails/dispatch";
 // The `source` field is preserved in the footer for attribution tracking.
 
 import { resend } from "./resend-client";
-import type { RessourceGratuite } from "./ressources-gratuites";
+import { echapperHtml, type RessourceGratuite } from "./ressources-gratuites";
 import { contenuModeleGratuit } from "./emails/modele-gratuit";
 
 const SITE_URL = "https://dcatracker.fr";
@@ -15,6 +15,12 @@ export interface EmailSubscription {
   source: string;
   /** Ce que la personne a demandé. Défaut : la cheat sheet (l'envoi historique). */
   ressource?: RessourceGratuite;
+  /**
+   * Case « recevoir aussi les emails occasionnels » cochée (01/10/2026). Seul
+   * `true` ajoute l'adresse à l'audience Resend ; la ressource part dans tous
+   * les cas.
+   */
+  newsletter: boolean;
 }
 
 export interface EmailProviderResult {
@@ -59,17 +65,23 @@ const ETFS: ETFShortRow[] = [
   { rank: 5, symbol: "PAEEM", isin: "FR0013412020", index: "MSCI Emerging Markets (ESG Transition)", ter: "0,30 %", role: "Satellite émergents"    },
 ];
 
-function buildHtml(source: string): string {
+// 01/10/2026 : toute valeur insérée dans ce gabarit passe par echapperHtml —
+// `source` vient du navigateur (déjà filtrée par lireSource dans la route, mais
+// le gabarit ne compte pas dessus), les lignes ETF sont des constantes qu'on
+// échappe quand même pour qu'un « & » d'indice ne dépende plus d'un replace
+// au cas par cas.
+function buildHtml(sourceBrute: string): string {
+  const source = echapperHtml(sourceBrute);
   const rowsHtml = ETFS.map(
     (e) => `
         <tr>
           <td style="padding:14px 16px;border-bottom:1px solid #f1f5f9;width:36px;vertical-align:top">
-            <span style="display:inline-flex;width:24px;height:24px;align-items:center;justify-content:center;background:#2563eb;color:#fff;border-radius:50%;font-size:12px;font-weight:700;line-height:24px;text-align:center">${e.rank}</span>
+            <span style="display:inline-flex;width:24px;height:24px;align-items:center;justify-content:center;background:#2563eb;color:#fff;border-radius:50%;font-size:12px;font-weight:700;line-height:24px;text-align:center">${echapperHtml(e.rank)}</span>
           </td>
           <td style="padding:14px 16px;border-bottom:1px solid #f1f5f9;vertical-align:top">
-            <p style="margin:0 0 4px 0;font-size:15px;font-weight:700;color:#0f172a;font-family:'SFMono-Regular',Menlo,Consolas,monospace">${e.symbol} <span style="font-size:12px;font-weight:400;color:#94a3b8">${e.isin}</span></p>
-            <p style="margin:0;font-size:13px;color:#475569;line-height:1.5">${e.index.replace(/&/g, "&amp;")}</p>
-            <p style="margin:4px 0 0 0;font-size:12px;color:#94a3b8">${e.role} · TER ${e.ter}</p>
+            <p style="margin:0 0 4px 0;font-size:15px;font-weight:700;color:#0f172a;font-family:'SFMono-Regular',Menlo,Consolas,monospace">${echapperHtml(e.symbol)} <span style="font-size:12px;font-weight:400;color:#94a3b8">${echapperHtml(e.isin)}</span></p>
+            <p style="margin:0;font-size:13px;color:#475569;line-height:1.5">${echapperHtml(e.index)}</p>
+            <p style="margin:4px 0 0 0;font-size:12px;color:#94a3b8">${echapperHtml(e.role)} · TER ${echapperHtml(e.ter)}</p>
           </td>
         </tr>`
   ).join("");
@@ -94,7 +106,7 @@ function buildHtml(source: string): string {
 
           <tr>
             <td style="padding:24px 32px;border-bottom:1px solid #f1f5f9">
-              <a href="${SITE_URL}" style="text-decoration:none">
+              <a href="${echapperHtml(SITE_URL)}" style="text-decoration:none">
                 <span style="font-size:16px;font-weight:700;color:#1d4ed8">DCA</span><span style="font-size:16px;color:#6b7280">Tracker</span>
               </a>
             </td>
@@ -152,7 +164,7 @@ function buildHtml(source: string): string {
               <table cellpadding="0" cellspacing="0">
                 <tr>
                   <td style="border-radius:10px;background:#2563eb">
-                    <a href="${GUIDE_URL}"
+                    <a href="${echapperHtml(GUIDE_URL)}"
                        style="display:inline-block;padding:14px 28px;color:#ffffff;font-size:15px;font-weight:700;text-decoration:none;border-radius:10px;line-height:1">
                       Lire le guide complet &rarr;
                     </a>
@@ -178,8 +190,8 @@ function buildHtml(source: string): string {
           <tr>
             <td style="padding:20px 32px;background:#f8fafc;border-top:1px solid #f1f5f9">
               <p style="margin:0;font-size:11px;color:#cbd5e1;line-height:1.6">
-                Vous recevez cet email car vous vous &ecirc;tes inscrit sur
-                <a href="${SITE_URL}" style="color:#cbd5e1;text-decoration:underline">${SITE_URL}</a>
+                Vous recevez cet email car vous avez demand&eacute; cette cheat sheet sur
+                <a href="${echapperHtml(SITE_URL)}" style="color:#cbd5e1;text-decoration:underline">${echapperHtml(SITE_URL)}</a>
                 (source&nbsp;: ${source}).
                 DCA Tracker est un outil p&eacute;dagogique &mdash; pas de conseil
                 en investissement.
@@ -214,7 +226,7 @@ Le guide complet présente 3 exemples d'allocation (Simple, Équilibré, Croissa
 À lire : cette sélection est pédagogique, pas un conseil en investissement personnalisé. Investir comporte un risque de perte en capital.
 
 ---
-Vous recevez cet email car vous vous êtes inscrit sur ${SITE_URL} (source : ${source}).
+Vous recevez cet email car vous avez demandé cette cheat sheet sur ${SITE_URL} (source : ${source}).
 DCA Tracker est un outil pédagogique — pas de conseil en investissement.`;
 }
 
@@ -224,8 +236,23 @@ export async function subscribeEmail({
   email,
   source,
   ressource = "cheat-sheet",
+  newsletter,
 }: EmailSubscription): Promise<EmailProviderResult> {
   try {
+    // ─── DEUX DEMANDES, DEUX BASES (01/10/2026) ──────────────────────────────
+    //
+    // Jusqu'ici chaque demande de ressource ajoutait l'adresse à l'audience :
+    // on ne pouvait pas recevoir le fichier sans entrer dans la liste, et la
+    // confidentialité couvrait les deux par un « consentement explicite » que
+    // rien ne recueillait (constat #19). Or un consentement à la prospection
+    // doit être spécifique, et il n'est pas libre s'il conditionne le service
+    // demandé.
+    //
+    // Désormais : la ressource part sur simple demande (exécution de la
+    // demande, art. 6.1.b) ; l'ajout à l'audience n'a lieu QUE si la case,
+    // non cochée par défaut, l'a demandé (consentement, art. 6.1.a). Sans case
+    // cochée, l'adresse ne figure que dans le journal d'envoi de Resend.
+
     // ─── L'INSCRIPTION À LA LISTE, ET CE QU'ELLE PROMETTAIT SANS LE TENIR ────
     //
     // Il n'y a pas de base de données : l'audience Resend est le SEUL endroit
@@ -244,7 +271,10 @@ export async function subscribeEmail({
     // conditionné à ce succès : le visiteur a demandé un document, il doit le
     // recevoir même si notre liste est mal configurée.
     const audienceId = process.env.RESEND_AUDIENCE_ID;
-    if (!audienceId) {
+    if (!newsletter) {
+      // Rien à inscrire : la personne a demandé la ressource, pas la liste.
+      console.log(`[email-provider] Case non cochée — adresse non ajoutée à l'audience (source : ${source}).`);
+    } else if (!audienceId) {
       console.error(
         "[email-provider] RESEND_AUDIENCE_ID absent — le contact n'est enregistré NULLE PART. " +
           `Adresse récupérable uniquement dans le journal Resend (source : ${source}).`,
@@ -293,8 +323,12 @@ export async function subscribeEmail({
       replyTo: "hello@dcatracker.fr",
     });
 
+    // Contrôle du 01/10/2026 : ces deux journaux écrivaient l'adresse en clair
+    // dans les logs Vercel. La confidentialité (3.5) dit maintenant que, sans
+    // case cochée, l'adresse ne figure que dans le journal d'envoi de Resend :
+    // on ne la journalise plus ici (dispatch.ts ne le faisait déjà pas).
     if (!parti) {
-      console.log("[email-provider] Supprimé (désinscrit) :", email);
+      console.log(`[email-provider] Supprimé (désinscrit) — source : ${source}.`);
       return {
         success: false,
         error:
@@ -302,10 +336,10 @@ export async function subscribeEmail({
       };
     }
 
-    console.log("[email-provider] Email sent to:", email, "source:", source, "ressource:", ressource);
+    console.log("[email-provider] Email envoyé — source:", source, "ressource:", ressource, "newsletter:", newsletter);
     return { success: true };
   } catch (err) {
     console.error("[email-provider] Unexpected error:", err);
-    return { success: false, error: "Erreur lors de l'inscription." };
+    return { success: false, error: "Erreur lors de l'envoi. Réessayez dans un instant." };
   }
 }

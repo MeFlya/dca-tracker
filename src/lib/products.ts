@@ -202,7 +202,9 @@ export type Product = {
 // date depuis le lancement, est retirée le même jour : une hausse annoncée
 // sans échéance finit par ressembler à une fausse urgence. Si un prix change
 // un jour : `priceEur`, le prix Stripe, le « 19 € » de la metaDescription,
-// puis le prix du pack (son prix barré se recalcule seul, pas son prix).
+// puis le prix du pack (son prix barré se recalcule seul, pas son prix), et
+// une entrée au journal (changelog.ts) : celle du 01/10/2026 écrit que le
+// prix reste 19 € et qu'aucune hausse n'est prévue.
 //
 // Faits du classeur, écrits UNE fois puis lus par `features`, `contents` et
 // les chiffres clés : journal de 1 000 lignes, 10 ETF au plus (onglet Par
@@ -290,7 +292,10 @@ export const TEMPLATE_CAPTURES: Capture[] = [
     height: 1319,
     repere: "Par ETF",
     legende:
-      "PRU, valeur et performance de chaque ligne : +15,7 % pour PE500, +0,7 % pour ETZ, +2,5 % pour PAEEM. Dans Excel, le cours se saisit à la main ; dans Google Sheets, il est récupéré automatiquement.",
+      // 01/10/2026 : le cours manuel (col. F), s'il est rempli, passe devant
+      // le cours automatique (col. E) : la légende le dit, sans quoi « récupéré
+      // automatiquement » est faux dès qu'un cours est saisi en F.
+      "PRU, valeur et performance de chaque ligne : +15,7 % pour PE500, +0,7 % pour ETZ, +2,5 % pour PAEEM. Dans Excel, le cours se saisit à la main ; dans Google Sheets, il est récupéré automatiquement tant que la colonne du cours manuel reste vide.",
   },
   {
     src: "/produits/cockpit-v2-projection.png",
@@ -404,15 +409,23 @@ const TEMPLATE: Product = {
         us: "Calculateur de rééquilibrage par les flux, en parts entières",
       },
       {
+        // 01/10/2026 : remplace « cours auto + manuel en secours ». Le cours
+        // manuel n'est pas un secours : s'il est rempli, il passe DEVANT le
+        // cours automatique (formule du cours retenu, Par ETF!G).
         them: "Un fichier fait maison : à étendre et à corriger soi-même",
-        us: "1 000 lignes pré-câblées, cours auto + manuel en secours, mises à jour incluses",
+        us: `${milliers(TEMPLATE_LIGNES)} lignes pré-câblées, cours automatiques dans Google Sheets tant que la colonne du cours manuel reste vide, mises à jour incluses`,
       },
       {
         them: "Agrégateurs type Finary : centrés sur la connexion bancaire, version complète sur abonnement annuel",
         us: "Aucune connexion bancaire, vos données restent chez vous, paiement unique",
       },
       {
-        them: "Courtier : PRU brut, généralement ni projection ni analyse de frais",
+        // 01/10/2026 : « PRU brut » retiré. Faux : BoursoBank, par exemple,
+        // compte courtage et TTF dans le prix de revient (aide en ligne), et
+        // notre propre Mode d'emploi rappelle que c'est l'usage français. Ne
+        // reste que ce que la colonne « nous » montre et qu'un espace client
+        // de courtier, en général, n'a pas.
+        them: "Courtier : en général, ni projection, ni coût des frais sur 30 ans, ni calcul du versement du mois",
         us: "Projection composée + impact des frais sur 30 ans, en euros",
       },
     ],
@@ -425,15 +438,19 @@ const TEMPLATE: Product = {
   faq: [
     {
       q: "Excel ou Google Sheets ?",
-      a: "Les deux sont inclus. Google Sheets récupère les cours automatiquement ; Excel fonctionne partout, la mise à jour manuelle des cours tient dans vos 2 minutes mensuelles. Mêmes formules, même structure.",
+      a: "Les deux sont inclus. Google Sheets récupère les cours automatiquement, tant que la colonne du cours manuel reste vide ; Excel fonctionne partout, la mise à jour manuelle des cours tient dans vos 2 minutes mensuelles. Mêmes formules, même structure.",
     },
     {
       q: "Je débute, c'est pour moi ?",
       a: "Oui : mode d'emploi 5 minutes intégré, exemple pré-rempli à remplacer par vos données, cases bleues = à remplir — tout le reste est automatique.",
     },
+    // 01/10/2026 : l'ancienne réponse (« le cours manuel prend toujours le
+    // relais ») taisait la règle réelle : le cours manuel ne prend le relais
+    // que si on le saisit, et tant qu'il est saisi, il passe devant le cours
+    // automatique, même quand celui-ci remonte.
     {
       q: "Et si un cours automatique tombe en panne ?",
-      a: "Le fichier est conçu pour : le cours manuel prend toujours le relais, rien ne casse. Et les mises à jour du fichier sont incluses.",
+      a: "Saisissez ce cours dans la colonne du cours manuel : tant qu'il est rempli, le fichier le retient à la place du cours automatique. Videz la case quand le cours automatique remonte, sinon le cours saisi reste figé. Et les mises à jour du fichier sont incluses.",
     },
     {
       q: "Pourquoi payer pour un tableur ?",

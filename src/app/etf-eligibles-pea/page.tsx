@@ -44,7 +44,8 @@ const N_NON_ELIGIBLES = ETF_NON_ELIGIBLES.length;
 /** « 28 septembre 2026 » */
 const DATE_VERIF = dateEnToutesLettres(DATE_VERIFICATION_PEA);
 /** « septembre 2026 » */
-const MOIS_VERIF = DATE_VERIF.replace(/^\d+\s/, "");
+// 01/10/2026 : dateEnToutesLettres écrit désormais « 1er » le premier du mois.
+const MOIS_VERIF = DATE_VERIF.replace(/^\d+(?:er)?\s/, "");
 
 // Requête visée : « ETF éligibles PEA » / « liste ETF PEA ». Les pages voisines
 // visent autre chose : /guide-5-etf-pea-premium une sélection courte,

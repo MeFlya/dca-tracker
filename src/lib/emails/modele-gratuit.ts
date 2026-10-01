@@ -8,6 +8,7 @@
 import { createDownloadToken } from "@/lib/download-token";
 import { getProduct } from "@/lib/products";
 import {
+  echapperHtml,
   MODELE_GRATUIT_FICHIER,
   MODELE_GRATUIT_SHEETS_COPIE,
   MODELE_GRATUIT_TTL_JOURS,
@@ -22,7 +23,13 @@ function euros(n: number): string {
   return `${n.toLocaleString("fr-FR", { minimumFractionDigits: Number.isInteger(n) ? 0 : 2 })} €`;
 }
 
+// 01/10/2026 : `source` arrive du navigateur et finissait telle quelle dans le
+// HTML (« source : … » en pied d'email) — de quoi y glisser un lien piégé
+// (constats #15, #26). La route la filtre désormais (lireSource), et le
+// gabarit échappe quand même TOUTE valeur insérée (`h`), URL comprises : la
+// version texte, elle, reçoit les valeurs brutes.
 export function contenuModeleGratuit(email: string, source: string) {
+  const h = echapperHtml;
   const lienFichier = `${SITE_URL}/api/products/download?token=${encodeURIComponent(
     createDownloadToken(MODELE_GRATUIT_FICHIER, email, MODELE_GRATUIT_TTL_JOURS),
   )}`;
@@ -36,7 +43,7 @@ export function contenuModeleGratuit(email: string, source: string) {
               <table cellpadding="0" cellspacing="0" style="margin:0 0 12px 0">
                 <tr>
                   <td style="border-radius:10px;background:${principal ? "#1d4ed8" : "#ffffff"};border:1px solid #1d4ed8">
-                    <a href="${href}" style="display:inline-block;padding:13px 24px;color:${principal ? "#ffffff" : "#1d4ed8"};font-size:15px;font-weight:700;text-decoration:none;border-radius:10px;line-height:1">${texte}</a>
+                    <a href="${h(href)}" style="display:inline-block;padding:13px 24px;color:${principal ? "#ffffff" : "#1d4ed8"};font-size:15px;font-weight:700;text-decoration:none;border-radius:10px;line-height:1">${h(texte)}</a>
                   </td>
                 </tr>
               </table>`;
@@ -46,7 +53,7 @@ export function contenuModeleGratuit(email: string, source: string) {
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>${SUJET_MODELE_GRATUIT}</title>
+  <title>${h(SUJET_MODELE_GRATUIT)}</title>
 </head>
 <body style="margin:0;padding:0;background:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
   <div style="display:none;max-height:0;overflow:hidden;font-size:1px;line-height:1px;color:#f8fafc">
@@ -58,7 +65,7 @@ export function contenuModeleGratuit(email: string, source: string) {
         <table width="100%" cellpadding="0" cellspacing="0" style="max-width:580px;background:#ffffff;border-radius:16px;border:1px solid #e2e8f0;overflow:hidden">
           <tr>
             <td style="padding:24px 32px;border-bottom:1px solid #f1f5f9">
-              <a href="${SITE_URL}" style="text-decoration:none">
+              <a href="${h(SITE_URL)}" style="text-decoration:none">
                 <span style="font-size:16px;font-weight:700;color:#1d4ed8">DCA</span><span style="font-size:16px;color:#6b7280">Tracker</span>
               </a>
             </td>
@@ -80,9 +87,9 @@ export function contenuModeleGratuit(email: string, source: string) {
               ${bouton(lienFichier, "Télécharger le fichier Excel", true)}
               ${sheets ? bouton(sheets, "Copier la version Google Sheets", false) : ""}
               <p style="margin:4px 0 0 0;font-size:12px;color:#94a3b8;line-height:1.6">
-                Lien de téléchargement valable ${MODELE_GRATUIT_TTL_JOURS}&nbsp;jours.${
+                Lien de téléchargement valable ${h(MODELE_GRATUIT_TTL_JOURS)}&nbsp;jours.${
                   sheets
-                    ? " La version Google Sheets récupère les cours toute seule (GOOGLEFINANCE)&nbsp;; « Copier » crée votre exemplaire dans votre Drive."
+                    ? " La version Google Sheets récupère les cours toute seule (GOOGLEFINANCE), tant que la colonne «&nbsp;Cours manuel&nbsp;» reste vide&nbsp;; « Copier » crée votre exemplaire dans votre Drive."
                     : ""
                 }
               </p>
@@ -92,7 +99,7 @@ export function contenuModeleGratuit(email: string, source: string) {
             <td style="padding:24px 32px 8px">
               <p style="margin:0;font-size:14px;color:#475569;line-height:1.7">
                 Les formules, onglet par onglet, sont expliquées dans notre guide&nbsp;:
-                <a href="${GUIDE_URL}" style="color:#1d4ed8;font-weight:600">suivre votre PEA dans Excel ou Google Sheets</a>.
+                <a href="${h(GUIDE_URL)}" style="color:#1d4ed8;font-weight:600">suivre votre PEA dans Excel ou Google Sheets</a>.
               </p>
             </td>
           </tr>
@@ -104,8 +111,8 @@ export function contenuModeleGratuit(email: string, source: string) {
                     <p style="margin:0;font-size:13px;color:#1e3a8a;line-height:1.6">
                       Ce modèle ne calcule pas le rendement annualisé (TRI), le versement du mois ni le
                       plafond et la date des 5&nbsp;ans du PEA. Ce sont les onglets du
-                      <a href="${cockpitUrl}" style="color:#1d4ed8;font-weight:600">Cockpit DCA</a>
-                      (${prix}, paiement unique).
+                      <a href="${h(cockpitUrl)}" style="color:#1d4ed8;font-weight:600">Cockpit DCA</a>
+                      (${h(prix)}, paiement unique).
                     </p>
                   </td>
                 </tr>
@@ -124,8 +131,8 @@ export function contenuModeleGratuit(email: string, source: string) {
             <td style="padding:20px 32px;background:#f8fafc;border-top:1px solid #f1f5f9">
               <p style="margin:0;font-size:11px;color:#94a3b8;line-height:1.6">
                 Vous recevez cet email car vous avez demandé ce modèle sur
-                <a href="${SITE_URL}" style="color:#94a3b8;text-decoration:underline">dcatracker.fr</a>
-                (source&nbsp;: ${source}). Une question&nbsp;? Répondez simplement à cet email.
+                <a href="${h(SITE_URL)}" style="color:#94a3b8;text-decoration:underline">dcatracker.fr</a>
+                (source&nbsp;: ${h(source)}). Une question&nbsp;? Répondez simplement à cet email.
               </p>
             </td>
           </tr>

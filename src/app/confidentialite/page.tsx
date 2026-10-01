@@ -109,15 +109,32 @@ export default function ConfidentialitePage() {
           <li>journaux serveur (logs d&apos;erreur, requêtes API) — conservés 30 jours.</li>
         </ul>
 
-        <h3>3.5 Email d&apos;inscription à la newsletter (lead magnet)</h3>
+        {/* 01/10/2026 : l'envoi de la ressource et l'inscription à la liste
+            étaient une seule finalité sous un « consentement explicite » que
+            rien ne recueillait (constat #19). Deux finalités, deux bases, et
+            une case non cochée par défaut dans les formulaires. */}
+        <h3>3.5 Adresse email saisie pour recevoir une ressource gratuite</h3>
         <ul>
           <li>
-            adresse email collectée via les formulaires de capture (homepage,
-            simulateur, page /suivi-pea-excel) — utilisée pour vous envoyer
-            la ressource demandée (cheat sheet « 5 ETF Premium pour PEA » ou
-            modèle de suivi PEA gratuit, avec un lien de téléchargement
-            valable 30 jours) et, le cas échéant, des emails ponctuels liés
-            au produit.
+            adresse email collectée via les formulaires des ressources
+            gratuites (page d&apos;accueil, simulateur, guides, page
+            /suivi-pea-excel) — utilisée pour vous envoyer la ressource
+            demandée (cheat sheet « 5 ETF Premium pour PEA » ou modèle de
+            suivi PEA gratuit, avec un lien de téléchargement valable 30
+            jours). Cet envoi répond à votre demande, rien de plus ;
+          </li>
+          <li>
+            emails occasionnels de DCA Tracker sur le suivi d&apos;un PEA :
+            uniquement si vous avez coché la case prévue dans le formulaire
+            (non cochée par défaut). Votre adresse est alors ajoutée à notre
+            liste d&apos;emails, hébergée chez Resend. Vous pouvez retirer ce
+            consentement à tout moment, en un clic, depuis le lien de
+            désinscription présent dans chaque email ;
+          </li>
+          <li>
+            sans case cochée, votre adresse n&apos;est pas ajoutée à cette
+            liste : elle figure seulement dans le journal d&apos;envoi de notre
+            prestataire d&apos;emails, Resend.
           </li>
         </ul>
       </section>
@@ -150,8 +167,18 @@ export default function ConfidentialitePage() {
                 <td>Exécution du contrat (art. 6.1.b)</td>
               </tr>
               <tr>
-                <td>Envoi de la ressource gratuite demandée (cheat sheet, modèle de suivi) et emails produit</td>
-                <td>Consentement explicite (art. 6.1.a) — désinscription en 1 clic</td>
+                <td>Envoi de la ressource gratuite demandée (cheat sheet, modèle de suivi)</td>
+                <td>Exécution de votre demande (art. 6.1.b)</td>
+              </tr>
+              <tr>
+                <td>
+                  Emails occasionnels sur le suivi d&apos;un PEA (liste d&apos;emails,
+                  voir 3.5)
+                </td>
+                <td>
+                  Consentement (art. 6.1.a) — case non cochée par défaut, retrait
+                  en un clic
+                </td>
               </tr>
               <tr>
                 <td>
@@ -197,8 +224,10 @@ export default function ConfidentialitePage() {
             <strong>Logs serveur :</strong> 30 jours.
           </li>
           <li>
-            <strong>Email d&apos;inscription newsletter :</strong> jusqu&apos;à
-            désinscription par l&apos;utilisateur.
+            <strong>Adresses de la liste d&apos;emails occasionnels :</strong>{" "}
+            3 ans à compter de l&apos;inscription ou du dernier contact venant
+            de vous, sauf désinscription avant (référentiel de la CNIL relatif
+            à la gestion commerciale).
           </li>
           <li>
             <strong>Données de mesure d&apos;audience (Vercel Web Analytics) :</strong>{" "}
@@ -303,7 +332,8 @@ export default function ConfidentialitePage() {
           </li>
           <li>
             <strong>Droit de retirer votre consentement</strong> à tout moment
-            pour les traitements fondés sur le consentement (newsletter) ;
+            pour les traitements fondés sur le consentement (emails
+            occasionnels, en un clic depuis chaque email) ;
           </li>
           <li>
             <strong>Droit de définir des directives post-mortem</strong> sur le

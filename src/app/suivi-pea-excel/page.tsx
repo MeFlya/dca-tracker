@@ -45,7 +45,27 @@ import {
 // ⚠️ Chaque chiffre de l'exemple est CALCULÉ (src/lib/cockpit-exemple.ts) sur
 // les 87 achats du classeur livré, avec les règles de ses formules : il ne
 // peut pas diverger des captures. Rien n'est écrit à la main, sauf les taux
-// légaux qui ont leur source en bas de page.
+// légaux qui ont leur source en bas de page, la date de la v2.0 (journal des
+// changements) et le temps de saisie (page produit).
+// ⚠️ 01/10/2026 : ces achats et ces cours sont FICTIFS (le Mode d'emploi du
+// classeur le dit : « EXEMPLE FICTIF »), sur trois ETF réels. Le cours de
+// PE500 de l'exemple est sous son plus bas sur 52 semaines (Google Finance,
+// consulté le 01/10/2026) : lu sans précision, il passe pour un cours de
+// marché faux, daté d'un vrai jour. La page le dit donc au premier chiffre
+// (section PRU), dans l'intro, dans la FAQ (texte repris en JSON-LD), dans
+// les légendes et dans l'avertissement final ; le TRI se date « à la date de
+// la capture, sur ces données fictives », jamais comme un fait de marché.
+// ⚠️ Cours : dans nos fichiers, le cours manuel (Par ETF, col. F), s'il est
+// rempli, passe DEVANT le cours automatique (col. E, GOOGLEFINANCE) — formule
+// du cours retenu en G. Ne jamais l'appeler « secours » ni écrire que Sheets
+// récupère les cours « tout seul » sans cette condition. Dans Excel, le cours
+// se saisit à la main parce que NOS formules ne lisent pas le type de données
+// Actions d'Excel pour Microsoft 365, pas parce qu'Excel ne saurait pas.
+// ⚠️ Le TRI à 0,0 % touchait les versions antérieures à la 2.0 (vendues
+// jusqu'au 1er octobre 2026) : même fond que le journal (src/lib/changelog.ts),
+// jamais « la première version ».
+// ⚠️ Temps de saisie : « environ 2 minutes par mois pour 3 ETF », comme la page
+// produit et le classeur (Par ETF!A4), pas un autre chiffre.
 // ⚠️ Aucun conseil : les ETF de l'exemple sont ceux du jeu de démonstration,
 // et le versement du mois est un calcul sur une allocation que le lecteur
 // fixe lui-même (le site n'a pas le statut de CIF).
@@ -59,11 +79,22 @@ const DESCRIPTION =
   "Suivre un PEA d'ETF dans Excel ou Google Sheets : modèle gratuit, formules du PRU frais inclus, du TRI, du plafond, des 5 ans et du versement du mois.";
 const H1 = "Suivre votre PEA dans Excel ou Google Sheets : le tableau, onglet par onglet";
 
+// 01/10/2026 : cet openGraph remplace en entier celui du layout, image,
+// siteName et locale compris (constat : partage sans visuel). L'image vient
+// d'opengraph-image.tsx, à côté (convention Next.js) ; Next la reprend en
+// twitter:image tant que `twitter.images` n'est pas défini ici.
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
   alternates: { canonical: URL_PAGE },
-  openGraph: { title: TITLE, description: DESCRIPTION, url: URL_PAGE, type: "article" },
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    url: URL_PAGE,
+    type: "article",
+    siteName: "DCA Tracker",
+    locale: "fr_FR",
+  },
   twitter: { card: "summary_large_image", title: TITLE, description: DESCRIPTION },
 };
 
@@ -118,7 +149,7 @@ const FAQ = [
   {
     id: "pru-plusieurs-achats",
     q: "Comment calculer le PRU d'un ETF acheté plusieurs fois ?",
-    a: `Additionnez tout ce que vous avez payé pour cet ETF, frais compris, et divisez par le nombre de parts que vous détenez. Dans l'exemple, ${PE500.ticker} a coûté ${eur(PE500.investi)} pour ${PE500.parts} parts, soit un prix de revient unitaire (PRU) de ${eur(PE500.pru)}. Dans un tableur, deux SOMME.SI.ENS sur le journal des achats (les montants, puis les parts) et une division suffisent. Ce calcul suppose que vous n'avez rien vendu, le cas courant d'un DCA sur un PEA.`,
+    a: `Additionnez tout ce que vous avez payé pour cet ETF, frais compris, et divisez par le nombre de parts que vous détenez. Dans l'exemple de cette page (des achats fictifs, sur un ETF réel), ${PE500.ticker} a coûté ${eur(PE500.investi)} pour ${PE500.parts} parts, soit un prix de revient unitaire (PRU) de ${eur(PE500.pru)}. Dans un tableur, deux SOMME.SI.ENS sur le journal des achats (les montants, puis les parts) et une division suffisent. Ce calcul suppose que vous n'avez rien vendu, le cas courant d'un DCA sur un PEA.`,
   },
   {
     id: "frais-de-courtage",
@@ -128,12 +159,12 @@ const FAQ = [
   {
     id: "cours-google-sheets",
     q: "Comment récupérer le cours d'un ETF dans Google Sheets ?",
-    a: "Avec la fonction GOOGLEFINANCE, en préfixant le ticker par la place de cotation : =GOOGLEFINANCE(\"EPA:PE500\";\"price\") pour une part cotée à Paris. Le cours est différé de 20 minutes au plus, selon l'aide de Google. Si un ETF ne renvoie rien, saisissez son cours à la main : un tableau de suivi doit garder cette solution de secours.",
+    a: "Avec la fonction GOOGLEFINANCE, en préfixant le ticker par la place de cotation : =GOOGLEFINANCE(\"EPA:PE500\";\"price\") pour une part cotée à Paris. Le cours est différé de 20 minutes au plus, selon l'aide de Google. Si un ETF ne renvoie rien, saisissez son cours à la main. Dans nos fichiers, ce cours manuel, s'il est rempli, passe devant le cours automatique : laissez sa colonne vide tant que le cours automatique remonte.",
   },
   {
     id: "tri-a-zero",
     q: "Pourquoi mon TRI affiche-t-il 0 % ?",
-    a: "Le plus souvent, la plage donnée à TRI.PAIEMENTS (XIRR) commence par des lignes vides, comptées comme des flux nuls. C'est arrivé dans la première version de notre propre classeur : Excel affichait 0,0 %. La plage doit commencer au premier achat, avec les achats en négatif et la valeur du jour en positif, à la date du jour.",
+    a: "Le plus souvent, la plage donnée à TRI.PAIEMENTS (XIRR) commence par des lignes vides, comptées comme des flux nuls. C'est arrivé dans les versions de notre propre classeur antérieures à la 2.0 (vendues jusqu'au 1er octobre 2026) : Excel affichait 0,0 %. La plage doit commencer au premier achat, avec les achats en négatif et la valeur du jour en positif, à la date du jour.",
   },
   {
     id: "plafond-versements-ou-valeur",
@@ -141,9 +172,10 @@ const FAQ = [
     a: `En versements. Le plafond de ${PLAFOND} vise l'argent que vous déposez sur le plan, pas sa valeur : les plus-values n'en consomment rien, et un PEA peut valoir plus que le plafond. Votre tableau doit donc additionner vos dépôts, et non la valeur du portefeuille.`,
   },
   {
-    id: "excel-ou-google-sheets",
+    // 01/10/2026 : « faq- » devant, sinon le même id que le H2 de la section 8.
+    id: "faq-excel-ou-google-sheets",
     q: "Excel ou Google Sheets pour suivre un PEA ?",
-    a: "Google Sheets récupère les cours tout seul avec GOOGLEFINANCE et garde le fichier dans votre Google Drive. Excel garde le fichier sur votre ordinateur, mais les cours se saisissent à la main, une minute par ETF et par mois. Les formules du suivi sont les mêmes dans les deux.",
+    a: "Google Sheets garde le fichier dans votre Google Drive, et nos fichiers y prennent les cours de GOOGLEFINANCE tant que la colonne du cours manuel reste vide. Excel garde le fichier sur votre ordinateur. Dans nos fichiers Excel, le cours se saisit à la main, environ 2 minutes par mois pour 3 ETF (Excel pour Microsoft 365 a un type de données Actions, mais nos formules n'en dépendent pas). Les formules du suivi sont les mêmes dans les deux.",
   },
 ];
 
@@ -167,7 +199,7 @@ export default function SuiviPeaExcelPage() {
           "Un tableau de suivi de PEA tient en quatre feuilles : un journal de vos achats, une vue par ETF " +
           "(prix de revient, valeur, poids), un tableau de bord (versé, valeur, plus-value, rendement annualisé) et " +
           "une feuille PEA (plafond de versements, date des 5 ans). Voici leurs formules, pour Excel et Google Sheets, " +
-          "sur les captures d'un classeur réel, et un modèle gratuit à recevoir par email."
+          "sur les captures d'un classeur réel, avec son jeu d'exemple fictif, et un modèle gratuit à recevoir par email."
         }
       />
 
@@ -250,8 +282,13 @@ export default function SuiviPeaExcelPage() {
       <section className="mb-14">
         <h2 id="onglets" className="text-2xl font-bold text-gray-900 mb-4">Les onglets, un rôle chacun</h2>
         <p className="text-gray-600 leading-relaxed mb-5">
-          Voici les feuilles du Cockpit DCA, dans leur ordre. Les deux premières de la liste sont aussi
-          celles du modèle gratuit.
+          {/* 01/10/2026 : plus de « dans leur ordre ». La liste commence par le
+              journal ; le classeur, lui, par le Mode d'emploi et le Dashboard
+              (ordre réel : TEMPLATE_CONTENTS, products.ts). Pas de « dont tout
+              le reste dépend » non plus : l'onglet Frais ne lit aucune autre
+              feuille (formules du .xlsx v2.0, relues le 01/10/2026). */}
+          Voici les feuilles de calcul du Cockpit DCA, en commençant par le journal des achats. Les deux
+          premières de la liste sont aussi celles du modèle gratuit.
         </p>
         <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white">
           <table className="w-full text-sm">
@@ -322,7 +359,7 @@ export default function SuiviPeaExcelPage() {
           </div>
           <figcaption className="mt-2 text-xs text-gray-500">
             L&apos;onglet Transactions, identique dans le modèle gratuit et dans le Cockpit. Jeu de démonstration
-            ({NB_ACHATS} achats, du {PREMIER_ACHAT} au {DERNIER_ACHAT}), à remplacer par vos données.
+            fictif ({NB_ACHATS} achats, du {PREMIER_ACHAT} au {DERNIER_ACHAT}), à remplacer par vos données.
           </figcaption>
         </figure>
       </section>
@@ -340,7 +377,8 @@ export default function SuiviPeaExcelPage() {
           <code className={code}>=SOMME.SI.ENS(Transactions!$C$9:$C$1008;Transactions!$B$9:$B$1008;$A9)</code>
           <code className={code}>=SOMME.SI.ENS(Transactions!$F$9:$F$1008;Transactions!$B$9:$B$1008;$A9)</code>
           <p>
-            Le PRU est le total investi divisé par les parts. Dans l&apos;exemple, {PE500.ticker} a coûté{" "}
+            Le PRU est le total investi divisé par les parts. Dans l&apos;exemple (achats et cours fictifs, sur
+            trois ETF réels), {PE500.ticker} a coûté{" "}
             {eur(PE500.investi)} pour {PE500.parts}&nbsp;parts, soit un PRU de{" "}
             <strong className="text-gray-900">{eur(PE500.pru)}</strong>, frais compris. Au cours de{" "}
             {eur(PE500.cours)}, la ligne vaut {eur(PE500.valeur)}&nbsp;: {eur(PE500.plusValue)} de plus-value,
@@ -356,9 +394,15 @@ export default function SuiviPeaExcelPage() {
           <code className={code}>=SI($A9=&quot;&quot;;&quot;&quot;;SIERREUR(GOOGLEFINANCE(&quot;EPA:&quot;&amp;$A9;&quot;price&quot;);&quot;&quot;))</code>
           <p>
             «&nbsp;EPA&nbsp;» désigne la cotation à Paris. Le cours est différé de 20&nbsp;minutes au plus, selon
-            l&apos;aide de Google, ce qui suffit pour un suivi mensuel. Dans Excel, nos fichiers prévoient une
-            colonne de cours saisi à la main, qui sert aussi de secours dans Google Sheets si un ETF ne renvoie
-            rien.
+            l&apos;aide de Google, ce qui suffit pour un suivi mensuel. Nos fichiers ont aussi une colonne de
+            cours saisi à la main (F), et le cours retenu (G) suit une règle simple&nbsp;: le cours manuel,
+            s&apos;il est rempli, passe devant le cours automatique (E).
+          </p>
+          <code className={code}>{`=SI($A9="";"";SI($F9<>"";$F9;SI($E9<>"";$E9;"")))`}</code>
+          <p>
+            Dans Excel, saisissez donc le cours en F, environ 2&nbsp;minutes par mois pour 3&nbsp;ETF. Dans Google
+            Sheets, laissez la colonne F vide pour que le cours automatique serve, et ne la remplissez que si un
+            cours ne remonte pas&nbsp;; videz-la quand il remonte de nouveau.
           </p>
         </div>
         <div className="mt-6">
@@ -369,7 +413,8 @@ export default function SuiviPeaExcelPage() {
             sizes="(min-width: 768px) 720px, calc(100vw - 32px)"
           />
           <p className="mt-2 text-xs text-gray-500">
-            L&apos;onglet Par ETF (Cockpit et modèle gratuit). Jeu de démonstration, à remplacer par vos données.
+            L&apos;onglet Par ETF (Cockpit et modèle gratuit). Jeu de démonstration fictif, à remplacer par vos
+            données.
           </p>
         </div>
       </section>
@@ -385,14 +430,14 @@ export default function SuiviPeaExcelPage() {
             les {NB_ACHATS}&nbsp;achats se sont étalés sur plus de deux ans, et une partie de l&apos;argent
             n&apos;est investie que depuis quelques mois. Le{" "}
             <Link href="/glossaire/tri" className={lien}>taux de rendement interne (TRI)</Link> en tient
-            compte&nbsp;: au {DATE_CAPTURE}, il est de{" "}
+            compte&nbsp;: sur ces données fictives, à la date de la capture ({DATE_CAPTURE}), il est de{" "}
             <strong className="text-gray-900">{pc(TRI)} par an</strong>.
           </p>
           <p>
-            Dans le tableur, la fonction s&apos;appelle TRI.PAIEMENTS dans Excel en français et XIRR dans Google
-            Sheets. Elle prend deux colonnes&nbsp;: les flux et leurs dates. Chaque achat y figure en négatif
-            (l&apos;argent sort de votre poche), et une dernière ligne porte la valeur du portefeuille en positif,
-            à la date du jour&nbsp;:
+            Dans le tableur, la fonction s&apos;appelle TRI.PAIEMENTS en français et XIRR en anglais, dans Excel
+            comme dans Google Sheets (selon la langue des fonctions). Elle prend deux colonnes&nbsp;: les flux et
+            leurs dates. Chaque achat y figure en négatif (l&apos;argent sort de votre poche), et une dernière
+            ligne porte la valeur du portefeuille en positif, à la date du jour&nbsp;:
           </p>
           <code className={code}>{`=TRI.PAIEMENTS(I9:I${9 + NB_ACHATS};H9:H${9 + NB_ACHATS})`}</code>
           <p className="text-sm text-gray-500">
@@ -401,9 +446,11 @@ export default function SuiviPeaExcelPage() {
           </p>
           <p>
             <strong className="text-gray-900">Le piège&nbsp;:</strong> une plage qui commence par des lignes
-            vides, comptées comme des flux nuls. Dans la première version de notre classeur, Excel affichait
-            alors 0,0&nbsp;%. La plage doit commencer au premier achat. Le modèle gratuit ne calcule pas le
-            TRI&nbsp;: ces deux colonnes s&apos;y ajoutent à côté du journal.
+            vides, comptées comme des flux nuls. Dans les versions de notre classeur antérieures à la 2.0
+            (vendues jusqu&apos;au 1er octobre 2026), Excel affichait alors 0,0&nbsp;%&nbsp;: c&apos;est consigné
+            dans notre <Link href="/changelog" className={lien}>journal des changements</Link>. La plage doit
+            commencer au premier achat. Le modèle gratuit ne calcule pas le TRI&nbsp;: ces deux colonnes
+            s&apos;y ajoutent à côté du journal.
           </p>
         </div>
         <div className="mt-6">
@@ -416,7 +463,7 @@ export default function SuiviPeaExcelPage() {
           />
           <p className="mt-2 text-xs text-gray-500 text-center">
             Le Dashboard du Cockpit&nbsp;: plus-value et TRI côte à côte. Capture du {DATE_CAPTURE}, jeu de
-            démonstration.
+            démonstration fictif.
           </p>
         </div>
       </section>
@@ -526,7 +573,7 @@ export default function SuiviPeaExcelPage() {
             sizes="(min-width: 768px) 720px, calc(100vw - 32px)"
           />
           <p className="mt-2 text-xs text-gray-500">
-            L&apos;onglet Versement du mois du Cockpit, sur les mêmes chiffres. Jeu de démonstration.
+            L&apos;onglet Versement du mois du Cockpit, sur les mêmes chiffres. Jeu de démonstration fictif.
           </p>
         </div>
       </section>
@@ -547,8 +594,14 @@ export default function SuiviPeaExcelPage() {
             <tbody className="divide-y divide-gray-100 text-gray-700">
               <tr>
                 <th scope="row" className="px-4 py-3 text-left font-semibold text-gray-900">Cours</th>
-                <td className="px-4 py-3">Saisis à la main (une minute par ETF et par mois)</td>
-                <td className="px-4 py-3">Automatiques avec GOOGLEFINANCE, différés de 20&nbsp;min au plus</td>
+                <td className="px-4 py-3">
+                  Saisis à la main dans nos fichiers, environ 2&nbsp;minutes par mois pour 3&nbsp;ETF (Excel pour
+                  Microsoft&nbsp;365 a un type de données Actions, mais nos formules n&apos;en dépendent pas)
+                </td>
+                <td className="px-4 py-3">
+                  Automatiques avec GOOGLEFINANCE, différés de 20&nbsp;min au plus&nbsp;; dans nos fichiers, tant
+                  que la colonne du cours manuel reste vide
+                </td>
               </tr>
               <tr>
                 <th scope="row" className="px-4 py-3 text-left font-semibold text-gray-900">Vos données</th>
@@ -557,7 +610,7 @@ export default function SuiviPeaExcelPage() {
               </tr>
               <tr>
                 <th scope="row" className="px-4 py-3 text-left font-semibold text-gray-900">Formules</th>
-                <td className="px-4 py-3" colSpan={2}>Les mêmes&nbsp;: SOMME.SI.ENS (SUMIFS), TRI.PAIEMENTS (XIRR), SI, SIERREUR</td>
+                <td className="px-4 py-3" colSpan={2}>Les mêmes&nbsp;: SOMME.SI.ENS (SUMIFS), TRI.PAIEMENTS (XIRR), SI (IF), SIERREUR (IFERROR), en français ou en anglais selon la langue des fonctions</td>
               </tr>
             </tbody>
           </table>
@@ -614,9 +667,10 @@ export default function SuiviPeaExcelPage() {
       </section>
 
       <p className="text-xs text-gray-500 leading-relaxed mb-10">
-        Cette page décrit une méthode de suivi et des formules. Les ETF de l&apos;exemple sont ceux du jeu de
-        démonstration&nbsp;: ce n&apos;est pas un conseil en investissement personnalisé. Investir comporte un
-        risque de perte en capital.
+        Cette page décrit une méthode de suivi et des formules. Dans l&apos;exemple, les achats et les cours
+        sont fictifs, sur trois ETF réels pris pour la démonstration&nbsp;: ces chiffres ne disent rien des
+        performances de ces fonds, et le choix de ces ETF n&apos;est pas un conseil en investissement
+        personnalisé. Investir comporte un risque de perte en capital.
       </p>
 
       <SourcesReferences

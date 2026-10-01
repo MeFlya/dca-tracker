@@ -39,14 +39,30 @@ export const MAJ_LISTE_PEA = "2026-09-30";
 
 export const URL_LISTE_PEA = "/etf-eligibles-pea";
 
-/** « 2026-09-28 » → « 28 septembre 2026 ». */
+/**
+ * « 2026-09-28 » → « 28 septembre 2026 » ; « 2026-10-01 » → « 1er octobre 2026 ».
+ *
+ * 01/10/2026 : toLocaleDateString("fr-FR") écrit « 1 octobre 2026 », alors
+ * qu'en français le premier jour du mois s'écrit « 1er » (constat sur
+ * /suivi-pea-excel : « au 1 octobre 2026 », « Capture du 1 octobre 2026 »,
+ * quand products.ts écrit « Capture du 1er octobre 2026 » pour les mêmes
+ * images). Corrigé ici plutôt que page par page : aucun des appels du site
+ * n'ajoute lui-même « er » derrière la date (vérifié le 01/10/2026), et
+ * typoRiche() met l'ordinal en exposant là où le texte passe par lui.
+ * ⚠️ Un seul appel retouche le résultat : MOIS_VERIF d'etf-eligibles-pea
+ * (title de la page) retire le jour avec /^\d+\s/, qui ne reconnaît pas
+ * « 1er ». Sans effet tant que DATE_VERIFICATION_PEA n'est pas un 1er du mois
+ * (28/09 au 01/10/2026) ; sinon, passer cette regex à /^\d+(?:er)?\s/.
+ */
 export function dateEnToutesLettres(iso: string): string {
-  return new Date(`${iso}T00:00:00Z`).toLocaleDateString("fr-FR", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    timeZone: "UTC",
-  });
+  return new Date(`${iso}T00:00:00Z`)
+    .toLocaleDateString("fr-FR", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      timeZone: "UTC",
+    })
+    .replace(/^1(?=\s)/, "1er");
 }
 
 // ─── Périmètre ───────────────────────────────────────────────────────────────

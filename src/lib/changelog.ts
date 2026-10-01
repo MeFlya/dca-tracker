@@ -44,14 +44,41 @@ export const CHANGELOG: ChangelogEntry[] = [
   // 01/10/2026 : bogue relevé en préparant la v2.0 du Cockpit (Dashboard!B9,
   // XIRR sur une plage qui commençait par un flux nul). Vérifié dans Excel et
   // Google Sheets sur le fichier livré (sha1 487c1319…).
+  // 01/10/2026, relecture : le « 5,5 % » est daté. Le TRI du classeur se
+  // calcule jusqu'à TODAY() sur des cours d'exemple figés : il baisse de
+  // jour en jour (5,4 % dès le 10/10 d'après le recalcul des 87 achats), et un
+  // acheteur qui lirait « elle affiche 5,5 % » sans date croirait à un bogue.
   {
     date: "2026-10-01",
     kind: "correction",
     title: "Le TRI du Cockpit DCA affichait 0,0\u00a0% dans Excel",
     body:
       "Dans les versions du Cockpit DCA vendues jusqu'au 1er octobre 2026, la case «\u00a0TRI annualisé\u00a0» du tableau de bord affichait 0,0\u00a0% dans Excel\u00a0: la formule partait d'une ligne vide, comptée comme un flux nul. La version Google Sheets n'était pas touchée. " +
-      "La version 2.0, livrée depuis le 1er octobre 2026, part du premier achat\u00a0; sur le jeu d'exemple, elle affiche 5,5\u00a0% dans Excel comme dans Google Sheets. " +
+      "La version 2.0, livrée depuis le 1er octobre 2026, part du premier achat\u00a0; au 1er octobre 2026, sur le jeu d'exemple (achats et cours fictifs), elle affiche 5,5\u00a0% dans Excel comme dans Google Sheets, un chiffre qui baisse ensuite avec le temps, tant que les cours de l'exemple ne changent pas. " +
       "Les mises à jour sont incluses dans l'achat\u00a0: un acheteur peut recevoir la version 2.0 en écrivant à hello@dcatracker.fr depuis son adresse d'achat.",
+  },
+  // 01/10/2026 : la mention a été retirée le jour même par ad81b7d (décision
+  // de Maël, commentaire « Prix » de products.ts), sans entrée ici ; ajoutée
+  // le même jour, sur la règle de ce fichier (constat #23). Affichée depuis
+  // 8ec8c44 (11/06/2026), qui a aussi posé les deux lignes du comparatif.
+  // Le prix est écrit en dur, et non lu dans `priceEur` : l'entrée dit ce qui
+  // était vrai le 1er octobre 2026 ; un prix lu dans le code réécrirait
+  // l'histoire le jour où il changerait (ce jour-là, une nouvelle entrée).
+  // Relecture du 01/10/2026 : pas « jamais programmée ». En juin, une hausse
+  // « à date annoncée » était bien prévue (ancien commentaire « Prix » de
+  // products.ts, avant ad81b7d) ; ce qui se vérifie, c'est qu'aucune date n'a
+  // jamais été fixée. Et « affirmations », pas « lignes » : les deux lignes du
+  // comparatif restent, réécrites (Modèles gratuits, Courtier).
+  {
+    date: "2026-10-01",
+    kind: "correction",
+    title: "Le Cockpit DCA annonçait une hausse de prix, sans date",
+    body:
+      "Depuis la mise en ligne de sa page, le 11 juin 2026, le Cockpit DCA affichait sous son prix «\u00a0Prix de lancement — passera ensuite à 24\u00a0€\u00a0», sans aucune date\u00a0: aucune n'a jamais été fixée. La mention est retirée depuis le 1er octobre 2026\u00a0: le prix reste 19\u00a0€, et aucune hausse n'est prévue. " +
+      "Le même jour, deux affirmations fausses ont été retirées du comparatif de la page du Cockpit. «\u00a0Templates gratuits (YouTube, Reddit)\u00a0: génériques, pensés pour l'investisseur américain, en anglais ou en dollars\u00a0»\u00a0: des modèles gratuits français, propres au PEA, existent, et le site en donne un lui-même. «\u00a0Courtier\u00a0: PRU brut\u00a0»\u00a0: BoursoBank, par exemple, compte les frais de courtage dans le prix de revient, selon son aide en ligne. " +
+      "La mention «\u00a0cours auto + manuel en secours\u00a0» laisse place à la règle réelle du fichier\u00a0: le cours saisi à la main, s'il est rempli, passe devant le cours automatique.",
+    why:
+      "Une hausse annoncée sans date pousse à acheter vite pour une raison qui n'existe pas\u00a0: c'est une fausse urgence, et le site s'interdit d'en faire.",
   },
   {
     date: "2026-10-01",

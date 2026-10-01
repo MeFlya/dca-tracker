@@ -25,7 +25,10 @@ export default function CGVPage() {
       <h1 className="text-3xl font-bold text-gray-900 mb-2">
         Conditions Générales de Vente (CGV)
       </h1>
-      <p className="text-sm text-gray-500 mb-8">Dernière mise à jour : 11 juin 2026</p>
+      {/* 01/10/2026 : date à changer à chaque modification du texte. Ce jour-là :
+          article 6 (« prix net », TVA non applicable, commit ad81b7d) et article
+          13 (lien vers la plateforme européenne de règlement des litiges retiré). */}
+      <p className="text-sm text-gray-500 mb-8">Dernière mise à jour : 1er octobre 2026</p>
 
       <LegalArticle>
 
@@ -334,20 +337,16 @@ export default function CGVPage() {
           <a href="mailto:hello@dcatracker.fr">hello@dcatracker.fr</a> pour
           rechercher une solution amiable.
         </p>
+        {/* 01/10/2026 : phrase et lien vers la plateforme européenne de
+            règlement en ligne des litiges retirés. Le règlement (UE) 2024/3228
+            l'a abrogée : fermée depuis le 20/07/2025, son adresse renvoie vers
+            une page de déménagement. ⚠️ Aucun médiateur n'est encore nommé
+            (L616-1 du Code de la consommation : ses coordonnées sont dues) :
+            à compléter quand Maël en aura désigné un, jamais avant. */}
         <p>
           Conformément à l&apos;article L.612-1 du Code de la consommation,
           vous avez la possibilité de recourir gratuitement à un médiateur de
-          la consommation en vue d&apos;une résolution amiable. La plateforme
-          européenne de règlement en ligne des litiges est accessible à
-          l&apos;adresse :{" "}
-          <a
-            href="https://ec.europa.eu/consumers/odr/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            ec.europa.eu/consumers/odr
-          </a>
-          .
+          la consommation en vue d&apos;une résolution amiable.
         </p>
         <p>
           À défaut d&apos;accord amiable, les tribunaux français seront seuls

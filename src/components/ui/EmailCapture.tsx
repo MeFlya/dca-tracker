@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { track } from "@/lib/analytics";
+import { CHAMP_POT_DE_MIEL } from "@/lib/ressources-gratuites";
 
 type SubmitState = "idle" | "loading" | "success" | "error";
 
@@ -28,6 +29,16 @@ const HEADLINE = "5 ETF Premium pour PEA — la cheat sheet 2026";
 const SUBLINE =
   "Par email, gratuitement\u00a0: un tableau de 5 ETF éligibles au PEA, avec ISIN, indice suivi et frais (TER), et le lien vers le guide qui détaille 3 exemples d'allocation.";
 
+// 01/10/2026 : demander la cheat sheet inscrivait d'office à la liste d'emails
+// (audience Resend), sans case ni choix (constat #19). La cheat sheet part
+// désormais sur simple demande ; la liste est une case à part, NON cochée par
+// défaut, envoyée en `newsletter: true/false` — même libellé que le formulaire
+// du modèle gratuit, puisque c'est la même liste. La phrase sous le bouton
+// (« Désinscription en un clic. ») laissait entendre une inscription : elle dit
+// maintenant à quoi sert l'adresse. Plus un pot de miel hors écran.
+const LIBELLE_NEWSLETTER =
+  "Recevoir aussi les emails occasionnels de DCA Tracker sur le suivi d'un PEA (désinscription en un clic)";
+
 export function EmailCapture({
   variant = "section",
   source = "website",
@@ -35,7 +46,9 @@ export function EmailCapture({
 }: EmailCaptureProps) {
   const [state, setState] = useState<SubmitState>("idle");
   const [errorMsg, setErrorMsg] = useState("");
+  const [newsletter, setNewsletter] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const piegeRef = useRef<HTMLInputElement>(null);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -49,7 +62,12 @@ export function EmailCapture({
       const res = await fetch("/api/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, source }),
+        body: JSON.stringify({
+          email,
+          source,
+          newsletter,
+          [CHAMP_POT_DE_MIEL]: piegeRef.current?.value ?? "",
+        }),
       });
 
       const data: { success?: boolean; error?: string } = await res.json();
@@ -93,22 +111,31 @@ export function EmailCapture({
           <form
             onSubmit={handleSubmit}
             noValidate
-            className="mt-8 flex flex-col sm:flex-row gap-2.5 max-w-md mx-auto"
+            className="mt-8 max-w-md mx-auto"
           >
-            <label htmlFor="email-section" className="sr-only">
-              Votre adresse e-mail
-            </label>
-            <input
-              ref={inputRef}
-              id="email-section"
-              type="email"
-              required
-              autoComplete="email"
-              placeholder="votre@email.fr"
+            <div className="flex flex-col sm:flex-row gap-2.5">
+              <label htmlFor="email-section" className="sr-only">
+                Votre adresse e-mail
+              </label>
+              <input
+                ref={inputRef}
+                id="email-section"
+                type="email"
+                required
+                autoComplete="email"
+                placeholder="votre@email.fr"
+                disabled={state === "loading"}
+                className="input-field flex-1 disabled:opacity-60"
+              />
+              <SubmitButton state={state} />
+            </div>
+            <NewsletterCheckbox
+              checked={newsletter}
+              onChange={setNewsletter}
               disabled={state === "loading"}
-              className="input-field flex-1 disabled:opacity-60"
+              className="mt-3 text-left"
             />
-            <SubmitButton state={state} />
+            <HoneypotField inputRef={piegeRef} />
           </form>
 
           {state === "error" && (
@@ -119,7 +146,12 @@ export function EmailCapture({
 
           <p className="mt-4 text-xs text-gray-500 flex items-center justify-center gap-1.5">
             <LockIcon />
-            Désinscription en un clic.
+            <span>
+              Si la case n&apos;est pas cochée, votre adresse ne sert qu&apos;à cet envoi.{" "}
+              <a href="/confidentialite" className="underline underline-offset-2 hover:text-gray-700">
+                Confidentialité
+              </a>
+            </span>
           </p>
         </div>
       </section>
@@ -149,22 +181,31 @@ export function EmailCapture({
       <form
         onSubmit={handleSubmit}
         noValidate
-        className="mt-4 flex flex-col sm:flex-row gap-2"
+        className="mt-4"
       >
-        <label htmlFor="email-card" className="sr-only">
-          Votre adresse e-mail
-        </label>
-        <input
-          ref={inputRef}
-          id="email-card"
-          type="email"
-          required
-          autoComplete="email"
-          placeholder="votre@email.fr"
+        <div className="flex flex-col sm:flex-row gap-2">
+          <label htmlFor="email-card" className="sr-only">
+            Votre adresse e-mail
+          </label>
+          <input
+            ref={inputRef}
+            id="email-card"
+            type="email"
+            required
+            autoComplete="email"
+            placeholder="votre@email.fr"
+            disabled={state === "loading"}
+            className="input-field flex-1 disabled:opacity-60"
+          />
+          <SubmitButton state={state} />
+        </div>
+        <NewsletterCheckbox
+          checked={newsletter}
+          onChange={setNewsletter}
           disabled={state === "loading"}
-          className="input-field flex-1 disabled:opacity-60"
+          className="mt-2.5"
         />
-        <SubmitButton state={state} />
+        <HoneypotField inputRef={piegeRef} />
       </form>
 
       {state === "error" && (
@@ -175,7 +216,12 @@ export function EmailCapture({
 
       <p className="mt-3 text-xs text-gray-500 flex items-center gap-1.5">
         <LockIcon />
-        Désinscription en un clic.
+        <span>
+          Si la case n&apos;est pas cochée, votre adresse ne sert qu&apos;à cet envoi.{" "}
+          <a href="/confidentialite" className="underline underline-offset-2 hover:text-gray-700">
+            Confidentialité
+          </a>
+        </span>
       </p>
     </div>
   );
@@ -228,6 +274,63 @@ function SuccessState({
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
+
+/** Case de consentement aux emails occasionnels — non cochée par défaut. */
+function NewsletterCheckbox({
+  checked,
+  onChange,
+  disabled,
+  className,
+}: {
+  checked: boolean;
+  onChange: (v: boolean) => void;
+  disabled: boolean;
+  className?: string;
+}) {
+  return (
+    <label
+      className={cn(
+        "flex cursor-pointer items-start gap-2 text-sm leading-snug text-gray-600",
+        className
+      )}
+    >
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+        disabled={disabled}
+        className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer accent-primary-600"
+      />
+      <span>{LIBELLE_NEWSLETTER}</span>
+    </label>
+  );
+}
+
+/** Pot de miel : hors écran, hors tabulation, ignoré des lecteurs d'écran. */
+function HoneypotField({
+  inputRef,
+}: {
+  inputRef: React.RefObject<HTMLInputElement | null>;
+}) {
+  return (
+    <div
+      aria-hidden="true"
+      style={{ position: "absolute", left: "-10000px", top: "auto", width: 1, height: 1, overflow: "hidden" }}
+    >
+      <label>
+        Site web (laisser vide)
+        <input
+          ref={inputRef}
+          type="text"
+          name={CHAMP_POT_DE_MIEL}
+          tabIndex={-1}
+          autoComplete="off"
+          defaultValue=""
+        />
+      </label>
+    </div>
+  );
+}
 
 function SubmitButton({ state }: { state: SubmitState }) {
   return (
