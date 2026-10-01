@@ -598,6 +598,29 @@ export function ProductPage({ product }: { product: Product }) {
               ? "https://schema.org/InStock"
               : "https://schema.org/PreOrder",
             url: `${CANONICAL_ORIGIN}${url}`,
+            // Search Console, « Fiches de marchand » (01/10/2026) : champs
+            // recommandés. Retour = la garantie « satisfait ou remboursé » de
+            // 14 jours des CGV (article 6), par simple email, sans frais.
+            // Livraison = téléchargement immédiat, gratuit, en France.
+            hasMerchantReturnPolicy: {
+              "@type": "MerchantReturnPolicy",
+              applicableCountry: "FR",
+              returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+              merchantReturnDays: 14,
+              returnMethod: "https://schema.org/ReturnByMail",
+              returnFees: "https://schema.org/FreeReturn",
+              merchantReturnLink: `${CANONICAL_ORIGIN}/cgv`,
+            },
+            shippingDetails: {
+              "@type": "OfferShippingDetails",
+              shippingRate: { "@type": "MonetaryAmount", value: 0, currency: "EUR" },
+              shippingDestination: { "@type": "DefinedRegion", addressCountry: "FR" },
+              deliveryTime: {
+                "@type": "ShippingDeliveryTime",
+                handlingTime: { "@type": "QuantitativeValue", minValue: 0, maxValue: 0, unitCode: "DAY" },
+                transitTime: { "@type": "QuantitativeValue", minValue: 0, maxValue: 0, unitCode: "DAY" },
+              },
+            },
           },
         }}
       />
