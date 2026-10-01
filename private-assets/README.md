@@ -13,6 +13,10 @@ Vercel, sinon la prod ne peut pas déchiffrer).
 1. Déposer l'original dans `private-assets/raw/` (gitignoré) avec le nom EXACT :
    - `raw/template-suivi-dca.xlsx` → Cockpit DCA (Excel)
    - `raw/guide-demarrer-dca.pdf`  → Guide « Démarrer le DCA en France »
+   - `raw/modele-suivi-pea-gratuit.xlsx` → modèle GRATUIT (journal + Par ETF),
+     envoyé contre une adresse email depuis /suivi-pea-excel. Construit depuis
+     le Cockpit livré par `raw/modele-gratuit/construire_modele_gratuit.py --excel`
+     (à relancer à chaque nouvelle version du Cockpit).
 2. `npm run assets:encrypt` → génère les `.enc` ici (self-check intégré)
 3. Committer les `.enc`
 

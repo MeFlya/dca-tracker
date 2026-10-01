@@ -293,6 +293,17 @@ export default function AllocationPortefeuillePage() {
                 augmente le coût de rééquilibrage : chaque ligne ajoutée doit
                 apporter une exposition que les autres n&apos;ont pas.
               </p>
+              {/* 01/10/2026 : renvoi vers /suivi-pea-excel (brief du
+                  01/10/2026, lien n° 4). */}
+              <p>
+                Avec deux ou trois lignes, ce suivi revient à comparer chaque
+                mois le poids réel de chaque ETF à sa cible, et à diriger le
+                versement vers ceux qui sont en dessous. Voir comment{" "}
+                <Link href="/suivi-pea-excel#versement-du-mois" className="text-primary-700 font-medium hover:underline">
+                  construire ce tableau de suivi dans Excel ou Google Sheets
+                </Link>
+                .
+              </p>
             </div>
           </div>
 

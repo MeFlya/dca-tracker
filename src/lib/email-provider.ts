@@ -4,6 +4,8 @@ import { sendEmail } from "./emails/dispatch";
 // The `source` field is preserved in the footer for attribution tracking.
 
 import { resend } from "./resend-client";
+import type { RessourceGratuite } from "./ressources-gratuites";
+import { contenuModeleGratuit } from "./emails/modele-gratuit";
 
 const SITE_URL = "https://dcatracker.fr";
 const GUIDE_URL = `${SITE_URL}/guide-5-etf-pea-premium`;
@@ -11,6 +13,8 @@ const GUIDE_URL = `${SITE_URL}/guide-5-etf-pea-premium`;
 export interface EmailSubscription {
   email: string;
   source: string;
+  /** Ce que la personne a demandé. Défaut : la cheat sheet (l'envoi historique). */
+  ressource?: RessourceGratuite;
 }
 
 export interface EmailProviderResult {
@@ -219,6 +223,7 @@ DCA Tracker est un outil pédagogique — pas de conseil en investissement.`;
 export async function subscribeEmail({
   email,
   source,
+  ressource = "cheat-sheet",
 }: EmailSubscription): Promise<EmailProviderResult> {
   try {
     // ─── L'INSCRIPTION À LA LISTE, ET CE QU'ELLE PROMETTAIT SANS LE TENIR ────
@@ -274,11 +279,18 @@ export async function subscribeEmail({
     // `sendEmail` renvoie `false` quand l'adresse s'est déjà désinscrite —
     // l'envoi est alors supprimé volontairement. Répondre « succès » sans le
     // dire laissait le visiteur attendre un document qui ne partait pas.
+    const message =
+      ressource === "modele-suivi-pea"
+        ? contenuModeleGratuit(email, source)
+        : {
+            subject: "Votre cheat sheet : 5 ETF Premium pour PEA en 2026",
+            html: buildHtml(source),
+            text: buildText(source),
+          };
     const parti = await sendEmail({
       to: email,
-      subject: "Votre cheat sheet : 5 ETF Premium pour PEA en 2026",
-      html: buildHtml(source),
-      text: buildText(source),
+      ...message,
+      replyTo: "hello@dcatracker.fr",
     });
 
     if (!parti) {
@@ -290,7 +302,7 @@ export async function subscribeEmail({
       };
     }
 
-    console.log("[email-provider] Email sent to:", email, "source:", source);
+    console.log("[email-provider] Email sent to:", email, "source:", source, "ressource:", ressource);
     return { success: true };
   } catch (err) {
     console.error("[email-provider] Unexpected error:", err);

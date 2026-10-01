@@ -34,6 +34,16 @@ const PRODUCT_FILES: Record<
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     downloadName: "Cockpit-DCA-PEA_dcatracker.xlsx",
   },
+  // Modèle GRATUIT (01/10/2026) : journal + Par ETF, tiré du Cockpit v2.0.
+  // Livré par email contre une adresse (/suivi-pea-excel, /api/subscribe),
+  // avec le même jeton signé que les fichiers payants. Chiffré comme eux :
+  // un seul chemin de livraison, une seule règle pour private-assets/.
+  "modele-gratuit-xlsx": {
+    filename: "modele-suivi-pea-gratuit.enc",
+    contentType:
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    downloadName: "Modele-suivi-PEA_dcatracker.xlsx",
+  },
 };
 
 function htmlError(title: string, body: string, status: number): NextResponse {
@@ -58,7 +68,7 @@ export async function GET(req: Request) {
   } catch {
     return htmlError(
       "Service momentanément indisponible",
-      "Le téléchargement est indisponible pour une raison technique de notre côté. Écrivez à hello@dcatracker.fr avec votre email d'achat — nous vous livrons le fichier sans délai.",
+      "Le téléchargement est indisponible pour une raison technique de notre côté. Écrivez à hello@dcatracker.fr depuis l'adresse qui a reçu le lien — nous vous livrons le fichier sans délai.",
       503,
     );
   }
@@ -66,7 +76,7 @@ export async function GET(req: Request) {
     if (check.reason === "expired") {
       return htmlError(
         "Lien expiré",
-        "Ce lien de téléchargement a expiré (validité 7 jours). Répondez à votre email de livraison ou écrivez à hello@dcatracker.fr avec votre email d'achat — nous vous renvoyons un lien immédiatement.",
+        "Ce lien de téléchargement a expiré. Répondez à l'email qui vous l'a envoyé, ou écrivez à hello@dcatracker.fr depuis cette adresse — nous vous renvoyons un lien immédiatement.",
         410,
       );
     }

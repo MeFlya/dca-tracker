@@ -41,6 +41,25 @@ export interface ChangelogEntry {
 
 /** Du plus récent au plus ancien. Garder cet ordre à la main. */
 export const CHANGELOG: ChangelogEntry[] = [
+  // 01/10/2026 : bogue relevé en préparant la v2.0 du Cockpit (Dashboard!B9,
+  // XIRR sur une plage qui commençait par un flux nul). Vérifié dans Excel et
+  // Google Sheets sur le fichier livré (sha1 487c1319…).
+  {
+    date: "2026-10-01",
+    kind: "correction",
+    title: "Le TRI du Cockpit DCA affichait 0,0\u00a0% dans Excel",
+    body:
+      "Dans les versions du Cockpit DCA vendues jusqu'au 1er octobre 2026, la case «\u00a0TRI annualisé\u00a0» du tableau de bord affichait 0,0\u00a0% dans Excel\u00a0: la formule partait d'une ligne vide, comptée comme un flux nul. La version Google Sheets n'était pas touchée. " +
+      "La version 2.0, livrée depuis le 1er octobre 2026, part du premier achat\u00a0; sur le jeu d'exemple, elle affiche 5,5\u00a0% dans Excel comme dans Google Sheets. " +
+      "Les mises à jour sont incluses dans l'achat\u00a0: un acheteur peut recevoir la version 2.0 en écrivant à hello@dcatracker.fr depuis son adresse d'achat.",
+  },
+  {
+    date: "2026-10-01",
+    kind: "correction",
+    title: "La page Tarifs annonçait une TVA «\u00a0incluse\u00a0»",
+    body:
+      "La foire aux questions de la page Tarifs répondait «\u00a0TVA française de 20\u00a0% incluse\u00a0», et la ligne sous les offres «\u00a0TVA incluse\u00a0». C'était faux\u00a0: l'activité est en franchise en base de TVA (article 293\u00a0B du code général des impôts), et les factures l'indiquaient déjà. Aucune TVA n'est facturée\u00a0: le prix affiché est le prix payé. Les deux mentions sont corrigées depuis le 1er octobre 2026.",
+  },
   // 30/09/2026 : entrée posée avec la page /etf-eligibles-pea, qui reconnaît
   // cette erreur en tête. Sources : table de vérité ETF du 28/09/2026, fait
   // swap-non-eligible, commit ac4b0d5 (cheat sheet et email). « Les quatre

@@ -56,18 +56,24 @@ const REV = {
   // /fiscalite-pea-cto-2026 : publiée le 30/09/2026 (hausse des prélèvements
   // sociaux, PFU à 31,4 %, ce qui reste à 17,2 %). Même date que sa byline.
   fiscalite2026: "2026-09-30",
+  // /suivi-pea-excel : publiée le 01/10/2026 (méthode, formules, modèle
+  // gratuit). Même date que sa byline.
+  suiviPeaExcel: "2026-10-01",
   // taux fiscaux 2026
   methodologie: "2026-08-03",
-  // capture du Dashboard corrigée, prix unifiés
-  produits: "2026-09-29",
+  // pages Ressources refaites, Cockpit v2.0 et guide v1.1 (01/10/2026)
+  produits: "2026-10-01",
   // Vercel Web Analytics remplace Plausible (mention dans la page)
   analytics: "2026-08-23",
-  // /confidentialite : page d'origine jointe aux achats (3.3 et 4). Même date
-  // que « Dernière mise à jour » affichée dans la page (30/09/2026).
-  confidentialite: "2026-09-30",
+  // /confidentialite : page d'origine jointe aux achats (3.3 et 4), puis le
+  // modèle de suivi gratuit (3.5 et 4). Même date que « Dernière mise à
+  // jour » affichée dans la page (01/10/2026).
+  confidentialite: "2026-10-01",
   // entrée de changelog sur la régression de série du 2 août ; partenariats
   affiliation: "2026-08-04",
-  cgv: "2026-06-11",
+  cgv: "2026-10-01",
+  // /changelog : corrections du TRI du Cockpit et de la mention de TVA
+  changelog: "2026-10-01",
   glossaireHub: "2026-06-10",
   glossaireDca: "2026-05-09",
   // /glossaire/interets-composes et /communaute
@@ -125,6 +131,7 @@ export async function GET(): Promise<NextResponse> {
     { url: `${base}/interets-composes`,        changeFreq: "monthly", priority: 0.85, lastmod: REV.etf },
     { url: `${base}/pea-ou-cto`,               changeFreq: "monthly", priority: 0.85, lastmod: REV.reponseDabord },
     { url: `${base}/fiscalite-pea-cto-2026`,   changeFreq: "monthly", priority: 0.85, lastmod: REV.fiscalite2026 },
+    { url: `${base}/suivi-pea-excel`,          changeFreq: "monthly", priority: 0.85, lastmod: REV.suiviPeaExcel },
     // Liste vérifiée des ETF éligibles au PEA (29/09/2026) : sa date vient de
     // son module de données, la même que celle de la byline.
     { url: `${base}${URL_LISTE_PEA}`,          changeFreq: "monthly", priority: 0.9,  lastmod: MAJ_LISTE_PEA },
@@ -145,7 +152,7 @@ export async function GET(): Promise<NextResponse> {
     { url: `${base}/a-propos`,                 changeFreq: "monthly", priority: 0.6,  lastmod: REV.analytics },
     { url: `${base}/methodologie`,             changeFreq: "monthly", priority: 0.5,  lastmod: REV.methodologie },
     { url: `${base}/transparence`,             changeFreq: "monthly", priority: 0.5,  lastmod: REV.affiliation },
-    { url: `${base}/changelog`,                changeFreq: "monthly", priority: 0.4,  lastmod: REV.affiliation },
+    { url: `${base}/changelog`,                changeFreq: "monthly", priority: 0.4,  lastmod: REV.changelog },
     { url: `${base}/mentions-legales`,         changeFreq: "yearly",  priority: 0.3,  lastmod: REV.analytics },
     { url: `${base}/cgv`,                      changeFreq: "yearly",  priority: 0.3,  lastmod: REV.cgv },
     { url: `${base}/confidentialite`,          changeFreq: "yearly",  priority: 0.3,  lastmod: REV.confidentialite },

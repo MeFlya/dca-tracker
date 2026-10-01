@@ -435,7 +435,11 @@ export default function BacktestPage() {
             </li>
             <li>
               <strong>Ne tient PAS compte :</strong> de la fiscalité (PFU,
-              prélèvements sociaux) ni des frais de courtage. Ces derniers
+              prélèvements sociaux, voir les{" "}
+              <Link href="/fiscalite-pea-cto-2026" className="text-primary-700 underline underline-offset-2">
+                taux de 2026
+              </Link>
+              ) ni des frais de courtage. Ces derniers
               pénalisent le versement mensuel plus qu&apos;un achat unique —
               plusieurs ordres au lieu d&apos;un.
             </li>

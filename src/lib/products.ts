@@ -134,6 +134,11 @@ export type Product = {
    */
   screenshots?: Capture[];
   /**
+   * Phrase sous le comparatif « Pourquoi pas un outil gratuit ? », avec un
+   * lien interne (le comparatif est rendu en texte brut, sans lien).
+   */
+  apresComparatif?: { avant: string; lien: { href: string; libelle: string }; apres?: string };
+  /**
    * Mise en page du H1 en deux niveaux. Le texte rendu DOIT rester égal à
    * `name` (référencement) : vérifié au chargement du module, plus bas.
    */
@@ -227,7 +232,7 @@ export const largeurLectureClasseur = (c: { width: number }) => Math.round(c.wid
 // Les légendes ne citent QUE des valeurs visibles dans l'image. Celles qui
 // dépendent de la date d'ouverture du fichier (TRI, âge du plan, jours avant
 // les 5 ans) sont datées : « Capture du 1er octobre 2026 ».
-const TEMPLATE_CAPTURES: Capture[] = [
+export const TEMPLATE_CAPTURES: Capture[] = [
   {
     src: "/produits/cockpit-v2-versement.png",
     alt: "Onglet Versement du mois : 300 € à verser dans la case bleue, et pour chacun des trois ETF de l'exemple l'allocation cible, le poids actuel, le montant suggéré et le nombre de parts à acheter (0, 6 et 7)",
@@ -378,13 +383,17 @@ const TEMPLATE: Product = {
   ],
   comparison: {
     intro:
-      "Votre courtier et les agrégateurs vous montrent où vous en êtes. Aucun ne vous dit quoi faire de vos 300 € ce mois-ci. Les outils gratuits constatent — le Cockpit décide.",
+      "Votre courtier et les agrégateurs vous montrent où vous en êtes. Le Cockpit calcule en plus où placer vos 300 € ce mois-ci, selon l'allocation que vous avez fixée.",
     themLabel: "Les autres",
     usLabel: "Cockpit DCA",
     rows: [
       {
-        them: "Templates gratuits (YouTube, Reddit) : génériques, pensés pour l'investisseur américain, en anglais ou en dollars",
-        us: "100 % PEA français : plafond, cap des 5 ans, 18,6 %, PRU frais inclus, vocabulaire FR",
+        // 01/10/2026 : remplace « Templates gratuits (YouTube, Reddit) :
+        // génériques, pensés pour l'investisseur américain ». Faux : des
+        // modèles gratuits français et propres au PEA existent (étude du
+        // 01/10/2026), et le site en donne un lui-même (/suivi-pea-excel).
+        them: "Modèles gratuits, dont le nôtre : un journal des achats et une vue par ETF (PRU, valeur, poids)",
+        us: "Les mêmes bases, plus le PEA (plafond, cap des 5 ans, 18,6 %), le TRI, le versement du mois, la projection et les frais",
       },
       {
         them: "Plus-value simple, qui ment en DCA (elle ignore le calendrier de vos versements)",
@@ -395,7 +404,7 @@ const TEMPLATE: Product = {
         us: "Calculateur de rééquilibrage par les flux, en parts entières",
       },
       {
-        them: "Fichiers figés, qui cassent à la première ligne ajoutée, jamais maintenus",
+        them: "Un fichier fait maison : à étendre et à corriger soi-même",
         us: "1 000 lignes pré-câblées, cours auto + manuel en secours, mises à jour incluses",
       },
       {
@@ -407,6 +416,11 @@ const TEMPLATE: Product = {
         us: "Projection composée + impact des frais sur 30 ans, en euros",
       },
     ],
+  },
+  apresComparatif: {
+    avant: "Vous préférez construire le vôtre ? La méthode et les formules sont détaillées dans notre guide du ",
+    lien: { href: "/suivi-pea-excel", libelle: "suivi PEA sur Excel ou Google Sheets" },
+    apres: ", avec un modèle gratuit à télécharger.",
   },
   faq: [
     {

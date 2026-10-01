@@ -142,7 +142,12 @@ const STEPS = [
           <p className="text-primary-700">
             Après 5 ans, vos gains ne sont taxés qu&apos;à 18,6 % (prélèvements
             sociaux uniquement), contre 31,4 % en CTO. Sur 20 ans de DCA, la
-            différence peut représenter plusieurs milliers d&apos;euros.
+            différence peut représenter plusieurs milliers d&apos;euros. Ces
+            deux taux datent de 2026&nbsp;:{" "}
+            <Link href="/fiscalite-pea-cto-2026" className="font-medium underline underline-offset-2 hover:text-primary-900">
+              ce qui a changé pour le PEA et le CTO
+            </Link>
+            .
           </p>
         </div>
         <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1.5">

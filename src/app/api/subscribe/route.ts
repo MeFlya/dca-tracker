@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { subscribeEmail } from "@/lib/email-provider";
+import { lireRessource } from "@/lib/ressources-gratuites";
 
 // Simple RFC-5322-ish check — full validation happens server-side at the provider.
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function POST(req: NextRequest) {
-  let body: { email?: unknown; source?: unknown };
+  let body: { email?: unknown; source?: unknown; ressource?: unknown };
 
   try {
     body = await req.json();
@@ -25,7 +26,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const result = await subscribeEmail({ email, source });
+  const result = await subscribeEmail({ email, source, ressource: lireRessource(body.ressource) });
 
   if (!result.success) {
     return NextResponse.json(

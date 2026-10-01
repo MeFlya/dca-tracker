@@ -30,6 +30,8 @@ interface Props {
   headline: string;
   /** Description courte (= meta description) — pour le JSON-LD Article. */
   description: string;
+  /** Images de l'article (chemins ou URL absolues) — champ `image` attendu par Google pour un Article. */
+  images?: string[];
   className?: string;
 }
 
@@ -54,6 +56,7 @@ export function ArticleByline({
   url,
   headline,
   description,
+  images,
   className,
 }: Props) {
   const fullUrl = url.startsWith("http") ? url : `${CANONICAL_ORIGIN}${url}`;
@@ -80,6 +83,9 @@ export function ArticleByline({
     datePublished: publishedAt,
     dateModified: updatedAt,
     inLanguage: "fr-FR",
+    ...(images?.length
+      ? { image: images.map((i) => (i.startsWith("http") ? i : `${CANONICAL_ORIGIN}${i}`)) }
+      : {}),
   };
 
   return (

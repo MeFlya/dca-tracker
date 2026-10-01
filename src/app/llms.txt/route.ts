@@ -264,6 +264,7 @@ const SECTIONS: Section[] = [
       "/investir-en-etf",
       "/pea-ou-cto",
       "/fiscalite-pea-cto-2026",
+      "/suivi-pea-excel",
       ...[100, 200, 300, 500].map((m) => `/investir-${m}-euros-mois-etf`),
     ],
   },

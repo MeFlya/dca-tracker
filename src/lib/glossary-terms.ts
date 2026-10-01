@@ -164,7 +164,8 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
   pea: {
     slug: "pea",
     // 30/09/2026 : lien vers /fiscalite-pea-cto-2026 dans « Pour aller plus loin ».
-    updatedAt: "2026-09-30",
+    // 01/10/2026 : lien vers /suivi-pea-excel (plafond et date des 5 ans).
+    updatedAt: "2026-10-01",
     term: "PEA — Plan d'Épargne en Actions",
     shortDef:
       "Enveloppe fiscale française : après 5 ans, les gains ne supportent que 18,6 % de prélèvements sociaux au lieu de 31,4 %.",
@@ -214,6 +215,7 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
     related: [
       { href: "/pea-ou-cto", label: "PEA ou CTO : le comparatif complet" },
       { href: "/fiscalite-pea-cto-2026", label: "Fiscalité du PEA en 2026 : ce qui a changé" },
+      { href: "/suivi-pea-excel#plafond-et-5-ans", label: "Suivre votre plafond et la date des 5 ans dans un tableur" },
       { href: "/etf-msci-world", label: "ETF MSCI World éligibles PEA" },
       { href: "/comparatif", label: "Chez quel courtier ouvrir un PEA ?" },
       { href: "/calculateur-fiscal-pea-cto", label: "Calculer l'écart fiscal sur votre cas" },
@@ -710,7 +712,9 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
 
   tri: {
     slug: "tri",
-    updatedAt: "2026-09-29",
+    // 01/10/2026 : mise en place dans un tableur (/suivi-pea-excel#tri) et
+    // piège de la plage qui commence par des flux nuls.
+    updatedAt: "2026-10-01",
     term: "TRI — Taux de Rendement Interne",
     shortDef:
       "Le rendement annualisé qui tient compte des dates et montants de chaque versement — la vraie mesure de performance d'un DCA.",
@@ -743,10 +747,11 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
       },
       {
         q: "Comment calculer le TRI de mon propre DCA ?",
-        a: "Notre backtest le calcule automatiquement pour un DCA sur le MSCI World (méthode Newton-Raphson sur les flux mensuels réels). Pour un portefeuille quelconque, la fonction TRI.PAIEMENTS (XIRR) d'Excel ou Google Sheets fait le même calcul à partir de vos dates et montants.",
+        a: "Notre backtest le calcule automatiquement pour un DCA sur le MSCI World (méthode Newton-Raphson sur les flux mensuels réels). Pour un portefeuille quelconque, la fonction TRI.PAIEMENTS (XIRR) d'Excel ou Google Sheets fait le même calcul à partir de vos dates et montants : chaque achat en négatif, la valeur du jour en positif. Attention à la plage : si elle commence par des lignes vides, comptées comme des flux nuls, le tableur peut afficher 0 %. La mise en place pas à pas est dans notre guide du suivi PEA sur Excel ou Google Sheets.",
       },
     ],
     related: [
+      { href: "/suivi-pea-excel#tri", label: "Calculer le TRI de votre PEA dans Excel ou Google Sheets" },
       { href: "/backtest", label: "Le backtest calcule votre TRI réel" },
       { href: "/backtest-depuis-2010", label: `Exemple réel : TRI ${TRI_2010} %/an depuis 2010` },
       { href: "/interets-composes", label: "Les intérêts composés" },

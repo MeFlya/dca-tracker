@@ -112,6 +112,15 @@ const STEPS = [
     title: "Automatiser si possible",
     body: "Certains courtiers permettent des ordres programmés mensuels. Sinon, posez un rappel le jour de votre virement de salaire.",
   },
+  {
+    n: "5",
+    title: "Noter chaque achat",
+    // 01/10/2026 : renvoi vers le guide du suivi dans un tableur (brief
+    // private-assets/raw/geo/brief-cockpit-2026-10-01.md, lien n° 1).
+    body: "Une ligne par achat (date, parts, prix, frais) suffit : c'est ce journal qui donne votre prix de revient, votre rendement annualisé et le poids de chaque ETF.",
+    href: "/suivi-pea-excel",
+    linkLabel: "Suivre votre PEA sur Excel ou Google Sheets →",
+  },
 ];
 
 const MISTAKES = [
@@ -544,7 +553,7 @@ export default function StrategieDCAPage() {
           Comment démarrer une stratégie DCA avec des ETF
         </h2>
         <p className="text-gray-600 leading-relaxed mb-6">
-          Avant les quatre étapes pratiques, une décision en amont conditionne
+          Avant les cinq étapes pratiques, une décision en amont conditionne
           tout : le choix de l&apos;enveloppe fiscale. Notre comparatif{" "}
           <Link href="/pea-ou-cto" className="text-primary-700 font-medium hover:underline">
             PEA ou CTO

@@ -25,7 +25,7 @@ export default function ConfidentialitePage() {
       <h1 className="text-3xl font-bold text-gray-900 mb-2">
         Politique de confidentialité
       </h1>
-      <p className="text-sm text-gray-500 mb-8">Dernière mise à jour : 30 septembre 2026</p>
+      <p className="text-sm text-gray-500 mb-8">Dernière mise à jour : 1er octobre 2026</p>
 
       <LegalArticle>
 
@@ -113,8 +113,10 @@ export default function ConfidentialitePage() {
         <ul>
           <li>
             adresse email collectée via les formulaires de capture (homepage,
-            simulateur) — utilisée pour vous envoyer la cheat sheet « 5 ETF
-            Premium pour PEA » et, le cas échéant, des emails ponctuels liés
+            simulateur, page /suivi-pea-excel) — utilisée pour vous envoyer
+            la ressource demandée (cheat sheet « 5 ETF Premium pour PEA » ou
+            modèle de suivi PEA gratuit, avec un lien de téléchargement
+            valable 30 jours) et, le cas échéant, des emails ponctuels liés
             au produit.
           </li>
         </ul>
@@ -148,7 +150,7 @@ export default function ConfidentialitePage() {
                 <td>Exécution du contrat (art. 6.1.b)</td>
               </tr>
               <tr>
-                <td>Envoi de la cheat sheet et emails produit (lead magnet)</td>
+                <td>Envoi de la ressource gratuite demandée (cheat sheet, modèle de suivi) et emails produit</td>
                 <td>Consentement explicite (art. 6.1.a) — désinscription en 1 clic</td>
               </tr>
               <tr>

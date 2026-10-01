@@ -517,6 +517,18 @@ export function ProductPage({ product }: { product: Product }) {
             <div data-reveal className="mb-16 md:mb-20">
               <EnTeteBloc titre={"Pourquoi pas un outil gratuit\u00a0?"} />
               <Comparatif comparison={product.comparison} />
+              {product.apresComparatif && (
+                <p className="mx-auto mt-6 max-w-2xl text-center text-sm leading-relaxed text-gray-600">
+                  {product.apresComparatif.avant}
+                  <Link
+                    href={product.apresComparatif.lien.href}
+                    className="font-medium text-primary-700 underline-offset-2 hover:underline"
+                  >
+                    {product.apresComparatif.lien.libelle}
+                  </Link>
+                  {product.apresComparatif.apres}
+                </p>
+              )}
             </div>
           )}
 

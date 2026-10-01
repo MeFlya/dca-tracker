@@ -129,7 +129,12 @@ if (!existsSync(RAW_DIR)) {
 // fichiers livrés, par leur nom exact (cf. PRODUCT_FILES de la route download
 // et le README de private-assets) : un fichier égaré dans raw/ ne finit pas
 // en .enc commité par accident.
-const FICHIERS_PRODUITS = ["template-suivi-dca.xlsx", "guide-demarrer-dca.pdf"];
+const FICHIERS_PRODUITS = [
+  "template-suivi-dca.xlsx",
+  "guide-demarrer-dca.pdf",
+  // Modèle gratuit (01/10/2026), construit par raw/modele-gratuit/construire_modele_gratuit.py.
+  "modele-suivi-pea-gratuit.xlsx",
+];
 const files = FICHIERS_PRODUITS.filter((f) => existsSync(path.join(RAW_DIR, f)));
 const absents = FICHIERS_PRODUITS.filter((f) => !files.includes(f));
 if (absents.length) {
