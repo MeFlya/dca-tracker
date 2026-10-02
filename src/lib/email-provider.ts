@@ -280,26 +280,43 @@ export async function subscribeEmail({
           `Adresse récupérable uniquement dans le journal Resend (source : ${source}).`,
       );
     } else {
+      // 02/10/2026 : Resend a remplacé les « Audiences » par des « Segments »
+      // (novembre 2025, guide « Migrating from Audiences to Segments ») ;
+      // l'ancienne route POST /audiences/{id}/contacts n'est plus documentée.
+      // RESEND_AUDIENCE_ID contient donc l'identifiant d'un SEGMENT (le nom de
+      // la variable est gardé : le cron et la désinscription la lisent aussi).
+      // On crée le contact rattaché au segment (POST /contacts) ; s'il existe
+      // déjà (refus), on le rattache seulement (POST /contacts/{email}/segments/{id}).
+      // On ne remet JAMAIS `unsubscribed` à false sur un contact existant : un
+      // tiers pourrait réinscrire quelqu'un qui s'est désinscrit.
+      const entetes = {
+        Authorization: `Bearer ${process.env.RESEND_API_KEY ?? ""}`,
+        "Content-Type": "application/json",
+      };
       try {
-        const res = await fetch(
-          `https://api.resend.com/audiences/${audienceId}/contacts`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${process.env.RESEND_API_KEY ?? ""}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ email, unsubscribed: false }),
-          },
-        );
+        const res = await fetch("https://api.resend.com/contacts", {
+          method: "POST",
+          headers: entetes,
+          body: JSON.stringify({ email, unsubscribed: false, segments: [{ id: audienceId }] }),
+        });
         if (!res.ok) {
-          console.error(
-            `[email-provider] Ajout à l'audience refusé (HTTP ${res.status}) — ` +
-              `contact non enregistré (source : ${source}).`,
+          const rattache = await fetch(
+            `https://api.resend.com/contacts/${encodeURIComponent(email)}/segments/${audienceId}`,
+            { method: "POST", headers: entetes },
           );
+          if (!rattache.ok) {
+            // Statuts seulement : jamais l'adresse dans les journaux (confidentialité, 3.5).
+            console.error(
+              `[email-provider] Ajout à la liste refusé (création HTTP ${res.status}, ` +
+                `rattachement HTTP ${rattache.status}) — contact non enregistré (source : ${source}).`,
+            );
+          }
         }
       } catch (err) {
-        console.error("[email-provider] Ajout à l'audience impossible :", err);
+        console.error(
+          "[email-provider] Ajout à la liste impossible :",
+          err instanceof Error ? err.name : "erreur inconnue",
+        );
       }
     }
 
