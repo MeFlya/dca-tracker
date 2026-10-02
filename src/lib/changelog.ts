@@ -41,6 +41,21 @@ export interface ChangelogEntry {
 
 /** Du plus récent au plus ancien. Garder cet ordre à la main. */
 export const CHANGELOG: ChangelogEntry[] = [
+  // 02/10/2026 : un chiffre affiché change (captures du Cockpit, page
+  // /suivi-pea-excel) : règle de ce fichier. Valeurs recalculées par Excel
+  // (classeur sha1 638dab57…) et par src/lib/cockpit-exemple.ts ; cours
+  // recoupés sur Euronext, Yahoo Finance et Boursorama (aucun écart de plus
+  // de 0,5 %). L'entrée du 01/10/2026 (TRI à 5,5 %) reste vraie à sa date.
+  {
+    date: "2026-10-02",
+    kind: "produit",
+    title: "L'exemple du Cockpit DCA et du modèle gratuit passe aux cours réels",
+    body:
+      "Le jeu d'exemple pré-rempli du Cockpit DCA et du modèle de suivi gratuit utilisait des cours inventés. Ses 87 achats gardent des quantités fictives, mais leurs prix sont désormais les cours de clôture réels de PE500, ETZ et PAEEM sur Euronext Paris, le 15 du mois ou le jour de bourse suivant, et les cours de l'onglet Par ETF ceux du 2 octobre 2026 (sources\u00a0: Euronext, Yahoo Finance et Boursorama). " +
+      "Les captures du Cockpit et les chiffres de la page «\u00a0Suivre votre PEA dans Excel ou Google Sheets\u00a0» changent en conséquence\u00a0: au 2 octobre 2026, le TRI de l'exemple est de 17,0\u00a0% (5,5\u00a0% le 1er octobre avec les anciens cours). Ce sont les chiffres d'un exemple aux quantités arbitraires, pas la performance d'un fonds.",
+    why:
+      "Des cours inventés, datés de vrais jours, passaient pour des cours de marché faux\u00a0: celui de PE500 était sous son plus bas sur 52 semaines. Un exemple aux cours réels se vérifie.",
+  },
   // 01/10/2026 : bogue relevé en préparant la v2.0 du Cockpit (Dashboard!B9,
   // XIRR sur une plage qui commençait par un flux nul). Vérifié dans Excel et
   // Google Sheets sur le fichier livré (sha1 487c1319…).

@@ -36,6 +36,7 @@
     ".next.nosync/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "video-accueil"
   ]
 }

@@ -10,3 +10,5 @@ private-assets/raw
 .claude
 *.log
 .DS_Store
+# Projet vidéo d'accueil (son propre package.json) : jamais déployé avec le site.
+video-accueil

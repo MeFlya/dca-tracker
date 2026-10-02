@@ -231,20 +231,27 @@ export const largeurLectureClasseur = (c: { width: number }) => Math.round(c.wid
 // à échelle fixe, depuis une copie, puis rastérisée et recadrée sur son
 // contenu (README de public/produits/). Pas de bandeau de titre en v2.0 :
 // chaque onglet est montré depuis son titre, sauf le recadrage mobile.
+// 02/10/2026 : refaites aux mêmes zones et à la même échelle (mêmes
+// dimensions) sur l'exemple aux COURS RÉELS : achats fictifs (mêmes parts),
+// prix = clôtures réelles d'Euronext Paris, cours de Par ETF du 02/10/2026
+// (src/lib/cockpit-exemple.ts). Frais est inchangée (onglet indépendant de
+// l'exemple).
 // Les légendes ne citent QUE des valeurs visibles dans l'image. Celles qui
 // dépendent de la date d'ouverture du fichier (TRI, âge du plan, jours avant
-// les 5 ans) sont datées : « Capture du 1er octobre 2026 ».
+// les 5 ans) sont datées : « Capture du 2 octobre 2026 ». Plus-value et TRI
+// sont ceux d'un exemple aux quantités arbitraires : jamais présentés comme
+// la performance d'un fonds.
 export const TEMPLATE_CAPTURES: Capture[] = [
   {
     src: "/produits/cockpit-v2-versement.png",
-    alt: "Onglet Versement du mois : 300 € à verser dans la case bleue, et pour chacun des trois ETF de l'exemple l'allocation cible, le poids actuel, le montant suggéré et le nombre de parts à acheter (0, 6 et 7)",
+    alt: "Onglet Versement du mois : 300 € à verser dans la case bleue, et pour chacun des trois ETF de l'exemple l'allocation cible, le poids actuel, le montant suggéré et le nombre de parts à acheter (0, 14 et 0)",
     width: 2452,
     height: 846,
     repere: "Versement du mois",
     // Seulement ce que montre le recadrage du hero (le total et les notes de
     // lecture ne sont que dans l'onglet entier, ouvert par le zoom).
     legende:
-      "Dans l'exemple pré-rempli : 300 € à verser. Le tableau propose 0 part de PE500, 6 d'ETZ et 7 de PAEEM. Calcul fait sur l'allocation que vous fixez, pas un conseil.",
+      "Dans l'exemple pré-rempli (achats fictifs, cours réels) : 300 € à verser. ETZ est le seul ETF sous sa cible : le tableau propose 14 parts d'ETZ, aucune de PE500 ni de PAEEM. Calcul fait sur l'allocation que vous fixez, pas un conseil.",
     complete: {
       src: "/produits/cockpit-v2-versement-complet.png",
       alt: "Onglet Versement du mois en entier : le tableau des ETF avec la ligne TOTAL, les notes de lecture et l'avertissement",
@@ -254,36 +261,37 @@ export const TEMPLATE_CAPTURES: Capture[] = [
       // du hero (relecture DA du 01/10/2026 : la visite redisait la légende
       // du hero mot pour mot).
       legende:
-        "Dans l'exemple pré-rempli, sur les 300 € versés, 276,76 € achètent des parts entières (6 d'ETZ, 7 de PAEEM) ; le reliquat de 23,24 € reste en liquidités et sera réinvesti le mois prochain.",
+        "Dans l'exemple pré-rempli (achats fictifs, cours réels), sur les 300 € versés, 291,76 € achètent des parts entières (14 d'ETZ) ; le reliquat de 8,24 € reste en liquidités et sera réinvesti le mois prochain.",
     },
     // Du montant à verser à la colonne « Parts à acheter », lignes 1 à 3.
     mobile: { src: "/produits/cockpit-v2-versement-mobile.png", width: 2011, height: 595 },
   },
-  // Le TRI corrigé (5,5 % au lieu de 0,0 %) permet de montrer le haut du
+  // Le TRI corrigé (5,5 % au lieu de 0,0 % le 01/10/2026 ; 17,0 % le
+  // 02/10/2026 sur l'exemple aux cours réels) permet de montrer le haut du
   // Dashboard d'un seul tenant : les six indicateurs, la répartition et son
   // camembert. Onglet ouvert par défaut dans la visite, vignette des cartes
   // du Cockpit, hero du Pack (`piecesDuPack`) et images de partage.
   {
     src: "/produits/cockpit-v2-dashboard.png",
-    alt: "Dashboard : six indicateurs (valeur du portefeuille 8 119,91 €, total versé frais inclus 7 465,43 €, plus-value latente +654,48 € soit +8,8 %, TRI annualisé 5,5 %, frais de courtage cumulés 173,13 €, 32 mois et 87 achats), puis la répartition par ETF face à la cible et son camembert",
+    alt: "Dashboard : six indicateurs (valeur du portefeuille 10 380,37 €, total versé frais inclus 8 107,21 €, plus-value latente +2 273,16 € soit +28,0 %, TRI annualisé 17,0 %, frais de courtage cumulés 173,13 €, 32 mois et 87 achats), puis la répartition par ETF face à la cible et son camembert",
     width: 2586,
     height: 1580,
     repere: "Dashboard",
     vignette: true,
     // TRI et « 32 mois » se calculent à la date d'ouverture : d'où la date.
     legende:
-      "Capture du 1er octobre 2026. Dans l'exemple pré-rempli : 7 465,43 € versés frais inclus, 8 119,91 € de valeur, 654,48 € de plus-value latente (+8,8 %) et un TRI annualisé de 5,5 %. PE500 pèse 55,0 % pour une cible de 50 %.",
+      "Capture du 2 octobre 2026. Dans l'exemple pré-rempli (achats fictifs, cours réels) : 8 107,21 € versés frais inclus, 10 380,37 € de valeur, 2 273,16 € de plus-value latente (+28,0 %) et un TRI annualisé de 17,0 %, un chiffre passé propre à ces dates. PE500 pèse 55,2 % pour une cible de 50 %.",
   },
   {
     src: "/produits/cockpit-v2-pea.png",
-    alt: "Onglet PEA : date d'ouverture, plafond légal et taux des prélèvements sociaux dans les cases bleues, puis plafond de versements utilisé à 5,0 % avec sa jauge, ancienneté du plan et cap des 5 ans, fiscalité estimée en cas de retrait",
+    alt: "Onglet PEA : date d'ouverture, plafond légal et taux des prélèvements sociaux dans les cases bleues, puis plafond de versements utilisé à 5,4 % avec sa jauge, ancienneté du plan et cap des 5 ans, fiscalité estimée en cas de retrait",
     width: 2365,
     height: 1715,
     repere: "PEA",
     // L'image contient des valeurs liées à la date d'ouverture du fichier
-    // (« 2 an(s) et 8 mois », « encore 837 jour(s) ») : d'où la date.
+    // (« 2 an(s) et 8 mois », « encore 836 jour(s) » le 02/10/2026) : d'où la date.
     legende:
-      "Capture du 1er octobre 2026. Plafond utilisé : 5,0 % (7 465,43 € de versements retenus). Cap des 5 ans le 15/01/2029. Prélèvements sociaux estimés sur la plus-value : 121,73 €.",
+      "Capture du 2 octobre 2026. Plafond utilisé : 5,4 % (8 107,21 € de versements retenus). Cap des 5 ans le 15/01/2029. Prélèvements sociaux estimés sur la plus-value : 422,81 €.",
   },
   {
     src: "/produits/cockpit-v2-par-etf.png",
@@ -295,7 +303,7 @@ export const TEMPLATE_CAPTURES: Capture[] = [
       // 01/10/2026 : le cours manuel (col. F), s'il est rempli, passe devant
       // le cours automatique (col. E) : la légende le dit, sans quoi « récupéré
       // automatiquement » est faux dès qu'un cours est saisi en F.
-      "PRU, valeur et performance de chaque ligne : +15,7 % pour PE500, +0,7 % pour ETZ, +2,5 % pour PAEEM. Dans Excel, le cours se saisit à la main ; dans Google Sheets, il est récupéré automatiquement tant que la colonne du cours manuel reste vide.",
+      "PRU, valeur et performance de chaque ligne, dans l'exemple (achats fictifs, cours de clôture du 2 octobre 2026) : +27,8 % pour PE500, +17,5 % pour ETZ, +42,6 % pour PAEEM. Dans Excel, le cours se saisit à la main ; dans Google Sheets, il est récupéré automatiquement tant que la colonne du cours manuel reste vide.",
   },
   {
     src: "/produits/cockpit-v2-projection.png",
@@ -304,7 +312,7 @@ export const TEMPLATE_CAPTURES: Capture[] = [
     height: 2280,
     repere: "Projection",
     legende:
-      "Avec 8 119,91 € de départ, 300 € par mois et un rendement hypothétique de 7 % par an, le capital estimé à 25 ans est de 278 983 €, dont 98 120 € versés. C'est une hypothèse que vous choisissez, pas une promesse.",
+      "Avec 10 380,37 € de départ (la valeur de l'exemple), 300 € par mois et un rendement hypothétique de 7 % par an, le capital estimé à 25 ans est de 291 251 €, dont 100 380 € versés. C'est une hypothèse que vous choisissez, pas une promesse.",
   },
   {
     src: "/produits/cockpit-v2-frais.png",

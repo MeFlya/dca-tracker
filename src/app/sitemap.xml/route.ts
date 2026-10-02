@@ -57,12 +57,14 @@ const REV = {
   // sociaux, PFU à 31,4 %, ce qui reste à 17,2 %). Même date que sa byline.
   fiscalite2026: "2026-09-30",
   // /suivi-pea-excel : publiée le 01/10/2026 (méthode, formules, modèle
-  // gratuit). Même date que sa byline.
-  suiviPeaExcel: "2026-10-01",
+  // gratuit). Même date que sa byline. 02/10/2026 : exemple aux cours réels
+  // (chiffres, captures, sources) ; updatedAt de la byline à la même date.
+  suiviPeaExcel: "2026-10-02",
   // taux fiscaux 2026
   methodologie: "2026-08-03",
-  // pages Ressources refaites, Cockpit v2.0 et guide v1.1 (01/10/2026)
-  produits: "2026-10-01",
+  // pages Ressources refaites, Cockpit v2.0 et guide v1.1 (01/10/2026) ;
+  // 02/10/2026 : captures et légendes du Cockpit sur l'exemple aux cours réels.
+  produits: "2026-10-02",
   // Vercel Web Analytics remplace Plausible (mention dans la page)
   analytics: "2026-08-23",
   // /confidentialite : page d'origine jointe aux achats (3.3 et 4), puis le
@@ -73,8 +75,9 @@ const REV = {
   // entrée de changelog sur la régression de série du 2 août ; partenariats
   affiliation: "2026-08-04",
   cgv: "2026-10-01",
-  // /changelog : corrections du TRI du Cockpit et de la mention de TVA
-  changelog: "2026-10-01",
+  // /changelog : corrections du TRI du Cockpit et de la mention de TVA ;
+  // 02/10/2026 : exemple du Cockpit et du modèle gratuit aux cours réels.
+  changelog: "2026-10-02",
   glossaireHub: "2026-06-10",
   glossaireDca: "2026-05-09",
   // /glossaire/interets-composes et /communaute

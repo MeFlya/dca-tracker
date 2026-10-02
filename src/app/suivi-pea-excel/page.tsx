@@ -47,14 +47,18 @@ import {
 // peut pas diverger des captures. Rien n'est écrit à la main, sauf les taux
 // légaux qui ont leur source en bas de page, la date de la v2.0 (journal des
 // changements) et le temps de saisie (page produit).
-// ⚠️ 01/10/2026 : ces achats et ces cours sont FICTIFS (le Mode d'emploi du
-// classeur le dit : « EXEMPLE FICTIF »), sur trois ETF réels. Le cours de
-// PE500 de l'exemple est sous son plus bas sur 52 semaines (Google Finance,
-// consulté le 01/10/2026) : lu sans précision, il passe pour un cours de
-// marché faux, daté d'un vrai jour. La page le dit donc au premier chiffre
+// ⚠️ 01/10/2026 : ces achats et ces cours étaient FICTIFS, sur trois ETF
+// réels ; le cours de PE500 de l'exemple était sous son plus bas sur
+// 52 semaines (Google Finance, consulté le 01/10/2026), un cours de marché
+// faux daté d'un vrai jour.
+// ⚠️ 02/10/2026 : les COURS sont désormais RÉELS (clôtures d'Euronext Paris
+// du 15 du mois ou du jour de bourse suivant, cours de Par ETF du 02/10/2026 ;
+// sources et recoupements : src/lib/cockpit-exemple.ts). Seuls les ACHATS
+// restent fictifs (quantités inventées). La page le dit au premier chiffre
 // (section PRU), dans l'intro, dans la FAQ (texte repris en JSON-LD), dans
-// les légendes et dans l'avertissement final ; le TRI se date « à la date de
-// la capture, sur ces données fictives », jamais comme un fait de marché.
+// les légendes et dans l'avertissement final. Plus-value et TRI sont ceux
+// d'un exemple aux quantités arbitraires : datés, présentés comme un chiffre
+// passé, jamais comme la performance d'un fonds.
 // ⚠️ Cours : dans nos fichiers, le cours manuel (Par ETF, col. F), s'il est
 // rempli, passe DEVANT le cours automatique (col. E, GOOGLEFINANCE) — formule
 // du cours retenu en G. Ne jamais l'appeler « secours » ni écrire que Sheets
@@ -72,7 +76,11 @@ import {
 
 const URL_PAGE = "/suivi-pea-excel";
 const PUBLIEE_LE = "2026-10-01";
+/** 02/10/2026 : exemple passé aux cours réels (captures, chiffres, sources). */
+const MISE_A_JOUR_LE = "2026-10-02";
 const CONSULTE_LE = dateEnToutesLettres("2026-10-01");
+/** Consultation des cours de l'exemple (Euronext, Yahoo Finance, Boursorama). */
+const COURS_CONSULTES_LE = dateEnToutesLettres("2026-10-02");
 
 const TITLE = "Suivi PEA Excel et Google Sheets : modèle gratuit et PRU";
 const DESCRIPTION =
@@ -100,8 +108,13 @@ export const metadata: Metadata = {
 
 // ─── Chiffres de l'exemple (calculés) ────────────────────────────────────────
 
+// 02/10/2026 : arrondi d'abord à 15 chiffres significatifs, comme l'affichage
+// d'Excel. Sans cela, 0,5 × 10 680,37 = 5 340,18499999… s'affichait
+// « 5 340,18 € » ici et « 5 340,19 € » sur la capture du Versement du mois.
 const eur = (n: number) =>
-  `${n.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`;
+  `${Number(n.toPrecision(15)).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`;
+/** 02/10/2026 : « 14 parts d'ETZ », pas « de ETZ » (élision devant une voyelle). */
+const de = (ticker: string) => (/^[AEIOUY]/i.test(ticker) ? `d'${ticker}` : `de ${ticker}`);
 const pc = (x: number, decimales = 1) =>
   `${(x * 100).toLocaleString("fr-FR", { minimumFractionDigits: decimales, maximumFractionDigits: decimales })} %`;
 
@@ -110,11 +123,15 @@ const TOTAL = totauxExemple();
 const PE500 = LIGNES[0];
 const VERSEMENT = 300;
 const V = versementExemple(VERSEMENT);
+/** ETF sans manque après versement : ils ne reçoivent rien ce mois-ci. */
+const SANS_MANQUE = V.lignes.filter((l) => l.manque === 0).map((l) => l.ticker);
 const TRI = triExemple();
 const NB_ACHATS = ACHATS_EXEMPLE.length;
 const PREMIER_ACHAT = dateEnToutesLettres(ACHATS_EXEMPLE[0][0]);
 const DERNIER_ACHAT = dateEnToutesLettres(ACHATS_EXEMPLE[NB_ACHATS - 1][0]);
 const DATE_CAPTURE = dateEnToutesLettres(DATE_CAPTURES);
+/** Premier achat dont la clôture a 3 décimales (Euronext cote ces ETF au millième). */
+const ACHAT_MILLIEME = ACHATS_EXEMPLE.find((a) => Math.round(a[3] * 1000) % 10 !== 0);
 const CINQ_ANS = dateEnToutesLettres(cinqAnsExemple());
 const OUVERTURE = dateEnToutesLettres(OUVERTURE_PEA_EXEMPLE);
 const PLAFOND_UTILISE = TOTAL.investi / PLAFOND_PEA;
@@ -149,7 +166,7 @@ const FAQ = [
   {
     id: "pru-plusieurs-achats",
     q: "Comment calculer le PRU d'un ETF acheté plusieurs fois ?",
-    a: `Additionnez tout ce que vous avez payé pour cet ETF, frais compris, et divisez par le nombre de parts que vous détenez. Dans l'exemple de cette page (des achats fictifs, sur un ETF réel), ${PE500.ticker} a coûté ${eur(PE500.investi)} pour ${PE500.parts} parts, soit un prix de revient unitaire (PRU) de ${eur(PE500.pru)}. Dans un tableur, deux SOMME.SI.ENS sur le journal des achats (les montants, puis les parts) et une division suffisent. Ce calcul suppose que vous n'avez rien vendu, le cas courant d'un DCA sur un PEA.`,
+    a: `Additionnez tout ce que vous avez payé pour cet ETF, frais compris, et divisez par le nombre de parts que vous détenez. Dans l'exemple de cette page (des achats fictifs, aux cours de clôture réels de l'ETF), ${PE500.ticker} a coûté ${eur(PE500.investi)} pour ${PE500.parts} parts, soit un prix de revient unitaire (PRU) de ${eur(PE500.pru)}. Dans un tableur, deux SOMME.SI.ENS sur le journal des achats (les montants, puis les parts) et une division suffisent. Ce calcul suppose que vous n'avez rien vendu, le cas courant d'un DCA sur un PEA.`,
   },
   {
     id: "frais-de-courtage",
@@ -199,13 +216,13 @@ export default function SuiviPeaExcelPage() {
           "Un tableau de suivi de PEA tient en quatre feuilles : un journal de vos achats, une vue par ETF " +
           "(prix de revient, valeur, poids), un tableau de bord (versé, valeur, plus-value, rendement annualisé) et " +
           "une feuille PEA (plafond de versements, date des 5 ans). Voici leurs formules, pour Excel et Google Sheets, " +
-          "sur les captures d'un classeur réel, avec son jeu d'exemple fictif, et un modèle gratuit à recevoir par email."
+          "sur les captures d'un classeur réel, avec son exemple (achats fictifs, cours réels), et un modèle gratuit à recevoir par email."
         }
       />
 
       <ArticleByline
         publishedAt={PUBLIEE_LE}
-        updatedAt={PUBLIEE_LE}
+        updatedAt={MISE_A_JOUR_LE}
         readingMinutes={9}
         url={URL_PAGE}
         headline={TITLE}
@@ -358,8 +375,17 @@ export default function SuiviPeaExcelPage() {
             />
           </div>
           <figcaption className="mt-2 text-xs text-gray-500">
-            L&apos;onglet Transactions, identique dans le modèle gratuit et dans le Cockpit. Jeu de démonstration
-            fictif ({NB_ACHATS} achats, du {PREMIER_ACHAT} au {DERNIER_ACHAT}), à remplacer par vos données.
+            L&apos;onglet Transactions, identique dans le modèle gratuit et dans le Cockpit. Exemple à remplacer
+            par vos données&nbsp;: {NB_ACHATS} achats fictifs (quantités inventées), du {PREMIER_ACHAT} au{" "}
+            {DERNIER_ACHAT}, aux cours de clôture réels sur Euronext Paris du 15 du mois ou du jour de bourse
+            suivant.
+            {ACHAT_MILLIEME ? (
+              <>
+                {" "}Ces clôtures sont publiées au millième ({ACHAT_MILLIEME[3].toLocaleString("fr-FR", { minimumFractionDigits: 3 })}&nbsp;€
+                pour {ACHAT_MILLIEME[1]} le {dateEnToutesLettres(ACHAT_MILLIEME[0])})&nbsp;: la colonne du prix
+                les affiche au centime, le montant total est calculé sur le prix exact.
+              </>
+            ) : null}
           </figcaption>
         </figure>
       </section>
@@ -377,11 +403,11 @@ export default function SuiviPeaExcelPage() {
           <code className={code}>=SOMME.SI.ENS(Transactions!$C$9:$C$1008;Transactions!$B$9:$B$1008;$A9)</code>
           <code className={code}>=SOMME.SI.ENS(Transactions!$F$9:$F$1008;Transactions!$B$9:$B$1008;$A9)</code>
           <p>
-            Le PRU est le total investi divisé par les parts. Dans l&apos;exemple (achats et cours fictifs, sur
-            trois ETF réels), {PE500.ticker} a coûté{" "}
+            Le PRU est le total investi divisé par les parts. Dans l&apos;exemple (achats fictifs, aux cours de
+            clôture réels de trois ETF), {PE500.ticker} a coûté{" "}
             {eur(PE500.investi)} pour {PE500.parts}&nbsp;parts, soit un PRU de{" "}
-            <strong className="text-gray-900">{eur(PE500.pru)}</strong>, frais compris. Au cours de{" "}
-            {eur(PE500.cours)}, la ligne vaut {eur(PE500.valeur)}&nbsp;: {eur(PE500.plusValue)} de plus-value,
+            <strong className="text-gray-900">{eur(PE500.pru)}</strong>, frais compris. Au cours de clôture du{" "}
+            {DATE_CAPTURE}, {eur(PE500.cours)}, la ligne vaut {eur(PE500.valeur)}&nbsp;: {eur(PE500.plusValue)} de plus-value,
             soit {pc(PE500.perf)}.
           </p>
           <p>
@@ -413,8 +439,8 @@ export default function SuiviPeaExcelPage() {
             sizes="(min-width: 768px) 720px, calc(100vw - 32px)"
           />
           <p className="mt-2 text-xs text-gray-500">
-            L&apos;onglet Par ETF (Cockpit et modèle gratuit). Jeu de démonstration fictif, à remplacer par vos
-            données.
+            L&apos;onglet Par ETF (Cockpit et modèle gratuit). Achats fictifs&nbsp;; cours&nbsp;: clôtures du{" "}
+            {DATE_CAPTURE} sur Euronext Paris. À remplacer par vos données.
           </p>
         </div>
       </section>
@@ -430,8 +456,9 @@ export default function SuiviPeaExcelPage() {
             les {NB_ACHATS}&nbsp;achats se sont étalés sur plus de deux ans, et une partie de l&apos;argent
             n&apos;est investie que depuis quelques mois. Le{" "}
             <Link href="/glossaire/tri" className={lien}>taux de rendement interne (TRI)</Link> en tient
-            compte&nbsp;: sur ces données fictives, à la date de la capture ({DATE_CAPTURE}), il est de{" "}
-            <strong className="text-gray-900">{pc(TRI)} par an</strong>.
+            compte&nbsp;: sur ces achats fictifs aux cours réels, à la date de la capture ({DATE_CAPTURE}), il
+            est de <strong className="text-gray-900">{pc(TRI)} par an</strong>, un chiffre passé, propre à ces
+            dates et à ces quantités.
           </p>
           <p>
             Dans le tableur, la fonction s&apos;appelle TRI.PAIEMENTS en français et XIRR en anglais, dans Excel
@@ -462,8 +489,8 @@ export default function SuiviPeaExcelPage() {
             largeur={640}
           />
           <p className="mt-2 text-xs text-gray-500 text-center">
-            Le Dashboard du Cockpit&nbsp;: plus-value et TRI côte à côte. Capture du {DATE_CAPTURE}, jeu de
-            démonstration fictif.
+            Le Dashboard du Cockpit&nbsp;: plus-value et TRI côte à côte. Capture du {DATE_CAPTURE}&nbsp;;
+            achats fictifs, cours réels.
           </p>
         </div>
       </section>
@@ -557,9 +584,17 @@ export default function SuiviPeaExcelPage() {
           <p>
             {V.lignes
               .filter((l) => l.parts > 0)
-              .map((l) => `${l.parts} parts de ${l.ticker} à ${eur(l.cours)}, soit ${eur(l.arrondi)}`)
+              .map((l) => `${l.parts} parts ${de(l.ticker)} à ${eur(l.cours)}, soit ${eur(l.arrondi)}`)
               .join(" ; ")}
-            . Il reste {eur(V.reliquat)}, qui attendent en liquidités sur le PEA et s&apos;ajoutent au versement
+            .{" "}
+            {SANS_MANQUE.length > 0 && SANS_MANQUE.length < V.lignes.length ? (
+              <>
+                {SANS_MANQUE.join(" et ")}{" "}
+                {SANS_MANQUE.length > 1 ? "restent au-dessus de leur cible" : "reste au-dessus de sa cible"} après
+                versement&nbsp;: rien ne {SANS_MANQUE.length > 1 ? "leur" : "lui"} est attribué ce mois-ci.{" "}
+              </>
+            ) : null}
+            Il reste {eur(V.reliquat)}, qui attendent en liquidités sur le PEA et s&apos;ajoutent au versement
             du mois suivant. Avec deux ou trois ETF, ce calcul suffit à garder la{" "}
             <Link href="/allocation-portefeuille" className={lien}>répartition que vous avez choisie</Link>{" "}
             sans jamais vendre.
@@ -573,7 +608,7 @@ export default function SuiviPeaExcelPage() {
             sizes="(min-width: 768px) 720px, calc(100vw - 32px)"
           />
           <p className="mt-2 text-xs text-gray-500">
-            L&apos;onglet Versement du mois du Cockpit, sur les mêmes chiffres. Jeu de démonstration fictif.
+            L&apos;onglet Versement du mois du Cockpit, sur les mêmes chiffres (achats fictifs, cours réels).
           </p>
         </div>
       </section>
@@ -667,14 +702,16 @@ export default function SuiviPeaExcelPage() {
       </section>
 
       <p className="text-xs text-gray-500 leading-relaxed mb-10">
-        Cette page décrit une méthode de suivi et des formules. Dans l&apos;exemple, les achats et les cours
-        sont fictifs, sur trois ETF réels pris pour la démonstration&nbsp;: ces chiffres ne disent rien des
-        performances de ces fonds, et le choix de ces ETF n&apos;est pas un conseil en investissement
-        personnalisé. Investir comporte un risque de perte en capital.
+        Cette page décrit une méthode de suivi et des formules. Dans l&apos;exemple, les achats sont fictifs
+        (quantités inventées) et les cours réels (clôtures d&apos;Euronext Paris), sur trois ETF pris pour la
+        démonstration&nbsp;: la plus-value et le TRI de l&apos;exemple dépendent de ces quantités et de ces
+        dates, ce sont des performances passées qui ne préjugent pas des performances futures, et le choix de
+        ces ETF n&apos;est pas un conseil en investissement personnalisé. Investir comporte un risque de perte
+        en capital.
       </p>
 
       <SourcesReferences
-        intro="Règles du PEA, taux et fonctions des tableurs cités sur cette page. Chaque source indique sa date de consultation."
+        intro="Règles du PEA, taux, fonctions des tableurs et cours de l'exemple cités sur cette page. Chaque source indique sa date de consultation."
         sources={[
           {
             label: "Plan d'épargne en actions (PEA)",
@@ -699,6 +736,32 @@ export default function SuiviPeaExcelPage() {
             url: "https://support.microsoft.com/fr-fr/excel/functions/xirr-function",
             publisher: "Support Microsoft",
             note: `Au moins un flux positif et un flux négatif ; actualisation sur une année de 365 jours. Consultée le ${CONSULTE_LE}.`,
+          },
+          // 02/10/2026 : sources des cours de l'exemple (prix des achats et cours de Par ETF).
+          {
+            label: "Historique des cours de PE500 (FR0013412285), ETZ (FR0011550193) et PAEEM (FR0013412020)",
+            url: "https://live.euronext.com/fr/product/etfs/FR0013412285-XPAR",
+            publisher: "Euronext",
+            note: `Clôture officielle (« Close ») sur Euronext Paris : prix des achats de l'exemple depuis le 3 octobre 2024 et cours du ${DATE_CAPTURE}. Pages d'ETZ et de PAEEM : même adresse avec leur ISIN. Le téléchargement ne remonte que deux ans. Consultée le ${COURS_CONSULTES_LE}.`,
+          },
+          {
+            // 02/10/2026 : fr.finance.yahoo.com. L'adresse finance.yahoo.com de
+            // ces trois tickers répond 404 (vérifié par curl le 02/10/2026) ;
+            // la version française répond 200 et affiche bien l'ETF.
+            label: "Historique des cours de PE500.PA, ETZ.PA et PAEEM.PA",
+            url: "https://fr.finance.yahoo.com/quote/PE500.PA/history/",
+            publisher: "Yahoo Finance",
+            note: `Clôtures des achats de l'exemple avant le 3 octobre 2024 ; ensuite, recoupement d'Euronext (mêmes valeurs à toutes les dates d'achat). Consultée le ${COURS_CONSULTES_LE}.`,
+          },
+          {
+            label: "Cours de PE500, ETZ et PAEEM",
+            url: "https://www.boursorama.com/bourse/trackers/cours/1rTPE500/",
+            publisher: "Boursorama",
+            // 02/10/2026 : la cause des écarts n'est prouvée que depuis le
+            // 03/10/2024 (à chaque écart, Boursorama = « Last » d'Euronext).
+            // Avant, Euronext ne fournit pas l'historique : le plus grand écart
+            // (0,28 %, PAEEM, 15/05/2024) reste sans explication vérifiée.
+            note: `Recoupement à toutes les dates d'achat : écarts de 0,3 % au plus. Depuis le 3 octobre 2024, chaque écart vient de ce que Boursorama donne le dernier cours échangé, et non la clôture officielle ; avant, l'historique d'Euronext ne permet pas de le vérifier. Consultée le ${COURS_CONSULTES_LE}.`,
           },
         ]}
       />

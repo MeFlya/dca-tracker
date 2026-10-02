@@ -75,12 +75,24 @@ n'est jamais modifié (sha1 identique avant et après). Toutes les captures sont
 fait 32 px) : un même facteur (`largeurVisiteClasseur`) donne partout le même
 corps de texte. PNG en palette de 256 couleurs, de 40 à 160 Ko.
 
+**Refaites le 02/10/2026 sur l'exemple aux cours réels**, sous les mêmes noms
+(consigne du 02/10/2026 ; la règle « nouvelle version = nouveaux fichiers »
+ci-dessus vaut pour une nouvelle version du produit, le classeur reste en
+v2.0) : classeur sha1 `638dab57…`, 91 547 octets. Les achats restent fictifs
+(mêmes parts, frais de 1,99 €), mais leurs prix sont les clôtures réelles
+d'Euronext Paris du 15 du mois ou du jour de bourse suivant, et les cours de
+Par ETF celles du 02/10/2026 (sources : `src/lib/cockpit-exemple.ts`). Mêmes
+zones, même commande (`--dpi 230`), mêmes dimensions au pixel près ;
+`cockpit-v2-frais.png` est identique (onglet indépendant de l'exemple). Les
+captures de la veille restent dans l'historique git. Les images optimisées
+par next/image peuvent rester en cache quelques heures après le déploiement.
+
 | Fichier | Zone | Contenu |
 | --- | --- | --- |
-| `cockpit-v2-versement.png` | Versement du mois!A1:J12 | Titre, montant de 300 € (case bleue), tableau des 3 ETF : montant suggéré et parts à acheter (0, 6, 7). Hero du Cockpit, vignette du Pack (hub, appel final), carte « Ce que contient le pack » |
+| `cockpit-v2-versement.png` | Versement du mois!A1:J12 | Titre, montant de 300 € (case bleue), tableau des 3 ETF : montant suggéré et parts à acheter (0, 14, 0). Hero du Cockpit, vignette du Pack (hub, appel final), carte « Ce que contient le pack » |
 | `cockpit-v2-versement-mobile.png` | Versement du mois!A5:H12 | Recadrage pour les téléphones : du montant à verser à la colonne « Parts à acheter » |
-| `cockpit-v2-versement-complet.png` | Versement du mois!A1:J25 | L'onglet entier : tableau avec la ligne TOTAL (276,76 € arrondis, 23,24 € de reliquat), notes de lecture, avertissement. Zoom du hero, visite (avec sa propre légende) |
-| `cockpit-v2-dashboard.png` | Dashboard!A1:J24 | Les six indicateurs (dont le TRI annualisé, 5,5 %), la répartition par ETF et son camembert. Visite (onglet par défaut), vignette des cartes du Cockpit, hero du Pack, images de partage du Cockpit et du Pack |
+| `cockpit-v2-versement-complet.png` | Versement du mois!A1:J25 | L'onglet entier : tableau avec la ligne TOTAL (291,76 € arrondis, 8,24 € de reliquat), notes de lecture, avertissement. Zoom du hero, visite (avec sa propre légende) |
+| `cockpit-v2-dashboard.png` | Dashboard!A1:J24 | Les six indicateurs (dont le TRI annualisé, 17,0 % le 02/10/2026), la répartition par ETF et son camembert. Visite (onglet par défaut), vignette des cartes du Cockpit, hero du Pack, images de partage du Cockpit et du Pack |
 | `cockpit-v2-pea.png` | PEA!A1:I27 | Cases de saisie, plafond de versements et sa jauge, ancienneté et compte à rebours des 5 ans, fiscalité estimée (sans les rappels ni l'avertissement) |
 | `cockpit-v2-par-etf.png` | Par ETF!A1:O21 | Notes sur les cours, tableau complet : PRU, valeur, plus-value, performance, poids et écart, ligne TOTAL, contrôle des allocations |
 | `cockpit-v2-projection.png` | Projection!A1:O35 | Hypothèses, capital à l'horizon, tableau des années 1 à 20 et courbe capital / versements |
@@ -88,7 +100,8 @@ corps de texte. PNG en palette de 256 couleurs, de 40 à 160 Ko.
 
 Certaines valeurs dépendent de la date d'ouverture du fichier (TRI, « 32 mois »
 du Dashboard, âge du plan, jours avant les 5 ans) : celles des captures sont
-celles du 1er octobre 2026, et les légendes qui citent le TRI sont datées.
+celles du 2 octobre 2026 (1er octobre pour la première série), et les
+légendes qui citent le TRI sont datées.
 
 Les graphiques d'Excel sont ancrés sur des bords de cellules (Dashboard
 H12:I23, Projection F15:O29, Frais G15:N27) : aucune zone ne les coupe.

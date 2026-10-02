@@ -9,6 +9,9 @@ export const alt = "Suivre votre PEA dans Excel ou Google Sheets : formules et 
 // layout, image comprise). Aucun chiffre ici : ceux de la page sont calculés
 // sur un jeu d'exemple FICTIF, qu'une image partagée seule ne pourrait pas
 // signaler comme tel. Next reprend cette image en twitter:image.
+// 02/10/2026 : l'exemple passe aux cours réels, mais ses achats (quantités)
+// restent fictifs : plus-value et TRI restent ceux d'un exemple, la règle
+// « aucun chiffre ici » tient toujours.
 export default async function Image() {
   return renderOgTemplate({
     variant: "light",
