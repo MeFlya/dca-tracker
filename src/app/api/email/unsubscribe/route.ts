@@ -20,6 +20,7 @@
 
 import { NextResponse } from "next/server";
 import {
+  empreinteAdresse,
   optOutByEmail,
   verifyUnsubscribeToken,
 } from "@/lib/email-preferences";
@@ -66,8 +67,12 @@ export async function POST(req: Request) {
     // Le token était bon : c'est nous qui n'avons pas réussi à enregistrer.
     // Doit rester bruyant, sinon une désinscription perdue passe inaperçue et
     // la plainte pour spam arrive à la place.
+    // 02/10/2026 : plus d'adresse en clair (page confidentialité, 3.5 : sans
+    // case cochée, l'adresse n'est que dans le journal d'envoi de Resend).
+    // L'empreinte suffit à retrouver le cas (voir empreinteAdresse) ; la
+    // cause précise est dans la ligne [email-preferences] juste au-dessus.
     console.error(
-      `[unsubscribe] token valide mais écriture échouée pour ${email} — à traiter à la main`
+      `[unsubscribe] token valide mais écriture échouée (empreinte ${empreinteAdresse(email ?? "")}) — à traiter à la main`
     );
   }
 

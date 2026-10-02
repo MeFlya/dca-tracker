@@ -51,6 +51,35 @@ interface SendOptions {
    */
   optedOut?: boolean;
   replyTo?: string;
+  /**
+   * 02/10/2026 : clé d'idempotence Resend (en-tête `Idempotency-Key`, 1 à 256
+   * caractères). Pendant 24 h, Resend répond à une requête rejouée avec la
+   * même clé par la réponse de la première, SANS renvoyer l'email ; avec un
+   * contenu différent, il refuse (409 `invalid_idempotent_request`), ce qui
+   * lève ici. Sert aux envois sans état côté nous (cron serie-suivi-pea), que
+   * Vercel peut déclencher deux fois (doc Cron Jobs, « Cron job delivery and
+   * idempotency », consultée le 02/10/2026). Le contenu doit donc être
+   * identique d'un appel à l'autre : le pied de page l'est (jeton HMAC
+   * déterministe), le corps doit l'être aussi.
+   */
+  idempotencyKey?: string;
+}
+
+/**
+ * 02/10/2026 : refus de Resend, avec son nom d'erreur et son statut HTTP.
+ * Le cron serie-suivi-pea décide de réessayer sur ces deux champs (un 503
+ * `service_unavailable` oui, un quota du jour non) plutôt qu'en analysant le
+ * texte. Le message reste celui que les autres crons journalisent déjà.
+ */
+export class EnvoiRefuse extends Error {
+  readonly code: string;
+  readonly statut: number | null;
+  constructor(code: string, statut: number | null, message: string) {
+    super(message);
+    this.name = "EnvoiRefuse";
+    this.code = code;
+    this.statut = statut;
+  }
 }
 
 /** Renvoie l'URL de désinscription, ou un `mailto:` si le secret manque. */
@@ -117,6 +146,7 @@ export async function sendEmail({
   kind = "lifecycle",
   optedOut,
   replyTo,
+  idempotencyKey,
 }: SendOptions): Promise<boolean> {
   if (kind !== "transactional") {
     const skip = optedOut ?? (await isOptedOutByEmail(to));
@@ -148,7 +178,8 @@ export async function sendEmail({
   //
   // Les cinq crons qui envoient en lot ont chacun un try/catch par
   // utilisateur : une levée y est attrapée et journalisée sans interrompre le
-  // lot. Vérifié avant d'écrire ceci.
+  // lot. Vérifié avant d'écrire ceci. (02/10/2026 : le sixième,
+  // serie-suivi-pea, fait de même par contact.)
   if (cleResendManquante) {
     throw new Error(
       "RESEND_API_KEY absent — aucun email ne peut partir. " +
@@ -181,11 +212,13 @@ export async function sendEmail({
         ? {}
         : { "List-Unsubscribe-Post": "List-Unsubscribe=One-Click" }),
     },
-  });
+  }, idempotencyKey ? { idempotencyKey } : undefined);
 
   if (error) {
-    throw new Error(
-      `Resend a refusé l'envoi « ${subject} » : ${error.name} — ${error.message}`,
+    throw new EnvoiRefuse(
+      error.name,
+      error.statusCode ?? null,
+      `Resend a refusé l'envoi « ${subject} » : ${error.name} (HTTP ${error.statusCode ?? "?"}) — ${error.message}`,
     );
   }
   // L'identifiant Resend est la seule trace qui prouve qu'un email est parti.

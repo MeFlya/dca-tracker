@@ -72,8 +72,13 @@ export default async function DesinscriptionPage({
     return (
       <Shell>
         <h1 className="text-2xl font-bold text-gray-900 mb-3">C&apos;est fait.</h1>
+        {/* 02/10/2026 : la désinscription vaut aussi, désormais, pour les
+            emails occasionnels sur le suivi d'un PEA (contact Resend marqué
+            désinscrit, optOutByEmail) — la plupart de leurs destinataires
+            n'ont pas de compte. */}
         <p className="text-gray-600 leading-relaxed mb-4">
-          Vous ne recevrez plus les emails de suivi mensuel, de relance ni
+          Vous ne recevrez plus nos emails occasionnels sur le suivi d&apos;un
+          PEA, ni les emails de suivi mensuel, de relance ou
           d&apos;accompagnement. Ça prend effet immédiatement.
         </p>
         <p className="text-sm text-gray-500 leading-relaxed">
@@ -146,8 +151,9 @@ export default async function DesinscriptionPage({
         Se désinscrire des emails
       </h1>
       <p className="text-gray-600 leading-relaxed mb-2">
-        Confirmez pour ne plus recevoir le suivi mensuel, les relances et les
-        emails d&apos;accompagnement à l&apos;adresse :
+        Confirmez pour ne plus recevoir nos emails occasionnels sur le suivi
+        d&apos;un PEA, le suivi mensuel, les relances et les emails
+        d&apos;accompagnement à l&apos;adresse :
       </p>
       <p className="text-gray-900 font-medium mb-6 break-all">{email}</p>
 

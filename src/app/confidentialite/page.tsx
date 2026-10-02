@@ -25,7 +25,7 @@ export default function ConfidentialitePage() {
       <h1 className="text-3xl font-bold text-gray-900 mb-2">
         Politique de confidentialité
       </h1>
-      <p className="text-sm text-gray-500 mb-8">Dernière mise à jour : 1er octobre 2026</p>
+      <p className="text-sm text-gray-500 mb-8">Dernière mise à jour : 2 octobre 2026</p>
 
       <LegalArticle>
 
@@ -223,11 +223,22 @@ export default function ConfidentialitePage() {
           <li>
             <strong>Logs serveur :</strong> 30 jours.
           </li>
+          {/* 02/10/2026 : « sauf désinscription avant » laissait entendre un
+              effacement à la désinscription. Le code fait l'inverse, exprès :
+              le contact Resend reste, marqué « désinscrit » (optOutByEmail,
+              email-preferences.ts), et c'est ce qui empêche de réécrire à la
+              personne. La CNIL recommande de garder ces informations au moins
+              3 ans (fiche « liste repoussoir », consultée le 02/10/2026).
+              À FAIRE avant octobre 2029 : la purge des 3 ans n'est pas codée
+              (aucun contact ne peut l'atteindre avant cette date). */}
           <li>
             <strong>Adresses de la liste d&apos;emails occasionnels :</strong>{" "}
             3 ans à compter de l&apos;inscription ou du dernier contact venant
-            de vous, sauf désinscription avant (référentiel de la CNIL relatif
-            à la gestion commerciale).
+            de vous (référentiel de la CNIL relatif à la gestion commerciale).
+            Si vous vous désinscrivez, l&apos;adresse reste dans la liste chez
+            Resend, marquée « désinscrite », pendant 3 ans à compter de la
+            désinscription : elle ne sert plus qu&apos;à ne pas vous écrire
+            de nouveau (liste d&apos;opposition, durée recommandée par la CNIL).
           </li>
           <li>
             <strong>Données de mesure d&apos;audience (Vercel Web Analytics) :</strong>{" "}

@@ -66,9 +66,10 @@ const REV = {
   // Vercel Web Analytics remplace Plausible (mention dans la page)
   analytics: "2026-08-23",
   // /confidentialite : page d'origine jointe aux achats (3.3 et 4), puis le
-  // modèle de suivi gratuit (3.5 et 4). Même date que « Dernière mise à
-  // jour » affichée dans la page (01/10/2026).
-  confidentialite: "2026-10-01",
+  // modèle de suivi gratuit (3.5 et 4), puis la liste d'opposition après
+  // désinscription (5). Même date que « Dernière mise à jour » affichée dans
+  // la page (02/10/2026).
+  confidentialite: "2026-10-02",
   // entrée de changelog sur la régression de série du 2 août ; partenariats
   affiliation: "2026-08-04",
   cgv: "2026-10-01",
