@@ -3,10 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { Menu, Sparkles, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { LogoMark } from "@/components/ui/LogoMark";
-import { UserButton, useUser } from "@clerk/nextjs";
+import { useCompte } from "@/components/compte/etat-compte";
+import { EmplacementClerk } from "@/components/compte/EmplacementClerk";
 import { GuidesMenu } from "@/components/layout/GuidesMenu";
 import { NotificationBell } from "@/components/layout/NotificationBell";
 import { BoutonRecherche, RechercheRacine } from "@/components/search/Recherche";
@@ -33,8 +34,10 @@ const NAV_LINKS = [
 export function Header() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { isSignedIn, isLoaded, user } = useUser();
-  const plan = (user?.publicMetadata?.plan as string | undefined) ?? "free";
+  // Sans Clerk (voir etat-compte.ts) : un visiteur non connecté a ses liens
+  // Connexion / S'inscrire dès l'hydratation ; pour une session, le
+  // placeholder reste jusqu'à ce que Clerk, chargé à part, ait répondu.
+  const { isSignedIn, isLoaded, plan } = useCompte();
   const isPremium = plan === "premium";
 
   return (
@@ -165,9 +168,11 @@ export function Header() {
                 <MenuCompte isPremium={isPremium} />
               </>
             )}
-            {/* Placeholder anti-CLS pendant le chargement Clerk. w-44 ≈ largeur
-                de l'état signed-out (Connexion + S'inscrire, ~170 px mesurés le
-                28/09/2026) — le cas le plus fréquent sur les pages publiques.
+            {/* Placeholder anti-CLS tant que l'état du compte n'est pas
+                connu (rendu serveur, puis chargement de Clerk pour une
+                session). w-44 ≈ largeur de l'état signed-out (Connexion +
+                S'inscrire, ~170 px mesurés le 28/09/2026) — le cas le plus
+                fréquent sur les pages publiques.
                 L'ancien w-24 était trop étroit et créait un shift visible à
                 l'hydratation (AUDIT P4) ; w-48 était trop large d'une vingtaine
                 de pixels, assez pour replier « Comparer les ETF » à 1024 px. */}
@@ -272,23 +277,10 @@ export function Header() {
 }
 
 /**
- * Avatar du compte, avec « Passer à Premium » dans son menu pour les comptes
- * gratuits : le bouton de l'en-tête n'a de place qu'à partir de xl (voir les
- * largeurs mesurées plus haut) ; dans le menu, l'offre reste accessible à
- * toutes les largeurs, téléphone compris.
+ * Avatar du compte (UserButton de Clerk), avec « Passer à Premium » dans son
+ * menu pour les comptes gratuits. Rendu par l'îlot Clerk dans cet
+ * emplacement — le composant lui-même est dans compte/ClerkActif.tsx.
  */
 function MenuCompte({ isPremium }: { isPremium: boolean }) {
-  return (
-    <UserButton>
-      {!isPremium && (
-        <UserButton.MenuItems>
-          <UserButton.Link
-            label="Passer à Premium"
-            labelIcon={<Sparkles size={14} aria-hidden />}
-            href="/tarifs"
-          />
-        </UserButton.MenuItems>
-      )}
-    </UserButton>
-  );
+  return <EmplacementClerk widget={{ type: "menu-compte", isPremium }} />;
 }
