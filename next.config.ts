@@ -110,6 +110,16 @@ const nextConfig: NextConfig = {
         source: "/(recherche|search-index\\.json)",
         headers: [{ key: "X-Robots-Tag", value: "noindex, follow" }],
       },
+      {
+        // Vidéos du bandeau d'accueil : leurs noms portent l'empreinte du
+        // fichier (src/lib/video-accueil.ts), un nouveau rendu change de nom.
+        // On peut donc les garder un an sans jamais revalider ; par défaut,
+        // Vercel sert public/ en « max-age=0, must-revalidate ».
+        source: "/video/:path*",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+        ],
+      },
     ];
   },
 };

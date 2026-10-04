@@ -64,3 +64,6 @@ public/search-index.json
 # Projet vidéo d'accueil : dépendances et rendus locaux
 video-accueil/node_modules
 video-accueil/out
+video-accueil/public/musique.wav
+video-accueil/public/captures/*.png
+!video-accueil/public/captures/classeur/

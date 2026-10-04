@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { HeroDemoCard } from "./HeroDemoCard";
+import { HeroVideo } from "./HeroVideo";
 
-// Hero reste un server component pour la perf SSR. Toute l'interactivité
-// (toggles montant/durée + courbe live) est isolée dans <HeroDemoCard />,
-// le seul "use client" du Hero. Les chiffres ne sont plus dur-codés ici —
-// ils sont calculés côté client à chaque toggle.
+// Hero reste un server component pour la perf SSR. La colonne de droite est
+// la boucle de démonstration (<HeroVideo />, décision du 04/10/2026) : son
+// affiche est rendue côté serveur, seule la lecture est "use client".
+// L'ancienne carte interactive (HeroDemoCard.tsx) reste dans le code, pour
+// pouvoir la replacer plus bas dans la page.
 
 export function Hero() {
   return (
@@ -94,11 +95,12 @@ export function Hero() {
             </div>
           </div>
 
-          {/* ── Right column: interactive demo card ─────────────────────
-              Client component isolé — gère toggles montant + durée et
-              recalcule la projection live. */}
+          {/* ── Right column: boucle de démonstration ───────────────────
+              Carrée, 448 px au plus (tablette), 480 px sur ordinateur ; sur
+              téléphone, pleine largeur sous les boutons. Lien « Regarder
+              avec le son » dessous. */}
           <div className="lg:col-span-5 flex justify-center lg:justify-end">
-            <HeroDemoCard />
+            <HeroVideo />
           </div>
 
         </div>
