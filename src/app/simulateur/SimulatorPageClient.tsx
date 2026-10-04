@@ -149,11 +149,6 @@ export function SimulatorPageClient({ initialOutput, isPremium }: Props) {
       cancelled = true;
     };
   }, [mcInput]);
-  useEffect(() => {
-    return () => {
-      if (mcTimer.current) clearTimeout(mcTimer.current);
-    };
-  }, []);
 
   const urlUpdateTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hasScrolled = useRef(false);
@@ -162,6 +157,45 @@ export function SimulatorPageClient({ initialOutput, isPremium }: Props) {
   // Holds the current ?etfs= URL fragment, or "" if portfolio mode is off.
   // Refs (vs state) avoids re-renders on URL serialization.
   const portfolioFragmentRef = useRef<string>("");
+
+  // Au démontage, on coupe TOUS les timers en attente. Sans ça, le
+  // router.replace débouncé (300 ms) partait après une navigation vers une
+  // autre page et ramenait le visiteur sur /simulateur, et complete_simulation
+  // était tracké après son départ.
+  useEffect(() => {
+    return () => {
+      if (mcTimer.current) clearTimeout(mcTimer.current);
+      if (urlUpdateTimer.current) clearTimeout(urlUpdateTimer.current);
+      if (completeTimer.current) clearTimeout(completeTimer.current);
+    };
+  }, []);
+
+  // Le démontage ne suffit pas : pendant une navigation client, la page reste
+  // montée tant que la suivante n'est pas prête (prefetch pas fini, données
+  // RSC en vol). Un router.replace qui part dans cet intervalle ANNULE la
+  // navigation. On abandonne donc la synchro d'URL en attente dès qu'un clic
+  // sur un lien quitte /simulateur, ou au retour arrière/avant.
+  useEffect(() => {
+    function cancelUrlUpdate() {
+      if (urlUpdateTimer.current) clearTimeout(urlUpdateTimer.current);
+      urlUpdateTimer.current = null;
+    }
+    function onClick(e: MouseEvent) {
+      // Clic qui ouvre un autre onglet / fenêtre : on reste sur la page.
+      if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      const link = e.target instanceof Element ? e.target.closest("a[href]") : null;
+      if (!(link instanceof HTMLAnchorElement)) return;
+      if ((link.target && link.target !== "_self") || link.hasAttribute("download")) return;
+      if (link.pathname === window.location.pathname) return;
+      cancelUrlUpdate();
+    }
+    document.addEventListener("click", onClick, true);
+    window.addEventListener("popstate", cancelUrlUpdate);
+    return () => {
+      document.removeEventListener("click", onClick, true);
+      window.removeEventListener("popstate", cancelUrlUpdate);
+    };
+  }, []);
 
   const handleChange = useCallback(
     (input: SimulatorInput, inflationEnabled: boolean) => {
@@ -200,6 +234,10 @@ export function SimulatorPageClient({ initialOutput, isPremium }: Props) {
 
       if (urlUpdateTimer.current) clearTimeout(urlUpdateTimer.current);
       urlUpdateTimer.current = setTimeout(() => {
+        urlUpdateTimer.current = null;
+        // Filet : l'URL a déjà quitté /simulateur mais le nettoyage du
+        // démontage n'est pas encore passé → ne pas y renvoyer le visiteur.
+        if (window.location.pathname !== "/simulateur") return;
         const qs = paramsToSearch({ input, inflationEnabled });
         if (portfolioFragmentRef.current) {
           qs.set("etfs", portfolioFragmentRef.current);
