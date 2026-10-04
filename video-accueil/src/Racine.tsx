@@ -1,6 +1,7 @@
 import React from "react";
 import { Composition } from "remotion";
 import { Boucle, BOUCLE } from "./boucle/Boucle";
+import { BoucleCockpit, BOUCLE_COCKPIT } from "./cockpit/BoucleCockpit";
 import { Complete, COMPLETE } from "./complete/Complete";
 import { CompleteCarree, COMPLETE_CARREE } from "./carre/CompleteCarree";
 import { Mesure } from "./Mesure";
@@ -10,6 +11,15 @@ export const Racine: React.FC = () => (
   <>
     {/* Boucle muette du bandeau d'accueil (sans piste audio). */}
     <Composition id="Boucle" component={Boucle} width={BOUCLE.largeur} height={BOUCLE.hauteur} fps={BOUCLE.fps} durationInFrames={BOUCLE.duree} />
+    {/* Boucle muette de la page du Cockpit DCA (STORYBOARD-COCKPIT.md), sans piste audio. */}
+    <Composition
+      id="BoucleCockpit"
+      component={BoucleCockpit}
+      width={BOUCLE_COCKPIT.largeur}
+      height={BOUCLE_COCKPIT.hauteur}
+      fps={BOUCLE_COCKPIT.fps}
+      durationInFrames={BOUCLE_COCKPIT.duree}
+    />
     {/* Version complète : musique (public/musique.wav, ou .mp3) et bruitages
         d'interface ; --props='{"bruitages":false}' rend la musique seule. */}
     <Composition

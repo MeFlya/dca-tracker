@@ -1,6 +1,6 @@
 {
   "_avertissement": "Fichier généré par scripts/extraire-donnees.mjs : ne pas modifier à la main.",
-  "genere_le": "2026-10-03T23:58:24.016Z",
+  "genere_le": "2026-10-04T07:50:57.367Z",
   "textes_lus_le": "2026-10-02T19:49:26.497Z",
   "musique": "musique.wav",
   "pastilleAccueil": "Le cockpit DCA pour investisseurs long-terme",
@@ -38,6 +38,26 @@
   },
   "cockpit": {
     "prix": 19
+  },
+  "cockpitBoucle": {
+    "titre": "Cockpit DCA",
+    "complement": [
+      "Tableau de bord PEA",
+      "Excel + Google Sheets"
+    ],
+    "pastille": "19 € · paiement unique",
+    "sousTitrePea": "Plafond, cap des 5 ans, prélèvements sociaux",
+    "dateExemple": "2 octobre 2026",
+    "exemple": {
+      "date": "2026-10-02",
+      "versement": "300 €",
+      "etf": "ETZ",
+      "parts": 14,
+      "montantArrondi": "291,76 €",
+      "reliquat": "8,24 €",
+      "ecart": "-6,7 %",
+      "cap5ans": "15/01/2029"
+    }
   },
   "premium": {
     "mensuel": 4.9,

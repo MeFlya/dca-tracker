@@ -14,6 +14,8 @@ Il produit trois vidéos, fabriquées avec [Remotion](https://www.remotion.dev) 
 
 Le scénario, la charte et la source de chaque texte sont dans `STORYBOARD.md`. Les écarts au storyboard sont listés à la fin de ce fichier.
 
+Une quatrième vidéo, la **boucle du Cockpit** (`BoucleCockpit`, `src/cockpit/BoucleCockpit.tsx`, zones dans `src/zones-cockpit.ts`), est faite pour la page `/produits/template-suivi-dca` : muette, 1080×1080, 570 images (19 s), même mécanique de raccord que la boucle. Son scénario, ses sources et ses règles d'honnêteté sont dans `STORYBOARD-COCKPIT.md` (§8 : premier rendu ; §9 : corrections des relectures). Plans, sources des chiffres, fichiers et commande : section « Boucle du Cockpit » ci-dessous. Intégrée au site le 04/10/2026 (voir « Sur le site » dans cette section).
+
 ## Fichiers finaux (boucle : rendu du 04/10/2026 ; version complète : 02/10/2026)
 
 | Fichier | Taille | Détail |
@@ -52,14 +54,16 @@ npm run captures            # refait les captures du site en production (Playwri
 npm run donnees             # relit prix, nombres d'ETF, date de vérification → src/donnees.json
 npm run sons                # régénère les effets sonores → public/sons/*.wav
 npm run studio              # aperçu interactif dans le navigateur (Remotion Studio)
-npm run rendu               # rend tout (boucle + version complète + version carrée) → out/
+npm run rendu               # rend tout (boucle + boucle du Cockpit + version complète + version carrée) → out/
 npm run rendu -- boucle     # la boucle seule
+npm run rendu -- cockpit    # la boucle de la page du Cockpit → out/boucle-cockpit.webm, .mp4, -affiche.jpg
 npm run rendu -- carre      # la version carrée avec le son, et sa variante musique seule
 npm run rendu -- complete   # la version complète 16:9 seule
 npm run rendu -- complete --sans-bruitages   # la même, musique seule → out/complete-sans-bruitages.mp4
 npm run rendu -- son        # le son seul (WAV), avec et sans bruitages, puis ses mesures → out/musique/
 npm run controle            # images de contrôle + 3 planches contact → out/controle/
 npm run controle -- CompleteCarree   # celles de la version carrée seulement, et sa planche
+npm run controle -- BoucleCockpit    # celles de la boucle du Cockpit, et sa planche
 npm run verifier            # contrôle TypeScript du projet vidéo
 ```
 
@@ -369,6 +373,52 @@ Les relectures de fidélité et d'exactitude de la passe précédente ont été 
 | `out/controle/_scenes-retouchees-343.png` | | Images 0, 555, 100, 135, 210 et 235 du nouveau MP4, réduites à 343 px |
 
 **Contrôles :** `npm run verifier` passe. Raccord : PNG de Remotion identiques (SHA-256) ; images 0 et 569 décodées identiques dans `boucle.mp4` (écart 0) ; écart maximal 27/255 sur 41 pixels dans `boucle.webm`. Les deux vidéos restent sous 1,5 Mo, l'affiche sous 150 Ko. `tsconfig.tsbuildinfo` n'a pas bougé.
+
+## Boucle du Cockpit (rendu du 04/10/2026, après les relectures design et exactitude)
+
+Pour la page `/produits/template-suivi-dca`. Muette, carrée 1080×1080, 30 i/s, 570 images (19 s). Composition `BoucleCockpit` (`src/cockpit/BoucleCockpit.tsx`), zones au pixel dans `src/zones-cockpit.ts`. Le fichier commence sur l'affiche (scénario 255) et y revient : image 0 = image 569 = affiche.
+
+**Plans** (numéros du scénario ; fichier = scénario − 225 à partir de 255, scénario + 315 avant) :
+
+| Plan | Images | Ce qu'on voit | Source des textes |
+|---|---|---|---|
+| P1 | 0 → 74 | « Ce mois-ci, où va votre versement ? » / « Et combien de parts de chaque ETF ? ». Entre dès 534 du tour précédent, pendant que la fin s'éteint | `abstract[1]` (« il vous dit où verser : combien de parts de chaque ETF acheter ») |
+| P2 | 70 → 164 | « Votre répartition » : tableau du Dashboard (ETF, poids, cible, écart ; ni montants ni barres), bande sur ETZ, anneau sur « -6,7 % » | `abstract[0]` (« répartition réelle vs cible ») |
+| P3 (affiche) | 160 → 284 | « Où verser ce mois-ci » : 300,00 € saisis, le calcul se découvre, bande sur ETZ, anneau sur « 14 », puis « → 14 parts d'ETZ » en grand | `features[1]` ; la réponse vient de `donnees.json` |
+| P4 | 280 → 374 | « Le tableau de bord » : Valeur, Total versé, Frais de courtage ; un anneau sur Valeur | `features[0]` ; sous-titre « recalculés depuis vos achats » (sens du classeur, vrai en Excel comme en Sheets) |
+| P5 | 370 → 460 | « Pensé pour le PEA » : taux, plafond utilisé, cap des 5 ans ; un anneau sur la date du cap | `abstract[2]`, sous-titre copié par le script |
+| P6 | 452 → 539 | Logo, « Cockpit DCA », « Tableau de bord PEA » / « Excel + Google Sheets », pastille « 19 € · paiement unique » | `titreHero`, `priceEur` |
+
+**Sources des chiffres.** Aucun chiffre n'est écrit dans le code. Les montants et pourcentages sont les **pixels des captures** du fichier livré : `public/captures/classeur/cockpit-v2-*.png`, de même empreinte SHA-256 que `public/produits/` du site, et la fenêtre du versement `public/captures/cockpit-bureau-fenetre-versement.png` (non versionnée, relue à l'œil, empreinte inscrite dans `AFFICHE_RELUE`). Le prix, la date de l'exemple et la réponse « 14 parts d'ETZ » viennent de `src/donnees.json`, clé `cockpitBoucle`. `scripts/extraire-donnees.mjs` la remplit et **recalcule l'exemple** avec `src/lib/cockpit-exemple.ts` du site : 300 € → 14 parts d'ETZ (291,76 €, reliquat 8,24 €), ETZ seul sous sa cible à -6,7 %, cap des 5 ans au 15/01/2029. Au moindre écart avec la fiche, le code du site ou les captures, il arrête le rendu.
+
+**Honnêteté.** Chaque fenêtre arrive avec sa mention, sans aucune image où des montants seraient lisibles sans elle : « Exemple pré-rempli, extraits du fichier : achats fictifs, cours (de clôture) du 2 octobre 2026 » (P2, P4), « Exemple pré-rempli, extraits du fichier » (P5), « Exemple pré-rempli, extrait du fichier » et « Calcul sur l'allocation que vous fixez, pas un conseil » (P3). Aucun pourcentage de performance n'est montré : ni plus-value, ni TRI chiffré. Aucun cours n'est présenté comme actuel.
+
+**Fichiers** (`out/`, ignoré par git) :
+
+| Fichier | Taille | Détail |
+|---|---|---|
+| `boucle-cockpit.mp4` | 1,41 Mo (1 482 110 o) | H.264 QP 24, BT.709, sans piste audio, `moov` avant `mdat` |
+| `boucle-cockpit.webm` | 1,04 Mo (1 091 008 o) | VP9 CRF 32, deux passes |
+| `boucle-cockpit-affiche.jpg` | 100 Ko (102 302 o) | Image 0 |
+| `controle/_planche-bouclecockpit.png` | | Les 28 images de contrôle (Remotion), dont la 1re image de chaque plan où la fenêtre dépasse 0,5 d'opacité |
+| `controle/decode-cockpit-v2/` | | 24 images décodées du MP4 livré, réduites à 343 et 480 px, et leurs planches `_planche-343.png`, `_planche-480.png` |
+
+**Contrôles.** `npm run verifier` passe. Raccord : PNG de Remotion des images 0 et 569 identiques (SHA-256) ; MP4 décodé : écart 0 ; WebM décodé : 22/255 au plus, sur 30 pixels au-delà de 16. Affiche face à l'image 0 décodée : écart moyen par canal 2,66 / 2,48 / 2,60 (biais de décodage de ffmpeg, équivalent à la boucle d'accueil). Images sombres entre deux plans : 5 au plus, sauf P5 → P6 (8 images, mais le carré bleu du logo y est posé dès la 3e). À 343 px, on lit le « 14 », la réponse, le « -6,7 % », le « 15/01/2029 » et toutes les mentions. `tsconfig.tsbuildinfo` n'a pas bougé.
+
+**Commandes.**
+
+```bash
+npm run rendu -- cockpit             # relit les données, rend la boucle → out/boucle-cockpit.webm, .mp4, -affiche.jpg (environ 4 min)
+npm run controle -- BoucleCockpit    # images de contrôle et planche → out/controle/
+```
+
+**Sur le site (intégration du 04/10/2026).**
+- Fichiers copiés sous des noms versionnés : `public/video/boucle-cockpit-0f77d257.webm`, `boucle-cockpit-e4bb9328.mp4`, `boucle-cockpit-affiche-002e8e24.jpg` (8 premiers caractères du SHA-256). Noms dans `src/lib/video-accueil.ts` (`VIDEO_COCKPIT`), chiffres gravés dans `DANS_LA_VIDEO_COCKPIT`.
+- `src/components/products/VideoCockpit.tsx` remplace, pour le seul Cockpit, la fenêtre statique « Versement du mois » du bandeau (`ProductVisual`), sous le bouton d'achat. Lecteur : `HeroVideoLecteur`, variante « produit », sans version avec le son, bouton pause en haut à droite.
+- Garde-fou au build : prix, titre, date de l'exemple, poids et cibles, parts, valeur, total versé, frais, taux des prélèvements sociaux, plafond utilisé et cap des 5 ans sont recalculés depuis `cockpit-exemple.ts`, `products.ts` et le barème fiscal. Au moindre écart, la page reprend `ProductVisual` et le build affiche « [vidéo du Cockpit] PÉRIMÉE ».
+- **Après un nouveau rendu :** recopier les trois fichiers sous leur nouveau nom (même commande que pour l'accueil, en tête de `video-accueil.ts`), mettre à jour `VIDEO_COCKPIT` et `DANS_LA_VIDEO_COCKPIT`, puis supprimer les anciens fichiers de `public/video/`.
+
+**À arbitrer par Maël.** Réordonner le scénario (P4, P5, P1, P2, P3, P6) pour montrer la réponse et le prix dans les 4 premières secondes ; l'affiche porte déjà la réponse en grand.
 
 ## Plan d'intégration (après validation de Maël)
 

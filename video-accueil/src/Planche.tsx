@@ -5,14 +5,16 @@
 import React from "react";
 import { AbsoluteFill, Freeze } from "remotion";
 import { Boucle, BOUCLE } from "./boucle/Boucle";
+import { BoucleCockpit, BOUCLE_COCKPIT } from "./cockpit/BoucleCockpit";
 import { Complete, COMPLETE } from "./complete/Complete";
 import { CompleteCarree, COMPLETE_CARREE } from "./carre/CompleteCarree";
 
-export type PlancheProps = { id: "Boucle" | "Complete" | "CompleteCarree"; images: number[] };
+export type PlancheProps = { id: "Boucle" | "BoucleCockpit" | "Complete" | "CompleteCarree"; images: number[] };
 
-/** Dimensions et composant de chaque composition (Boucle et CompleteCarree sont carrées). */
+/** Dimensions et composant de chaque composition (Boucle, BoucleCockpit et CompleteCarree sont carrées). */
 const COMPOSITIONS = {
   Boucle: { c: BOUCLE, Comp: Boucle },
+  BoucleCockpit: { c: BOUCLE_COCKPIT, Comp: BoucleCockpit },
   Complete: { c: COMPLETE, Comp: Complete },
   CompleteCarree: { c: COMPLETE_CARREE, Comp: CompleteCarree },
 } as const;

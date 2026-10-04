@@ -5,10 +5,11 @@
 // Lancer : npm run controle               (toutes les images + planches)
 //          npm run controle -- CompleteCarree (les images par défaut d'une seule
 //                                              composition, et sa planche)
+//          npm run controle -- BoucleCockpit  (boucle de la page du Cockpit)
 //          npm run controle -- Boucle:0,97 Complete:300,315   (images choisies)
 // Sortie : out/controle/<composition>-<image>.png
-//          out/controle/_planche-boucle.png, _planche-complete.png,
-//          _planche-completecarree.png
+//          out/controle/_planche-boucle.png, _planche-bouclecockpit.png,
+//          _planche-complete.png, _planche-completecarree.png
 //
 // Les numéros de la boucle sont ceux du FICHIER rendu (570 images), qui
 // commence sur l'état final du simulateur ; entre parenthèses, l'image du
@@ -49,6 +50,39 @@ const PAR_DEFAUT = {
     530, // (165) le compteur défile, sans sous-titre
     555, // (190) compteur arrivé, le sous-titre apparaît
     569, // (204) dernière image = image 0
+  ],
+  // Boucle du Cockpit (STORYBOARD-COCKPIT.md). Numéros du FICHIER (570
+  // images, qui commence sur l'affiche) ; entre parenthèses, l'image du
+  // scénario : fichier = scénario − 225 à partir de 255, scénario + 315 avant.
+  BoucleCockpit: [
+    0, // (255) affiche : ligne d'ETZ, anneau du « 14 », « → 14 parts d'ETZ »
+    52, // (277) P3 recule
+    61, // (286) P4 : la fenêtre entre, les cases avec elle
+    65, // (290) P4 : 1re image où la fenêtre dépasse 0,5 d'opacité (mention ?)
+    80, // (305) les cases sont posées
+    115, // (340) anneau « Valeur » seul
+    155, // (380) P5 : 1re image où la fenêtre dépasse 0,5 (mention ?)
+    185, // (410) anneau du cap des 5 ans
+    215, // (440) P5 posé
+    232, // (457) P5 presque sortie, le carré du logo apparaît
+    240, // (465) le logo se trace, le nom entre
+    290, // (515) fin : nom, formats, prix
+    307, // (532) la fin s'éteint
+    310, // (535) la question entre déjà
+    314, // (539) dernière image du scénario : la question entre
+    315, // (0) reprise : même état qu'en 539, une image plus loin
+    317, // (2) la question entre
+    345, // (30) la question
+    381, // (66) sortie de la question
+    394, // (79) P2 : 1re image où la fenêtre dépasse 0,5 (mention ?)
+    418, // (103) bande sur la ligne d'ETZ
+    440, // (125) anneau « -6,7 % »
+    472, // (157) sortie de P2
+    485, // (170) P3 : 1re image où la fenêtre dépasse 0,5 (mention ?)
+    515, // (200) anneau « 300,00 € »
+    530, // (215) le calcul se découvre, la bande d'ETZ arrive
+    545, // (230) anneau du « 14 », la réponse entre
+    569, // (254) dernière image = image 0
   ],
   // C1 | C2 | C3 (réglages, compteur, scénarios) | C4 | C5 | C6 | C7 | C8 | C9
   Complete: [0, 30, 75, 100, 130, 196, 230, 255, 265, 290, 320, 375, 395, 440, 465, 500, 545, 590, 615, 660, 700, 715, 735, 770, 820, 845, 880, 899],

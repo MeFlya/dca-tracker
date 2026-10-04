@@ -2,6 +2,9 @@
 //
 // Lancer : npm run rendu                 (tout)
 //          npm run rendu -- boucle       (la boucle seule)
+//          npm run rendu -- cockpit      (la boucle de la page du Cockpit :
+//                                         out/boucle-cockpit.webm, .mp4 et
+//                                         out/boucle-cockpit-affiche.jpg)
 //          npm run rendu -- complete     (la version complète 16:9 seule)
 //          npm run rendu -- carre        (la version carrée avec le son,
 //                                         et sa variante musique seule)
@@ -62,6 +65,7 @@ const CRF_BOUCLE_VP9 = process.env.CRF_BOUCLE_VP9 ?? "32";
 const CRF_COMPLETE = process.env.CRF_COMPLETE ?? "20";
 const OBJECTIF_BOUCLE = 1.5 * 1024 * 1024; // 1,5 Mo
 const OBJECTIF_POSTER = 150 * 1024; // 150 Ko
+const OBJECTIF_AFFICHE_COCKPIT = 120 * 1024; // 120 Ko (STORYBOARD-COCKPIT.md §2)
 
 const options = process.argv.slice(2).filter((a) => a.startsWith("--"));
 const quoi = process.argv.slice(2).find((a) => !a.startsWith("--")) ?? "tout";
@@ -69,13 +73,14 @@ for (const o of options) if (o !== "--sans-bruitages") throw new Error(`Option i
 const sansBruitages = options.includes("--sans-bruitages");
 // La boucle est muette : --sans-bruitages ne la concerne pas, et ne la refait jamais.
 const faireBoucle = (quoi === "tout" || quoi === "boucle") && !sansBruitages;
+const faireCockpit = (quoi === "tout" || quoi === "cockpit") && !sansBruitages;
 const faireComplete = quoi === "tout" || quoi === "complete";
 const faireSon = quoi === "son";
 // La version carrée produit toujours ses deux fichiers (avec et sans
 // bruitages) : --sans-bruitages ne la concerne pas.
 const faireCarre = (quoi === "tout" && !sansBruitages) || quoi === "carre";
-if (!faireBoucle && !faireComplete && !faireSon && !faireCarre)
-  throw new Error(`À rendre : tout, boucle, complete, carre ou son (reçu : ${quoi})`);
+if (!faireBoucle && !faireCockpit && !faireComplete && !faireSon && !faireCarre)
+  throw new Error(`À rendre : tout, boucle, cockpit, complete, carre ou son (reçu : ${quoi})`);
 /** Props des compositions sonores : musique seule si --sans-bruitages. */
 const PROPS_SANS_BRUITAGES = `--props=${JSON.stringify({ bruitages: false })}`;
 
@@ -124,9 +129,14 @@ function pistes(fichier) {
 await mkdir(MAITRE, { recursive: true });
 const bilan = [];
 
-if (faireBoucle) {
-  const maitre = path.join(MAITRE, "boucle.mov");
-  lancer(["remotion", "render", "src/index.ts", "Boucle", maitre, "--codec=prores", "--prores-profile=hq", "--image-format=png", "--color-space=bt709", "--muted"]);
+/**
+ * Une boucle muette (Boucle de l'accueil, BoucleCockpit de la page du
+ * Cockpit) : master ProRes, MP4 H.264 en QP constant, WebM VP9 en deux passes,
+ * affiche (image 0), et contrôle du raccord. Mêmes réglages pour les deux.
+ */
+async function rendreBoucle({ id, nom, affiche, objectifAffiche }) {
+  const maitre = path.join(MAITRE, `${nom}.mov`);
+  lancer(["remotion", "render", "src/index.ts", id, maitre, "--codec=prores", "--prores-profile=hq", "--image-format=png", "--color-space=bt709", "--muted"]);
 
   // Raccord (relecture de fidélité du 04/10) : avec -g 600, tout le fichier
   // était un seul groupe d'images ; décodée, la dernière image (prédite)
@@ -150,14 +160,14 @@ if (faireBoucle) {
   const derniere = nbImages - 1;
 
   // H.264 : profil High, yuv420p (lecture partout, iOS compris), moov en tête.
-  const mp4 = path.join(OUT, "boucle.mp4");
+  const mp4 = path.join(OUT, `${nom}.mp4`);
   ffmpeg(["-i", maitre, "-an", "-c:v", "libx264", "-preset", "veryslow", "-tune", "animation", "-qp", QP_BOUCLE_H264,
     "-pix_fmt", "yuv420p", ...BT709, "-profile:v", "high", "-level", "4.0", "-g", "600",
     "-force_key_frames", `expr:eq(n,0)+eq(n,${derniere})`, "-movflags", "+faststart", mp4]);
 
   // VP9 en deux passes (qualité constante, -b:v 0).
-  const webm = path.join(OUT, "boucle.webm");
-  const journal = path.join(MAITRE, "vp9");
+  const webm = path.join(OUT, `${nom}.webm`);
+  const journal = path.join(MAITRE, `vp9-${nom}`);
   ffmpeg(["-i", maitre, "-an", "-c:v", "libvpx-vp9", "-b:v", "0", "-crf", CRF_BOUCLE_VP9, "-pix_fmt", "yuv420p", ...BT709, "-row-mt", "1",
     "-deadline", "good", "-cpu-used", "1", "-g", "600", "-pass", "1", "-passlogfile", journal, "-f", "null", "-"]);
   ffmpeg(["-i", maitre, "-an", "-c:v", "libvpx-vp9", "-b:v", "0", "-crf", CRF_BOUCLE_VP9, "-pix_fmt", "yuv420p", ...BT709, "-row-mt", "1",
@@ -165,15 +175,15 @@ if (faireBoucle) {
 
   // Affiche : l'image 0 (titre, compteur arrivé, graphique ; identique à la
   // dernière). Elle sert aussi d'image fixe pour prefers-reduced-motion.
-  const poster = path.join(OUT, "poster.jpg");
-  lancer(["remotion", "still", "src/index.ts", "Boucle", poster, "--frame=0", "--image-format=jpeg", "--jpeg-quality=80"]);
-  await rm(path.join(OUT, "image-fixe.jpg"), { force: true }); // ancienne image fixe : c'est désormais l'affiche
+  const poster = path.join(OUT, affiche);
+  lancer(["remotion", "still", "src/index.ts", id, poster, "--frame=0", "--image-format=jpeg", "--jpeg-quality=80"]);
+  if (id === "Boucle") await rm(path.join(OUT, "image-fixe.jpg"), { force: true }); // ancienne image fixe : c'est désormais l'affiche
 
   // La boucle se referme-t-elle sans à-coup ? Première et dernière images, en PNG.
-  const i0 = path.join(MAITRE, "boucle-premiere.png");
-  const i539 = path.join(MAITRE, "boucle-derniere.png");
-  lancer(["remotion", "still", "src/index.ts", "Boucle", i0, "--frame=0", "--image-format=png"]);
-  lancer(["remotion", "still", "src/index.ts", "Boucle", i539, "--frame=-1", "--image-format=png"]);
+  const i0 = path.join(MAITRE, `${nom}-premiere.png`);
+  const i539 = path.join(MAITRE, `${nom}-derniere.png`);
+  lancer(["remotion", "still", "src/index.ts", id, i0, "--frame=0", "--image-format=png"]);
+  lancer(["remotion", "still", "src/index.ts", id, i539, "--frame=-1", "--image-format=png"]);
   const h = async (f) => createHash("sha256").update(await readFile(f)).digest("hex");
   let raccord;
   if ((await h(i0)) === (await h(i539))) raccord = "première et dernière images identiques (même empreinte SHA-256)";
@@ -194,7 +204,7 @@ if (faireBoucle) {
   // Remotion). Attendu : 0 pour le MP4 ; environ 25/255 pour le WebM.
   async function raccordDecode(fichier) {
     // (L'ffmpeg de Remotion n'a pas le filtre select : trim pour la dernière.)
-    const motif = path.join(MAITRE, `raccord-${path.extname(fichier).slice(1)}-%d.png`);
+    const motif = path.join(MAITRE, `raccord-${nom}-${path.extname(fichier).slice(1)}-%d.png`);
     const [p0, pN] = [motif.replace("%d", "0"), motif.replace("%d", String(derniere))];
     ffmpeg(["-i", fichier, "-frames:v", "1", "-pix_fmt", "rgb24", p0]);
     ffmpeg(["-i", fichier, "-vf", `trim=start_frame=${derniere}`, "-frames:v", "1", "-pix_fmt", "rgb24", pN]);
@@ -211,17 +221,40 @@ if (faireBoucle) {
   }
   const raccordMp4 = await raccordDecode(mp4), raccordWebm = await raccordDecode(webm);
 
+  // L'affiche JPEG face à l'image 0 du MP4, décodés tous deux par ffmpeg :
+  // écart moyen par canal. Mesure du 04/10 : 2,2 à 2,6 niveaux pour la
+  // boucle d'accueil comme pour celle du Cockpit (biais d'environ −2 propre au
+  // décodage de ffmpeg ; dans Chrome, la relecture du 02/10 mesurait 0,2 à
+  // 0,3). Sert à repérer une affiche qui ne serait pas l'image 0.
+  {
+    const p0 = path.join(MAITRE, `raccord-${nom}-mp4-0.png`);
+    const affichePng = path.join(MAITRE, `${nom}-affiche.png`);
+    ffmpeg(["-i", poster, "-pix_fmt", "rgb24", affichePng]);
+    const a = lirePng(p0), b = lirePng(affichePng);
+    const somme = [0, 0, 0];
+    for (let y = 0; y < a.h; y++) for (let x = 0; x < a.w; x++) {
+      const p = a.get(x, y), q = b.get(x, y);
+      for (let i = 0; i < 3; i++) somme[i] += Math.abs(p[i] - q[i]);
+    }
+    const moyennes = somme.map((v) => (v / a.w / a.h).toFixed(2));
+    bilan.push(`Affiche ${rel(poster)} face à l'image 0 décodée de ${rel(mp4)} : écart moyen par canal ${moyennes.join(" / ")} (attendu : environ 2,5 avec ffmpeg)`);
+  }
+
   const sMp4 = (await stat(mp4)).size, sWebm = (await stat(webm)).size, sPoster = (await stat(poster)).size;
   const infoMp4 = pistes(mp4), infoWebm = pistes(webm);
   bilan.push(
     `${rel(mp4)} : ${mo(sMp4)} ${sMp4 <= OBJECTIF_BOUCLE ? "(objectif 1,5 Mo tenu)" : "(AU-DESSUS de 1,5 Mo)"} — QP ${QP_BOUCLE_H264}, pistes : ${infoMp4.streams.map(decrire).join(", ")}, boîtes : ${(await boitesMp4(mp4)).join(" > ")}`,
     `${rel(webm)} : ${mo(sWebm)} ${sWebm <= OBJECTIF_BOUCLE ? "(objectif 1,5 Mo tenu)" : "(AU-DESSUS de 1,5 Mo)"} — CRF ${CRF_BOUCLE_VP9}, pistes : ${infoWebm.streams.map(decrire).join(", ")}`,
-    `${rel(poster)} : ${ko(sPoster)} ${sPoster <= OBJECTIF_POSTER ? "(objectif 150 Ko tenu)" : "(AU-DESSUS de 150 Ko)"}`,
-    `Raccord de la boucle : ${raccord}`,
+    `${rel(poster)} : ${ko(sPoster)} ${sPoster <= objectifAffiche ? `(objectif ${ko(objectifAffiche)} tenu)` : `(AU-DESSUS de ${ko(objectifAffiche)})`}`,
+    `Raccord de ${id} : ${raccord}`,
     `Raccord décodé : ${raccordMp4}`,
     `Raccord décodé : ${raccordWebm}`
   );
 }
+
+if (faireBoucle) await rendreBoucle({ id: "Boucle", nom: "boucle", affiche: "poster.jpg", objectifAffiche: OBJECTIF_POSTER });
+// Boucle de la page du Cockpit (STORYBOARD-COCKPIT.md) : affiche visée sous 120 Ko.
+if (faireCockpit) await rendreBoucle({ id: "BoucleCockpit", nom: "boucle-cockpit", affiche: "boucle-cockpit-affiche.jpg", objectifAffiche: OBJECTIF_AFFICHE_COCKPIT });
 
 if (faireComplete) {
   const suffixe = sansBruitages ? "-sans-bruitages" : "";
