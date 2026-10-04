@@ -6,7 +6,7 @@
 // 1. La <video> n'a NI autoplay NI source dans le HTML. `autoplay` l'emporte
 //    sur `preload` et ferait télécharger toute la boucle dès l'arrivée. Les
 //    sources (WebM puis MP4) sont posées ici, après l'événement `load` de la
-//    page ET quand le cadre est visible.
+//    page, après son premier rendu ET quand le cadre est visible.
 // 2. Moins d'animations demandées (prefers-reduced-motion) ou économiseur de
 //    données : jamais de vidéo, l'affiche reste (elle porte l'information).
 // 3. La boucle fait TOURS tours puis s'arrête sur sa dernière image, identique
@@ -140,9 +140,19 @@ export function HeroVideoLecteur({
       .connection;
     const economieDeDonnees = connexion?.saveData === true;
     let pageChargee = document.readyState === "complete";
+    // Premier rendu de la page déjà affiché ? Sur un appareil lent (et sur la
+    // machine de PageSpeed), l'événement `load` peut précéder le premier
+    // rendu : la boucle (près de 1 Mo) partait alors avant que le texte du
+    // bandeau ne s'affiche, et PageSpeed la comptait dans le LCP mobile
+    // (mesuré le 04/10/2026). Sans Paint Timing (vieux navigateurs), on ne
+    // l'attend pas.
+    let premierRendu =
+      typeof PerformanceObserver === "undefined" ||
+      !PerformanceObserver.supportedEntryTypes?.includes("paint") ||
+      performance.getEntriesByName("first-contentful-paint").length > 0;
 
     function charger() {
-      if (!v || s.chargee || !s.visible || !pageChargee) return;
+      if (!v || s.chargee || !s.visible || !pageChargee || !premierRendu) return;
       if (preferenceMouvement.matches || economieDeDonnees) return;
       s.chargee = true;
       v.muted = true;
@@ -196,11 +206,33 @@ export function HeroVideoLecteur({
     }
     document.addEventListener("visibilitychange", surVisibilitePage);
 
+    function rendu() {
+      if (premierRendu) return;
+      premierRendu = true;
+      observateurRendu?.disconnect();
+      charger();
+    }
+    let observateurRendu: PerformanceObserver | undefined;
+    if (!premierRendu) {
+      observateurRendu = new PerformanceObserver((liste) => {
+        if (liste.getEntriesByName("first-contentful-paint").length > 0) rendu();
+      });
+      observateurRendu.observe({ type: "paint", buffered: true });
+    }
+    // Filet de sécurité : si le premier rendu n'était jamais signalé (cas non
+    // prévu), la boucle part quand même 3 s après `load`.
+    let filet: number | undefined;
+    function armerFilet() {
+      if (!premierRendu) filet = window.setTimeout(rendu, 3000);
+    }
+
     function surChargement() {
       pageChargee = true;
+      armerFilet();
       charger();
     }
     if (!pageChargee) window.addEventListener("load", surChargement, { once: true });
+    else armerFilet();
 
     // « Moins d'animations » activé en cours de route : on arrête, même si la
     // boucle était déjà en pause (hors de l'écran, onglet caché, fenêtre
@@ -221,6 +253,8 @@ export function HeroVideoLecteur({
       observateur.disconnect();
       document.removeEventListener("visibilitychange", surVisibilitePage);
       window.removeEventListener("load", surChargement);
+      observateurRendu?.disconnect();
+      window.clearTimeout(filet);
       preferenceMouvement.removeEventListener("change", surPreference);
       if (s.defilementBloque) debloquerDefilement();
     };

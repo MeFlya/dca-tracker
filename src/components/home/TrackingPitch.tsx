@@ -28,7 +28,16 @@ const BULLETS = [
   {
     Icon: Mail,
     title: "Email mensuel",
-    text: "Résumé personnalisé le 1ᵉʳ de chaque mois. Vos chiffres, vos insights, rien d'autre.",
+    // « 1<sup>er</sup> » et pas « 1ᵉʳ » : les lettres en exposant Unicode
+    // (U+1D49, U+02B3) ne sont pas dans le sous-ensemble latin d'Inter, et ces
+    // deux caractères suffisaient à faire télécharger sur chaque visite de
+    // l'accueil le fichier « latin-ext » de la police (85 Ko, mesuré le
+    // 04/10/2026).
+    text: (
+      <>
+        Résumé personnalisé le 1<sup>er</sup> de chaque mois. Vos chiffres, vos insights, rien d&apos;autre.
+      </>
+    ),
   },
   {
     Icon: Flame,

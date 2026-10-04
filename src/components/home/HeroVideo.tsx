@@ -91,12 +91,19 @@ export function HeroVideo() {
     <HeroVideoLecteur descriptionAvecSon={descriptionAvecSon}>
       {/* Pas de next/image : l'affiche doit rester identique au pixel près à
           la première image de la vidéo, sans recompression. */}
+      {/* Priorité BASSE sur la balise elle-même : sur téléphone, l'affiche
+          n'est pas l'élément LCP (c'est le sous-titre du bandeau), et en
+          priorité moyenne ses 88 Ko passaient avant le JavaScript et
+          comptaient dans le LCP simulé de PageSpeed (mesuré le 04/10/2026).
+          Sur ordinateur, rien ne change : la balise reprend le préchargement
+          ci-dessus, déjà lancé en priorité haute. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={affiche}
         width={largeur}
         height={hauteur}
         alt={description}
+        fetchPriority="low"
         decoding="async"
         className="absolute inset-0 block w-full h-full object-cover"
       />
