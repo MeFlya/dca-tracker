@@ -1,0 +1,34 @@
+{
+  "name": "dcatracker-video-accueil",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Vidéo d'accueil de dcatracker.fr : boucle muette (15-20 s) et version complète avec son (~30 s). Projet isolé du site : aucune dépendance ajoutée au package.json racine.",
+  "type": "module",
+  "scripts": {
+    "captures": "node scripts/captures.mjs",
+    "donnees": "node scripts/extraire-donnees.mjs",
+    "sons": "node scripts/generer-sons.mjs",
+    "musique": "python3 musique/composer.py && python3 musique/analyse.py",
+    "studio": "npm run donnees && remotion studio src/index.ts",
+    "controle": "npm run donnees && node scripts/images-controle.mjs",
+    "rendu": "npm run donnees && node scripts/rendre.mjs",
+    "verifier": "tsc --noEmit -p ."
+  },
+  "devDependencies": {
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "playwright": "^1.63.0",
+    "typescript": "7.0.2"
+  },
+  "dependencies": {
+    "@remotion/bundler": "4.0.532",
+    "@remotion/cli": "4.0.532",
+    "@remotion/google-fonts": "4.0.532",
+    "@remotion/motion-blur": "4.0.532",
+    "@remotion/renderer": "4.0.532",
+    "@remotion/transitions": "4.0.532",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "remotion": "4.0.532"
+  }
+}

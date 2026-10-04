@@ -1,0 +1,55 @@
+{
+  "site": "https://dcatracker.fr",
+  "lu_le": "2026-10-02T19:49:26.497Z",
+  "textes": {
+    "accueil": {
+      "titre": "Combien peut valoir votre argent dans 20 ans ?",
+      "chiffres_site": "CE QUE CONTIENT LE SITE\n\nCOMPARATIFS ETF DOCUMENTÉS\n\n8\n\nMOIS DE DONNÉES RÉELLES DEPUIS 2008\n\n225\n\nTERMES EXPLIQUÉS AU GLOSSAIRE\n\n15",
+      "carte_demo": {
+        "100 € · 10 ans": "MONTANT\n100 €\n200 €\n500 €\n1000 €\nDURÉE\n10 ans\n20 ans\n30 ans\n\nPROJECTION\n\n100 €/mois · 10 ans · 7 %/an, frais de 0,38 % déduits\n\n+ 41 %\n\nInvestis\n\n12 000 €\n\nProjetés\n\n16 900 €\n\nGains\n\n+ 4 900 €\n\nCroissance sur 10 ans\n29 % d'intérêts\nMultiplicateur du capital\n× 1,41\nTester avec mes chiffres\n→",
+        "100 € · 20 ans": "MONTANT\n100 €\n200 €\n500 €\n1000 €\nDURÉE\n10 ans\n20 ans\n30 ans\n\nPROJECTION\n\n100 €/mois · 20 ans · 7 %/an, frais de 0,38 % déduits\n\n+ 104 %\n\nInvestis\n\n24 000 €\n\nProjetés\n\n48 900 €\n\nGains\n\n+ 24 900 €\n\nCroissance sur 20 ans\n51 % d'intérêts\nMultiplicateur du capital\n× 2,04\nTester avec mes chiffres\n→",
+        "100 € · 30 ans": "MONTANT\n100 €\n200 €\n500 €\n1000 €\nDURÉE\n10 ans\n20 ans\n30 ans\n\nPROJECTION\n\n100 €/mois · 30 ans · 7 %/an, frais de 0,38 % déduits\n\n+ 205 %\n\nInvestis\n\n36 000 €\n\nProjetés\n\n109 700 €\n\nGains\n\n+ 73 700 €\n\nCroissance sur 30 ans\n67 % d'intérêts\nMultiplicateur du capital\n× 3,05\nTester avec mes chiffres\n→",
+        "200 € · 10 ans": "MONTANT\n100 €\n200 €\n500 €\n1000 €\nDURÉE\n10 ans\n20 ans\n30 ans\n\nPROJECTION\n\n200 €/mois · 10 ans · 7 %/an, frais de 0,38 % déduits\n\n+ 41 %\n\nInvestis\n\n24 000 €\n\nProjetés\n\n33 700 €\n\nGains\n\n+ 9 700 €\n\nCroissance sur 10 ans\n29 % d'intérêts\nMultiplicateur du capital\n× 1,41\nTester avec mes chiffres\n→",
+        "200 € · 20 ans": "MONTANT\n100 €\n200 €\n500 €\n1000 €\nDURÉE\n10 ans\n20 ans\n30 ans\n\nPROJECTION\n\n200 €/mois · 20 ans · 7 %/an, frais de 0,38 % déduits\n\n+ 104 %\n\nInvestis\n\n48 000 €\n\nProjetés\n\n97 800 €\n\nGains\n\n+ 49 800 €\n\nCroissance sur 20 ans\n51 % d'intérêts\nMultiplicateur du capital\n× 2,04\nTester avec mes chiffres\n→",
+        "200 € · 30 ans": "MONTANT\n100 €\n200 €\n500 €\n1000 €\nDURÉE\n10 ans\n20 ans\n30 ans\n\nPROJECTION\n\n200 €/mois · 30 ans · 7 %/an, frais de 0,38 % déduits\n\n+ 205 %\n\nInvestis\n\n72 000 €\n\nProjetés\n\n219 300 €\n\nGains\n\n+ 147 300 €\n\nCroissance sur 30 ans\n67 % d'intérêts\nMultiplicateur du capital\n× 3,05\nTester avec mes chiffres\n→",
+        "500 € · 10 ans": "MONTANT\n100 €\n200 €\n500 €\n1000 €\nDURÉE\n10 ans\n20 ans\n30 ans\n\nPROJECTION\n\n500 €/mois · 10 ans · 7 %/an, frais de 0,38 % déduits\n\n+ 41 %\n\nInvestis\n\n60 000 €\n\nProjetés\n\n84 300 €\n\nGains\n\n+ 24 300 €\n\nCroissance sur 10 ans\n29 % d'intérêts\nMultiplicateur du capital\n× 1,41\nTester avec mes chiffres\n→",
+        "500 € · 20 ans": "MONTANT\n100 €\n200 €\n500 €\n1000 €\nDURÉE\n10 ans\n20 ans\n30 ans\n\nPROJECTION\n\n500 €/mois · 20 ans · 7 %/an, frais de 0,38 % déduits\n\n+ 104 %\n\nInvestis\n\n120 000 €\n\nProjetés\n\n244 400 €\n\nGains\n\n+ 124 400 €\n\nCroissance sur 20 ans\n51 % d'intérêts\nMultiplicateur du capital\n× 2,04\nTester avec mes chiffres\n→",
+        "500 € · 30 ans": "MONTANT\n100 €\n200 €\n500 €\n1000 €\nDURÉE\n10 ans\n20 ans\n30 ans\n\nPROJECTION\n\n500 €/mois · 30 ans · 7 %/an, frais de 0,38 % déduits\n\n+ 205 %\n\nInvestis\n\n180 000 €\n\nProjetés\n\n548 300 €\n\nGains\n\n+ 368 300 €\n\nCroissance sur 30 ans\n67 % d'intérêts\nMultiplicateur du capital\n× 3,05\nTester avec mes chiffres\n→",
+        "1000 € · 10 ans": "MONTANT\n100 €\n200 €\n500 €\n1000 €\nDURÉE\n10 ans\n20 ans\n30 ans\n\nPROJECTION\n\n1000 €/mois · 10 ans · 7 %/an, frais de 0,38 % déduits\n\n+ 41 %\n\nInvestis\n\n120 000 €\n\nProjetés\n\n168 600 €\n\nGains\n\n+ 48 600 €\n\nCroissance sur 10 ans\n29 % d'intérêts\nMultiplicateur du capital\n× 1,41\nTester avec mes chiffres\n→",
+        "1000 € · 20 ans": "MONTANT\n100 €\n200 €\n500 €\n1000 €\nDURÉE\n10 ans\n20 ans\n30 ans\n\nPROJECTION\n\n1000 €/mois · 20 ans · 7 %/an, frais de 0,38 % déduits\n\n+ 104 %\n\nInvestis\n\n240 000 €\n\nProjetés\n\n488 800 €\n\nGains\n\n+ 248 800 €\n\nCroissance sur 20 ans\n51 % d'intérêts\nMultiplicateur du capital\n× 2,04\nTester avec mes chiffres\n→",
+        "1000 € · 30 ans": "MONTANT\n100 €\n200 €\n500 €\n1000 €\nDURÉE\n10 ans\n20 ans\n30 ans\n\nPROJECTION\n\n1000 €/mois · 30 ans · 7 %/an, frais de 0,38 % déduits\n\n+ 205 %\n\nInvestis\n\n360 000 €\n\nProjetés\n\n1 096 500 €\n\nGains\n\n+ 736 500 €\n\nCroissance sur 30 ans\n67 % d'intérêts\nMultiplicateur du capital\n× 3,05\nTester avec mes chiffres\n→"
+      }
+    },
+    "simulateur": {
+      "resultat": "En investissant 200 €/mois pendant 20 ans · hypothèse de rendement 7,00 %/an avant frais\n\n97 753 €\n\nScénario central : hypothèse de 7,00 %/an avant frais, pas une prévision\n\nCapital investi\n\n48 000 €\n\nGains générés\n\n+ 49 753 €\n\nMultiplicateur\n\n× 2,0\n\nVous voyez le résultat moyen. Mais dans la réalité, les marchés ne sont jamais moyens.\n\nVoir tous les scénarios →",
+      "indicateurs": "CAPITAL INVESTI\n\n48 000 €\n\n200 €/mois × 20 ans\n\nVALEUR ESTIMÉE\n\n97 753 €\n\nRendement net : 6,62 %/an\n\nGAINS POTENTIELS\n\n49 753 €\n\n+103,7 % sur capital investi\n\nDURÉE\n\n20 ans\n\n240 versements mensuels",
+      "scenarios": "3 scénarios comparés\n± 2 % autour de votre hypothèse\nCONSERVATEUR\n5 %/an brut\n\nCapital final\n\n78 140 €\n\nGains\n\n30 140 €\n\nCapital investi\n\n48 000 €\n\nPerformance\n\n+62,8 %\n\nBASE\n7 %/an brut\n\nCapital final\n\n97 753 €\n\nGains\n\n49 753 €\n\nCapital investi\n\n48 000 €\n\nPerformance\n\n+103,7 %\n\nOPTIMISTE\n9 %/an brut\n\nCapital final\n\n123 095 €\n\nGains\n\n75 095 €\n\nCapital investi\n\n48 000 €\n\nPerformance\n\n+156,4 %"
+    },
+    "comparer_etf": {
+      "chapeau": "19 ETF analysés — monde, USA, Europe, émergents, small cap, obligations. Filtrez par région, éligibilité PEA ou niveau de frais.",
+      "compteur_pea_uniquement": "Tous\nMonde\nUSA\nEurope\nÉmergents\nJapon\nSmall Cap\nObligations\nPEA uniquement\nTER ≤\nTous\n0,20 %\n0,30 %\n0,50 %\n8 ETFs"
+    },
+    "etf_eligibles_pea": {
+      "entete": "VÉRIFIÉE LE 28 SEPTEMBRE 2026\n\nETF éligibles au PEA : la liste vérifiée\n\n13 ETF éligibles au PEA, vérifiés un par un avec leur ISIN et leurs frais. Et 10 fonds qui ne le sont pas, avec la raison pour chacun.",
+      "h2_liste": "La liste : 13 ETF éligibles au PEA, par indice"
+    },
+    "cockpit": {
+      "bandeau": "Cockpit DCA\n\n19 € · paiement unique · satisfait ou remboursé 14 jours\n\nAcheter le Cockpit DCA"
+    },
+    "suivi_pea_excel": {
+      "deux_facons": "Deux façons de faire\n\nPartir du modèle gratuit\n\nLe journal des achats et la vue par ETF (PRU frais inclus, valeur, plus-value, poids), en Excel et Google Sheets. Puis ajoutez ce qui vous manque avec les formules de cette page.\n\nVotre adresse email\nRecevoir le modèle\nRecevoir aussi les emails occasionnels de DCA Tracker sur le suivi d'un PEA (désinscription en un clic)\nSite web (laisser vide)\n\nFichier Excel et copie Google Sheets, par email. Si la case n'est pas cochée, votre adresse ne sert qu'à cet envoi. Confidentialité\n\nOu prendre le classeur complet\n\nLe Cockpit DCA ajoute le tableau de bord avec le TRI, le versement du mois, la feuille PEA, la projection et les frais (19 €, paiement unique, Excel et Google Sheets). Ce sont ses captures qui illustrent cette page.\n\nVoir le Cockpit DCA →"
+    },
+    "tarifs": {
+      "annuel": "TOUT POUR DÉMARRER VOTRE DCA\n\nGratuit\nGratuit\nEssayer le simulateur\nSimulateur DCA (3 scénarios, 30 ans)\nComparaison ETF (tous les ETF)\nCalculateur fiscal PEA vs CTO\nGuides et glossaire\nLien de partage de simulation\nExport PDF (avec filigrane)\nSuivi mensuel de stratégie\nRécap fiscal annuel (cases 2042 et 2074 calculées)\nAnalyse Monte Carlo (1 000 scénarios)\nBacktest historique (données réelles)\nComparaison A vs B\nLe plus populaire\n\nSUIVEZ ET OPTIMISEZ VOTRE DCA CHAQUE MOIS\n\nPremium\n4,08 €\n/mois\n\nFacturé 49 € / an(économisez 10 €)\n\nCréer un compte\n\nEssai gratuit 7 jours · annulable à tout moment\n\nSuivi mensuel de stratégie + emails personnalisés\nRécap fiscal annuel (cases 2042 et 2074 calculées)\nAnalyse Monte Carlo (1 000 scénarios de marché)\nBacktest historique (DCA sur les vrais cours depuis 2008)\nComparaison A vs B (deux stratégies)\nSimulations sauvegardées (10 slots)\nExport PDF professionnel (sans filigrane)\nTout du plan Gratuit\nSupport par email",
+      "mensuel": "TOUT POUR DÉMARRER VOTRE DCA\n\nGratuit\nGratuit\nEssayer le simulateur\nSimulateur DCA (3 scénarios, 30 ans)\nComparaison ETF (tous les ETF)\nCalculateur fiscal PEA vs CTO\nGuides et glossaire\nLien de partage de simulation\nExport PDF (avec filigrane)\nSuivi mensuel de stratégie\nRécap fiscal annuel (cases 2042 et 2074 calculées)\nAnalyse Monte Carlo (1 000 scénarios)\nBacktest historique (données réelles)\nComparaison A vs B\nLe plus populaire\n\nSUIVEZ ET OPTIMISEZ VOTRE DCA CHAQUE MOIS\n\nPremium\n4,90 €\n/mois\n\nOu 4,08 €/mois facturé annuellement\n\nCréer un compte\n\nEssai gratuit 7 jours · annulable à tout moment\n\nSuivi mensuel de stratégie + emails personnalisés\nRécap fiscal annuel (cases 2042 et 2074 calculées)\nAnalyse Monte Carlo (1 000 scénarios de marché)\nBacktest historique (DCA sur les vrais cours depuis 2008)\nComparaison A vs B (deux stratégies)\nSimulations sauvegardées (10 slots)\nExport PDF professionnel (sans filigrane)\nTout du plan Gratuit\nSupport par email"
+    },
+    "fiscalite_2026": {
+      "h1": "Fiscalité du PEA et du CTO en 2026 : ce qui a changé"
+    },
+    "calculateur_fiscal": {
+      "h1": "PEA ou CTO : combien d'impôt sur votre DCA ETF ?",
+      "taux": "En 2026, un gain retiré d'un PEA de plus de 5 ans ne supporte que les prélèvements sociaux, 18,6 %. Sur un compte-titres (CTO), une plus-value paie le prélèvement forfaitaire unique (PFU) de 31,4 % : 12,8 % d'impôt sur le revenu et 18,6 % de prélèvements sociaux. L'écart est donc de 12,8 points sur chaque euro de gain.",
+      "resultat": "COMPARAISON FISCALE\n\nLe PEA vous fait économiser 6 368 €\n\nSoit +7,8 % de net après impôt par rapport à l'autre enveloppe, pour la même stratégie."
+    }
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "_avertissement": "Fichier généré par scripts/extraire-donnees.mjs : ne pas modifier à la main.",
+  "genere_le": "2026-10-03T23:58:24.016Z",
+  "textes_lus_le": "2026-10-02T19:49:26.497Z",
+  "musique": "musique.wav",
+  "pastilleAccueil": "Le cockpit DCA pour investisseurs long-terme",
+  "simulateur": {
+    "versementMensuel": 200,
+    "dureeAns": 20,
+    "hypothese": "7,00",
+    "valeurFinale": 97753,
+    "capitalVerse": 48000,
+    "mention": "Scénario central : hypothèse de 7,00 %/an avant frais, pas une prévision",
+    "fraisDefaut": "0,38 %",
+    "etfFrais": "CW8",
+    "tauxScenarios": [
+      5,
+      7,
+      9
+    ],
+    "valeursScenarios": [
+      78140,
+      97753,
+      123095
+    ]
+  },
+  "comparateur": {
+    "nbEtf": 19,
+    "nbEtfFiltrePea": 8
+  },
+  "listePea": {
+    "nbEtf": 13,
+    "dateVerif": "28 septembre 2026"
+  },
+  "fiscal": {
+    "tauxPea": "18,6 %",
+    "tauxCto": "31,4 %"
+  },
+  "cockpit": {
+    "prix": 19
+  },
+  "premium": {
+    "mensuel": 4.9,
+    "annuel": 49,
+    "essaiJours": 7
+  },
+  "affichage": {
+    "valeurFinale": "97 753 €",
+    "capitalVerse": "48 000 €",
+    "versementMensuel": "200 €/mois",
+    "cockpitPrix": "19 €",
+    "premiumMensuel": "4,90 €/mois",
+    "premiumAnnuel": "49 €/an"
+  }
+}

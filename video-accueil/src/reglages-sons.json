@@ -1,0 +1,6 @@
+{
+  "_avertissement": "Écrit par scripts/generer-sons.mjs (--bpm, --decalage-ms, --tonalite).",
+  "bpm": 120,
+  "decalageMs": 0,
+  "tonalite": "A"
+}

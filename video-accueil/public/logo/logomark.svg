@@ -1,0 +1,6 @@
+<!-- Copie exacte de src/components/ui/LogoMark.tsx (02/10/2026), attributs JSX convertis en SVG. Ne pas retoucher : en cas de changement du logo, recopier le composant. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+  <rect width="28" height="28" rx="7" fill="#1d4ed8"/>
+  <path d="M5 21 Q9 21 13 15 Q17 9 22 6.5" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  <circle cx="22" cy="6.5" r="2.5" fill="white"/>
+</svg>

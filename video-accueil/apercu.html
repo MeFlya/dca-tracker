@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aperçu vidéo d'accueil</title>
+<!--
+  Page de démonstration LOCALE (video-accueil/apercu.html, à ouvrir après
+  `npm run rendu`) : la boucle muette telle qu'elle serait dans le bandeau
+  d'accueil de dcatracker.fr, et la version complète dans une fenêtre. Ce n'est
+  pas une page du site. Elle sert de MODÈLE de comportement pour l'intégration
+  (src/components/home/Hero.tsx, après validation de Maël) :
+
+  1. L'affiche est une vraie <img> dans le HTML (rendu serveur), préchargée en
+     priorité haute, avec ses dimensions : c'est l'élément LCP, elle ne doit pas
+     attendre le JavaScript. Elle est identique à la première image de la
+     boucle : le passage de l'affiche à la vidéo ne se voit pas.
+  2. La <video> n'a NI autoplay NI source dans le HTML : `autoplay` l'emporte
+     sur `preload` et ferait télécharger toute la boucle dès l'arrivée, même
+     pour un visiteur qui demande moins d'animations. Les sources sont posées
+     en JS, après l'événement `load` de la page, quand le cadre est visible.
+  3. Moins d'animations (prefers-reduced-motion) ou économiseur de données :
+     pas de vidéo du tout, l'affiche reste (elle porte l'information).
+  4. Bouton pause (WCAG 2.2.2) : son état est lu sur la vidéo (video.paused),
+     pas supposé ; si la lecture automatique est refusée (iPhone en économie
+     d'énergie), il devient un bouton « lancer ». La boucle s'arrête hors de
+     l'écran et ne repart jamais si le visiteur l'a mise en pause.
+  5. La version complète (fenêtre) ne charge rien, pas même son affiche, avant
+     l'ouverture. À la fermeture, la boucle ne repart que si elle tournait.
+-->
+<link rel="preload" as="image" href="out/poster.jpg" fetchpriority="high">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bleu: #1d4ed8; --bleu-700: #1e40af; --bleu-50: #eff6ff; --bleu-100: #dbeafe; --bleu-400: #60a5fa; --bleu-500: #3b82f6;
+    --gris-900: #111827; --gris-600: #4b5563; --gris-500: #6b7280; --gris-200: #e5e7eb;
+    --slate-950: #020617; --slate-200: #e2e8f0; --gain: #047857;
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-font-smoothing: antialiased; }
+  body { margin: 0; font-family: Inter, ui-sans-serif, system-ui, sans-serif; color: var(--gris-900); background: #fff; }
+
+  .bandeau-apercu { background: var(--slate-950); color: #cbd5e1; font-size: 13px; padding: 8px 16px; text-align: center; }
+  .bandeau-apercu strong { color: #fff; font-weight: 600; }
+
+  /* Bandeau d'accueil (repris de Hero.tsx) */
+  .hero { position: relative; overflow: hidden; border-bottom: 1px solid rgb(226 232 240 / .6);
+    background: linear-gradient(to bottom right, #f8fafc, #fff, rgb(239 246 255 / .6)); }
+  .hero .grille { position: absolute; inset: 0; opacity: .04; pointer-events: none;
+    background-image: linear-gradient(#1d4ed8 1px, transparent 1px), linear-gradient(to right, #1d4ed8 1px, transparent 1px);
+    background-size: 56px 56px; }
+  .hero .orbe { position: absolute; top: 25%; right: -128px; width: 500px; height: 500px; border-radius: 50%;
+    background: rgb(96 165 250 / .3); filter: blur(64px); pointer-events: none; }
+  .contenu { position: relative; max-width: 1280px; margin: 0 auto; padding: 64px 16px;
+    display: grid; grid-template-columns: 1fr; gap: 48px; align-items: center; }
+  @media (min-width: 640px) { .contenu { padding-left: 24px; padding-right: 24px; } }
+  @media (min-width: 768px) { .contenu { padding-top: 96px; padding-bottom: 96px; } }
+  @media (min-width: 1024px) { .contenu { grid-template-columns: 7fr 5fr; gap: 40px; padding-left: 32px; padding-right: 32px; } }
+
+  .pastille { display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px; border-radius: 999px;
+    background: var(--bleu-50); border: 1px solid var(--bleu-100); color: var(--bleu-700); font-size: 12px; font-weight: 500; margin-bottom: 24px; }
+  .pastille i { width: 6px; height: 6px; border-radius: 50%; background: var(--bleu-500); }
+  h1 { font-family: Newsreader, ui-serif, Georgia, serif; font-weight: 700; letter-spacing: -0.02em; font-optical-sizing: auto;
+    font-size: 36px; line-height: 1.1; margin: 0 0 20px; }
+  @media (min-width: 768px) { h1 { font-size: 48px; } }
+  @media (min-width: 1024px) { h1 { font-size: 52px; } }
+  .chapo { font-size: 18px; line-height: 1.625; color: var(--gris-600); max-width: 36rem; margin: 0 0 32px; }
+  @media (min-width: 768px) { .chapo { font-size: 20px; } }
+  .boutons { display: flex; flex-direction: column; gap: 12px; margin-bottom: 40px; }
+  @media (min-width: 640px) { .boutons { flex-direction: row; } }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 24px; border-radius: 12px;
+    font: 500 16px/1.5 Inter, sans-serif; text-decoration: none; cursor: pointer; transition: background-color .15s ease-out, transform .15s ease-out; }
+  .btn:active { transform: scale(.98); }
+  .btn-primaire { background: var(--bleu); color: #fff; border: 0; }
+  .btn-primaire:hover { background: var(--bleu-700); }
+  .btn-secondaire { background: #fff; color: #374151; border: 1px solid var(--gris-200); }
+  .btn-secondaire:hover { background: #f9fafb; }
+  .confiance { display: flex; flex-wrap: wrap; gap: 8px 24px; font-size: 14px; color: var(--gris-500); }
+  .confiance span { display: inline-flex; align-items: center; gap: 6px; }
+  .confiance svg { color: var(--gain); }
+
+  /* Colonne de droite : la boucle */
+  .droite { display: flex; justify-content: center; }
+  @media (min-width: 1024px) { .droite { justify-content: flex-end; } }
+  .lecteur { position: relative; width: 100%; max-width: 480px; }
+  .lecteur .halo { position: absolute; inset: -12px; border-radius: 28px; filter: blur(40px); pointer-events: none;
+    background: linear-gradient(to bottom right, rgb(59 130 246 / .30), rgb(129 140 248 / .20), rgb(56 189 248 / .20)); }
+  .cadre { position: relative; border-radius: 16px; overflow: hidden; background: var(--slate-950); aspect-ratio: 1 / 1;
+    border: 1px solid rgb(226 232 240 / .6); box-shadow: 0 10px 15px -3px rgb(0 0 0 / .06), 0 4px 6px -4px rgb(0 0 0 / .04); }
+  .cadre img, .cadre video { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover; }
+  /* La vidéo ne se montre qu'une fois lancée : jusque-là, l'affiche (même image). */
+  .cadre video { opacity: 0; transition: opacity .2s ease-out; }
+  .cadre.lecture video { opacity: 1; }
+  .pause { position: absolute; right: 12px; bottom: 12px; width: 36px; height: 36px; border-radius: 50%; border: 1px solid rgb(255 255 255 / .2);
+    background: rgb(2 6 23 / .55); color: #fff; display: grid; place-items: center; cursor: pointer; backdrop-filter: blur(4px); }
+  .pause[hidden] { display: none; }
+  .pause span { display: grid; place-items: center; }
+  .pause span[hidden] { display: none; }
+  .pause:focus-visible, .btn:focus-visible, .fermer:focus-visible { outline: 2px solid var(--bleu-500); outline-offset: 2px; }
+  .son { margin-top: 16px; width: 100%; }
+  .son svg { flex-shrink: 0; }
+
+  /* Fenêtre de la version complète */
+  dialog { width: min(1120px, calc(100vw - 32px)); padding: 0; border: 0; border-radius: 16px; background: var(--slate-950); overflow: hidden;
+    box-shadow: 0 25px 50px -12px rgb(0 0 0 / .5); }
+  dialog::backdrop { background: rgb(2 6 23 / .75); backdrop-filter: blur(4px); }
+  dialog[open] { animation: entree .35s var(--ease-out-expo); }
+  @keyframes entree { from { opacity: 0; transform: translateY(12px) scale(.98); } to { opacity: 1; transform: none; } }
+  dialog video { display: block; width: 100%; aspect-ratio: 16 / 9; background: var(--slate-950); }
+  .barre { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px 10px 16px; color: #cbd5e1; font-size: 13px; }
+  .fermer { border: 1px solid rgb(255 255 255 / .15); background: rgb(255 255 255 / .1); color: #fff; border-radius: 10px; padding: 6px 12px;
+    font: 500 13px Inter, sans-serif; cursor: pointer; }
+  @media (prefers-reduced-motion: reduce) { dialog[open] { animation: none; } .cadre video { transition: none; } }
+
+  .notes { max-width: 1280px; margin: 0 auto; padding: 32px 16px 64px; font-size: 14px; color: var(--gris-600); line-height: 1.6; }
+  .notes h2 { font: 600 15px Inter, sans-serif; color: var(--gris-900); margin: 0 0 8px; }
+  .notes code { font-size: 13px; background: #f1f5f9; padding: 1px 5px; border-radius: 4px; }
+  .notes ul { padding-left: 20px; margin: 0; }
+</style>
+</head>
+<body>
+
+<div class="bandeau-apercu"><strong>Aperçu local</strong> de la vidéo d'accueil, pas une page du site. Fichiers lus dans <code>out/</code>.</div>
+
+<section class="hero">
+  <div class="grille" aria-hidden="true"></div>
+  <div class="orbe" aria-hidden="true"></div>
+  <div class="contenu">
+    <div>
+      <div class="pastille"><i></i>Le cockpit DCA pour investisseurs long-terme</div>
+      <h1>Combien peut valoir votre argent dans 20 ans ?</h1>
+      <p class="chapo">Simulez votre stratégie DCA, sauvegardez-la, puis suivez votre progression mois après mois. Hypothèses transparentes, trois scénarios de marché, zéro jargon.</p>
+      <div class="boutons">
+        <a class="btn btn-primaire" href="https://dcatracker.fr/simulateur">Voir ce que vaut mon argent <span aria-hidden="true">→</span></a>
+        <a class="btn btn-secondaire" href="https://dcatracker.fr/comparer-etf">Comparer les ETF</a>
+      </div>
+      <div class="confiance">
+        <span><svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="currentColor" fill-opacity="0.12"/><path d="M5 8.5l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Sans inscription</span>
+        <span><svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="currentColor" fill-opacity="0.12"/><path d="M5 8.5l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Formules vérifiables</span>
+        <span><svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="currentColor" fill-opacity="0.12"/><path d="M5 8.5l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Hypothèses transparentes</span>
+        <span><svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="currentColor" fill-opacity="0.12"/><path d="M5 8.5l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Gratuit</span>
+      </div>
+    </div>
+
+    <div class="droite">
+      <div class="lecteur">
+        <div class="halo" aria-hidden="true"></div>
+        <div class="cadre" id="cadre">
+          <!-- Affiche = première image de la boucle (état final du simulateur). -->
+          <img src="out/poster.jpg" width="1080" height="1080" fetchpriority="high" decoding="async"
+               alt="Simulez votre DCA : 97 753 € pour 200 €/mois pendant 20 ans, hypothèse de 7 %/an avant frais, pas une prévision. Graphique « Évolution du portefeuille ».">
+          <!-- Pas d'autoplay ni de source ici : posées en JS (voir l'en-tête). -->
+          <video id="boucle" muted loop playsinline preload="none" disablepictureinpicture aria-hidden="true" tabindex="-1"></video>
+          <!-- WCAG 2.2.2 : tout mouvement automatique de plus de 5 s doit pouvoir s'arrêter. -->
+          <button class="pause" id="pause" type="button" hidden>
+            <span id="icone-pause"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><rect x="2.5" y="2" width="3" height="10" rx="1" fill="currentColor"/><rect x="8.5" y="2" width="3" height="10" rx="1" fill="currentColor"/></svg></span>
+            <span id="icone-lecture" hidden><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M4 2.5v9l7.5-4.5z" fill="currentColor"/></svg></span>
+          </button>
+        </div>
+        <button class="btn btn-secondaire son" id="ouvrir" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          Regarder avec le son <span style="color:var(--gris-500)">(30 s)</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<dialog id="fenetre" aria-label="Présentation de DCA Tracker, avec le son">
+  <video id="complete" controls playsinline preload="none"></video>
+  <div class="barre">
+    <span>Simuler, comparer, suivre : ce que fait dcatracker.fr, en 30 secondes.</span>
+    <button class="fermer" id="fermer" type="button">Fermer</button>
+  </div>
+</dialog>
+
+<div class="notes">
+  <h2>Ce que montre cet aperçu</h2>
+  <ul>
+    <li>À droite du titre (qui reste du vrai texte HTML), l'affiche s'affiche tout de suite ; la boucle muette de 19 s se charge après la page, quand elle est visible, et commence sur la même image.</li>
+    <li>Le bouton rond met la boucle en pause, ou la lance si le navigateur a refusé la lecture automatique. Elle s'arrête quand elle sort de l'écran.</li>
+    <li>Moins d'animations demandées (<code>prefers-reduced-motion</code>) ou économiseur de données : la vidéo n'est jamais chargée, l'affiche reste.</li>
+    <li>« Regarder avec le son » ouvre la version complète (rien n'est chargé avant). Échap ou « Fermer » l'arrête ; la boucle ne repart que si elle tournait à l'ouverture.</li>
+  </ul>
+</div>
+
+<script>
+  const cadre = document.getElementById("cadre");
+  const boucle = document.getElementById("boucle");
+  const pause = document.getElementById("pause");
+  const iconePause = document.getElementById("icone-pause");
+  const iconeLecture = document.getElementById("icone-lecture");
+  const fenetre = document.getElementById("fenetre");
+  const complete = document.getElementById("complete");
+
+  const moinsDAnimations = matchMedia("(prefers-reduced-motion: reduce)");
+  const economieDeDonnees = navigator.connection && navigator.connection.saveData === true;
+
+  let chargee = false;     // sources posées
+  let visible = false;     // cadre à l'écran
+  let pageChargee = document.readyState === "complete";
+  let arretVoulu = false;  // le visiteur a mis en pause : on ne relance jamais tout seul
+
+  // L'état du bouton est LU sur la vidéo, jamais supposé.
+  function majBouton() {
+    if (!chargee) return;
+    pause.hidden = false;
+    const arretee = boucle.paused;
+    iconePause.hidden = arretee;
+    iconeLecture.hidden = !arretee;
+    pause.setAttribute("aria-label", arretee ? "Lancer l'animation" : "Mettre l'animation en pause");
+  }
+
+  function lancer() {
+    // Refus possible (lecture automatique bloquée) : on garde l'affiche et le bouton devient « lancer ».
+    boucle.play().catch(() => {}).finally(majBouton);
+  }
+
+  function charger() {
+    if (chargee || !visible || !pageChargee || moinsDAnimations.matches || economieDeDonnees) return;
+    chargee = true;
+    boucle.innerHTML =
+      '<source src="out/boucle.webm" type=\'video/webm; codecs="vp9"\'>' +
+      '<source src="out/boucle.mp4" type=\'video/mp4; codecs="avc1.640028"\'>';
+    boucle.preload = "auto";
+    boucle.load();
+    lancer();
+  }
+
+  boucle.addEventListener("playing", () => { cadre.classList.add("lecture"); majBouton(); });
+  boucle.addEventListener("pause", majBouton);
+  boucle.addEventListener("play", majBouton);
+
+  pause.addEventListener("click", () => {
+    if (boucle.paused) { arretVoulu = false; lancer(); }
+    else { arretVoulu = true; boucle.pause(); }
+  });
+
+  // Ne charge et ne joue que si le cadre est visible ; s'arrête hors de l'écran.
+  new IntersectionObserver(([e]) => {
+    visible = e.isIntersecting;
+    if (!chargee) { charger(); return; }
+    if (!visible && !boucle.paused) boucle.pause();
+    else if (visible && boucle.paused && !arretVoulu && !fenetre.open) lancer();
+  }, { threshold: 0.25 }).observe(cadre);
+
+  if (!pageChargee) addEventListener("load", () => { pageChargee = true; charger(); }, { once: true });
+
+  // Le visiteur active « moins d'animations » en cours de route : on arrête.
+  moinsDAnimations.addEventListener("change", (e) => { if (e.matches && chargee) { arretVoulu = true; boucle.pause(); } });
+
+  // Version complète : rien n'est chargé avant l'ouverture.
+  let reprendre = false;
+  document.getElementById("ouvrir").addEventListener("click", () => {
+    reprendre = chargee && !boucle.paused;
+    if (reprendre) boucle.pause();
+    if (!complete.querySelector("source")) {
+      complete.poster = "out/complete-poster.jpg";
+      complete.innerHTML = '<source src="out/complete.mp4" type=\'video/mp4; codecs="avc1.640029, mp4a.40.2"\'>';
+      complete.load();
+    }
+    fenetre.showModal();
+    complete.currentTime = 0;
+    complete.play().catch(() => {});
+  });
+  document.getElementById("fermer").addEventListener("click", () => fenetre.close());
+  fenetre.addEventListener("click", (e) => { if (e.target === fenetre) fenetre.close(); });
+  fenetre.addEventListener("close", () => {
+    complete.pause();
+    if (reprendre && !arretVoulu) lancer();
+  });
+</script>
+</body>
+</html>

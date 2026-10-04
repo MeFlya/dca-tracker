@@ -1,0 +1,713 @@
+{
+  "site": "https://dcatracker.fr",
+  "genere_le": "2026-10-02T19:49:26.497Z",
+  "captures": [
+    {
+      "fichier": "accueil-bureau-ecran.png",
+      "page": "/",
+      "url": "https://dcatracker.fr/",
+      "quoi": "Écran au-dessus de la ligne de flottaison",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "2880×1800",
+      "octets": 1404876,
+      "capturee_le": "2026-10-02T19:45:40.340Z"
+    },
+    {
+      "fichier": "accueil-bureau-hero.png",
+      "page": "/",
+      "url": "https://dcatracker.fr/",
+      "quoi": "Bandeau d'accueil entier (titre + carte de démonstration)",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "2560×1398",
+      "octets": 1115831,
+      "capturee_le": "2026-10-02T19:45:41.355Z"
+    },
+    {
+      "fichier": "accueil-bureau-carte-demo.png",
+      "page": "/",
+      "url": "https://dcatracker.fr/",
+      "quoi": "Carte de démonstration (200 € · 20 ans, réglage par défaut)",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "864×1110",
+      "octets": 214384,
+      "capturee_le": "2026-10-02T19:45:41.693Z"
+    },
+    {
+      "fichier": "accueil-bureau-chiffres-site.png",
+      "page": "/",
+      "url": "https://dcatracker.fr/",
+      "quoi": "Bandeau « Ce que contient le site » (comparatifs, mois de données, glossaire)",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "2048×274",
+      "octets": 35813,
+      "capturee_le": "2026-10-02T19:45:41.848Z"
+    },
+    {
+      "fichier": "accueil-bureau-comment-ca-marche.png",
+      "page": "/",
+      "url": "https://dcatracker.fr/",
+      "quoi": "Section « De la simulation au pilotage réel » (3 étapes)",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "2048×1098",
+      "octets": 159698,
+      "capturee_le": "2026-10-02T19:45:42.096Z"
+    },
+    {
+      "fichier": "accueil-bureau-fonctions.png",
+      "page": "/",
+      "url": "https://dcatracker.fr/",
+      "quoi": "Section « Des outils simples pour des décisions éclairées »",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "2560×1240",
+      "octets": 226563,
+      "capturee_le": "2026-10-02T19:45:42.329Z"
+    },
+    {
+      "fichier": "accueil-bureau-section-sombre.png",
+      "page": "/",
+      "url": "https://dcatracker.fr/",
+      "quoi": "Section sombre slate-950 (référence de style ; la carte « Suivi de stratégie » est une MAQUETTE, ses chiffres ne sont pas réels)",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "2880×2198",
+      "octets": 1162643,
+      "capturee_le": "2026-10-02T19:45:43.130Z"
+    },
+    {
+      "fichier": "accueil-bureau-engagements.png",
+      "page": "/",
+      "url": "https://dcatracker.fr/",
+      "quoi": "Section « Transparent par conception » (4 engagements)",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "2560×714",
+      "octets": 129770,
+      "capturee_le": "2026-10-02T19:45:43.275Z"
+    },
+    {
+      "fichier": "accueil-bureau-carte-demo-500-30.png",
+      "page": "/",
+      "url": "https://dcatracker.fr/",
+      "quoi": "Carte de démonstration réglée sur 500 € · 30 ans",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "864×1110",
+      "octets": 211392,
+      "capturee_le": "2026-10-02T19:45:54.517Z"
+    },
+    {
+      "fichier": "accueil-bureau-page.png",
+      "page": "/",
+      "url": "https://dcatracker.fr/",
+      "quoi": "Page entière",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "2880×13242",
+      "octets": 4493841,
+      "capturee_le": "2026-10-02T19:46:04.042Z"
+    },
+    {
+      "fichier": "simulateur-bureau-ecran.png",
+      "page": "/simulateur",
+      "url": "https://dcatracker.fr/simulateur",
+      "quoi": "Écran d'arrivée : paramètres + résultat affiché (réglages par défaut)",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "2880×1800",
+      "octets": 2312391,
+      "capturee_le": "2026-10-02T19:46:12.090Z"
+    },
+    {
+      "fichier": "simulateur-bureau-resultat.png",
+      "page": "/simulateur",
+      "url": "https://dcatracker.fr/simulateur",
+      "quoi": "Carte résultat sombre : 97 753 € (200 €/mois, 20 ans, 7 %/an avant frais)",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "1568×612",
+      "octets": 350738,
+      "capturee_le": "2026-10-02T19:46:12.357Z"
+    },
+    {
+      "fichier": "simulateur-bureau-parametres.png",
+      "page": "/simulateur",
+      "url": "https://dcatracker.fr/simulateur",
+      "quoi": "Panneau Paramètres (curseurs)",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "800×2044",
+      "octets": 217500,
+      "capturee_le": "2026-10-02T19:46:12.517Z"
+    },
+    {
+      "fichier": "simulateur-bureau-indicateurs.png",
+      "page": "/simulateur",
+      "url": "https://dcatracker.fr/simulateur",
+      "quoi": "Quatre indicateurs (capital investi, valeur estimée, gains, durée)",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "1568×280",
+      "octets": 51420,
+      "capturee_le": "2026-10-02T19:46:12.603Z"
+    },
+    {
+      "fichier": "simulateur-bureau-graphique.png",
+      "page": "/simulateur",
+      "url": "https://dcatracker.fr/simulateur",
+      "quoi": "Graphique « Évolution du portefeuille » (3 courbes de scénarios + versé)",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "944×916",
+      "octets": 93730,
+      "capturee_le": "2026-10-02T19:46:12.684Z"
+    },
+    {
+      "fichier": "simulateur-bureau-repartition.png",
+      "page": "/simulateur",
+      "url": "https://dcatracker.fr/simulateur",
+      "quoi": "Anneau « Répartition de votre projection »",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "576×978",
+      "octets": 59546,
+      "capturee_le": "2026-10-02T19:46:12.776Z"
+    },
+    {
+      "fichier": "simulateur-bureau-scenarios.png",
+      "page": "/simulateur",
+      "url": "https://dcatracker.fr/simulateur",
+      "quoi": "3 scénarios comparés (5 %, 7 %, 9 % brut)",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "1568×404",
+      "octets": 99657,
+      "capturee_le": "2026-10-02T19:46:12.849Z"
+    },
+    {
+      "fichier": "simulateur-bureau-annee-par-annee.png",
+      "page": "/simulateur",
+      "url": "https://dcatracker.fr/simulateur",
+      "quoi": "Tableau année par année",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "1568×1052",
+      "octets": 147205,
+      "capturee_le": "2026-10-02T19:46:12.968Z"
+    },
+    {
+      "fichier": "simulateur-bureau-page.png",
+      "page": "/simulateur",
+      "url": "https://dcatracker.fr/simulateur",
+      "quoi": "Page entière",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "2880×12920",
+      "octets": 4417206,
+      "capturee_le": "2026-10-02T19:46:16.054Z"
+    },
+    {
+      "fichier": "comparer-etf-bureau-ecran.png",
+      "page": "/comparer-etf",
+      "url": "https://dcatracker.fr/comparer-etf",
+      "quoi": "Écran au-dessus de la ligne de flottaison",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "2880×1800",
+      "octets": 416081,
+      "capturee_le": "2026-10-02T19:46:23.184Z"
+    },
+    {
+      "fichier": "comparer-etf-bureau-filtres.png",
+      "page": "/comparer-etf",
+      "url": "https://dcatracker.fr/comparer-etf",
+      "quoi": "Barres de filtres (région, PEA uniquement, TER, tri), filtre PEA désactivé",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "2480×288",
+      "octets": 56506,
+      "capturee_le": "2026-10-02T19:46:23.552Z"
+    },
+    {
+      "fichier": "comparer-etf-bureau-carte-wpea.png",
+      "page": "/comparer-etf",
+      "url": "https://dcatracker.fr/comparer-etf",
+      "quoi": "Carte WPEA (TER, réplication, ISIN, cours indicatif)",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "778×1126",
+      "octets": 129425,
+      "capturee_le": "2026-10-02T19:46:23.704Z"
+    },
+    {
+      "fichier": "comparer-etf-bureau-carte-dcam.png",
+      "page": "/comparer-etf",
+      "url": "https://dcatracker.fr/comparer-etf",
+      "quoi": "Carte DCAM",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "778×1126",
+      "octets": 122563,
+      "capturee_le": "2026-10-02T19:46:23.888Z"
+    },
+    {
+      "fichier": "comparer-etf-bureau-carte-cw8.png",
+      "page": "/comparer-etf",
+      "url": "https://dcatracker.fr/comparer-etf",
+      "quoi": "Carte CW8",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "778×1126",
+      "octets": 141856,
+      "capturee_le": "2026-10-02T19:46:23.999Z"
+    },
+    {
+      "fichier": "comparer-etf-bureau-page.png",
+      "page": "/comparer-etf",
+      "url": "https://dcatracker.fr/comparer-etf",
+      "quoi": "Page entière",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "2880×11076",
+      "octets": 2725210,
+      "capturee_le": "2026-10-02T19:46:25.565Z"
+    },
+    {
+      "fichier": "comparer-etf-bureau-pea-uniquement.png",
+      "page": "/comparer-etf",
+      "url": "https://dcatracker.fr/comparer-etf",
+      "quoi": "Filtre « PEA uniquement » activé",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "2880×1800",
+      "octets": 415802,
+      "capturee_le": "2026-10-02T19:46:27.445Z"
+    },
+    {
+      "fichier": "comparer-etf-bureau-filtres-pea.png",
+      "page": "/comparer-etf",
+      "url": "https://dcatracker.fr/comparer-etf",
+      "quoi": "Barres de filtres, « PEA uniquement » activé (compteur d'ETF à droite)",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "2480×288",
+      "octets": 56688,
+      "capturee_le": "2026-10-02T19:46:27.753Z"
+    },
+    {
+      "fichier": "etf-eligibles-pea-bureau-ecran.png",
+      "page": "/etf-eligibles-pea",
+      "url": "https://dcatracker.fr/etf-eligibles-pea",
+      "quoi": "Écran au-dessus de la ligne de flottaison",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "2880×1800",
+      "octets": 1824827,
+      "capturee_le": "2026-10-02T19:46:42.681Z"
+    },
+    {
+      "fichier": "etf-eligibles-pea-bureau-entete.png",
+      "page": "/etf-eligibles-pea",
+      "url": "https://dcatracker.fr/etf-eligibles-pea",
+      "quoi": "En-tête « ETF éligibles au PEA : la liste vérifiée »",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "1408×392",
+      "octets": 272084,
+      "capturee_le": "2026-10-02T19:46:43.171Z"
+    },
+    {
+      "fichier": "etf-eligibles-pea-bureau-msci-world.png",
+      "page": "/etf-eligibles-pea",
+      "url": "https://dcatracker.fr/etf-eligibles-pea",
+      "quoi": "Tableau MSCI World (CW8, DCAM, EWLD, WPEA : ISIN, frais, réplication, dividendes)",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "1456×1092",
+      "octets": 177855,
+      "capturee_le": "2026-10-02T19:46:43.487Z"
+    },
+    {
+      "fichier": "etf-eligibles-pea-bureau-carte-iwda.png",
+      "page": "/etf-eligibles-pea",
+      "url": "https://dcatracker.fr/etf-eligibles-pea",
+      "quoi": "Carte IWDA : non éligible, la raison, et les équivalents PEA vérifiés (porte la mention « Présenté à tort comme éligible sur ce site »)",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "1424×552",
+      "octets": 104468,
+      "capturee_le": "2026-10-02T19:46:43.711Z"
+    },
+    {
+      "fichier": "etf-eligibles-pea-bureau-non-eligibles.png",
+      "page": "/etf-eligibles-pea",
+      "url": "https://dcatracker.fr/etf-eligibles-pea",
+      "quoi": "Début de la section « Ils ne sont pas éligibles au PEA » (raison + équivalent PEA)",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "1472×2000",
+      "octets": 420648,
+      "capturee_le": "2026-10-02T19:46:44.090Z"
+    },
+    {
+      "fichier": "cockpit-bureau-ecran.png",
+      "page": "/produits/template-suivi-dca",
+      "url": "https://dcatracker.fr/produits/template-suivi-dca",
+      "quoi": "Bandeau sombre du Cockpit DCA : prix, capture « Versement du mois »",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "2880×1800",
+      "octets": 1065982,
+      "capturee_le": "2026-10-02T19:47:00.696Z"
+    },
+    {
+      "fichier": "cockpit-bureau-fenetre-versement.png",
+      "page": "/produits/template-suivi-dca",
+      "url": "https://dcatracker.fr/produits/template-suivi-dca",
+      "quoi": "Fenêtre du classeur, onglet « Versement du mois » (exemple pré-rempli)",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "2216×840",
+      "octets": 301287,
+      "capturee_le": "2026-10-02T19:47:01.202Z"
+    },
+    {
+      "fichier": "cockpit-bureau-chiffres.png",
+      "page": "/produits/template-suivi-dca",
+      "url": "https://dcatracker.fr/produits/template-suivi-dca",
+      "quoi": "Chiffres clés (8 onglets, 1 000 lignes, 10 ETF, 2 formats)",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "1760×294",
+      "octets": 66541,
+      "capturee_le": "2026-10-02T19:47:01.380Z"
+    },
+    {
+      "fichier": "cockpit-bureau-visite.png",
+      "page": "/produits/template-suivi-dca",
+      "url": "https://dcatracker.fr/produits/template-suivi-dca",
+      "quoi": "Visite du classeur, onglet Dashboard",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "2208×2316",
+      "octets": 372745,
+      "capturee_le": "2026-10-02T19:47:01.650Z"
+    },
+    {
+      "fichier": "cockpit-bureau-onglets.png",
+      "page": "/produits/template-suivi-dca",
+      "url": "https://dcatracker.fr/produits/template-suivi-dca",
+      "quoi": "Grille « Huit onglets, un rôle chacun »",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "2208×1548",
+      "octets": 251464,
+      "capturee_le": "2026-10-02T19:47:01.933Z"
+    },
+    {
+      "fichier": "cockpit-bureau-page.png",
+      "page": "/produits/template-suivi-dca",
+      "url": "https://dcatracker.fr/produits/template-suivi-dca",
+      "quoi": "Page entière",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "2880×18200",
+      "octets": 4032656,
+      "capturee_le": "2026-10-02T19:47:05.246Z"
+    },
+    {
+      "fichier": "classeur/cockpit-v2-dashboard.png",
+      "page": "/produits/template-suivi-dca",
+      "url": "https://dcatracker.fr/produits/cockpit-v2-dashboard.png",
+      "quoi": "Capture du classeur Cockpit v2.0 servie par le site",
+      "appareil": "image du site (capture du classeur, 01/10/2026)",
+      "pixels": "2586×1580",
+      "octets": 68878,
+      "capturee_le": "2026-10-02T19:47:05.498Z",
+      "sha256": "10faa44ae74ace630a1cc6dc152530ad202d7cb0cc55f77321b5ee27223ce93a"
+    },
+    {
+      "fichier": "classeur/cockpit-v2-versement.png",
+      "page": "/produits/template-suivi-dca",
+      "url": "https://dcatracker.fr/produits/cockpit-v2-versement.png",
+      "quoi": "Capture du classeur Cockpit v2.0 servie par le site",
+      "appareil": "image du site (capture du classeur, 01/10/2026)",
+      "pixels": "2452×846",
+      "octets": 65996,
+      "capturee_le": "2026-10-02T19:47:05.647Z",
+      "sha256": "b562816bba755b0b6a3993aa4a90571211d21d1bccca5ed1ce2e1910d1b86c24"
+    },
+    {
+      "fichier": "classeur/cockpit-v2-versement-complet.png",
+      "page": "/produits/template-suivi-dca",
+      "url": "https://dcatracker.fr/produits/cockpit-v2-versement-complet.png",
+      "quoi": "Capture du classeur Cockpit v2.0 servie par le site",
+      "appareil": "image du site (capture du classeur, 01/10/2026)",
+      "pixels": "2452×1574",
+      "octets": 93486,
+      "capturee_le": "2026-10-02T19:47:05.797Z",
+      "sha256": "c522ea254bc6422247bdf99ccc0f3b2f5a19e0156a7f24296a21ad25f9e9af7e"
+    },
+    {
+      "fichier": "classeur/cockpit-v2-pea.png",
+      "page": "/produits/template-suivi-dca",
+      "url": "https://dcatracker.fr/produits/cockpit-v2-pea.png",
+      "quoi": "Capture du classeur Cockpit v2.0 servie par le site",
+      "appareil": "image du site (capture du classeur, 01/10/2026)",
+      "pixels": "2365×1715",
+      "octets": 107197,
+      "capturee_le": "2026-10-02T19:47:05.972Z",
+      "sha256": "826ddf2a73d337b50cee63a61d4b9db1c44f5936e029bd5a50b73c37328d9d7f"
+    },
+    {
+      "fichier": "classeur/cockpit-v2-par-etf.png",
+      "page": "/produits/template-suivi-dca",
+      "url": "https://dcatracker.fr/produits/cockpit-v2-par-etf.png",
+      "quoi": "Capture du classeur Cockpit v2.0 servie par le site",
+      "appareil": "image du site (capture du classeur, 01/10/2026)",
+      "pixels": "3698×1319",
+      "octets": 98246,
+      "capturee_le": "2026-10-02T19:47:06.147Z",
+      "sha256": "72e3c796f7ad91ac7fb283eaeeb6df9d0b224fde150b5f7ce428e30cff50b483"
+    },
+    {
+      "fichier": "classeur/cockpit-v2-projection.png",
+      "page": "/produits/template-suivi-dca",
+      "url": "https://dcatracker.fr/produits/cockpit-v2-projection.png",
+      "quoi": "Capture du classeur Cockpit v2.0 servie par le site",
+      "appareil": "image du site (capture du classeur, 01/10/2026)",
+      "pixels": "3279×2280",
+      "octets": 156571,
+      "capturee_le": "2026-10-02T19:47:06.409Z",
+      "sha256": "60c6cc21ee7366524ba63e2a078a3771e38320a54b0e95ff3a2b43b4c3acd55b"
+    },
+    {
+      "fichier": "classeur/cockpit-v2-frais.png",
+      "page": "/produits/template-suivi-dca",
+      "url": "https://dcatracker.fr/produits/cockpit-v2-frais.png",
+      "quoi": "Capture du classeur Cockpit v2.0 servie par le site",
+      "appareil": "image du site (capture du classeur, 01/10/2026)",
+      "pixels": "3701×1835",
+      "octets": 133036,
+      "capturee_le": "2026-10-02T19:47:06.662Z",
+      "sha256": "d9887ba9e9fe9fa8993b35e4fce42e70b75aa9c0359b3675421bf913fde55ab7"
+    },
+    {
+      "fichier": "suivi-pea-excel-bureau-ecran.png",
+      "page": "/suivi-pea-excel",
+      "url": "https://dcatracker.fr/suivi-pea-excel",
+      "quoi": "Écran au-dessus de la ligne de flottaison",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "2880×1800",
+      "octets": 1458216,
+      "capturee_le": "2026-10-02T19:47:23.227Z"
+    },
+    {
+      "fichier": "suivi-pea-excel-bureau-deux-facons.png",
+      "page": "/suivi-pea-excel",
+      "url": "https://dcatracker.fr/suivi-pea-excel",
+      "quoi": "Encadré « Deux façons de faire » (modèle gratuit / Cockpit)",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "1408×802",
+      "octets": 299781,
+      "capturee_le": "2026-10-02T19:47:23.678Z"
+    },
+    {
+      "fichier": "suivi-pea-excel-bureau-onglets.png",
+      "page": "/suivi-pea-excel",
+      "url": "https://dcatracker.fr/suivi-pea-excel",
+      "quoi": "Tableau des onglets : lesquels sont dans le modèle gratuit",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "1436×1028",
+      "octets": 138948,
+      "capturee_le": "2026-10-02T19:47:23.868Z"
+    },
+    {
+      "fichier": "suivi-pea-excel-bureau-transactions.png",
+      "page": "/suivi-pea-excel",
+      "url": "https://dcatracker.fr/suivi-pea-excel",
+      "quoi": "Onglet Transactions (identique dans le modèle gratuit et le Cockpit) + légende",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "1456×1164",
+      "octets": 345074,
+      "capturee_le": "2026-10-02T19:47:24.062Z"
+    },
+    {
+      "fichier": "tarifs-bureau-ecran.png",
+      "page": "/tarifs",
+      "url": "https://dcatracker.fr/tarifs",
+      "quoi": "Écran d'arrivée /tarifs (bascule sur Annuel)",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "2880×1800",
+      "octets": 1111484,
+      "capturee_le": "2026-10-02T19:47:31.847Z"
+    },
+    {
+      "fichier": "tarifs-bureau-cartes-annuel.png",
+      "page": "/tarifs",
+      "url": "https://dcatracker.fr/tarifs",
+      "quoi": "Cartes Gratuit / Premium, tarif annuel",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "1632×1392",
+      "octets": 477071,
+      "capturee_le": "2026-10-02T19:47:32.325Z"
+    },
+    {
+      "fichier": "tarifs-bureau-cartes-mensuel.png",
+      "page": "/tarifs",
+      "url": "https://dcatracker.fr/tarifs",
+      "quoi": "Cartes Gratuit / Premium, tarif mensuel",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "1632×1392",
+      "octets": 476371,
+      "capturee_le": "2026-10-02T19:47:34.116Z"
+    },
+    {
+      "fichier": "tarifs-bureau-premium-prix.png",
+      "page": "/tarifs",
+      "url": "https://dcatracker.fr/tarifs",
+      "quoi": "Bloc prix Premium, tarif mensuel (sans le badge)",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "708×344",
+      "octets": 80317,
+      "capturee_le": "2026-10-02T19:47:34.434Z"
+    },
+    {
+      "fichier": "tarifs-bureau-premium-liste.png",
+      "page": "/tarifs",
+      "url": "https://dcatracker.fr/tarifs",
+      "quoi": "Liste des fonctions Premium (sans le badge)",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "708×724",
+      "octets": 101794,
+      "capturee_le": "2026-10-02T19:47:34.652Z"
+    },
+    {
+      "fichier": "tarifs-bureau-gratuit-liste.png",
+      "page": "/tarifs",
+      "url": "https://dcatracker.fr/tarifs",
+      "quoi": "Liste des fonctions du plan Gratuit (inclus / non inclus)",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "708×840",
+      "octets": 100500,
+      "capturee_le": "2026-10-02T19:47:34.742Z"
+    },
+    {
+      "fichier": "backtest-bureau-ecran.png",
+      "page": "/backtest",
+      "url": "https://dcatracker.fr/backtest",
+      "quoi": "Écran au-dessus de la ligne de flottaison",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "2880×1800",
+      "octets": 680382,
+      "capturee_le": "2026-10-02T19:47:41.656Z"
+    },
+    {
+      "fichier": "backtest-bureau-scenarios.png",
+      "page": "/backtest",
+      "url": "https://dcatracker.fr/backtest",
+      "quoi": "Boutons des scénarios (Premium)",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "1696×244",
+      "octets": 58932,
+      "capturee_le": "2026-10-02T19:47:41.880Z"
+    },
+    {
+      "fichier": "fiscalite-2026-bureau-ecran.png",
+      "page": "/fiscalite-pea-cto-2026",
+      "url": "https://dcatracker.fr/fiscalite-pea-cto-2026",
+      "quoi": "Écran au-dessus de la ligne de flottaison",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "2880×1800",
+      "octets": 3012304,
+      "capturee_le": "2026-10-02T19:47:50.093Z"
+    },
+    {
+      "fichier": "calculateur-fiscal-bureau-ecran.png",
+      "page": "/calculateur-fiscal-pea-cto",
+      "url": "https://dcatracker.fr/calculateur-fiscal-pea-cto",
+      "quoi": "Écran au-dessus de la ligne de flottaison",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "2880×1800",
+      "octets": 585983,
+      "capturee_le": "2026-10-02T19:47:56.956Z"
+    },
+    {
+      "fichier": "calculateur-fiscal-bureau-taux.png",
+      "page": "/calculateur-fiscal-pea-cto",
+      "url": "https://dcatracker.fr/calculateur-fiscal-pea-cto",
+      "quoi": "Paragraphe des taux 2026 (18,6 % de prélèvements sociaux, PFU de 31,4 %)",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "1408×356",
+      "octets": 84455,
+      "capturee_le": "2026-10-02T19:47:57.173Z"
+    },
+    {
+      "fichier": "calculateur-fiscal-bureau-resultat.png",
+      "page": "/calculateur-fiscal-pea-cto",
+      "url": "https://dcatracker.fr/calculateur-fiscal-pea-cto",
+      "quoi": "Carte sombre « Comparaison fiscale » (réglages par défaut du calculateur)",
+      "appareil": "bureau 1440×900 @2x",
+      "pixels": "976×296",
+      "octets": 165290,
+      "capturee_le": "2026-10-02T19:47:57.424Z"
+    },
+    {
+      "fichier": "accueil-mobile-ecran.png",
+      "page": "/",
+      "url": "https://dcatracker.fr/",
+      "quoi": "Écran au-dessus de la ligne de flottaison",
+      "appareil": "mobile 390×844 @3x",
+      "pixels": "1170×2532",
+      "octets": 1179084,
+      "capturee_le": "2026-10-02T19:48:05.117Z"
+    },
+    {
+      "fichier": "simulateur-mobile-ecran.png",
+      "page": "/simulateur",
+      "url": "https://dcatracker.fr/simulateur",
+      "quoi": "Écran au-dessus de la ligne de flottaison",
+      "appareil": "mobile 390×844 @3x",
+      "pixels": "1170×2532",
+      "octets": 2268038,
+      "capturee_le": "2026-10-02T19:48:12.853Z"
+    },
+    {
+      "fichier": "comparer-etf-mobile-ecran.png",
+      "page": "/comparer-etf",
+      "url": "https://dcatracker.fr/comparer-etf",
+      "quoi": "Écran au-dessus de la ligne de flottaison",
+      "appareil": "mobile 390×844 @3x",
+      "pixels": "1170×2532",
+      "octets": 290311,
+      "capturee_le": "2026-10-02T19:48:27.656Z"
+    },
+    {
+      "fichier": "etf-eligibles-pea-mobile-ecran.png",
+      "page": "/etf-eligibles-pea",
+      "url": "https://dcatracker.fr/etf-eligibles-pea",
+      "quoi": "Écran au-dessus de la ligne de flottaison",
+      "appareil": "mobile 390×844 @3x",
+      "pixels": "1170×2532",
+      "octets": 1816475,
+      "capturee_le": "2026-10-02T19:48:36.184Z"
+    },
+    {
+      "fichier": "cockpit-mobile-ecran.png",
+      "page": "/produits/template-suivi-dca",
+      "url": "https://dcatracker.fr/produits/template-suivi-dca",
+      "quoi": "Écran au-dessus de la ligne de flottaison",
+      "appareil": "mobile 390×844 @3x",
+      "pixels": "1170×2532",
+      "octets": 1179202,
+      "capturee_le": "2026-10-02T19:48:51.259Z"
+    },
+    {
+      "fichier": "suivi-pea-excel-mobile-ecran.png",
+      "page": "/suivi-pea-excel",
+      "url": "https://dcatracker.fr/suivi-pea-excel",
+      "quoi": "Écran au-dessus de la ligne de flottaison",
+      "appareil": "mobile 390×844 @3x",
+      "pixels": "1170×2532",
+      "octets": 1460513,
+      "capturee_le": "2026-10-02T19:49:06.837Z"
+    },
+    {
+      "fichier": "tarifs-mobile-ecran.png",
+      "page": "/tarifs",
+      "url": "https://dcatracker.fr/tarifs",
+      "quoi": "Écran au-dessus de la ligne de flottaison",
+      "appareil": "mobile 390×844 @3x",
+      "pixels": "1170×2532",
+      "octets": 850156,
+      "capturee_le": "2026-10-02T19:49:13.312Z"
+    },
+    {
+      "fichier": "simulateur-mobile-resultat.png",
+      "page": "/simulateur",
+      "url": "https://dcatracker.fr/simulateur",
+      "quoi": "Carte résultat sombre, mobile",
+      "appareil": "mobile 390×844 @3x",
+      "pixels": "1074×1242",
+      "octets": 538703,
+      "capturee_le": "2026-10-02T19:49:20.145Z"
+    },
+    {
+      "fichier": "accueil-mobile-carte-demo.png",
+      "page": "/",
+      "url": "https://dcatracker.fr/",
+      "quoi": "Carte de démonstration, mobile",
+      "appareil": "mobile 390×844 @3x",
+      "pixels": "1146×1593",
+      "octets": 257607,
+      "capturee_le": "2026-10-02T19:49:26.438Z"
+    }
+  ]
+}
