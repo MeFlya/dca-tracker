@@ -50,6 +50,7 @@ import { FondSombre } from "./FondSombre";
 import { ProductBuyButton } from "./ProductBuyButton";
 import { ProductCard } from "./ProductCard";
 import { enEntier, Fenetre, Livre, piecesDuPack, ProductVisual } from "./visuels";
+import { VideoCockpit } from "./VideoCockpit";
 import { VisiteOnglets, type OngletVisite } from "./VisiteOnglets";
 import {
   getProductPriceId,
@@ -91,7 +92,23 @@ const slugOnglet = (s: string) =>
 
 // ─── Hero ────────────────────────────────────────────────────────────────────
 
-function ProductHero({ product, available }: { product: Product; available: boolean }) {
+/**
+ * Pages dont le bandeau montre une boucle vidéo à la place du visuel statique
+ * (VideoCockpit, décision du 04/10/2026) : le Cockpit seulement. Le Guide et
+ * le Pack gardent leur visuel.
+ */
+const AVEC_VIDEO = new Set<string>(["template-suivi-dca"]);
+
+function ProductHero({
+  product,
+  available,
+  avecVisite,
+}: {
+  product: Product;
+  available: boolean;
+  /** La page a une visite par onglets (#visite), vers laquelle la légende de la vidéo renvoie. */
+  avecVisite: boolean;
+}) {
   const separes = prixSepares(product);
   const inclus = produitsInclus(product);
   const tableur = !product.inclut?.length && !estUnePage(product.screenshots?.[0]);
@@ -181,7 +198,11 @@ function ProductHero({ product, available }: { product: Product; available: bool
       </div>
 
       <div className={`relative mx-auto mt-10 px-4 sm:px-6 md:mt-14 ${tableur ? "max-w-6xl" : "max-w-5xl"}`}>
-        <ProductVisual product={product} />
+        {AVEC_VIDEO.has(product.slug) ? (
+          <VideoCockpit product={product} avecVisite={avecVisite} />
+        ) : (
+          <ProductVisual product={product} />
+        )}
       </div>
 
       <div className="relative mx-auto mt-12 max-w-4xl px-4 sm:px-6 md:mt-16">
@@ -412,7 +433,7 @@ export function ProductPage({ product }: { product: Product }) {
         ]}
       />
 
-      <ProductHero product={product} available={available} />
+      <ProductHero product={product} available={available} avecVisite={visite.length > 0} />
 
       {/* -mb-12 : recouvre la marge haute du pied de page (mt-12), sinon le
           fond du layout réapparaît sur 48 px avant le footer. */}

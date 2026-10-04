@@ -88,7 +88,10 @@ export function HeroVideo() {
   preload(affiche, { as: "image", fetchPriority: "high", media: "(min-width: 1024px)" });
 
   return (
-    <HeroVideoLecteur descriptionAvecSon={descriptionAvecSon}>
+    <HeroVideoLecteur
+      sources={{ webm: VIDEO_ACCUEIL.boucle.webm, mp4: VIDEO_ACCUEIL.boucle.mp4 }}
+      avecSon={{ ...VIDEO_ACCUEIL.avecSon, description: descriptionAvecSon }}
+    >
       {/* Pas de next/image : l'affiche doit rester identique au pixel près à
           la première image de la vidéo, sans recompression. */}
       {/* Priorité BASSE sur la balise elle-même : sur téléphone, l'affiche

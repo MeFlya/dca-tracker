@@ -1,7 +1,10 @@
 "use client";
 
-// Lecture de la boucle du bandeau d'accueil, et fenêtre de la version avec le
-// son. Reprend le comportement testé dans video-accueil/apercu.html :
+// Lecture d'une boucle muette (bandeau d'accueil, et depuis le 04/10/2026
+// bandeau de la page du Cockpit), et fenêtre FACULTATIVE de la version avec le
+// son (accueil seulement). Les fichiers sont passés par le composant serveur
+// (HeroVideo.tsx, products/VideoCockpit.tsx), lus dans src/lib/video-accueil.ts.
+// Reprend le comportement testé dans video-accueil/apercu.html :
 //
 // 1. La <video> n'a NI autoplay NI source dans le HTML. `autoplay` l'emporte
 //    sur `preload` et ferait télécharger toute la boucle dès l'arrivée. Les
@@ -18,8 +21,8 @@
 //    « Moins d'animations » activé en cours de route : elle s'arrête et seul
 //    un clic du visiteur peut la relancer. Si aucune source n'est lisible,
 //    l'affiche reste seule, sans bouton.
-// 5. La version avec le son ne charge rien, pas même son affiche, avant le
-//    clic. Le clic lance la lecture avec le son (geste du visiteur). À la
+// 5. (Seulement si `avecSon` est fourni.) La version avec le son ne charge
+//    rien, pas même son affiche, avant le clic. Le clic lance la lecture avec le son (geste du visiteur). À la
 //    fermeture, la vidéo est libérée (plus aucun téléchargement) et la boucle
 //    ne reprend que si elle tournait.
 //
@@ -30,7 +33,6 @@
 
 import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { pageview } from "@vercel/analytics";
-import { VIDEO_ACCUEIL } from "@/lib/video-accueil";
 
 const TOURS = 3;
 
@@ -60,14 +62,52 @@ function moinsDAnimations() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
+/** Version avec le son, ouverte dans une fenêtre (accueil seulement). */
+export type VideoAvecSon = {
+  mp4: string;
+  affiche: string;
+  /** Durée affichée sur le lien, en secondes. */
+  dureeSecondes: number;
+  /** Équivalent textuel de la version avec le son (aucune voix, tout est écrit à l'image). */
+  description: string;
+};
+
+/**
+ * Mise en page du cadre, selon la page. « accueil » : classes d'origine,
+ * inchangées. « produit » : bandeau sombre de la page du Cockpit, centré, et
+ * bouton en HAUT à droite. En bas, sur l'image où la boucle s'arrête, il
+ * couvre les mentions « Exemple pré-rempli » et « pas un conseil » (à gauche)
+ * ou les touche dès 343 px de large (à droite) ; le coin haut-droit est vide
+ * sur tous les plans (titre le plus large : x = 860 sur 1080).
+ */
+const VARIANTES = {
+  accueil: {
+    conteneur: "relative w-full max-w-md lg:max-w-[480px]",
+    cadre:
+      "relative aspect-square w-full overflow-hidden rounded-2xl border border-slate-200/60 bg-slate-950 shadow-card-lg",
+    coinBouton: "left-3 bottom-3",
+  },
+  produit: {
+    conteneur: "relative mx-auto w-full max-w-[480px]",
+    cadre: "relative aspect-square w-full overflow-hidden rounded-2xl bg-slate-950 shadow-2xl ring-1 ring-white/10",
+    coinBouton: "right-3 top-3",
+  },
+} as const;
+
 export function HeroVideoLecteur({
   children,
-  descriptionAvecSon,
+  sources,
+  avecSon,
+  variante = "accueil",
 }: {
   children: ReactNode;
-  /** Équivalent textuel de la version avec le son (aucune voix, tout est écrit à l'image). */
-  descriptionAvecSon: string;
+  /** Boucle muette : WebM (VP9) d'abord, MP4 (H.264 High) en secours. */
+  sources: { webm: string; mp4: string };
+  /** Facultatif : sans lui, ni lien « Regarder avec le son » ni fenêtre. */
+  avecSon?: VideoAvecSon;
+  variante?: keyof typeof VARIANTES;
 }) {
+  const classes = VARIANTES[variante];
   const cadreRef = useRef<HTMLDivElement>(null);
   const boucleRef = useRef<HTMLVideoElement>(null);
   const fenetreRef = useRef<HTMLDialogElement>(null);
@@ -158,9 +198,9 @@ export function HeroVideoLecteur({
       v.muted = true;
       v.setAttribute("muted", "");
       v.loop = true;
-      ajouterSource(v, VIDEO_ACCUEIL.boucle.webm, 'video/webm; codecs="vp9"');
+      ajouterSource(v, sources.webm, 'video/webm; codecs="vp9"');
       // L'erreur de la DERNIÈRE source signifie qu'aucune n'a pu être lue.
-      ajouterSource(v, VIDEO_ACCUEIL.boucle.mp4, 'video/mp4; codecs="avc1.640028"').addEventListener(
+      ajouterSource(v, sources.mp4, 'video/mp4; codecs="avc1.640028"').addEventListener(
         "error",
         abandonner,
       );
@@ -258,7 +298,8 @@ export function HeroVideoLecteur({
       preferenceMouvement.removeEventListener("change", surPreference);
       if (s.defilementBloque) debloquerDefilement();
     };
-    // lancer() ne lit que des refs : le monter une fois suffit.
+    // lancer() ne lit que des refs, et les sources ne changent pas (fichiers
+    // versionnés, fixés au build) : le monter une fois suffit.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -316,15 +357,15 @@ export function HeroVideoLecteur({
     const fenetre = fenetreRef.current;
     const c = completeRef.current;
     const v = boucleRef.current;
-    if (!fenetre || !c) return;
+    if (!fenetre || !c || !avecSon) return;
     const s = r.current;
 
     s.reprendre = s.chargee && !!v && !v.paused;
     if (s.reprendre) v?.pause();
 
     if (!c.querySelector("source")) {
-      c.poster = VIDEO_ACCUEIL.avecSon.affiche;
-      ajouterSource(c, VIDEO_ACCUEIL.avecSon.mp4, "video/mp4");
+      c.poster = avecSon.affiche;
+      ajouterSource(c, avecSon.mp4, "video/mp4");
       c.load();
     }
     bloquerDefilement();
@@ -380,7 +421,7 @@ export function HeroVideoLecteur({
   }
 
   return (
-    <div data-nosearch="" className="relative w-full max-w-md lg:max-w-[480px]">
+    <div data-nosearch="" className={classes.conteneur}>
       {/* Halo bleu derrière le cadre, comme l'ancienne carte de démonstration. */}
       <div
         className="absolute -inset-3 rounded-3xl bg-gradient-to-br from-primary-400/30 via-primary-300/10 to-sky-300/20 blur-2xl opacity-80 pointer-events-none"
@@ -389,9 +430,9 @@ export function HeroVideoLecteur({
 
       <div
         ref={cadreRef}
-        className="relative aspect-square w-full overflow-hidden rounded-2xl border border-slate-200/60 bg-slate-950 shadow-card-lg"
+        className={classes.cadre}
       >
-        {/* L'affiche, rendue côté serveur (HeroVideo.tsx). */}
+        {/* L'affiche, rendue côté serveur (HeroVideo.tsx, VideoCockpit.tsx). */}
         {children}
 
         <video
@@ -424,97 +465,102 @@ export function HeroVideoLecteur({
             onClick={surBouton}
             aria-label={LIBELLES[etat]}
             title={LIBELLES[etat]}
-            // Coin bas-GAUCHE : sur l'image où la boucle s'arrête (le
-            // simulateur, identique à l'affiche), le coin bas-droit est l'axe
-            // « 17 ans / 20 ans » du graphique. Icône seule dans tous les
+            // Accueil : coin bas-GAUCHE, car sur l'image où la boucle
+            // s'arrête (le simulateur, identique à l'affiche), le coin
+            // bas-droit est l'axe « 17 ans / 20 ans » du graphique. Cockpit :
+            // coin haut-DROIT (voir VARIANTES). Icône seule dans tous les
             // états, pour ne jamais masquer l'image ni doubler visuellement
             // le lien « Regarder avec le son » ; le libellé est dans
             // aria-label et title.
-            className="absolute left-3 bottom-3 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-slate-950/60 text-white backdrop-blur-sm transition-colors duration-150 hover:bg-slate-950/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+            className={`absolute ${classes.coinBouton} inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-slate-950/60 text-white backdrop-blur-sm transition-colors duration-150 hover:bg-slate-950/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950`}
           >
             <IconeBouton etat={etat} />
           </button>
         )}
       </div>
 
-      {/* Sur ordinateur, le lien sort du flux : seul le carré est centré
-          verticalement face au texte de gauche (sinon il remonte de 22 px). */}
-      <div className="mt-4 flex justify-center lg:absolute lg:inset-x-0 lg:top-full">
-        <button
-          ref={ouvrirRef}
-          type="button"
-          onClick={ouvrir}
-          aria-haspopup="dialog"
-          aria-label={`Regarder avec le son, ${VIDEO_ACCUEIL.avecSon.dureeSecondes} secondes`}
-          className="inline-flex items-center gap-1.5 rounded-md px-1.5 py-1 text-sm font-medium text-gray-600 underline-offset-4 transition-colors duration-150 hover:text-primary-700 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
-        >
-          <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true" className="shrink-0">
-            <path d="M3 1.8v8.4l7-4.2z" fill="currentColor" />
-          </svg>
-          Regarder avec le son
-          <span className="text-gray-400" aria-hidden>
-            ·
-          </span>
-          <span className="tabular-nums">{VIDEO_ACCUEIL.avecSon.dureeSecondes} s</span>
-        </button>
-      </div>
+      {avecSon && (
+        <>
+          {/* Sur ordinateur, le lien sort du flux : seul le carré est centré
+              verticalement face au texte de gauche (sinon il remonte de 22 px). */}
+          <div className="mt-4 flex justify-center lg:absolute lg:inset-x-0 lg:top-full">
+            <button
+              ref={ouvrirRef}
+              type="button"
+              onClick={ouvrir}
+              aria-haspopup="dialog"
+              aria-label={`Regarder avec le son, ${avecSon.dureeSecondes} secondes`}
+              className="inline-flex items-center gap-1.5 rounded-md px-1.5 py-1 text-sm font-medium text-gray-600 underline-offset-4 transition-colors duration-150 hover:text-primary-700 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+            >
+              <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true" className="shrink-0">
+                <path d="M3 1.8v8.4l7-4.2z" fill="currentColor" />
+              </svg>
+              Regarder avec le son
+              <span className="text-gray-400" aria-hidden>
+                ·
+              </span>
+              <span className="tabular-nums">{avecSon.dureeSecondes} s</span>
+            </button>
+          </div>
 
-      {/* Fenêtre de la version avec le son. Vide jusqu'au clic. */}
-      <dialog
-        ref={fenetreRef}
-        aria-labelledby="video-son-titre"
-        aria-describedby="video-son-description"
-        onClose={surFermeture}
-        onKeyDown={surToucheFenetre}
-        onPointerDown={(e) => {
-          r.current.appuiSurFond = e.target === e.currentTarget;
-        }}
-        onClick={(e) => {
-          // Clic sur le fond : la cible est la fenêtre elle-même, ET l'appui a
-          // commencé sur le fond. Un glisser parti de la barre de temps ou du
-          // volume, relâché sur le fond, ne ferme donc pas la fenêtre.
-          if (r.current.appuiSurFond && e.target === e.currentTarget) e.currentTarget.close();
-          r.current.appuiSurFond = false;
-        }}
-        // svh : la plus petite hauteur d'écran (barres du navigateur
-        // affichées), pour que la barre de commandes de la vidéo reste
-        // visible sur un téléphone à l'horizontale.
-        style={{ width: "min(640px, calc(100vw - 2rem), calc(100svh - 7rem))" }}
-        className="m-auto max-h-[calc(100svh-1rem)] max-w-none overflow-auto overscroll-contain rounded-2xl border border-white/10 bg-slate-950 p-0 text-slate-300 shadow-2xl backdrop:bg-slate-950/75 backdrop:backdrop-blur-sm"
-      >
-        <div className="flex items-center justify-between gap-3 py-2.5 pl-4 pr-2.5">
-          <p id="video-son-titre" className="text-sm font-medium text-slate-200">
-            DCA Tracker en {VIDEO_ACCUEIL.avecSon.dureeSecondes} secondes
-          </p>
-          <button
-            ref={fermerRef}
-            type="button"
-            onClick={() => fenetreRef.current?.close()}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-white/10 px-3 py-1.5 text-sm font-medium text-white transition-colors duration-150 hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+          {/* Fenêtre de la version avec le son. Vide jusqu'au clic. */}
+          <dialog
+            ref={fenetreRef}
+            aria-labelledby="video-son-titre"
+            aria-describedby="video-son-description"
+            onClose={surFermeture}
+            onKeyDown={surToucheFenetre}
+            onPointerDown={(e) => {
+              r.current.appuiSurFond = e.target === e.currentTarget;
+            }}
+            onClick={(e) => {
+              // Clic sur le fond : la cible est la fenêtre elle-même, ET l'appui a
+              // commencé sur le fond. Un glisser parti de la barre de temps ou du
+              // volume, relâché sur le fond, ne ferme donc pas la fenêtre.
+              if (r.current.appuiSurFond && e.target === e.currentTarget) e.currentTarget.close();
+              r.current.appuiSurFond = false;
+            }}
+            // svh : la plus petite hauteur d'écran (barres du navigateur
+            // affichées), pour que la barre de commandes de la vidéo reste
+            // visible sur un téléphone à l'horizontale.
+            style={{ width: "min(640px, calc(100vw - 2rem), calc(100svh - 7rem))" }}
+            className="m-auto max-h-[calc(100svh-1rem)] max-w-none overflow-auto overscroll-contain rounded-2xl border border-white/10 bg-slate-950 p-0 text-slate-300 shadow-2xl backdrop:bg-slate-950/75 backdrop:backdrop-blur-sm"
           >
-            <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
-              <path d="M2.5 2.5l7 7M9.5 2.5l-7 7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-            </svg>
-            Fermer
-          </button>
-        </div>
-        <video
-          ref={completeRef}
-          controls
-          playsInline
-          preload="none"
-          aria-labelledby="video-son-titre"
-          aria-describedby="video-son-description"
-          onEnded={surFinComplete}
-          className="block aspect-square w-full bg-slate-950"
-        />
-        <p id="video-son-description" className="sr-only">
-          {descriptionAvecSon}
-        </p>
-        {/* Sentinelle : après la dernière commande de la vidéo, Tab revient
-            sur « Fermer ». */}
-        <span tabIndex={0} onFocus={() => fermerRef.current?.focus()} className="sr-only" />
-      </dialog>
+            <div className="flex items-center justify-between gap-3 py-2.5 pl-4 pr-2.5">
+              <p id="video-son-titre" className="text-sm font-medium text-slate-200">
+                DCA Tracker en {avecSon.dureeSecondes} secondes
+              </p>
+              <button
+                ref={fermerRef}
+                type="button"
+                onClick={() => fenetreRef.current?.close()}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-white/10 px-3 py-1.5 text-sm font-medium text-white transition-colors duration-150 hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+              >
+                <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
+                  <path d="M2.5 2.5l7 7M9.5 2.5l-7 7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                </svg>
+                Fermer
+              </button>
+            </div>
+            <video
+              ref={completeRef}
+              controls
+              playsInline
+              preload="none"
+              aria-labelledby="video-son-titre"
+              aria-describedby="video-son-description"
+              onEnded={surFinComplete}
+              className="block aspect-square w-full bg-slate-950"
+            />
+            <p id="video-son-description" className="sr-only">
+              {avecSon.description}
+            </p>
+            {/* Sentinelle : après la dernière commande de la vidéo, Tab revient
+                sur « Fermer ». */}
+            <span tabIndex={0} onFocus={() => fermerRef.current?.focus()} className="sr-only" />
+          </dialog>
+        </>
+      )}
     </div>
   );
 }
