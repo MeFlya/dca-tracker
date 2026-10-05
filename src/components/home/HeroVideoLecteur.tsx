@@ -3,7 +3,8 @@
 // Lecture d'une boucle muette (bandeau d'accueil, et depuis le 04/10/2026
 // bandeau de la page du Cockpit), et fenêtre FACULTATIVE de la version avec le
 // son (accueil seulement). Les fichiers sont passés par le composant serveur
-// (HeroVideo.tsx, products/VideoCockpit.tsx), lus dans src/lib/video-accueil.ts.
+// (HeroVideo.tsx, products/VideoCockpit.tsx, ressources/VideoModeleGratuit.tsx),
+// lus dans src/lib/video-accueil.ts.
 // Reprend le comportement testé dans video-accueil/apercu.html :
 //
 // 1. La <video> n'a NI autoplay NI source dans le HTML. `autoplay` l'emporte
@@ -91,6 +92,18 @@ const VARIANTES = {
     conteneur: "relative mx-auto w-full max-w-[480px]",
     cadre: "relative aspect-square w-full overflow-hidden rounded-2xl bg-slate-950 shadow-2xl ring-1 ring-white/10",
     coinBouton: "right-3 top-3",
+  },
+  // « article » (04/10/2026) : boucle du modèle gratuit, sur le fond clair de
+  // /suivi-pea-excel (ressources/VideoModeleGratuit.tsx). Bouton
+  // en BAS à droite : le coin haut-droit est pris par le titre du plan
+  // « Excel ou Google Sheets » (jusqu'à x ≈ 956 sur 1080) ; le coin bas-droit
+  // est vide sur les 510 images (luminance maximale 43, le fond), et sur
+  // l'image où la boucle s'arrête la mention s'arrête à x ≈ 655, y ≈ 915.
+  article: {
+    conteneur: "relative mx-auto w-full max-w-[480px]",
+    cadre:
+      "relative aspect-square w-full overflow-hidden rounded-2xl bg-slate-950 shadow-card-lg ring-1 ring-slate-900/10",
+    coinBouton: "right-3 bottom-3",
   },
 } as const;
 

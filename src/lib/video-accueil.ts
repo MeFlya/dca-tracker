@@ -126,3 +126,64 @@ export const DANS_LA_VIDEO_COCKPIT = {
   plafondUtilisePct: 5.4,
   cap5ans: "2029-01-15",
 } as const;
+
+/**
+ * Boucle muette du MODÈLE GRATUIT, sur /suivi-pea-excel, dans l'encadré
+ * « Deux façons de faire », juste après le formulaire du haut (décision du
+ * 04/10/2026, video-accueil/STORYBOARD-MODELE-GRATUIT.md §6 et §10).
+ * 1080×1080, 17 s, sans piste audio ; rendu `npm run rendu -- modele`
+ * (out/boucle-modele-gratuit.*). Comme pour les deux autres boucles, la
+ * première et la dernière image sont identiques à l'affiche (l'onglet Par
+ * ETF, PRU de PE500 entouré).
+ */
+export const VIDEO_MODELE = {
+  boucle: {
+    webm: "/video/boucle-modele-gratuit-f8082c21.webm",
+    mp4: "/video/boucle-modele-gratuit-6745ad95.mp4",
+    affiche: "/video/boucle-modele-gratuit-affiche-dd6c7e3e.jpg",
+    largeur: 1080,
+    hauteur: 1080,
+    /** 510 images à 30 i/s. */
+    dureeSecondes: 17,
+  },
+} as const;
+
+/**
+ * Chiffres et promesses GRAVÉS dans la boucle du modèle gratuit
+ * (video-accueil/src/donnees.json, clé `modeleBoucle`, et captures du journal
+ * et de Par ETF recomposées à l'image). VideoModeleGratuit.tsx les recalcule à
+ * chaque build depuis cockpit-exemple.ts et ressources-gratuites.ts : au
+ * moindre écart, la vidéo n'est PAS affichée (elle ne remplace aucun visuel,
+ * la page redevient celle d'avant la vidéo) et le journal du build le
+ * signale, jusqu'au prochain rendu. Après un nouveau rendu, mettre ces valeurs
+ * à jour en même temps que les noms de fichiers.
+ *
+ * Le nom du fichier livré, écrit dans la barre de fenêtre
+ * (« Modele-suivi-PEA_dcatracker.xlsx »), n'est vérifié qu'au rendu
+ * (extraire-donnees.mjs lit la route de téléchargement) : le site ne peut pas
+ * importer une constante interne d'une route API.
+ */
+export const DANS_LA_VIDEO_MODELE = {
+  /** Pastille de P3, cartes de P4, fin : « Excel + Google Sheets » (MODELE_GRATUIT_SHEETS_COPIE non nul). */
+  sheets: true,
+  /** P2 : les sept lignes visibles du journal (date, ticker, parts, prix affiché au centime, frais), dans l'ordre du fichier. */
+  journal: [
+    ["2024-01-15", "PE500", 4, 35.7, 1.99],
+    ["2024-01-15", "ETZ", 4, 14.53, 1.99],
+    ["2024-01-15", "PAEEM", 2, 20.23, 1.99],
+    ["2024-02-15", "PE500", 4, 37.92, 1.99],
+    ["2024-02-15", "ETZ", 4, 14.98, 1.99],
+    ["2024-02-15", "PAEEM", 2, 20.81, 1.99],
+    ["2024-03-15", "PE500", 4, 38.27, 1.99],
+  ],
+  /**
+   * P3 (l'affiche) : parts détenues, total investi (frais compris) et PRU, en
+   * euros, dans l'ordre du fichier. La réponse « → 44,40 € la part, frais
+   * compris » est le PRU de la première ligne (PE500, entouré).
+   */
+  parEtf: [
+    { ticker: "PE500", parts: 101, investi: 4484.17, pru: 44.4 },
+    { ticker: "ETZ", parts: 116, investi: 2056.7, pru: 17.73 },
+    { ticker: "PAEEM", parts: 60, investi: 1566.34, pru: 26.11 },
+  ],
+} as const;

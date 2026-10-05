@@ -11,6 +11,7 @@ import { RenvoiProduit } from "@/components/products/RenvoiProduit";
 import { LienRenvoiProduit } from "@/components/products/LienRenvoiProduit";
 import { Fenetre } from "@/components/products/visuels";
 import { ModeleGratuitForm } from "@/components/ressources/ModeleGratuitForm";
+import { VideoModeleGratuit } from "@/components/ressources/VideoModeleGratuit";
 import { getProduct, TEMPLATE_CAPTURES, type Capture } from "@/lib/products";
 import { baremeCapital, tauxAffiche } from "@/lib/fiscal/pea-cto";
 import { dateEnToutesLettres } from "@/lib/etf-pea-verifies";
@@ -243,6 +244,11 @@ export default function SuiviPeaExcelPage() {
             </p>
             <ModeleGratuitForm source="suivi-pea-excel-haut" id="email-modele-haut" className="mt-3" />
           </div>
+          {/* 04/10/2026 : la boucle du modèle gratuit, APRÈS le formulaire
+              (une colonne : formulaire, vidéo, Cockpit ; deux colonnes : en
+              deuxième rangée). Le formulaire ne bouge sur aucun format.
+              STORYBOARD-MODELE-GRATUIT.md §6. */}
+          <VideoModeleGratuit className="sm:col-span-2 sm:order-last" />
           <div className="sm:border-l sm:border-primary-100 sm:pl-6">
             <p className="font-semibold text-gray-900">Ou prendre le classeur complet</p>
             <p className="mt-1 text-sm text-gray-600 leading-relaxed">
