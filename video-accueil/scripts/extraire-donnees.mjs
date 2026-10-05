@@ -306,6 +306,149 @@ const AFFICHE_RELUE = {
   }
 }
 
+// ─── Boucle du modèle gratuit (BoucleModeleGratuit, STORYBOARD-MODELE-GRATUIT.md §5) ─
+// Tout ce que la boucle du modèle gratuit écrit ou montre est relu ici, dans
+// la page /suivi-pea-excel, le formulaire, l'email, la route de
+// téléchargement et l'exemple du site. Arrêt au moindre écart : la vidéo ne
+// doit jamais dire ce que la page ne dit plus, ni montrer un ancien exemple.
+//
+// Le JSX est mis à plat pour la lecture : entités (&apos; &nbsp;), {" "} et
+// retours à la ligne ramenés à du texte simple.
+const aplatirJsx = (s) =>
+  s
+    .replace(/&apos;/g, "'")
+    .replace(/&nbsp;/g, " ")
+    .replace(/\{" "\}/g, " ")
+    .replace(/[  ]/g, " ")
+    .replace(/\s+/g, " ");
+const pageModele = aplatirJsx(await lire("src/app/suivi-pea-excel/page.tsx"));
+const formModele = aplatirJsx(await lire("src/components/ressources/ModeleGratuitForm.tsx"));
+const emailModele = aplatirJsx(await lire("src/lib/emails/modele-gratuit.ts"));
+const ressources = await lire("src/lib/ressources-gratuites.ts");
+const routeTelechargement = await lire("src/app/api/products/download/route.ts");
+
+// 1. La copie Google Sheets existe. Si MODELE_GRATUIT_SHEETS_COPIE passe à
+//    null, la page et l'email ne parlent plus de Sheets : la pastille, le
+//    plan P4 et la fin deviendraient faux.
+if (!/export const MODELE_GRATUIT_SHEETS_COPIE: string \| null =\s*"https:\/\/docs\.google\.com\/spreadsheets\/[^"]+\/copy";/.test(ressources)) {
+  throw new Error(
+    "extraire-donnees : MODELE_GRATUIT_SHEETS_COPIE n'est plus un lien de copie Google Sheets (ressources-gratuites.ts) : la boucle du modèle gratuit (pastille, P4, fin) dit « Excel + Google Sheets », elle ne doit plus être rendue ni affichée"
+  );
+}
+
+// 2. Phrases de la page, du formulaire et de l'email que la boucle reprend
+//    ou résume. Si l'une disparaît, le plan correspondant est à revoir.
+for (const [texte, ou, phrase, plan] of [
+  [pageModele, "page.tsx", "ce que chaque part vous a réellement coûté", "P1, question"],
+  [pageModele, "page.tsx", "le PRU inclut les frais de courtage", "P1, sous-titre « Frais de courtage compris »"],
+  [pageModele, "page.tsx", "Une ligne par achat : la date, le ticker de l'ETF, le nombre de parts, le prix unitaire et les frais", "P2, titre et sous-titre"],
+  [pageModele, "page.tsx", "Le journal des achats et la vue par ETF (PRU frais inclus,", "P3, réponse « la part, frais compris »"],
+  [pageModele, "page.tsx", "Le PRU est le total investi divisé par les parts", "P3, colonnes Parts détenues, Total investi et PRU"],
+  [pageModele, "page.tsx", 'soit un PRU de <strong className="text-gray-900">{eur(PE500.pru)}</strong>, frais compris', "P3, réponse « → 44,40 € la part, frais compris »"],
+  [pageModele, "page.tsx", "const PE500 = LIGNES[0];", "P3, réponse (le PRU de la page est celui de la 1re ligne de l'exemple)"],
+  [pageModele, "page.tsx", "L'onglet Par ETF (Cockpit et modèle gratuit)", "P3, capture Par ETF du Cockpit montrée comme celle du modèle gratuit"],
+  [pageModele, "page.tsx", 'const CAPTURE_PAR_ETF = capture("cockpit-v2-par-etf.png");', "P3, capture"],
+  [pageModele, "page.tsx", "Achats fictifs ; cours : clôtures du", "P2 et P3, mentions"],
+  [pageModele, "page.tsx", "Suivre votre PEA dans Excel ou Google Sheets", "P3 et P4, titres"],
+  [pageModele, "page.tsx", "Les formules du suivi sont les mêmes dans les deux", "P4, sous-titre « Les mêmes formules de suivi dans les deux »"],
+  [pageModele, "page.tsx", "Dans un fichier, sur votre ordinateur", "P4, carte Excel"],
+  [pageModele, "page.tsx", "Dans votre Google Drive", "P4, carte Google Sheets"],
+  [pageModele, "page.tsx", "Saisis à la main dans nos fichiers", "P4, carte « Fichier Excel », « Ses cours, saisis à la main »"],
+  [pageModele, "page.tsx", "mais nos formules n'en dépendent pas", "P4, carte « Fichier Excel » (la vidéo parle de NOS fichiers, pas d'Excel)"],
+  [pageModele, "page.tsx", "Automatiques avec GOOGLEFINANCE, différés de 20 min au plus", "P4, mention « différés de 20 min au plus »"],
+  [pageModele, "page.tsx", "tant que la colonne du cours manuel reste vide", "P4, mention des cours automatiques"],
+  [pageModele, "page.tsx", "GOOGLEFINANCE", "P4, mention des cours automatiques"],
+  [pageModele, "page.tsx", "le journal et la vue par ETF du Cockpit, avec son mode d'emploi", "P5, « avec son mode d'emploi »"],
+  [pageModele, "page.tsx", "un modèle gratuit à recevoir par email", "P3 et P5, « Modèle gratuit », « Gratuit · reçu par email »"],
+  [formModele, "ModeleGratuitForm.tsx", '{MODELE_GRATUIT_SHEETS_COPIE ? "Fichier Excel et copie Google Sheets" : "Fichier Excel"}, par email.', "P3 et P5, « Excel + Google Sheets », « reçu par email »"],
+  [emailModele, "emails/modele-gratuit.ts", "tant que la colonne « Cours manuel » reste vide", "P4, mention « « Cours manuel » reste vide »"],
+  [emailModele, "emails/modele-gratuit.ts", "Votre modèle de suivi PEA", "P5, titre « Modèle de suivi PEA »"],
+]) {
+  if (!texte.includes(phrase)) throw new Error(`extraire-donnees : « ${phrase} » absent de ${ou} — ${plan} de la boucle du modèle gratuit à revoir`);
+}
+// Nom du fichier livré (barre de fenêtre des plans P2 et P3).
+const fichierModele = trouver(
+  routeTelechargement,
+  /"modele-gratuit-xlsx": \{[^}]*?downloadName: "([^"]+\.xlsx)"/,
+  "downloadName du modèle gratuit (api/products/download/route.ts)"
+);
+
+// 3. Les captures de la vidéo sont-elles celles du site, et celles relues ?
+//    Les lignes du journal et les valeurs de Par ETF ont été lues à l'œil le
+//    04/10/2026 sur les captures dont voici les empreintes, puis comparées à
+//    l'exemple recalculé ci-dessous. Si une capture change (nouvel exemple),
+//    le rendu s'arrête : relire la capture, puis mettre à jour CAPTURES_RELUES
+//    et LU_SUR_LES_CAPTURES.
+const CAPTURES_RELUES = {
+  "modele/modele-suivi-pea-transactions.png": {
+    site: "public/ressources/modele-suivi-pea-transactions.png",
+    sha256: "7af4c06d7a1398f72e5a19e83d85ad0fa91aa8c6753f81860bc09a903be57326",
+  },
+  "classeur/cockpit-v2-par-etf.png": {
+    site: "public/produits/cockpit-v2-par-etf.png",
+    sha256: "72e3c796f7ad91ac7fb283eaeeb6df9d0b224fde150b5f7ce428e30cff50b483",
+  },
+};
+for (const [nom, { site, sha256 }] of Object.entries(CAPTURES_RELUES)) {
+  const video = await empreinte(path.join(VIDEO, "public/captures", nom));
+  const surLeSite = await empreinte(path.join(SITE, site));
+  if (video !== surLeSite) {
+    throw new Error(`extraire-donnees : public/captures/${nom} n'est plus la capture du site (${site}) : la recopier, la relire, puis revoir zones-modele-gratuit.ts`);
+  }
+  if (video !== sha256) {
+    throw new Error(`extraire-donnees : ${site} a changé depuis la relecture du 04/10 : relire la capture (lignes du journal, valeurs de Par ETF), puis mettre à jour CAPTURES_RELUES`);
+  }
+}
+
+// 4. L'exemple recalculé par le code du site (même module que pour le
+//    Cockpit) : ce que montrent les pixels doit en sortir.
+const LU_SUR_LES_CAPTURES = {
+  // Les sept lignes gardées du journal (P2) : date, ticker, parts, prix, frais.
+  journal: [
+    "15/01/2024 PE500 4 35,70 1,99",
+    "15/01/2024 ETZ 4 14,53 1,99",
+    "15/01/2024 PAEEM 2 20,23 1,99",
+    "15/02/2024 PE500 4 37,92 1,99",
+    "15/02/2024 ETZ 4 14,98 1,99",
+    "15/02/2024 PAEEM 2 20,81 1,99",
+    "15/03/2024 PE500 4 38,27 1,99",
+  ],
+  // Par ETF (P3) : ticker, parts détenues, total investi, PRU (colonnes
+  // montrées depuis la relecture du 04/10 ; Valeur actuelle est coupée).
+  parEtf: ["PE500 101 4 484,17 44,40", "ETZ 116 2 056,70 17,73", "PAEEM 60 1 566,34 26,11"],
+};
+const deuxDecimales = (n) => n.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).replace(/[  ]/g, " ");
+const journalCalcule = ex.ACHATS_EXEMPLE.slice(0, 7).map(
+  ([date, ticker, parts, prix, frais]) => `${date.split("-").reverse().join("/")} ${ticker} ${parts} ${deuxDecimales(prix)} ${deuxDecimales(frais)}`
+);
+const parEtfCalcule = lignesEx.map((l) => `${l.ticker} ${l.parts} ${deuxDecimales(l.investi)} ${deuxDecimales(l.pru)}`);
+for (const [quoi, lu, calcule] of [
+  ["journal (P2)", LU_SUR_LES_CAPTURES.journal, journalCalcule],
+  ["Par ETF (P3)", LU_SUR_LES_CAPTURES.parEtf, parEtfCalcule],
+]) {
+  if (lu.join(" | ") !== calcule.join(" | ")) {
+    throw new Error(`extraire-donnees : l'exemple du site ne donne plus ce que montre la capture du ${quoi} :\n  capture : ${lu.join(" | ")}\n  calcul  : ${calcule.join(" | ")}`);
+  }
+}
+const pe500 = lignesEx[0];
+if (pe500.ticker !== "PE500") throw new Error(`extraire-donnees : la 1re ligne de l'exemple n'est plus PE500 (${pe500.ticker}) : l'anneau et la réponse de l'affiche du modèle gratuit sont à revoir`);
+
+// 5. Le fichier réellement envoyé aux inscrits. La boucle dit « extrait du
+//    fichier » : le 04/10/2026, le modèle livré (clair de l'.enc ci-dessous)
+//    a été relu et donne exactement les lignes du journal et les valeurs de
+//    Par ETF ci-dessus (Transactions!A9:E15, Par ETF!H9:J11). Le modèle
+//    gratuit se reconstruit à part (construire_modele_gratuit.py) : s'il
+//    change, la vidéo pourrait montrer un exemple qu'il ne contient plus.
+const MODELE_LIVRE_RELU = {
+  fichier: "private-assets/modele-suivi-pea-gratuit.enc",
+  sha256: "8d2d6c0fc5e5da42e48cae3d9a7623daeac46bc7c136b0116260583d09ae9623",
+};
+if ((await empreinte(path.join(SITE, MODELE_LIVRE_RELU.fichier))) !== MODELE_LIVRE_RELU.sha256) {
+  throw new Error(
+    `extraire-donnees : le modèle gratuit livré (${MODELE_LIVRE_RELU.fichier}) a changé depuis la relecture du 04/10 : relire Transactions!A9:E15 et Par ETF!H9:J11 du fichier déchiffré contre LU_SUR_LES_CAPTURES, puis mettre à jour MODELE_LIVRE_RELU.sha256`
+  );
+}
+
 // ─── Musique (optionnelle) ───────────────────────────────────────────────────
 // Nom du fichier de public/ que la bande-son charge (src/son/BandeSon.tsx), ou
 // false. Le WAV (rendu de musique/composer.py, sans perte) passe en premier ;
@@ -376,6 +519,20 @@ const donnees = {
       cap5ans: capAffiche,
     },
   },
+  // Boucle du modèle gratuit (BoucleModeleGratuit). Comme pour le Cockpit, les
+  // chiffres de l'exemple sont les pixels des captures ; `exemple` prouve
+  // qu'ils sortent de l'exemple du site et sert au texte alternatif.
+  modeleBoucle: {
+    fichier: fichierModele,
+    dateExemple,
+    sheets: true,
+    exemple: {
+      date: dateIso,
+      tickers: lignesEx.map((l) => l.ticker),
+      premierAchat: journalCalcule[0],
+      pruPe500: euros(Math.round(pe500.pru * 100) / 100),
+    },
+  },
   premium: { mensuel: premiumMensuel, annuel: premiumAnnuel, essaiJours: premiumEssai },
   affichage: {
     valeurFinale: euros(valeurFinale),
@@ -391,5 +548,5 @@ await writeFile(path.join(VIDEO, "src/donnees.json"), JSON.stringify(donnees, nu
 console.log(
   `✓ src/donnees.json — ${donnees.affichage.valeurFinale} (${versementMensuel} €/mois, ${dureeAns} ans, ${hypothese} %), ` +
     `${nbEtfComparateur} ETF (${nbEtfFiltrePea} avec PEA), ${nbEtfPea} ETF PEA vérifiés le ${dateVerif}, ` +
-    `Cockpit ${cockpitPrix} € (exemple du ${dateExemple} : ${versementEx} € → ${achetes[0].parts} ${achetes[0].ticker}), Premium ${premiumMensuel} €/mois ou ${premiumAnnuel} €/an (${premiumEssai} j), musique : ${musique || "aucune"}`
+    `Cockpit ${cockpitPrix} € (exemple du ${dateExemple} : ${versementEx} € → ${achetes[0].parts} ${achetes[0].ticker}), Premium ${premiumMensuel} €/mois ou ${premiumAnnuel} €/an (${premiumEssai} j), modèle gratuit (${fichierModele}, PRU PE500 ${donnees.modeleBoucle.exemple.pruPe500}), musique : ${musique || "aucune"}`
 );

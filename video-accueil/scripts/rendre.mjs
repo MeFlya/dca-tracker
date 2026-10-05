@@ -5,6 +5,10 @@
 //          npm run rendu -- cockpit      (la boucle de la page du Cockpit :
 //                                         out/boucle-cockpit.webm, .mp4 et
 //                                         out/boucle-cockpit-affiche.jpg)
+//          npm run rendu -- modele       (la boucle de la page du modèle
+//                                         gratuit, /suivi-pea-excel :
+//                                         out/boucle-modele-gratuit.webm, .mp4
+//                                         et out/boucle-modele-gratuit-affiche.jpg)
 //          npm run rendu -- complete     (la version complète 16:9 seule)
 //          npm run rendu -- carre        (la version carrée avec le son,
 //                                         et sa variante musique seule)
@@ -74,13 +78,14 @@ const sansBruitages = options.includes("--sans-bruitages");
 // La boucle est muette : --sans-bruitages ne la concerne pas, et ne la refait jamais.
 const faireBoucle = (quoi === "tout" || quoi === "boucle") && !sansBruitages;
 const faireCockpit = (quoi === "tout" || quoi === "cockpit") && !sansBruitages;
+const faireModele = (quoi === "tout" || quoi === "modele") && !sansBruitages;
 const faireComplete = quoi === "tout" || quoi === "complete";
 const faireSon = quoi === "son";
 // La version carrée produit toujours ses deux fichiers (avec et sans
 // bruitages) : --sans-bruitages ne la concerne pas.
 const faireCarre = (quoi === "tout" && !sansBruitages) || quoi === "carre";
-if (!faireBoucle && !faireCockpit && !faireComplete && !faireSon && !faireCarre)
-  throw new Error(`À rendre : tout, boucle, cockpit, complete, carre ou son (reçu : ${quoi})`);
+if (!faireBoucle && !faireCockpit && !faireModele && !faireComplete && !faireSon && !faireCarre)
+  throw new Error(`À rendre : tout, boucle, cockpit, modele, complete, carre ou son (reçu : ${quoi})`);
 /** Props des compositions sonores : musique seule si --sans-bruitages. */
 const PROPS_SANS_BRUITAGES = `--props=${JSON.stringify({ bruitages: false })}`;
 
@@ -131,8 +136,9 @@ const bilan = [];
 
 /**
  * Une boucle muette (Boucle de l'accueil, BoucleCockpit de la page du
- * Cockpit) : master ProRes, MP4 H.264 en QP constant, WebM VP9 en deux passes,
- * affiche (image 0), et contrôle du raccord. Mêmes réglages pour les deux.
+ * Cockpit, BoucleModeleGratuit de la page du modèle gratuit) : master ProRes,
+ * MP4 H.264 en QP constant, WebM VP9 en deux passes, affiche (image 0), et
+ * contrôle du raccord. Mêmes réglages pour les trois.
  */
 async function rendreBoucle({ id, nom, affiche, objectifAffiche }) {
   const maitre = path.join(MAITRE, `${nom}.mov`);
@@ -255,6 +261,9 @@ async function rendreBoucle({ id, nom, affiche, objectifAffiche }) {
 if (faireBoucle) await rendreBoucle({ id: "Boucle", nom: "boucle", affiche: "poster.jpg", objectifAffiche: OBJECTIF_POSTER });
 // Boucle de la page du Cockpit (STORYBOARD-COCKPIT.md) : affiche visée sous 120 Ko.
 if (faireCockpit) await rendreBoucle({ id: "BoucleCockpit", nom: "boucle-cockpit", affiche: "boucle-cockpit-affiche.jpg", objectifAffiche: OBJECTIF_AFFICHE_COCKPIT });
+// Boucle de la page du modèle gratuit (STORYBOARD-MODELE-GRATUIT.md §2) : même
+// objectif d'affiche que le Cockpit, 120 Ko.
+if (faireModele) await rendreBoucle({ id: "BoucleModeleGratuit", nom: "boucle-modele-gratuit", affiche: "boucle-modele-gratuit-affiche.jpg", objectifAffiche: OBJECTIF_AFFICHE_COCKPIT });
 
 if (faireComplete) {
   const suffixe = sansBruitages ? "-sans-bruitages" : "";

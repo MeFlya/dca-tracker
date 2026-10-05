@@ -2,6 +2,7 @@ import React from "react";
 import { Composition } from "remotion";
 import { Boucle, BOUCLE } from "./boucle/Boucle";
 import { BoucleCockpit, BOUCLE_COCKPIT } from "./cockpit/BoucleCockpit";
+import { BoucleModeleGratuit, BOUCLE_MODELE_GRATUIT } from "./modele-gratuit/BoucleModeleGratuit";
 import { Complete, COMPLETE } from "./complete/Complete";
 import { CompleteCarree, COMPLETE_CARREE } from "./carre/CompleteCarree";
 import { Mesure } from "./Mesure";
@@ -19,6 +20,16 @@ export const Racine: React.FC = () => (
       height={BOUCLE_COCKPIT.hauteur}
       fps={BOUCLE_COCKPIT.fps}
       durationInFrames={BOUCLE_COCKPIT.duree}
+    />
+    {/* Boucle muette de la page du modèle gratuit, /suivi-pea-excel
+        (STORYBOARD-MODELE-GRATUIT.md), sans piste audio. */}
+    <Composition
+      id="BoucleModeleGratuit"
+      component={BoucleModeleGratuit}
+      width={BOUCLE_MODELE_GRATUIT.largeur}
+      height={BOUCLE_MODELE_GRATUIT.hauteur}
+      fps={BOUCLE_MODELE_GRATUIT.fps}
+      durationInFrames={BOUCLE_MODELE_GRATUIT.duree}
     />
     {/* Version complète : musique (public/musique.wav, ou .mp3) et bruitages
         d'interface ; --props='{"bruitages":false}' rend la musique seule. */}

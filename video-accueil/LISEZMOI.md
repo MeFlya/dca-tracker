@@ -57,6 +57,7 @@ npm run studio              # aperçu interactif dans le navigateur (Remotion St
 npm run rendu               # rend tout (boucle + boucle du Cockpit + version complète + version carrée) → out/
 npm run rendu -- boucle     # la boucle seule
 npm run rendu -- cockpit    # la boucle de la page du Cockpit → out/boucle-cockpit.webm, .mp4, -affiche.jpg
+npm run rendu -- modele     # la boucle du modèle gratuit → out/boucle-modele-gratuit.webm, .mp4, -affiche.jpg
 npm run rendu -- carre      # la version carrée avec le son, et sa variante musique seule
 npm run rendu -- complete   # la version complète 16:9 seule
 npm run rendu -- complete --sans-bruitages   # la même, musique seule → out/complete-sans-bruitages.mp4
@@ -64,6 +65,7 @@ npm run rendu -- son        # le son seul (WAV), avec et sans bruitages, puis se
 npm run controle            # images de contrôle + 3 planches contact → out/controle/
 npm run controle -- CompleteCarree   # celles de la version carrée seulement, et sa planche
 npm run controle -- BoucleCockpit    # celles de la boucle du Cockpit, et sa planche
+npm run controle -- BoucleModeleGratuit   # celles de la boucle du modèle gratuit, et sa planche
 npm run verifier            # contrôle TypeScript du projet vidéo
 ```
 
@@ -420,6 +422,47 @@ npm run controle -- BoucleCockpit    # images de contrôle et planche → out/co
 
 **À arbitrer par Maël.** Réordonner le scénario (P4, P5, P1, P2, P3, P6) pour montrer la réponse et le prix dans les 4 premières secondes ; l'affiche porte déjà la réponse en grand.
 
+## Boucle du modèle gratuit (rendu du 04/10/2026, corrigé après relecture, pas encore intégrée)
+
+Pour la page `/suivi-pea-excel`. Muette, carrée 1080×1080, 30 i/s, 510 images (17 s). Composition `BoucleModeleGratuit` (`src/modele-gratuit/BoucleModeleGratuit.tsx`), zones au pixel dans `src/zones-modele-gratuit.ts`. Même mécanique que la boucle du Cockpit : le fichier commence sur l'affiche (scénario 255) et y revient, image 0 = image 509. Scénario, sources et honnêteté : `STORYBOARD-MODELE-GRATUIT.md` (§9 pour le premier rendu, **§10 pour les corrections des relectures design et exactitude**).
+
+**Plans** (numéros du scénario ; fichier = scénario − 225 à partir de 255, scénario + 255 avant) :
+- P1 : « Combien vous a coûté chaque part ? ».
+- P2 : « Une ligne par achat », le journal du modèle gratuit (5 colonnes saisies, 7 lignes), avec un anneau autour de la colonne « Frais (€) ».
+- P3, l'affiche :
+  - « Suivez votre PEA », avec la pastille « Modèle gratuit · Excel + Google Sheets » ;
+  - la vue par ETF (ticker, parts détenues, total investi, PRU) : les calculs se découvrent, puis un anneau se pose sur le PRU « 44,40 € » ;
+  - la réponse « → 44,40 € la part, frais compris ».
+- P4 : « Excel ou Google Sheets », deux cartes de texte :
+  - « Fichier Excel » : ses cours, saisis à la main ;
+  - « Google Sheets » : ses cours, automatiques*, avec la note « différés de 20 min au plus, tant que la colonne « Cours manuel » reste vide ».
+- P5 : logo, « Modèle de suivi PEA », puis « → Gratuit, reçu par email ».
+
+Ce que la boucle ne montre pas : rien du Cockpit payant, aucune plus-value (ni affichée ni déductible : « Valeur actuelle » est coupée), aucun rappel du Cockpit.
+
+**Sources et garde-fous.** Les deux captures :
+- `public/captures/modele/modele-suivi-pea-transactions.png`, copie de `../public/ressources/` ;
+- `public/captures/classeur/cockpit-v2-par-etf.png`, le même onglet que dans le modèle gratuit.
+
+Avec la clé `modeleBoucle`, `scripts/extraire-donnees.mjs` :
+- vérifie les empreintes des captures contre le site et contre `CAPTURES_RELUES` ;
+- vérifie l'empreinte du modèle réellement livré (`MODELE_LIVRE_RELU`, `private-assets/modele-suivi-pea-gratuit.enc`) ;
+- recalcule les lignes visibles avec `cockpit-exemple.ts` (journal, puis parts, investi et PRU) ;
+- relit les phrases de la page, du formulaire et de l'email que la boucle reprend, dont « nos formules n'en dépendent pas », « différés de 20 min au plus » et « soit un PRU de … frais compris » ;
+- lit le nom du fichier livré ;
+- s'arrête si `MODELE_GRATUIT_SHEETS_COPIE` devient `null`.
+
+Le PRU de la réponse vient de `donnees.json`.
+
+**Fichiers** (`out/`) :
+- `boucle-modele-gratuit.mp4` : 1,24 Mo (1 298 469 o) ;
+- `boucle-modele-gratuit.webm` : 0,91 Mo (955 095 o) ;
+- `boucle-modele-gratuit-affiche.jpg` : 104 Ko (106 805 o).
+
+Raccord : les PNG sont identiques, l'écart est de 0 sur le MP4 décodé et de 18/255 au plus sur le WebM.
+
+Images sans texte lisible, entre P4 et la fin : 154 à 161, avec le carré du logo dès 159 (8 images, comme le Cockpit). Les images décodées, réduites à 343 et 480 px, sont dans `out/controle/decode-modele-gratuit/`.
+
 ## Plan d'intégration (après validation de Maël)
 
 1. **Fichiers.**
@@ -466,6 +509,8 @@ musique/                       musique synthétisée (composer.py), contrôles (
 src/composants/                logo (copie exacte de LogoMark.tsx), fond, captures, accents, textes
 src/composants/Morceaux.tsx    capture recomposée de morceaux (carte d'ETF sans cours, Cockpit sur 3 colonnes)
 src/boucle/Boucle.tsx          la boucle (B0 à B5 du storyboard, et le départ du fichier)
+src/modele-gratuit/BoucleModeleGratuit.tsx  la boucle du modèle gratuit (P1 à P5 de STORYBOARD-MODELE-GRATUIT.md)
+src/zones-modele-gratuit.ts    ses zones mesurées sur les captures
 src/carre/CompleteCarree.tsx   la version carrée avec le son (C1 à C9, mêmes temps que Complete)
 src/carre/Finition.tsx         sa finition : transition « glissement », flou de mouvement, reflet
 src/complete/Complete.tsx      la version complète 16:9 (C1 à C9)

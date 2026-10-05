@@ -1,6 +1,6 @@
 {
   "_avertissement": "Fichier généré par scripts/extraire-donnees.mjs : ne pas modifier à la main.",
-  "genere_le": "2026-10-04T07:50:57.367Z",
+  "genere_le": "2026-10-04T14:57:54.568Z",
   "textes_lus_le": "2026-10-02T19:49:26.497Z",
   "musique": "musique.wav",
   "pastilleAccueil": "Le cockpit DCA pour investisseurs long-terme",
@@ -57,6 +57,21 @@
       "reliquat": "8,24 €",
       "ecart": "-6,7 %",
       "cap5ans": "15/01/2029"
+    }
+  },
+  "modeleBoucle": {
+    "fichier": "Modele-suivi-PEA_dcatracker.xlsx",
+    "dateExemple": "2 octobre 2026",
+    "sheets": true,
+    "exemple": {
+      "date": "2026-10-02",
+      "tickers": [
+        "PE500",
+        "ETZ",
+        "PAEEM"
+      ],
+      "premierAchat": "15/01/2024 PE500 4 35,70 1,99",
+      "pruPe500": "44,40 €"
     }
   },
   "premium": {

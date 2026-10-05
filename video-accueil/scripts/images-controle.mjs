@@ -6,9 +6,11 @@
 //          npm run controle -- CompleteCarree (les images par défaut d'une seule
 //                                              composition, et sa planche)
 //          npm run controle -- BoucleCockpit  (boucle de la page du Cockpit)
+//          npm run controle -- BoucleModeleGratuit (boucle du modèle gratuit)
 //          npm run controle -- Boucle:0,97 Complete:300,315   (images choisies)
 // Sortie : out/controle/<composition>-<image>.png
 //          out/controle/_planche-boucle.png, _planche-bouclecockpit.png,
+//          _planche-bouclemodelegratuit.png,
 //          _planche-complete.png, _planche-completecarree.png
 //
 // Les numéros de la boucle sont ceux du FICHIER rendu (570 images), qui
@@ -83,6 +85,49 @@ const PAR_DEFAUT = {
     530, // (215) le calcul se découvre, la bande d'ETZ arrive
     545, // (230) anneau du « 14 », la réponse entre
     569, // (254) dernière image = image 0
+  ],
+  // Boucle du modèle gratuit (STORYBOARD-MODELE-GRATUIT.md). Numéros du
+  // FICHIER (510 images, qui commence sur l'affiche) ; entre parenthèses,
+  // l'image du scénario : fichier = scénario − 225 à partir de 255,
+  // scénario + 255 avant.
+  BoucleModeleGratuit: [
+    0, // (255) affiche : pastille, Par ETF (parts, investi, PRU), anneau, réponse, mention
+    50, // (275) P3 recule
+    58, // (283) P4 : titre et sous-titre entrent, P3 presque sortie
+    66, // (291) P4 : la carte Excel monte, la carte Sheets entre
+    90, // (315) P4 posé, note sur deux lignes
+    140, // (365) P4 toujours lisible (sortie à 371 depuis la relecture design)
+    148, // (373) sortie de P4
+    156, // (381) fin de la sortie de P4, avant le carré du logo
+    158, // (383) le carré du logo apparaît, les cartes éteintes
+    161, // (386) le titre de la fin entre avec le carré
+    164, // (389) le logo se trace
+    172, // (397) la fin entre
+    176, // (401) la réponse « → Gratuit, reçu par email » entre
+    184, // (409) la réponse posée
+    200, // (425) fin posée
+    245, // (470) la fin s'éteint
+    251, // (476) la question entre déjà, la fin presque éteinte
+    254, // (479) dernière image du scénario
+    255, // (0) reprise : même état qu'en 479, une image plus loin
+    258, // (3) la question entre
+    290, // (35) la question
+    318, // (63) sortie de la question
+    326, // (71) P2 : titre, fenêtre qui monte
+    330, // (75) P2 : 1re image où la fenêtre dépasse 0,5 d'opacité (mention ?)
+    355, // (100) l'anneau de la colonne Frais entre
+    365, // (110) anneau de la colonne Frais posé
+    395, // (140) P2 posé
+    412, // (157) sortie de P2
+    415, // (160) fin de la sortie de P2, le titre de P3 entre
+    420, // (165) P3 entre, la pastille arrive
+    428, // (173) P3 : 1re image où la fenêtre dépasse 0,5 (mention ?)
+    450, // (195) P3 : fenêtre posée, cache encore plein
+    460, // (205) les calculs se découvrent
+    475, // (220) calculs découverts, avant l'anneau
+    480, // (225) l'anneau du PRU se pose
+    490, // (235) la réponse se pose
+    509, // (254) dernière image = image 0
   ],
   // C1 | C2 | C3 (réglages, compteur, scénarios) | C4 | C5 | C6 | C7 | C8 | C9
   Complete: [0, 30, 75, 100, 130, 196, 230, 255, 265, 290, 320, 375, 395, 440, 465, 500, 545, 590, 615, 660, 700, 715, 735, 770, 820, 845, 880, 899],
