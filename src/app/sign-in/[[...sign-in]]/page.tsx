@@ -1,7 +1,7 @@
-import { SignIn } from "@clerk/nextjs";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { LogoMark } from "@/components/ui/LogoMark";
+import { EmplacementClerk } from "@/components/compte/EmplacementClerk";
 
 export const metadata: Metadata = {
   title: "Connexion — DCA Tracker",
@@ -26,10 +26,13 @@ export default function SignInPage() {
           </p>
         </div>
 
-        {/* Clerk form (themed via global appearance) */}
-        <SignIn
-          signUpUrl="/sign-up"
-          fallbackRedirectUrl="/account"
+        {/* Clerk form (themed via global appearance), rendu par l'îlot Clerk
+            dans cet emplacement. <SignIn> n'est plus importé ici : Next
+            précharge cette page, JavaScript compris, depuis le lien
+            « Connexion » de l'en-tête, donc depuis toutes les pages (voir
+            compte/etat-compte.ts). */}
+        <EmplacementClerk
+          widget={{ type: "sign-in", signUpUrl: "/sign-up", fallbackRedirectUrl: "/account" }}
         />
 
         {/* Footer trust line — « Hébergement en Europe » retiré : Vercel, Clerk

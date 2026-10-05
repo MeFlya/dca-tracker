@@ -1,16 +1,16 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Newsreader } from "next/font/google";
 import "./globals.css";
-import { ClerkProvider } from "@clerk/nextjs";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { AmbientBackground } from "@/components/ui/AmbientBackground";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
-import { clerkAppearance, clerkLocalization } from "@/lib/clerk-appearance";
 import { Analytics } from "@vercel/analytics/next";
 import { AncresTitres } from "@/components/search/AncresTitres";
 import { AnalyticsContextProvider } from "@/components/analytics/AnalyticsContext";
+import { IlotClerk } from "@/components/compte/IlotClerk";
+import { scriptPrechargementClerk } from "@/lib/clerk-prechargement";
 
 // Hardcoded — never trust NEXT_PUBLIC_SITE_URL for canonical/metadataBase
 // (Vercel preview deployments set it to *.vercel.app which breaks SEO)
@@ -38,6 +38,8 @@ const newsreader = Newsreader({
   display: "swap",
   axes: ["opsz"],
 });
+
+const PRECHARGEMENT_CLERK = scriptPrechargementClerk();
 
 export const viewport: Viewport = {
   themeColor: "#1d4ed8",
@@ -137,7 +139,12 @@ export default function RootLayout({
       <head>
         {/* Plus de preconnect Google Fonts : les polices sont self-hostées
             par next/font (servies depuis /_next/static, même origine). */}
-
+        {/* Scripts de Clerk préchargés pour une session ou sur /sign-in et
+            /sign-up seulement ; rien pour un visiteur non connecté ailleurs
+            (voir src/lib/clerk-prechargement.ts). */}
+        {PRECHARGEMENT_CLERK && (
+          <script dangerouslySetInnerHTML={{ __html: PRECHARGEMENT_CLERK }} />
+        )}
       </head>
       <body className="min-h-screen flex flex-col">
         {/* Sans JS, on n'applique pas l'état caché du scroll-reveal. */}
@@ -148,7 +155,6 @@ export default function RootLayout({
         {/* Animated ambient background — sits below all content.
             Provides the "premium feel" on every page for free. */}
         <AmbientBackground />
-        <ClerkProvider appearance={clerkAppearance} localization={clerkLocalization}>
         <JsonLd
           data={{
             "@context": "https://schema.org",
@@ -189,7 +195,12 @@ export default function RootLayout({
         <main className="flex-1">{children}</main>
         <Footer />
         <AncresTitres />
-        </ClerkProvider>
+        {/* Clerk n'enveloppe plus le site (04/10/2026) : ~165 Ko gzip de
+            JavaScript chargés à chaque visite, pour un en-tête qui n'avait
+            besoin que de savoir « connecté ou non ». L'îlot ne le monte que
+            pour une session ou une page de connexion — voir
+            src/components/compte/etat-compte.ts. */}
+        <IlotClerk />
         <Analytics />
       </body>
     </html>

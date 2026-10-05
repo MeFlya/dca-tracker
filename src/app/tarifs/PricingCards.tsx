@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { useUser } from "@clerk/nextjs";
+import { useCompte } from "@/components/compte/etat-compte";
 import { track } from "@/lib/analytics";
 import { figerOrigineDeLAchat } from "@/lib/origine-achat";
 import { AuroraSweep } from "@/components/ui/AuroraSweep";
@@ -89,9 +89,8 @@ function CheckoutButton({
   billing: "monthly" | "yearly";
   label: string;
 }) {
-  const { isSignedIn, isLoaded, user } = useUser();
-  const isAlreadyPremium =
-    (user?.publicMetadata?.plan as string | undefined) === "premium";
+  const { isSignedIn, isLoaded, plan } = useCompte();
+  const isAlreadyPremium = plan === "premium";
   const [loading, setLoading] = useState(false);
 
   // Déjà Premium → aucun CTA d'essai (l'user a déjà tout). On propose la

@@ -1,14 +1,14 @@
 "use client";
 
-// « use client » exprès (04/10/2026), même sans composant ici. app/layout.tsx
-// (composant serveur) passe ces deux objets au <ClerkProvider> : sans la
-// directive, ils étaient sérialisés dans le HTML de CHAQUE page et dans chaque
-// préchargement de lien (.rsc). La traduction frFR complète pesait 78 Ko,
-// 18 Ko gzip, soit plus d'un tiers du HTML compressé de l'accueil. Avec la
-// directive, le serveur n'envoie qu'une référence vers ce module, que le
-// navigateur charge une fois avec le JavaScript commun, mis en cache.
-// Conséquence : côté serveur, ne jamais lire le contenu de ces objets
-// (clerkLocalization.signIn…), seulement les passer en props.
+// « use client » exprès (04/10/2026), même sans composant ici. Quand
+// app/layout.tsx (composant serveur) passait ces deux objets au
+// <ClerkProvider>, ils étaient sérialisés dans le HTML de CHAQUE page et dans
+// chaque préchargement de lien (.rsc) : la traduction frFR complète pesait
+// 78 Ko, 18 Ko gzip, plus d'un tiers du HTML compressé de l'accueil.
+// Depuis, le provider vit dans compte/ClerkActif.tsx, chargé à la demande, et
+// c'est le seul à importer ce module. La directive reste en garde-fou : un
+// composant serveur qui l'importerait ne recevrait qu'une référence. Ne jamais
+// lire le contenu de ces objets côté serveur (clerkLocalization.signIn…).
 import { frFR } from "@clerk/localizations";
 
 // Shared Clerk appearance config.

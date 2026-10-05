@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useUser } from "@clerk/nextjs";
+import { useCompte } from "@/components/compte/etat-compte";
 import {
   TrendingDown,
   Clock,
@@ -77,8 +77,7 @@ function PremiumFix({ bullets }: { bullets: string[] }) {
 // ─── Main wrapper ─────────────────────────────────────────────────────────────
 
 export function ConversionBlocks({ output }: { output: SimulatorOutput }) {
-  const { user } = useUser();
-  const plan = (user?.publicMetadata?.plan as string) ?? "free";
+  const { plan } = useCompte();
   const isPremium = plan === "premium";
 
   return (

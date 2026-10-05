@@ -24,7 +24,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useUser } from "@clerk/nextjs";
+import { useCompte } from "@/components/compte/etat-compte";
 import { track } from "@/lib/analytics";
 import { figerOrigineDeLAchat } from "@/lib/origine-achat";
 
@@ -39,7 +39,7 @@ export function LifetimePricingCard() {
 }
 
 function LifetimeCardInner() {
-  const { isSignedIn, isLoaded } = useUser();
+  const { isSignedIn, isLoaded } = useCompte();
   const [loading, setLoading] = useState(false);
 
   const priceEur = process.env.NEXT_PUBLIC_LIFETIME_PRICE_EUR ?? "99";

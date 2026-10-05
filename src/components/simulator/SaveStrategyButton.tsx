@@ -1,7 +1,7 @@
 "use client";
 
-import { useUser } from "@clerk/nextjs";
 import { useState } from "react";
+import { useCompte } from "@/components/compte/etat-compte";
 import Link from "next/link";
 import type { SimulatorInput } from "@/lib/simulator";
 import { paramsToSearch } from "@/lib/simulation-params";
@@ -15,7 +15,7 @@ interface Props {
 type State = "idle" | "saving" | "saved" | "error";
 
 export function SaveStrategyButton({ input, plan }: Props) {
-  const { isSignedIn } = useUser();
+  const { isSignedIn } = useCompte();
   const [state, setState] = useState<State>("idle");
 
   // Reconstruit depuis `input` — l'état réel des curseurs — et non depuis
