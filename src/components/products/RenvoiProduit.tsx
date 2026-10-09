@@ -43,6 +43,12 @@ import { LienRenvoiProduit } from "@/components/products/LienRenvoiProduit";
  *
  * Une page = un produit au plus. Deux renvois sur la même page, c'est une
  * page de vente qui ne dit pas son nom.
+ *
+ * Exception datée du 09/10/2026 : les comparatifs ETF portent le renvoi du
+ * guide ET, dans le bloc « Après le choix » (ETFComparisonPage.tsx), une
+ * phrase sans bouton sur le Cockpit. L'appel principal de ce bloc est le
+ * modèle gratuit ; le Cockpit n'y est qu'une mention secondaire, jamais un
+ * second RenvoiProduit.
  */
 export function RenvoiProduit({
   contexte,

@@ -16,9 +16,55 @@ import {
   type FraisOrdreEtfPea,
 } from "@/lib/brokers";
 import { HYPOTHESES_COMPARATIFS } from "@/lib/ecart-frais";
-import { DATE_VERIFICATION_PEA, dateEnToutesLettres } from "@/lib/etf-pea-verifies";
+import {
+  DATE_VERIFICATION_PEA,
+  ETF_PEA_VERIFIES,
+  URL_LISTE_PEA,
+  ancreFonds,
+  dateEnToutesLettres,
+  lienListePea,
+} from "@/lib/etf-pea-verifies";
+import { getETFBySymbol } from "@/lib/etf-config";
+import { getProduct } from "@/lib/products";
+import { MODELE_GRATUIT_SHEETS_COPIE } from "@/lib/ressources-gratuites";
+import { LienRenvoiProduit } from "@/components/products/LienRenvoiProduit";
 
-function PEAPill({ value }: { value: string }) {
+// ─── Liens vers la suite du choix (09/10/2026) ───────────────────────────────
+// Search Console au 09/10 : wpea-vs-dcam fait la moitié des clics du site
+// depuis dix jours, et aucun comparatif ne liait la fiche des fonds comparés,
+// la liste vérifiée des ETF éligibles au PEA ni le modèle de suivi gratuit.
+// Les cibles sont CALCULÉES, jamais écrites `/etf/${ticker}` : ESE n'a pas de
+// fiche (/etf/ESE = 404), et un fonds absent de la liste PEA n'y a pas de place.
+
+/** Guides d'indice, pour les duels d'indices (MSCI World vs S&P 500). */
+const GUIDE_INDICE: Record<string, string> = {
+  "MSCI World": "/etf-msci-world",
+  "S&P 500": "/etf-sp500",
+};
+/** Groupe de la liste vérifiée qui réunit les ETF éligibles de cet indice. */
+const GROUPE_PEA_INDICE: Record<string, string> = {
+  "MSCI World": `${URL_LISTE_PEA}#msci-world`,
+  "S&P 500": `${URL_LISTE_PEA}#sp500`,
+};
+
+/** Page du site qui décrit ce côté du duel : fiche ETF ou guide d'indice. */
+function pageDuCote(side: ETFSide): string | null {
+  if (side.type === "Indice") return GUIDE_INDICE[side.heading] ?? null;
+  const etf = getETFBySymbol(side.heading);
+  return etf ? `/etf/${etf.displaySymbol}` : null;
+}
+
+/** Endroit de la liste vérifiée qui parle de ce côté du duel (ou rien). */
+function lienPeaDuCote(side: ETFSide): string | null {
+  if (side.type === "Indice") return GROUPE_PEA_INDICE[side.heading] ?? null;
+  return lienListePea(side.heading);
+}
+
+const estEligibleVerifie = (symbole: string) => ETF_PEA_VERIFIES.some((f) => f.displaySymbol === symbole);
+/** « de CW8 », « d'ESE ». */
+const de = (nom: string) => (/^[AEIOUYH]/i.test(nom) ? `d'${nom}` : `de ${nom}`);
+
+function PEAPill({ value, href }: { value: string; href?: string | null }) {
   const normalized = value.toLowerCase();
   const positive = normalized.startsWith("oui");
   const negative = normalized.startsWith("non");
@@ -27,16 +73,28 @@ function PEAPill({ value }: { value: string }) {
     : negative
     ? "bg-orange-50 text-orange-700 border-orange-200"
     : "bg-gray-50 text-gray-700 border-gray-200";
-  return (
-    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wide border ${cls}`}>
-      PEA : {value}
-    </span>
-  );
+  const pastille = `text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wide border ${cls}`;
+  // 09/10/2026 : même patron que la pastille des fiches /etf/[symbol]. Le
+  // texte ne change pas ; le lien mène à l'endroit de la liste vérifiée qui
+  // parle de ce fonds (ou de cet indice). Sans place dans la liste, pas de lien.
+  if (href) {
+    return (
+      <Link
+        href={href}
+        title="Liste vérifiée des ETF éligibles au PEA"
+        className={`${pastille} inline-block transition-colors hover:border-current`}
+      >
+        PEA : {value}
+      </Link>
+    );
+  }
+  return <span className={pastille}>PEA : {value}</span>;
 }
 
 function SideCard({ side, accent }: { side: ETFSide; accent: "left" | "right" }) {
   const border = accent === "left" ? "border-primary-200 bg-primary-50/30" : "border-amber-200 bg-amber-50/30";
   const labelColor = accent === "left" ? "text-primary-700" : "text-amber-700";
+  const page = pageDuCote(side);
 
   return (
     <div className={`rounded-2xl border-2 p-5 ${border}`}>
@@ -49,7 +107,16 @@ function SideCard({ side, accent }: { side: ETFSide; accent: "left" | "right" })
             {side.type}
           </p>
           <h3 className="text-lg font-bold text-gray-900 mb-0.5 leading-tight">
-            {side.heading}
+            {page ? (
+              <Link
+                href={page}
+                className="text-gray-900 underline decoration-primary-300 decoration-2 underline-offset-4 transition-colors hover:text-primary-700 hover:decoration-primary-500"
+              >
+                {side.heading}
+              </Link>
+            ) : (
+              side.heading
+            )}
           </h3>
           {side.subheading && (
             <p className="text-xs text-gray-500">{side.subheading}</p>
@@ -86,7 +153,7 @@ function SideCard({ side, accent }: { side: ETFSide; accent: "left" | "right" })
         )}
       </dl>
 
-      <PEAPill value={side.peaEligible} />
+      <PEAPill value={side.peaEligible} href={lienPeaDuCote(side)} />
 
       <div className="mt-4 space-y-1.5 pt-3 border-t border-gray-100">
         <p className="text-xs text-gray-500">
@@ -290,9 +357,17 @@ export function ETFComparisonPage({ comparison }: { comparison: ETFComparison })
       {/* Date et sources de ce qui précède (30/09/2026). Hors recherche
           interne : c'est une note de méthode, pas un passage à trouver. */}
       <p data-nosearch="" className="mb-10 text-xs text-gray-500 leading-relaxed">
-        {comparison.left.type === "ETF"
-          ? "ISIN, frais (TER) et éligibilité au PEA vérifiés le "
-          : "Frais (TER) des ETF cités vérifiés le "}
+        {comparison.left.type === "ETF" ? (
+          <>
+            ISIN, frais (TER) et{" "}
+            <Link href={URL_LISTE_PEA} className="text-gray-600 underline underline-offset-2 hover:text-primary-700">
+              éligibilité au PEA
+            </Link>{" "}
+            vérifiés le{" "}
+          </>
+        ) : (
+          "Frais (TER) des ETF cités vérifiés le "
+        )}
         {dateEnToutesLettres(DATE_VERIFICATION_PEA)} sur les documents des émetteurs, recoupés
         sur justETF, Boursorama et Euronext.
         {aUnEncours && <> {SOURCE_ENCOURS}</>}
@@ -400,6 +475,8 @@ export function ETFComparisonPage({ comparison }: { comparison: ETFComparison })
           d'écart. */}
       <RenvoiProduit produit="guide-demarrer-dca" contexte={accrocheGuide} className="mb-10" />
 
+      <ApresLeChoix comparison={comparison} />
+
       {/* Étape suivante.
           Ce bloc terminait sur « Ouvrir le simulateur → » et un TER de 0,25 %
           qui n'était le TER d'aucun ETF de la page — un chiffre sans source
@@ -498,6 +575,140 @@ export function ETFComparisonPage({ comparison }: { comparison: ETFComparison })
         l&apos;émetteur avant tout investissement.
       </p>
     </article>
+  );
+}
+
+/**
+ * « Après le choix : vérifier, puis tenir vos achats dans un tableur »
+ * (09/10/2026). Titre distinct du bloc simulateur qui suit (plan enregistré,
+ * versements pointés) : ici, les pages à relire et un tableur.
+ *
+ * Qui finit un comparatif a choisi son ETF. La suite logique tenait en un
+ * renvoi vers le guide et le simulateur ; il manquait la fiche des fonds,
+ * leur statut PEA vérifié, et l'outil de suivi gratuit.
+ *
+ * Placé APRÈS la FAQ et le renvoi du guide, AVANT le bloc simulateur : rien
+ * n'est inséré dans la zone de réponse (verdict en tête, intro, tableaux),
+ * l'ordre des sections existantes ne bouge pas. Pas de h2 (le plan des titres
+ * reste celui que Google connaît), data-nosearch comme les blocs voisins.
+ *
+ * Seule la première ligne varie selon le duel, et c'est voulu : les deux
+ * suivantes sont identiques sur les huit pages, donc courtes et factuelles.
+ * Textes repris de /suivi-pea-excel (modèle gratuit) et de products.ts
+ * (Cockpit : versement du mois, prix, format). Aucun chiffre écrit ici.
+ *
+ * Exception assumée à « une page = un produit » (RenvoiProduit.tsx) : l'appel
+ * principal est le modèle GRATUIT ; le Cockpit n'est qu'une phrase, sans
+ * bouton, pour qui veut le versement du mois en parts entières.
+ */
+function ApresLeChoix({ comparison }: { comparison: ETFComparison }) {
+  const cockpit = getProduct("template-suivi-dca");
+  const cotes = [comparison.left, comparison.right];
+
+  type Etape = { key: string; avant?: string; lien: string; href: string };
+  const etapes: Etape[] = [];
+  let precedente: "fiche" | "guide" | null = null;
+  let peaCouvert = false;
+
+  for (const side of cotes) {
+    const page = pageDuCote(side);
+    if (side.type === "Indice" && page) {
+      etapes.push({
+        key: `guide-${side.heading}`,
+        lien: precedente === "guide" ? `celui du ${side.heading}` : `le guide du ${side.heading}`,
+        href: page,
+      });
+      precedente = "guide";
+    } else if (page) {
+      etapes.push({
+        key: `fiche-${side.heading}`,
+        lien: precedente === "fiche" ? `celle ${de(side.heading)}` : `la fiche ${de(side.heading)}`,
+        href: page,
+      });
+      precedente = "fiche";
+    } else if (side.type === "ETF" && estEligibleVerifie(side.heading)) {
+      // Pas de fiche (ESE) : sa ligne dans la liste vérifiée en tient lieu.
+      etapes.push({
+        key: `ligne-${side.heading}`,
+        avant: `la ligne ${de(side.heading)} dans la `,
+        lien: "liste vérifiée des ETF éligibles au PEA",
+        href: `${URL_LISTE_PEA}#${ancreFonds(side.heading)}`,
+      });
+      precedente = null;
+      peaCouvert = true;
+    }
+  }
+
+  // Un fonds hors PEA : sa carte dans la liste dit pourquoi, et donne son
+  // équivalent éligible. Sinon, la place des deux côtés dans la liste.
+  const horsPea = cotes.filter(
+    (side) => side.type === "ETF" && !estEligibleVerifie(side.heading) && lienListePea(side.heading),
+  );
+  for (const side of horsPea) {
+    etapes.push({
+      key: `hors-pea-${side.heading}`,
+      lien: `pourquoi ${side.heading} n'entre pas dans un PEA`,
+      href: lienListePea(side.heading)!,
+    });
+  }
+  if (horsPea.length === 0 && !peaCouvert) {
+    const liens = cotes.map(lienPeaDuCote);
+    const commun = liens[0] && liens[0] === liens[1] ? liens[0] : URL_LISTE_PEA;
+    etapes.push({
+      key: "liste-pea",
+      avant: comparison.left.type === "Indice" ? "les ETF de ces deux indices dans la " : "leur place dans la ",
+      lien: "liste vérifiée des ETF éligibles au PEA",
+      href: commun,
+    });
+  }
+
+  return (
+    <section
+      data-nosearch=""
+      aria-labelledby="apres-le-choix"
+      className="rounded-2xl border border-gray-100 bg-white p-6 mb-10"
+    >
+      <p id="apres-le-choix" className="text-base font-bold text-gray-900 mb-3">
+        Après le choix&nbsp;: vérifier, puis tenir vos achats dans un tableur
+      </p>
+      {etapes.length > 0 && (
+        <p className="text-sm text-gray-600 leading-relaxed mb-3">
+          Pour vérifier&nbsp;:{" "}
+          {etapes.map((e, i) => (
+            <span key={e.key}>
+              {i > 0 && (i === etapes.length - 1 ? " et " : ", ")}
+              {e.avant}
+              <Link href={e.href} className="text-primary-700 font-medium underline underline-offset-2 hover:text-primary-800">
+                {e.lien}
+              </Link>
+            </span>
+          ))}
+          .
+        </p>
+      )}
+      <p className="text-sm text-gray-600 leading-relaxed mb-4">
+        Le modèle gratuit, reçu par email, réunit le journal des achats et la vue par ETF (PRU frais
+        inclus, valeur, plus-value, poids), en{MODELE_GRATUIT_SHEETS_COPIE ? " Excel et Google\u00a0Sheets" : " Excel"}.
+      </p>
+      <Link href="/suivi-pea-excel#modele-gratuit" className="btn-secondary text-sm">
+        Demander le modèle gratuit →
+      </Link>
+      {cockpit?.renvoi && (
+        <p className="text-sm text-gray-500 leading-relaxed mt-4">
+          Le{" "}
+          <LienRenvoiProduit
+            href={`/produits/${cockpit.slug}`}
+            produitId={cockpit.id}
+            className="font-semibold text-primary-700 underline underline-offset-2 hover:text-primary-800 transition-colors"
+          >
+            {cockpit.shortName}
+          </LienRenvoiProduit>{" "}
+          ({cockpit.priceEur}&nbsp;€, paiement unique) ajoute le versement du mois&nbsp;: la somme
+          répartie en parts entières par ETF, vers l&apos;allocation que vous fixez, avec le TRI et la
+          feuille PEA.
+        </p>
+      )}
+    </section>
   );
 }
 
