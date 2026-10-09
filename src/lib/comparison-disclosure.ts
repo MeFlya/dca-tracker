@@ -136,8 +136,9 @@ const BROKER_CRITERION: RankingCriterion = {
     // 29/09/2026 : « décisif en dessous de 150 € par mois » était faux dès la
     // brochure BoursoBank du 04/09/2026 (200 € minimum par ordre d'ETF, fait
     // bourso-montant-minimum-ordre) : un DCA de 150 à 199 € y est impossible.
-    // Pas de chiffre ici : ce minimum doit changer (annonce pour octobre 2026)
-    // et cette rubrique ne doit pas avoir à suivre chaque grille.
+    // Pas de chiffre ici : ce minimum a changé depuis (100 € dans la brochure
+    // du 05/10/2026, BOURSO_MINIMUM_ORDRE_ETF de brokers.ts) et cette
+    // rubrique ne doit pas avoir à suivre chaque grille.
     "Le montant minimum par ordre, décisif quand le versement prévu est inférieur au minimum exigé par le courtier : acheter chaque mois un ETF par ordre de bourse devient alors impossible.",
     "L'expérience d'usage, en dernier, parce qu'elle se juge mal à la place de quelqu'un d'autre.",
   ],

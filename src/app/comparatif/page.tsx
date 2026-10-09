@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { JsonLd } from "@/components/ui/JsonLd";
-import { BROKER_LIST } from "@/lib/brokers";
+import { BOURSO_BROCHURE_DU, BOURSO_MINIMUM_ORDRE_ETF, BROKER_LIST } from "@/lib/brokers";
 import { BrokerLogoMark } from "@/components/ui/BrokerLogoMark";
 import { InvestCTA } from "@/components/ui/InvestCTA";
 import { AffiliationNotice } from "@/components/ui/AffiliationNotice";
@@ -201,10 +201,9 @@ export default function ComparatifHubPage() {
           <p className="text-sm text-gray-600 leading-relaxed">
             <strong>BoursoBank</strong> (ex-Boursorama) — pour tout centraliser
             dans une banque en ligne française, avec l&apos;assurance-vie Bourso
-            Vie. Selon la brochure tarifaire du 4 septembre 2026 : ordre
-            minimum de 200 € sur les ETF (un assouplissement est annoncé, pas
-            encore dans la brochure), 0 € à l&apos;achat sur la gamme
-            Boursomarkets.
+            Vie. Selon la brochure tarifaire du {BOURSO_BROCHURE_DU} : ordre
+            minimum de {BOURSO_MINIMUM_ORDRE_ETF} € sur les ETF, 0 € à
+            l&apos;achat sur la gamme Boursomarkets.
           </p>
         </div>
         <div className="rounded-xl border border-gray-100 bg-white p-5">

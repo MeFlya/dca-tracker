@@ -7,10 +7,17 @@ import { ArticleByline } from "@/components/ui/ArticleByline";
 import { IssuerLogoMark } from "@/components/ui/IssuerLogoMark";
 import { AuroraSweep } from "@/components/ui/AuroraSweep";
 import { RenvoiProduit } from "@/components/products/RenvoiProduit";
-import { FICHE_ETF, FICHE_MSCI_WORLD, SOURCE_ENCOURS, type FicheCitee } from "@/lib/sources-etf";
+import {
+  FICHE_ETF,
+  FICHE_MSCI_WORLD,
+  SOURCE_ENCOURS,
+  TAILLE_AMUNDI_8_OCTOBRE,
+  prixPartEnviron,
+  type FicheCitee,
+  type TailleEmetteur,
+} from "@/lib/sources-etf";
 import {
   FRAIS_ORDRE_ETF_PEA,
-  GRILLES_CONSULTEES_LE,
   fraisOrdreEtf,
   gammeDeLEtf,
   type FraisOrdreEtfPea,
@@ -777,6 +784,35 @@ function LienSource({ fiche }: { fiche: FicheCitee }) {
 }
 
 /**
+ * « consultée le 9 octobre 2026 pour BoursoBank et le 28 septembre 2026 pour
+ * Fortuneo et Trade Republic » : une date par grille (09/10/2026). Une date
+ * commune aux trois aurait daté du jour de la relecture de BoursoBank deux
+ * grilles qui n'ont pas été relues ce jour-là.
+ */
+function datesDeConsultation(): string {
+  const parDate = new Map<string, string[]>();
+  for (const c of FRAIS_ORDRE_ETF_PEA) parDate.set(c.consulteeLe, [...(parDate.get(c.consulteeLe) ?? []), c.nom]);
+  /** ["A", "B", "C"] → « A, B et C » */
+  const liste = (mots: string[]) =>
+    mots.length > 1 ? `${mots.slice(0, -1).join(", ")} et ${mots[mots.length - 1]}` : mots[0];
+  // Du plus récent au plus ancien.
+  const groupes = [...parDate.entries()].sort(([a], [b]) => b.localeCompare(a));
+  if (groupes.length === 1) return dateEnToutesLettres(groupes[0][0]);
+  return liste(groupes.map(([date, noms], i) => `${i > 0 ? "le " : ""}${dateEnToutesLettres(date)} pour ${liste(noms)}`));
+}
+
+/**
+ * Prix d'une part publié par l'émetteur, daté (sources-etf.ts), pour les ETF
+ * dont on l'a relevé. 09/10/2026 : le tableau des frais affichait « CW8 : 0 €
+ * à l'achat » pour un achat de 200 €, alors qu'une part de CW8 valait environ
+ * 710 € le 08/10/2026 selon Amundi : un tel achat n'en achète pas une part
+ * entière. Un ETF dont la part dépasse le montant du tableau n'y a donc plus
+ * de frais, mais une mention qui le dit. Un ETF absent d'ici est traité comme
+ * avant : on n'en déduit rien.
+ */
+const PRIX_PART_EMETTEUR: Readonly<Record<string, TailleEmetteur>> = TAILLE_AMUNDI_8_OCTOBRE;
+
+/**
  * Frais d'un ordre d'achat dans un PEA chez trois courtiers (30/09/2026).
  *
  * Le verdict de plusieurs duels renvoie au courtier ; ce tableau dit ce qu'il
@@ -796,14 +832,50 @@ function FraisOrdreParCourtier({
   droite: string;
 }) {
   // 30/09/2026 : l'introduction disait « coûte autant…, sauf offre réservée à
-  // une gamme d'ETF » sans dire laquelle ni pour quel fonds — alors que WPEA
-  // est dans la gamme Boursomarkets de BoursoBank et DCAM ou CW8 non. Elle
-  // nomme désormais l'exception, calculée sur les gammes de brokers.ts, et le
+  // une gamme d'ETF » sans dire laquelle ni pour quel fonds. Elle nomme
+  // désormais l'exception, calculée sur les gammes de brokers.ts, et le
   // tableau donne alors le frais de chaque ETF sur la ligne du courtier.
+  // 09/10/2026 : sans exception, la phrase disait toujours « ni l'un ni
+  // l'autre ne fait partie de la gamme » ; depuis le passage de Boursomarkets
+  // chez Amundi, CW8 et DCAM (ou GPEA et DCAM) en font partie TOUS LES DEUX.
+  // Les gammes sont donc triées : celles qui contiennent les deux ETF, celles
+  // qui n'en contiennent aucun.
   const aUneException = (c: FraisOrdreEtfPea) =>
     Boolean(gammeDeLEtf(c, gauche)) !== Boolean(gammeDeLEtf(c, droite));
   const exceptions = FRAIS_ORDRE_ETF_PEA.filter(aUneException);
   const gammes = FRAIS_ORDRE_ETF_PEA.flatMap((c) => (c.gamme ? [{ courtier: c.nom, gamme: c.gamme }] : []));
+  const gammesDesDeux = gammes.filter(({ gamme }) => gamme.symboles.includes(gauche));
+  const gammesDAucun = gammes.filter(({ gamme }) => !gamme.symboles.includes(gauche));
+  const nommerGammes = (liste: typeof gammes, liaison: string) =>
+    liste.map(({ courtier, gamme }, i) => (
+      <span key={courtier}>
+        {i > 0 && ` ${liaison} `}la {gamme.nom} de {courtier}
+      </span>
+    ));
+  const appartenanceAuxGammes = (
+    <>
+      {gammesDesDeux.length > 0 && (
+        <>
+          l&apos;un et l&apos;autre font partie de {nommerGammes(gammesDesDeux, "et de")}
+        </>
+      )}
+      {gammesDesDeux.length > 0 && gammesDAucun.length > 0 && ", et "}
+      {gammesDAucun.length > 0 && (
+        <>
+          ni l&apos;un ni l&apos;autre ne fait partie de {nommerGammes(gammesDAucun, "ou de")}
+        </>
+      )}
+    </>
+  );
+  // 09/10/2026 : ETF du duel dont une part vaut plus que le montant (CW8 pour
+  // 200 €). Pas de frais pour lui à ce montant, et la phrase « pour un achat
+  // de 200 €, un ordre sur CW8 coûte autant… » n'est plus écrite.
+  const partsTropCheres = [gauche, droite].flatMap((symbole) => {
+    const taille = PRIX_PART_EMETTEUR[symbole];
+    return taille && taille.vlEur > montant ? [{ symbole, taille }] : [];
+  });
+  const partTropChere = (symbole: string) => partsTropCheres.some((p) => p.symbole === symbole);
+  const unFraisParEtf = (c: FraisOrdreEtfPea) => aUneException(c) || partsTropCheres.length > 0;
 
   return (
     <section aria-labelledby="frais-ordre-courtier" className="mb-10">
@@ -827,27 +899,35 @@ function FraisOrdreParCourtier({
               );
             })}
           </>
-        ) : (
+        ) : partsTropCheres.length === 0 ? (
           <>
             Pour un achat de {montant}&nbsp;€, un ordre sur {gauche} coûte autant qu&apos;un ordre
             sur {droite} chez chacun de ces courtiers
             {gammes.length > 0 && (
               <>
-                &nbsp;: au {dateEnToutesLettres(gammes[0].gamme.constateLe)}, ni l&apos;un ni l&apos;autre
-                ne fait partie de{" "}
-                {gammes.map(({ courtier, gamme }, i) => (
-                  <span key={courtier}>
-                    {i > 0 && " ou de "}la {gamme.nom} de {courtier}
-                  </span>
-                ))}
+                &nbsp;: au {dateEnToutesLettres(gammes[0].gamme.constateLe)}, {appartenanceAuxGammes}
               </>
             )}
             .
           </>
-        )}{" "}
+        ) : (
+          gammes.length > 0 && (
+            <>
+              Au {dateEnToutesLettres(gammes[0].gamme.constateLe)}, {appartenanceAuxGammes}.
+            </>
+          )
+        )}
+        {partsTropCheres.map(({ symbole, taille }) => (
+          <span key={symbole}>
+            {" "}Une part de {symbole} valait {prixPartEnviron(taille)} le {dateEnToutesLettres(taille.au)}{" "}
+            selon {taille.source}&nbsp;: un achat de {montant}&nbsp;€ n&apos;en achète pas une entière, sauf
+            chez un courtier qui vend des fractions de parts. Le tableau ne donne donc pas de frais
+            pour {symbole} à ce montant.
+          </span>
+        ))}{" "}
         Voici ce que coûte un achat de {montant}&nbsp;€
         dans un PEA, d&apos;après la grille officielle de chaque courtier, consultée le{" "}
-        {dateEnToutesLettres(GRILLES_CONSULTEES_LE)}. Dans un PEA, la loi plafonne ces frais à
+        {datesDeConsultation()}. Dans un PEA, la loi plafonne ces frais à
         0,5&nbsp;% du montant de l&apos;ordre (
         <a
           href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000043790337"
@@ -887,9 +967,20 @@ function FraisOrdreParCourtier({
                   </a>
                 </td>
                 <td className="px-4 py-3 align-top">
-                  {aUneException(c) ? (
-                    // Un ETF du duel est dans la gamme, l'autre non : un frais par ETF.
+                  {unFraisParEtf(c) ? (
+                    // Un ETF du duel est dans la gamme, l'autre non, ou la part de
+                    // l'un dépasse le montant : une ligne par ETF.
                     [gauche, droite].map((symbole) => {
+                      if (partTropChere(symbole)) {
+                        return (
+                          <span key={symbole} className="block font-medium text-gray-900">
+                            {symbole}&nbsp;:{" "}
+                            <span className="font-normal text-gray-500">
+                              pas une part entière pour {montant}&nbsp;€
+                            </span>
+                          </span>
+                        );
+                      }
                       const gamme = gammeDeLEtf(c, symbole);
                       return (
                         <span key={symbole} className="block font-medium text-gray-900">
@@ -899,7 +990,13 @@ function FraisOrdreParCourtier({
                       );
                     })
                   ) : (
-                    <span className="font-medium text-gray-900">{fraisOrdreEtf(c, gauche, montant)}</span>
+                    // Même frais pour les deux ETF ; s'ils sont tous deux dans la gamme, on la nomme.
+                    <span className="font-medium text-gray-900">
+                      {fraisOrdreEtf(c, gauche, montant)}
+                      {gammeDeLEtf(c, gauche) && (
+                        <span className="font-normal text-gray-500"> ({gammeDeLEtf(c, gauche)!.nom}, pour les deux ETF)</span>
+                      )}
+                    </span>
                   )}
                   <span className="block mt-1 text-xs text-gray-500 leading-relaxed">{c.precision}</span>
                 </td>

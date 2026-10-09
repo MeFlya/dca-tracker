@@ -169,11 +169,11 @@ export type ETFComparison = {
   voirAussi?: { avant: string; ancre: string; href: string; apres?: string }[];
   /**
    * Présent : le tableau « Frais d'un ordre sur ces ETF selon le courtier »
-   * n'est pas affiché. La valeur dit pourquoi (non affichée). 09/10/2026 :
-   * la gamme Boursomarkets de BoursoBank est passée d'iShares à Amundi le
-   * 5 octobre 2026 et FRAIS_ORDRE_ETF_PEA (brokers.ts) décrit encore la
-   * grille du 30 septembre ; les deux duels datés du 9 octobre ne publient
-   * pas ce tableau tant que la grille partagée n'est pas mise à jour.
+   * n'est pas affiché. La valeur dit pourquoi (non affichée). Posé le
+   * 09/10/2026 sur cw8-vs-dcam et gpea-vs-dcam, le temps de reporter la
+   * grille BoursoBank du 5 octobre 2026 dans FRAIS_ORDRE_ETF_PEA ; retiré le
+   * même jour, une fois la grille reportée. Aucun duel ne l'emploie : il sert
+   * la prochaine fois qu'une grille change avant d'être relue.
    */
   sansFraisOrdre?: string;
 };
@@ -643,7 +643,11 @@ const CW8_VS_WPEA: ETFComparison = {
     // 30/09/2026 : prix de part (table de vérité) et encours (justETF) de WPEA.
     // Pour CW8, la table ne donne ni l'un ni l'autre : la case le dit, au lieu
     // d'un chiffre repris d'un autre site (3,5, 5,8 ou 6,4 Md€ selon la page).
-    { criterion: "Prix de part", leftValue: "Non vérifié par le site", rightValue: `Sous 10\u00a0€ (${WPEA_TAILLE.prixPart} le ${WPEA_TAILLE.prixAu})` },
+    // 09/10/2026 : le tableau des frais d'ordre de cette page cite désormais
+    // le prix d'une part de CW8 publié par Amundi (8/10/2026), pour dire qu'un
+    // achat de 200 € n'en achète pas une entière ; la case le donne aussi, au
+    // lieu de « Non vérifié par le site ». L'encours reste non vérifié ici.
+    { criterion: "Prix de part", leftValue: `${prixPartEnviron(TAILLE_AMUNDI_8_OCTOBRE.CW8)} le ${dateEnToutesLettres(TAILLE_AMUNDI_8_OCTOBRE.CW8.au)} selon ${TAILLE_AMUNDI_8_OCTOBRE.CW8.source}`, rightValue: `Sous 10\u00a0€ (${WPEA_TAILLE.prixPart} le ${WPEA_TAILLE.prixAu})` },
     { criterion: "Encours", leftValue: "Non vérifié par le site", rightValue: `${WPEA_TAILLE.encours} ${WPEA_TAILLE.encoursAu}` },
     { criterion: "Éligibilité PEA", leftValue: "Oui", rightValue: "Oui" },
     { criterion: "Réplication", leftValue: "Synthétique", rightValue: "Synthétique" },
@@ -1314,9 +1318,10 @@ const VWCE_VS_WPEA: ETFComparison = {
 // ⚠️ GPEA : aucun reporting mensuel publié au 09/10/2026 (404). Preuve
 // d'éligibilité : DIC du 06/07/2026, prospectus, page amundietf.fr. À relire
 // au premier reporting (fin octobre ou novembre 2026).
-// ⚠️ Frais d'ordre : pas de tableau par courtier sur ces deux pages
-// (sansFraisOrdre), tant que la grille BoursoBank du 5/10/2026 n'est pas
-// reportée dans brokers.ts. Aucun tarif de courtier n'est écrit ici.
+// Frais d'ordre : le tableau par courtier, masqué un temps (sansFraisOrdre),
+// est affiché depuis le report de la grille BoursoBank du 5/10/2026 dans
+// brokers.ts (09/10/2026) : CW8, DCAM et GPEA y sont tous trois dans la gamme
+// Boursomarkets. Aucun tarif de courtier n'est écrit ici.
 
 /** Encours et prix de part : Amundi, 8 octobre 2026, pour les trois fonds. */
 const TAILLE = TAILLE_AMUNDI_8_OCTOBRE;
@@ -1358,9 +1363,6 @@ const VERSEMENTS_POUR_UNE_PART_CW8 = Math.ceil(TAILLE.CW8.vlEur / VERSEMENT);
 
 /** Rapport des encours DCAM / GPEA au 08/10/2026 (environ 23). */
 const RAPPORT_ENCOURS_DCAM_GPEA = Math.round(TAILLE.DCAM.encoursMEur / TAILLE.GPEA.encoursMEur);
-
-const SANS_FRAIS_ORDRE_BOURSO =
-  "Grille BoursoBank du 5 octobre 2026 (gamme Boursomarkets passée chez Amundi, nouveau minimum d'ordre) pas encore reportée dans FRAIS_ORDRE_ETF_PEA.";
 
 const CW8_VS_DCAM: ETFComparison = {
   slug: "cw8-vs-dcam",
@@ -1514,7 +1516,6 @@ const CW8_VS_DCAM: ETFComparison = {
     ],
   },
 
-  sansFraisOrdre: SANS_FRAIS_ORDRE_BOURSO,
 };
 
 const GPEA_VS_DCAM: ETFComparison = {
@@ -1655,7 +1656,6 @@ const GPEA_VS_DCAM: ETFComparison = {
     ],
   },
 
-  sansFraisOrdre: SANS_FRAIS_ORDRE_BOURSO,
 };
 
 export const ETF_COMPARISONS: Record<string, ETFComparison> = {

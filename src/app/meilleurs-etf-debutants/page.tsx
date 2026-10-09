@@ -11,6 +11,7 @@ import { formatTer } from "@/lib/utils";
 import { ecartCapital, HYPOTHESES_COMPARATIFS } from "@/lib/ecart-frais";
 import { DATE_VERIFICATION_PEA, ETF_PEA_VERIFIES, dateEnToutesLettres } from "@/lib/etf-pea-verifies";
 import { PFU_RATE, SOCIAL_CHARGES_RATE, tauxAffiche } from "@/lib/fiscal/pea-cto";
+import { BOURSO_BROCHURE_DU, BOURSO_MINIMUM_ORDRE_ETF } from "@/lib/brokers";
 
 // CTR (audit 07/2026) : le title mettait en avant IWDA/VWCE (non éligibles
 // PEA — hors intent du débutant FR) et contredisait la meta. Title aligné
@@ -307,7 +308,10 @@ const FAQ = [
     // Trade Republic non confirmées pour le PEA ; « Boursorama, Fortuneo…
     // acceptent des ordres à partir de 50 à 100 € » faux pour BoursoBank
     // (200 € minimum par ordre d'ETF, brochure du 04/09/2026).
-    a: "Oui, mais pas chez tous les courtiers. Chez Trade Republic, un plan d'investissement programmé s'exécute sans frais d'achat ; dans le PEA, vérifiez dans l'application s'il achète des fractions de parts ou seulement des parts entières. Chez Fortuneo, il n'y a pas de minimum d'ordre sur Euronext et, en tarif Starter, le premier ordre du mois est gratuit jusqu'à 500 €, mais il faut déposer 100 € à l'ouverture et passer l'ordre soi-même. Chez BoursoBank, selon la brochure tarifaire du 4 septembre 2026, un ordre d'ETF doit faire au moins 200 € : un versement de 50 € par mois n'y est possible qu'avec le Plan d'Épargne, qui investit dans des fonds maison. Le montant mensuel importe moins que la régularité sur le long terme.",
+    // 09/10/2026 : brochure du 5 octobre 2026, minimum ramené à 100 €,
+    // interpolé depuis brokers.ts ; la conclusion (50 €/mois seulement via le
+    // Plan d'Épargne) reste vraie.
+    a: `Oui, mais pas chez tous les courtiers. Chez Trade Republic, un plan d'investissement programmé s'exécute sans frais d'achat ; dans le PEA, vérifiez dans l'application s'il achète des fractions de parts ou seulement des parts entières. Chez Fortuneo, il n'y a pas de minimum d'ordre sur Euronext et, en tarif Starter, le premier ordre du mois est gratuit jusqu'à 500 €, mais il faut déposer 100 € à l'ouverture et passer l'ordre soi-même. Chez BoursoBank, selon la brochure tarifaire du ${BOURSO_BROCHURE_DU}, un ordre d'ETF doit faire au moins ${BOURSO_MINIMUM_ORDRE_ETF} € : un versement de 50 € par mois n'y est possible qu'avec le Plan d'Épargne, qui investit dans des fonds maison. Le montant mensuel importe moins que la régularité sur le long terme.`,
   },
   {
     q: "Quelle est la différence entre ETF et fonds actifs ?",

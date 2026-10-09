@@ -22,6 +22,7 @@
 
 import { TER_REFERENCE_SIMULATEUR } from "@/lib/etf-config";
 import { coutFraisOrdre, fraisOrdrePayes, HYPOTHESES_COMPARATIFS } from "@/lib/ecart-frais";
+import { dateEnToutesLettres } from "@/lib/etf-pea-verifies";
 
 /**
  * Mois de dernière revérification des conditions tarifaires, format YYYY-MM.
@@ -88,6 +89,66 @@ const TER_HYP = TER_REFERENCE_SIMULATEUR.toLocaleString("fr-FR", {
 const FRAIS_1_EURO_PAYES = fraisOrdrePayes(1);
 /** Capital final en moins avec 1 € prélevé sur chaque versement ≈ 490 (BT-33). */
 const FRAIS_1_EURO_CAPITAL = coutFraisOrdre(1, TER_REFERENCE_SIMULATEUR);
+
+/** Plafond légal des frais d'ordre dans un PEA : 0,5 % du montant (CMF art. D221-111-1). */
+export const PLAFOND_ORDRE_PEA = 0.005;
+
+// ─── BoursoBank : grille au 5 octobre 2026 (relue le 09/10/2026) ─────────────
+//
+// Déclarés ici, avant la fiche, parce que la fiche ET le tableau des
+// comparatifs d'ETF (FRAIS_ORDRE_ETF_PEA, plus bas) les emploient : un seul
+// endroit à changer à la prochaine grille. Sources et archives : commentaire
+// au-dessus de BOURSORAMA.
+
+/**
+ * BoursoBank : montant minimum d'un ordre d'achat d'ETF, en PEA comme en
+ * compte-titres, gamme Boursomarkets ou non (brochure au 05/10/2026, p. 23,
+ * identique dans les quatre colonnes ; 200 € dans la brochure au 04/09/2026).
+ * Exporté : les pages qui citent ce minimum l'interpolent, au lieu de le
+ * recopier.
+ */
+export const BOURSO_MINIMUM_ORDRE_ETF = 100;
+
+/** Date d'effet de la brochure tarifaire BoursoBank que le site cite. */
+export const BOURSO_BROCHURE_DU = "5 octobre 2026";
+
+/**
+ * BoursoBank, forfait Découverte, ETF hors Boursomarkets, dans un PEA :
+ * 1,99 € jusqu'à 500 €, puis 0,60 % (brochure au 05/10/2026, p. 20), ramené au
+ * plafond légal de 0,5 % (note 1 de la même page).
+ */
+function fraisBoursoDecouvertePea(montant: number): { tarif: number; frais: number } {
+  const tarif = montant <= 500 ? 1.99 : montant * 0.006;
+  return { tarif, frais: Math.min(tarif, montant * PLAFOND_ORDRE_PEA) };
+}
+
+/** Frais d'un ordre hors Boursomarkets au minimum d'ordre, en PEA (0,50 € au 05/10/2026). */
+const BOURSO_FRAIS_PEA_AU_MINIMUM = euros(fraisBoursoDecouvertePea(BOURSO_MINIMUM_ORDRE_ETF).frais);
+
+/**
+ * Ordre de MENSUEL € hors Boursomarkets, forfait Découverte : tarif et frais
+ * en PEA (1,99 € ramenés à 1,00 € pour 200 €, brochure au 05/10/2026). La
+ * prose de la fiche les interpole : si le versement des hypothèses change,
+ * elle suit, comme le tableau des comparatifs.
+ */
+const BOURSO_ORDRE_MENSUEL = fraisBoursoDecouvertePea(MENSUEL);
+/** Le plafond de 0,5 % joue-t-il sur un ordre de MENSUEL € ? */
+const BOURSO_MENSUEL_PLAFONNE = BOURSO_ORDRE_MENSUEL.frais < BOURSO_ORDRE_MENSUEL.tarif;
+
+/** 12 → « 12 € » ; 23.88 → « 23,88 € » : sommes annuelles, sans centimes inutiles. */
+function eurosAnnuels(v: number): string {
+  const centimes = Math.round(v * 100) % 100 !== 0;
+  return `${v.toLocaleString("fr-FR", { minimumFractionDigits: centimes ? 2 : 0, maximumFractionDigits: 2 })} €`;
+}
+
+/**
+ * Date du constat de la gamme Boursomarkets et de son partenaire ETF (page
+ * Boursomarkets de BoursoBank, fiches Boursorama), YYYY-MM-DD. 09/10/2026 :
+ * la brochure au 05/10/2026 ne nomme pas le partenaire ; que le passage
+ * d'iShares à Amundi date du 5 octobre, seule la presse le dit. La prose date
+ * donc le partenaire du jour du constat, pas de la brochure.
+ */
+const BOURSO_GAMME_CONSTATEE_LE = "2026-10-09";
 
 // ─── Brokers ──────────────────────────────────────────────────────────────────
 
@@ -207,45 +268,46 @@ const TRADE_REPUBLIC: BrokerData = {
   ],
 };
 
-// Grilles et documents utilisés (consultés le 28/09/2026) :
-//  · BoursoBank, brochure tarifaire « Tarifs applicables au 4 septembre 2026 »
+// Grilles et documents utilisés (BoursoBank relue le 09/10/2026) :
+//  · BoursoBank, brochure tarifaire « Tarifs applicables au 5 octobre 2026 »
 //    (courtage p. 20, montants minimum et autres frais p. 23, transfert et
-//    changement d'offre p. 25) :
+//    changement d'offre p. 25), même URL que la brochure « au 4 septembre
+//    2026 » qu'elle remplace (« annulent et remplacent à compter du
+//    05/10/2026 », p. 2) ; archive sha1 10c057e2… :
 //    https://www.boursobank.com/content/brochure_tarifaire/boursorama_bt.pdf
 //  · BoursoBank, Conditions générales applicables au 15/04/2026 (adhésion au
 //    FGDR) : https://www.boursorama.com/content/pdf/conditions-generales/conditions-generales.pdf
-//  · Pages officielles : https://www.boursobank.com/bourse/pea-plan-epargne-actions ,
+//  · Pages officielles : https://www.boursobank.com/bourse/pea-plan-epargne-actions
+//    (relue le 09/10/2026 : versement initial de 10 €, « dès 0,50 € de frais
+//    de courtage hors Boursomarkets ») ,
 //    https://www.boursobank.com/bourse/plan-epargne ,
 //    https://www.boursobank.com/aide-en-ligne/bourse/plan-d-epargne/question/quels-sont-les-frais-associes-au-plan-d-epargne-41162016 ,
-//    https://www.boursobank.com/bourse/boursomarkets-courtage-bourse-gratuit ,
+//    https://www.boursobank.com/bourse/boursomarkets-courtage-bourse-gratuit
+//    (relue le 09/10/2026 : partenaire ETF « Amundi Investment Solutions »,
+//    0 € à l'achat seulement) ,
 //    https://www.boursobank.com/bourse/transfert-compte-titres-pea
+//  · Boursorama, fiche de chaque ETF du site (pastille « Produit
+//    Boursomarkets ») et liste « ETF à 0 € de frais de courtage à l'achat »,
+//    relues le 09/10/2026 : voir FRAIS_ORDRE_ETF_PEA, plus bas.
 //  · FGDR, plaquette explicative (novembre 2025) :
 //    https://www.garantiedesdepots.fr/fr/plaquette-explicative-la-protection-de-votre-argent-en-cas-de-defaillance-de-votre-etablissement
-// Non repris en chiffres : le changement de gamme Boursomarkets et de minimum
-// d'ordre annoncé pour octobre 2026, relayé par la presse mais absent de la
-// brochure officielle au 28/09/2026. À revérifier dès sa publication.
+// Relevé complet, URL et archives (dépôt privé) :
+// private-assets/raw/geo/boursobank-grille-2026-10-09.json.
 //
-// REVÉRIFICATION DUE APRÈS LE 5 OCTOBRE 2026 (fait bourso-changement-oct-2026,
-// encore « a-verifier » au 29/09/2026) : minimum annoncé à 100 € au lieu de
-// 200 €, gamme Boursomarkets passant d'iShares à Amundi. Ne rien changer
-// avant que la brochure officielle le dise. Une fois publiée, mettre à jour
-// TOUTES les occurrences (chercher aussi « 4 septembre 2026 », date posée
-// sur celles qui s'affichent hors de la fiche) :
-//   · ici : metaDescription, heroIntro, specs.minDeposit, pros, cons,
-//     dcaFitTitle, dcaFitBody, bestFor, notIdealFor, feeExample, faq ;
-//   · src/app/comparatif/page.tsx (carte BoursoBank de « Comment choisir ») ;
-//   · src/app/meilleurs-etf-debutants/page.tsx (FAQ « 50 € par mois ») ;
-//   · plus bas dans ce fichier, FRAIS_ORDRE_ETF_PEA (tableau des comparatifs
-//     d'ETF, 30/09/2026) : minimum, précision, date de la brochure ET liste
-//     des ETF de la gamme Boursomarkets (WPEA au 30/09/2026 ; si la gamme
-//     passe à Amundi, WPEA en sort et DCAM, CW8 ou PSP5 peuvent y entrer :
-//     relire la fiche Boursorama de chaque ETF des duels) ;
-//   · grep -rn '200 €' src | grep -i bourso   pour ne rien oublier.
+// 09/10/2026 — grille du 5 octobre 2026 reportée. Le minimum d'un ordre
+// d'achat d'ETF passe de 200 € à 100 € (BOURSO_MINIMUM_ORDRE_ETF, interpolé
+// partout, y compris sur /comparatif et /meilleurs-etf-debutants), la gamme
+// Boursomarkets passe d'iShares à Amundi ; le forfait Découverte, le plafond
+// PEA et les autres frais repris ici sont inchangés. Non repris, faute de
+// source officielle : « plus de 275 ETF dont 75 éligibles au PEA » (email
+// client relayé par la presse ; 271 lignes constatées dans la liste). Non
+// revérifié ce jour : les 0,59 %/an du Plan d'Épargne (la brochure renvoie au
+// DIC) et la prime de transfert de PEA entrant.
 // Le slug reste « boursorama-bourse » : changer l'URL casserait les liens.
 const BOURSORAMA: BrokerData = {
   slug: "boursorama-bourse",
   publishedAt: "2026-04-19",
-  updatedAt: "2026-09-29",
+  updatedAt: "2026-10-09",
   name: "BoursoBank",
   shortName: "BoursoBank",
   tagline: "Banque en ligne française (ex-Boursorama), 0 € à l'achat sur les ETF Boursomarkets",
@@ -253,10 +315,10 @@ const BOURSORAMA: BrokerData = {
   metaTitle:
     "BoursoBank (ex-Boursorama) pour un DCA ETF : frais et PEA",
   metaDescription:
-    "BoursoBank (ex-Boursorama) pour un DCA ETF : frais d'ordre, 200 € minimum par ordre (brochure du 4 septembre 2026), Plan d'Épargne, face à Trade Republic.",
+    `BoursoBank (ex-Boursorama) pour un DCA ETF : frais d'ordre, ${BOURSO_MINIMUM_ORDRE_ETF} € minimum par ordre (brochure du ${BOURSO_BROCHURE_DU}), Plan d'Épargne, face à Trade Republic.`,
 
   heroIntro:
-    "BoursoBank, l'ancienne Boursorama Banque, est la banque en ligne du groupe Société Générale. Elle réunit compte courant, PEA, compte-titres et assurance-vie (Bourso Vie) dans la même application. Pour un DCA en ETF, deux lignes de sa grille comptent plus que les autres : un ordre d'achat d'ETF doit faire au moins 200 €, et les ETF de la gamme Boursomarkets s'achètent sans frais de courtage.",
+    `BoursoBank, l'ancienne Boursorama Banque, est la banque en ligne du groupe Société Générale. Elle réunit compte courant, PEA, compte-titres et assurance-vie (Bourso Vie) dans la même application. Pour un DCA en ETF, deux lignes de sa grille comptent plus que les autres : un ordre d'achat d'ETF doit faire au moins ${BOURSO_MINIMUM_ORDRE_ETF} €, et les ETF de la gamme Boursomarkets, dont le partenaire ETF est Amundi au ${dateEnToutesLettres(BOURSO_GAMME_CONSTATEE_LE)} selon sa page Boursomarkets, s'achètent sans frais de courtage.`,
 
   specs: {
     pea: true,
@@ -264,7 +326,7 @@ const BOURSORAMA: BrokerData = {
     assuranceVie: true,
     custodyFees: "0 € (droits de garde gratuits)",
     orderFeesText: "Forfait Découverte : 1,99 € jusqu'à 500 €, puis 0,60 %, plafonné à 0,5 % en PEA · 0 € à l'achat sur les ETF Boursomarkets",
-    minDeposit: "10 € à l'ouverture du PEA · ordre d'ETF : 200 € minimum",
+    minDeposit: `10 € à l'ouverture du PEA · ordre d'achat d'ETF : ${BOURSO_MINIMUM_ORDRE_ETF} € minimum`,
     regulation: "ACPR · AMF · FGDR (100 000 € d'espèces, 70 000 € de titres)",
     mobile: 4,
     savingsPlan: "Non", // Plan d'Épargne = 8 fonds maison à 0,59 %/an, pas un ETF au choix (bourso-plan-epargne)
@@ -273,42 +335,46 @@ const BOURSORAMA: BrokerData = {
   pros: [
     "Compte courant, PEA, compte-titres et assurance-vie Bourso Vie dans la même banque",
     "0 € de courtage à l'achat sur les ETF de la gamme Boursomarkets (la revente est au tarif normal)",
-    "En PEA, frais d'ordre plafonnés à 0,5 % : un achat d'ETF de 200 € coûte 1,00 € en forfait Découverte",
+    // 09/10/2026 : « un achat d'ETF de 200 € coûte 1,00 € » n'est vrai que
+    // hors Boursomarkets depuis la brochure au 05/10/2026 (CW8, DCAM, GPEA,
+    // PSP5 : 0 € à l'achat). Montant et frais interpolés.
+    `En PEA, frais d'ordre plafonnés à 0,5 % : hors Boursomarkets, un achat d'ETF de ${MENSUEL} € coûte ${euros(BOURSO_ORDRE_MENSUEL.frais)} en forfait Découverte`,
     "Droits de garde gratuits, et pas de frais d'inactivité avec le forfait Découverte",
     "Banque française adhérente au FGDR : si la banque faisait défaut, titres couverts jusqu'à 70 000 € et espèces jusqu'à 100 000 € (aucune protection contre une baisse des marchés)",
     "Transfert de PEA entrant gratuit, avec une prime égale à deux fois les frais facturés par l'ancien établissement (conditions sur le site officiel)",
   ],
 
   cons: [
-    "Ordre minimum de 200 € sur les ETF, en PEA comme en compte-titres : un DCA de 50 ou 100 € par mois en ETF est impossible par ordre de bourse",
+    `Ordre d'achat minimum de ${BOURSO_MINIMUM_ORDRE_ETF} € sur les ETF, en PEA comme en compte-titres : un DCA de 50 € par mois en ETF est impossible par ordre de bourse`,
     "Le Plan d'Épargne (dès 10 €/mois, sans frais de transaction) n'investit pas dans l'ETF de votre choix, mais dans 8 fonds maison à 0,59 %/an de frais de gestion",
     "En compte-titres, hors Boursomarkets : 1,99 € par ordre jusqu'à 500 €, près de 1 % d'un achat de 200 €",
     "Changer de forfait coûte 119 € (un changement gratuit par année civile) ; en forfaits Classic et Trader, 5,95 € par mois sans ordre exécuté",
   ],
 
-  dcaFitTitle: "BoursoBank convient si chaque achat atteint 200 €",
+  dcaFitTitle: `BoursoBank convient si chaque achat atteint ${BOURSO_MINIMUM_ORDRE_ETF} €`,
   dcaFitBody:
-    "BoursoBank se prête à un DCA en PEA à condition que chaque achat atteigne 200 €, le minimum par ordre d'ETF. À ce montant, le plafond légal de 0,5 % ramène le forfait Découverte à 1,00 € par ordre, autant qu'un ordre ponctuel chez Trade Republic, et un ETF de la gamme Boursomarkets s'achète à 0 €. En dessous de 200 €, reste le Plan d'Épargne pour automatiser : dès 10 €/mois, sans frais de transaction, mais sur 8 fonds maison à 0,59 %/an de frais de gestion, là où un ordre de bourse permet de choisir son ETF. BoursoBank a annoncé des changements sur sa gamme Boursomarkets et sur ce minimum ; tant qu'ils ne figurent pas dans la brochure tarifaire officielle, cette fiche s'en tient à la grille du 4 septembre 2026.",
+    `BoursoBank se prête à un DCA en PEA à condition que chaque achat atteigne ${BOURSO_MINIMUM_ORDRE_ETF} €, le minimum par ordre d'ETF. Un ETF de la gamme Boursomarkets s'achète à 0 €. Hors gamme, le plafond légal de 0,5 % ramène le forfait Découverte à ${BOURSO_FRAIS_PEA_AU_MINIMUM} pour un ordre de ${BOURSO_MINIMUM_ORDRE_ETF} € et à ${euros(BOURSO_ORDRE_MENSUEL.frais)} pour un ordre de ${MENSUEL} €${BOURSO_ORDRE_MENSUEL.frais === 1 ? " (autant qu'un ordre ponctuel chez Trade Republic)" : ""}. En dessous de ${BOURSO_MINIMUM_ORDRE_ETF} €, reste le Plan d'Épargne pour automatiser : dès 10 €/mois, sans frais de transaction, mais sur 8 fonds maison à 0,59 %/an de frais de gestion, là où un ordre de bourse permet de choisir son ETF.`,
 
   bestFor: [
     "Investisseurs qui veulent compte courant, PEA et assurance-vie dans la même banque",
-    "DCA d'au moins 200 € par achat, a fortiori sur un ETF Boursomarkets",
+    `DCA d'au moins ${BOURSO_MINIMUM_ORDRE_ETF} € par achat, a fortiori sur un ETF Boursomarkets`,
     "Ceux qui tiennent à une banque française couverte par le FGDR",
   ],
 
   notIdealFor: [
-    "DCA de 50 ou 100 € par mois en ETF choisis soi-même (ordre minimum de 200 €)",
+    `DCA de 50 € par mois en ETF choisis soi-même (ordre minimum de ${BOURSO_MINIMUM_ORDRE_ETF} €)`,
     "Ceux qui veulent automatiser l'achat d'un ETF précis : le Plan d'Épargne ne porte que sur des fonds maison",
   ],
 
-  // Calcul (brochure BoursoBank au 04/09/2026, p. 20, forfait Découverte) :
+  // Calcul (brochure BoursoBank au 05/10/2026, p. 20, forfait Découverte,
+  // inchangé par rapport à la brochure au 04/09/2026) :
   //   PEA, ETF hors Boursomarkets, ordre de 200 € : tarif 1,99 € (jusqu'à
   //   500 €), plafonné à 0,5 % × 200 € = 1,00 € → 12 €/an → 240 € sur 20 ans ;
   //   PEA ou CTO, ETF Boursomarkets : 0 € à l'achat → 0 € ;
   //   CTO, ETF hors Boursomarkets, sans plafond : 1,99 € × 12 = 23,88 €/an ;
   //   Plan d'Épargne : 0 € de transaction, 0,59 %/an de frais de gestion.
   feeExample:
-    `En PEA, forfait Découverte, sur un ETF hors Boursomarkets : un ordre de ${MENSUEL} € coûte 1,00 € (1,99 € ramenés au plafond légal de 0,5 %), soit 12 €/an et ${FRAIS_1_EURO_PAYES} € sur ${DUREE} ans. Sur un ETF Boursomarkets : 0 € à l'achat. En compte-titres, sans plafond : 1,99 € par ordre, soit 23,88 €/an. En dessous de 200 € par ordre d'ETF, l'achat n'est pas possible.`,
+    `En PEA, forfait Découverte, sur un ETF hors Boursomarkets : un ordre de ${MENSUEL} € coûte ${euros(BOURSO_ORDRE_MENSUEL.frais)}${BOURSO_MENSUEL_PLAFONNE ? ` (${euros(BOURSO_ORDRE_MENSUEL.tarif)} ramenés au plafond légal de 0,5 %)` : ""}, soit ${eurosAnnuels(BOURSO_ORDRE_MENSUEL.frais * 12)}/an et ${fraisOrdrePayes(BOURSO_ORDRE_MENSUEL.frais)} € sur ${DUREE} ans. Sur un ETF Boursomarkets : 0 € à l'achat. En compte-titres, sans plafond : ${euros(BOURSO_ORDRE_MENSUEL.tarif)} par ordre, soit ${eurosAnnuels(BOURSO_ORDRE_MENSUEL.tarif * 12)}/an. En dessous de ${BOURSO_MINIMUM_ORDRE_ETF} € par ordre d'ETF, l'achat n'est pas possible.`,
 
   faq: [
     {
@@ -318,7 +384,9 @@ const BOURSORAMA: BrokerData = {
       // exact de WPEA est « iShares MSCI World Swap PEA ». Un lecteur qui
       // cherchait « iShares Core MSCI World » dans son PEA tombait sur le mauvais
       // fonds.
-      a: "Oui, s'il est éligible au PEA : CW8 (Amundi MSCI World Swap), WPEA (iShares MSCI World Swap PEA), DCAM (Amundi PEA Monde) ou, pour le S&P 500, ESE (BNP Paribas Easy S&P 500, synthétique). Hors gamme Boursomarkets, un ETF est facturé comme une action Euronext selon votre forfait, et chaque ordre d'achat doit faire au moins 200 €. Cherchez l'ETF par son ISIN pour être sûr d'acheter le bon fonds.",
+      // 09/10/2026 : gamme Boursomarkets relue fiche par fiche sur Boursorama
+      // (pastille et liste officielle) : CW8 et DCAM y sont, WPEA et ESE non.
+      a: `Oui, s'il est éligible au PEA : CW8 (Amundi MSCI World Swap), WPEA (iShares MSCI World Swap PEA), DCAM (Amundi PEA Monde) ou, pour le S&P 500, ESE (BNP Paribas Easy S&P 500, synthétique). Au 9 octobre 2026, CW8 et DCAM font partie de la gamme Boursomarkets (0 € à l'achat), WPEA et ESE non. Hors gamme Boursomarkets, un ETF est facturé comme une action Euronext selon votre forfait. Dans les deux cas, chaque ordre d'achat doit faire au moins ${BOURSO_MINIMUM_ORDRE_ETF} €. Cherchez l'ETF par son ISIN pour être sûr d'acheter le bon fonds.`,
     },
     {
       q: "L'assurance-vie Bourso Vie peut-elle remplacer le PEA pour un DCA ?",
@@ -326,15 +394,15 @@ const BOURSORAMA: BrokerData = {
     },
     {
       q: "BoursoBank propose-t-elle une épargne programmée automatique ?",
-      a: "Oui, dans le PEA, avec le Plan d'Épargne lancé en avril 2025 : un versement automatique dès 10 € par mois, exécuté le 10 de chaque mois, sans frais de transaction ni droits d'entrée. Mais il ne porte pas sur l'ETF de votre choix : il investit dans 8 fonds maison (Bourso Monde, US, Europe, France, Climat, Santé, Tech, Luxe), gérés par SG IS (groupe Société Générale), qui placent chacun dans un ETF. Leurs frais de gestion sont de 0,59 % par an tout compris. Pour acheter un ETF précis, il faut passer l'ordre soi-même, 200 € au minimum.",
+      a: `Oui, dans le PEA, avec le Plan d'Épargne lancé en avril 2025 : un versement automatique dès 10 € par mois, exécuté le 10 de chaque mois, sans frais de transaction ni droits d'entrée. Mais il ne porte pas sur l'ETF de votre choix : il investit dans 8 fonds maison (Bourso Monde, US, Europe, France, Climat, Santé, Tech, Luxe), gérés par SG IS (groupe Société Générale), qui placent chacun dans un ETF. Leurs frais de gestion sont de 0,59 % par an tout compris. Pour acheter un ETF précis, il faut passer l'ordre soi-même, ${BOURSO_MINIMUM_ORDRE_ETF} € au minimum.`,
     },
     {
       q: "Quel montant minimum pour investir en ETF chez BoursoBank ?",
-      a: "Selon la brochure tarifaire du 4 septembre 2026 : 200 € par ordre d'achat d'ETF, en PEA comme en compte-titres, ETF Boursomarkets compris. Le versement initial minimum du PEA est de 10 €, et il faut ouvrir un compte bancaire BoursoBank (gratuit). BoursoBank a annoncé un assouplissement de ce minimum, qui ne figure pas encore dans sa brochure officielle : vérifiez la grille en vigueur avant d'ouvrir un compte.",
+      a: `Selon la brochure tarifaire du ${BOURSO_BROCHURE_DU} : ${BOURSO_MINIMUM_ORDRE_ETF} € par ordre d'achat d'ETF, en PEA comme en compte-titres, ETF Boursomarkets compris (la grille précédente exigeait 200 €). Le versement initial minimum du PEA est de 10 €, et il faut ouvrir un compte bancaire BoursoBank (gratuit). Les tarifs peuvent changer : vérifiez la grille en vigueur avant d'ouvrir un compte.`,
     },
     {
       q: "Quel est le meilleur usage de BoursoBank pour un DCA ?",
-      a: "Le levier le plus net est la gamme Boursomarkets : 0 € à l'achat, dès 200 € par ordre. Hors Boursomarkets, regrouper ses achats fait gagner peu en PEA, grâce au plafond de 0,5 % : investir 1 000 € en cinq ordres de 200 € coûte 5 × 1,00 € = 5,00 €, contre 2 × 1,99 € = 3,98 € en deux ordres de 500 €. En compte-titres, sans plafond, l'écart est plus net : 5 × 1,99 € = 9,95 € contre 3,98 €. Regrouper retarde aussi l'investissement : à comparer avec la régularité que vous visez.",
+      a: `Le levier le plus net est la gamme Boursomarkets : 0 € à l'achat, dès ${BOURSO_MINIMUM_ORDRE_ETF} € par ordre. Hors Boursomarkets, regrouper ses achats fait gagner peu en PEA, grâce au plafond de 0,5 % : investir 1 000 € en cinq ordres de 200 € coûte 5 × 1,00 € = 5,00 €, contre 2 × 1,99 € = 3,98 € en deux ordres de 500 €. En compte-titres, sans plafond, l'écart est plus net : 5 × 1,99 € = 9,95 € contre 3,98 €. Regrouper retarde aussi l'investissement : à comparer avec la régularité que vous visez.`,
     },
   ],
 };
@@ -451,25 +519,26 @@ const FORTUNEO: BrokerData = {
 // décrit une grille, il ne classe rien : ordre alphabétique, aucun « meilleur ».
 //
 // Les RÈGLES tarifaires sont des faits (grilles citées au-dessus de chaque
-// fiche, consultées le 28/09/2026 ; faits tr-frais-ordre, bourso-pea-courtage-etf,
+// fiche ; faits tr-frais-ordre, bourso-pea-courtage-etf,
 // bourso-montant-minimum-ordre, fortuneo-courtage-pea, synthese-frais-ordre-pea).
 // Le montant d'un ordre donné, lui, se CALCULE sur ces règles : la page passe
 // le versement de ses hypothèses (200 € aujourd'hui), et si l'hypothèse
 // change, le frais suit.
 //
-// ⚠️ BoursoBank : à revérifier après le 5 octobre 2026, comme le reste de la
-// fiche (voir le commentaire au-dessus de BOURSORAMA).
-//
 // 30/09/2026 — gammes à frais réduits. Le tableau disait « un ordre sur WPEA
 // coûte autant qu'un ordre sur DCAM, sauf offre réservée à une gamme », sans
-// dire qui en profite. Or c'était le cas même des duels : la fiche Boursorama
-// de WPEA porte le logo « Produit Boursomarkets » (0 € à l'achat), celles de
-// DCAM, CW8, ESE, PSP5 et SPEA non (relu le 30/09/2026). Chaque courtier
-// déclare donc sa gamme ET les ETF du site qu'on y a constatés, datés : la
-// page calcule le frais ETF par ETF et nomme l'exception au lieu de la taire.
-
-/** Date de consultation des trois grilles, YYYY-MM-DD. */
-export const GRILLES_CONSULTEES_LE = "2026-09-28";
+// dire qui en profite. Chaque courtier déclare donc sa gamme ET les ETF du
+// site qu'on y a constatés, datés : la page calcule le frais ETF par ETF et
+// nomme l'exception au lieu de la taire.
+//
+// 09/10/2026 — BoursoBank relue sur sa brochure au 5 octobre 2026. La gamme
+// Boursomarkets est passée d'iShares à Amundi : WPEA en est sorti, CW8, DCAM,
+// GPEA et PSP5 y sont entrés ; le minimum d'ordre est passé de 200 € à 100 €.
+// Les pages de production affichaient l'inverse de la réalité sur
+// wpea-vs-dcam et cw8-vs-wpea (« WPEA 0 €, DCAM/CW8 1,00 € »), et « ni l'un
+// ni l'autre » sur cw8-vs-ese et ese-vs-psp5. Chaque grille porte désormais
+// sa propre date de consultation (consulteeLe) : Fortuneo et Trade Republic
+// n'ont pas été relues le 09/10/2026, une date commune aurait menti pour eux.
 
 /** Offre d'un courtier réservée à certains ETF (Boursomarkets chez BoursoBank). */
 export interface GammeFraisReduits {
@@ -495,6 +564,8 @@ export interface FraisOrdreEtfPea {
   offre: string;
   /** Document officiel qui fixe le tarif. */
   grille: { libelle: string; url: string };
+  /** Date à laquelle cette grille a été consultée, YYYY-MM-DD (affichée). */
+  consulteeLe: string;
   /**
    * Frais d'un ordre d'achat d'ETF coté sur Euronext, dans un PEA, pour ce
    * montant — hors gamme à frais réduits.
@@ -518,19 +589,11 @@ export function fraisOrdreEtf(courtier: FraisOrdreEtfPea, symbole: string, monta
 
 /** 0.7 → « 0,70 € ». Deux décimales : ce sont des frais facturés au centime. */
 function euros(v: number): string {
-  return `${v.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}\u00a0€`;
+  return `${v.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`;
 }
 
-/** Plafond légal des frais d'ordre dans un PEA : 0,5 % du montant (CMF art. D221-111-1). */
-export const PLAFOND_ORDRE_PEA = 0.005;
-
-/**
- * BoursoBank : montant minimum d'un ordre d'achat d'ETF, Boursomarkets ou non
- * (brochure du 04/09/2026, p. 23 ; fait bourso-montant-minimum-ordre). Une
- * seule valeur pour le frais, la gamme et la précision.
- */
-const BOURSO_MINIMUM_ORDRE_ETF = 200;
-const BOURSO_SOUS_LE_MINIMUM = `Ordre impossible sous ${BOURSO_MINIMUM_ORDRE_ETF}\u00a0€`;
+/** BoursoBank : libellé d'un ordre sous le minimum (BOURSO_MINIMUM_ORDRE_ETF, plus haut). */
+const BOURSO_SOUS_LE_MINIMUM = `Ordre impossible sous ${BOURSO_MINIMUM_ORDRE_ETF} €`;
 
 /** Fortuneo : montant d'achat à partir duquel joue l'offre FreeTrade Amundi (fait fortuneo-freetrade-amundi). */
 const FORTUNEO_SEUIL_FREETRADE_AMUNDI = 500;
@@ -541,39 +604,44 @@ export const FRAIS_ORDRE_ETF_PEA: FraisOrdreEtfPea[] = [
     nom: "BoursoBank",
     offre: "forfait Découverte",
     grille: {
-      libelle: "brochure tarifaire au 4 septembre 2026",
+      libelle: `brochure tarifaire au ${BOURSO_BROCHURE_DU}`,
       url: "https://www.boursobank.com/content/brochure_tarifaire/boursorama_bt.pdf",
     },
-    // 1,99 € jusqu'à 500 €, puis 0,60 % ; plafond de 0,5 % en PEA ; 200 €
-    // minimum par ordre d'ETF (brochure du 04/09/2026, p. 20 et 23).
+    consulteeLe: "2026-10-09",
+    // 1,99 € jusqu'à 500 €, puis 0,60 % ; plafond de 0,5 % en PEA ; 100 €
+    // minimum par ordre d'achat d'ETF (brochure au 05/10/2026, p. 20 et 23).
     frais: (m) => {
       if (m < BOURSO_MINIMUM_ORDRE_ETF) return BOURSO_SOUS_LE_MINIMUM;
-      const tarif = m <= 500 ? 1.99 : m * 0.006;
-      const plafond = m * PLAFOND_ORDRE_PEA;
-      return plafond < tarif
-        ? `${euros(plafond)} (${euros(tarif)} ramenés au plafond légal de 0,5\u00a0%)`
+      const { tarif, frais } = fraisBoursoDecouvertePea(m);
+      return frais < tarif
+        ? `${euros(frais)} (${euros(tarif)} ramenés au plafond légal de 0,5 %)`
         : euros(tarif);
     },
-    // Boursomarkets : 0 € à l'achat, même minimum (brochure p. 20 ; fait
-    // bourso-boursomarkets-etf, émetteur partenaire iShares). Constat du
-    // 30/09/2026 sur boursorama.com, fiche par fiche : WPEA porte le logo
-    // « Produit Boursomarkets » ; DCAM, CW8, ESE, PSP5 et SPEA ne le portent
-    // pas (SPEA est pourtant un iShares : on ne déduit rien de l'émetteur).
-    // À relire après le 5/10/2026 (changement de partenaire annoncé).
+    // Boursomarkets : 0 € à l'ACHAT seulement (la vente suit « même
+    // tarification que sur Actions Euronext Paris »), même minimum, en PEA
+    // comme en compte-titres (brochure au 05/10/2026, p. 20 et 23). Partenaire
+    // ETF : « Amundi Investment Solutions » (page Boursomarkets officielle).
+    // Constat du 09/10/2026 sur boursorama.com, ETF par ETF, deux preuves
+    // concordantes : pastille « Produit Boursomarkets » sur la fiche (HTML
+    // servi et rendu Chromium) ET présence dans la liste officielle « ETF à
+    // 0 € de frais de courtage à l'achat » (271 lignes, 19 pages). Dans la
+    // gamme : les 12 ETF du site ci-dessous. Hors gamme : WPEA, ESE, SPEA
+    // (« Négociable chez BoursoBank » seulement), ETZ ; IWDA, CSPX, VUSA,
+    // VWCE, CNDX (compte-titres). Comme au 30/09, on ne déduit rien de
+    // l'émetteur : un ETF n'entre ici qu'après constat sur sa fiche.
+    // Archives : private-assets/raw/geo/sources-bourso-2026-10-09/.
     gamme: {
       nom: "gamme Boursomarkets",
-      symboles: ["WPEA"],
-      constateLe: "2026-09-30",
-      frais: (m) => (m < BOURSO_MINIMUM_ORDRE_ETF ? BOURSO_SOUS_LE_MINIMUM : "0\u00a0€ à l'achat"),
+      symboles: ["CW8", "DCAM", "GPEA", "PSP5", "PAEEM", "PUST", "PCEU", "PE500", "500", "AEEM", "ANX", "JPNK"],
+      constateLe: BOURSO_GAMME_CONSTATEE_LE,
+      frais: (m) => (m < BOURSO_MINIMUM_ORDRE_ETF ? BOURSO_SOUS_LE_MINIMUM : "0 € à l'achat"),
     },
-    // 30/09/2026 : « BoursoBank a annoncé des changements » affirmait un fait
-    // que seules la presse et un blog rapportent (bourso-changement-oct-2026,
-    // « a-verifier ») : attribué, et sans ses chiffres, comme dans la fiche.
+    // 09/10/2026 : la phrase « Selon la presse, BoursoBank changerait… » est
+    // retirée : le changement figure dans la brochure officielle.
     precision:
-      "0\u00a0€ à l'achat sur les ETF de la gamme Boursomarkets, dont l'émetteur partenaire est iShares au 30 septembre 2026\u00a0; " +
-      `les autres ETF suivent le tarif du forfait. ${BOURSO_MINIMUM_ORDRE_ETF}\u00a0€ minimum par ordre d'ETF. ` +
-      "Selon la presse, BoursoBank changerait en octobre 2026 l'émetteur de cette gamme et ce minimum\u00a0; " +
-      "au 30 septembre 2026, ni sa brochure tarifaire ni sa page Boursomarkets ne l'indiquent.",
+      `0 € à l'achat sur les ETF de la gamme Boursomarkets, dont le partenaire ETF est Amundi au ${dateEnToutesLettres(BOURSO_GAMME_CONSTATEE_LE)} ; ` +
+      "la revente, et l'achat des autres ETF, suivent le tarif du forfait. " +
+      `${BOURSO_MINIMUM_ORDRE_ETF} € minimum par ordre d'achat d'ETF.`,
   },
   {
     slug: "fortuneo",
@@ -583,6 +651,7 @@ export const FRAIS_ORDRE_ETF_PEA: FraisOrdreEtfPea[] = [
       libelle: "conditions tarifaires au 6 août 2026",
       url: "https://www.fortuneo.fr/files/tarifs_fortuneo.pdf",
     },
+    consulteeLe: "2026-09-28",
     // 0 € pour le 1er ordre du mois jusqu'à 500 €, sinon 0,35 % (p. 10).
     // 30/09/2026 : l'offre FreeTrade Amundi (fait fortuneo-freetrade-amundi,
     // jusqu'au 31/12/2026) rend gratuits les achats de 500 € et plus sur une
@@ -610,6 +679,7 @@ export const FRAIS_ORDRE_ETF_PEA: FraisOrdreEtfPea[] = [
       libelle: "grille tarifaire publique, mise à jour le 30 juin 2026",
       url: "https://traderepublic.com/fr-fr?openModal=pricing-scheme",
     },
+    consulteeLe: "2026-09-28",
     // 1 € par ordre ponctuel quel que soit le montant ; plan programmé sans
     // frais d'achat (faits tr-frais-ordre, tr-plan-epargne-frais).
     frais: () => `${euros(1)} par ordre ponctuel, 0\u00a0€ par plan programmé`,

@@ -41,6 +41,22 @@ export interface ChangelogEntry {
 
 /** Du plus récent au plus ancien. Garder cet ordre à la main. */
 export const CHANGELOG: ChangelogEntry[] = [
+  // 09/10/2026 : chiffres affichés changés (frais d'ordre BoursoBank) : règle
+  // de ce fichier. Grille relevée le 09/10/2026 sur la brochure tarifaire au
+  // 05/10/2026 (p. 20 et 23), la page Boursomarkets et les fiches Boursorama
+  // de chaque ETF (relevé : private-assets/raw/geo/boursobank-grille-2026-10-09.json).
+  // Montants écrits en dur, comme les autres entrées : l'entrée dit ce qui
+  // était vrai le 9 octobre 2026, pas ce que dira brokers.ts plus tard.
+  {
+    date: "2026-10-09",
+    kind: "correction",
+    title: "Frais BoursoBank\u00a0: la grille du 5 octobre 2026 remplace celle de septembre",
+    body:
+      "La brochure tarifaire de BoursoBank applicable au 5 octobre 2026 a abaissé son minimum d'ordre d'achat d'ETF, et sa gamme Boursomarkets, ses ETF sans frais de courtage à l'achat, a changé de partenaire. Jusqu'au 9 octobre 2026, le site décrivait encore la grille précédente. Le tableau «\u00a0Frais d'un ordre sur ces ETF selon le courtier\u00a0» des comparatifs WPEA vs DCAM et CW8 vs WPEA donnait, pour un achat de 200\u00a0€ en PEA chez BoursoBank, WPEA à 0\u00a0€ et DCAM ou CW8 à 1,00\u00a0€, l'inverse de la nouvelle grille\u00a0; ceux de CW8 vs ESE et ESE vs PSP5 comptaient 1,00\u00a0€ pour les deux ETF, alors que CW8 et PSP5 s'achètent désormais à 0\u00a0€. La fiche BoursoBank, la page des courtiers et la FAQ des meilleurs ETF pour débutants indiquaient un minimum de 200\u00a0€ par ordre d'ETF. " +
+      "Depuis le 9 octobre 2026, ces pages suivent la brochure tarifaire au 5 octobre 2026 et la page Boursomarkets de BoursoBank\u00a0: au 9 octobre 2026, le partenaire ETF de la gamme est Amundi, CW8, DCAM, GPEA et PSP5 en font partie, WPEA, ESE et SPEA non, le 0\u00a0€ ne vaut qu'à l'achat, et un ordre d'achat d'ETF doit faire au moins 100\u00a0€. Les comparatifs CW8 vs DCAM et GPEA vs DCAM, mis en ligne le 9 octobre 2026 sans ce tableau, l'affichent désormais. Pour CW8, dont une part vaut plus qu'un achat de 200 €, le tableau ne donne plus de frais à ce montant : il précise qu'un tel achat n'en achète pas une part entière.",
+    why:
+      "Ce tableau sert à choisir entre deux ETF\u00a0: avec la grille périmée, il présentait comme gratuit à l'achat chez BoursoBank l'ETF qui ne l'est plus, et comme payant celui qui l'est devenu.",
+  },
   // 02/10/2026 : un chiffre affiché change (captures du Cockpit, page
   // /suivi-pea-excel) : règle de ce fichier. Valeurs recalculées par Excel
   // (classeur sha1 638dab57…) et par src/lib/cockpit-exemple.ts ; cours
