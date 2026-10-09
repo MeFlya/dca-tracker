@@ -490,7 +490,7 @@ const TEMPLATE: Product = {
 //
 // Nombre de pages et prix : écrits UNE fois. La meta, la liste « ce que vous
 // obtenez » et le renvoi de fin d'article les lisent ici : trois « 63 » à
-// retrouver à la main, c'est un oubli garanti (la v1.1 en a aussi 63). Le prix, lui, doit rester
+// retrouver à la main, c'est un oubli garanti (les v1.1 et v1.2 en ont aussi 63). Le prix, lui, doit rester
 // égal au prix Stripe (`livePriceId`) : un « 19 € » recopié dans la meta
 // survivrait à sa hausse.
 const GUIDE_PAGES = 63;
@@ -500,21 +500,29 @@ const GUIDE_PRIX = 19;
 // préparé pour la livraison (private-assets/raw/guide-demarrer-dca.pdf), dont
 // les pages sont montrées plus bas. Sa couverture garde « Chiffres vérifiés au
 // 28 septembre 2026 » et ajoute « mise à jour du 30 septembre 2026 ».
-const GUIDE_VERSION = "1.1";
-const GUIDE_MAJ = "30 septembre 2026";
+// Version 1.2 le 09/10/2026 : mise à jour BoursoBank (brochure au 5 octobre
+// 2026, gamme Boursomarkets relevée le 9 octobre), mêmes 63 pages et mêmes
+// numéros de page (sources : private-assets/raw/guide-sources/v1.2/).
+const GUIDE_VERSION = "1.2";
+const GUIDE_MAJ = "9 octobre 2026";
+const GUIDE_MOIS = "octobre 2026"; // édition imprimée sur la couverture
 const GUIDE_DATE_VERIF = "28 septembre 2026";
+// La grille BoursoBank du guide est celle du 5 octobre 2026, relue le
+// 9 octobre (v1.2) ; les autres chiffres restent vérifiés au 28 septembre.
+const GUIDE_DATE_VERIF_DETAIL = `${GUIDE_DATE_VERIF} (BoursoBank : ${GUIDE_MAJ})`;
 const GUIDE_ETF = 13;
 
 /**
  * Sommaire du PDF, pages 2 et 3, relu contre le rendu des pages de la v1.1 le
  * 01/10/2026 : mêmes numéros de page qu'en v1.0 ; seul le résumé de « Comment
- * lire ce guide » a changé (il annonce ce qui change en version 1.1).
+ * lire ce guide » a changé (il annonce ce qui change en version 1.1). v1.2 :
+ * mêmes numéros de page, résumé « … ce qui change en version 1.2 ».
  */
 const GUIDE_SOMMAIRE: SommairePartie[] = [
   {
     partie: "Avant de commencer",
     entrees: [
-      { repere: "—", titre: "Comment lire ce guide", resume: "Le parcours, ce que le guide ne fait pas, ses chiffres et ce qui change en version 1.1", page: 4 },
+      { repere: "—", titre: "Comment lire ce guide", resume: `Le parcours, ce que le guide ne fait pas, ses chiffres et ce qui change en version ${GUIDE_VERSION}`, page: 4 },
     ],
   },
   {
@@ -570,16 +578,16 @@ const GUIDE_SOMMAIRE: SommairePartie[] = [
   },
 ];
 
-// Pages rendues depuis le PDF v1.1 le 01/10/2026 (pymupdf, 1 600 × 2 265 :
-// la page A4 de 594,96 × 841,92 pt à 1 600 px de large). Mêmes numéros de
-// page qu'avec la v1.0 : le texte des pages 19, 39, 49 et 52 est identique
-// (seul le pied de page change : logo du site, « v1.1 ») ; la couverture est
-// refaite sur la base de marque (« Version 1.1 / mise à jour du 30 septembre
-// 2026 ») et le sommaire change d'une ligne de résumé.
-// Pages 22 (les courtiers) et 34 (le premier ordre) NON montrées : elles
-// restent à revérifier après le 5/10/2026 (annonce BoursoBank,
-// CHANGEMENTS.md), et la page de vente afficherait une grille périmée sous
-// « chiffres vérifiés ».
+// Pages rendues depuis le PDF v1.2 le 09/10/2026 (pymupdf, 1 600 × 2 265 :
+// la page A4 de 594,96 × 841,92 pt à 1 600 px de large ; palette 256
+// couleurs par sharp), même méthode et mêmes dimensions qu'en v1.1. Mêmes
+// numéros de page qu'en v1.0 et v1.1 : le texte des pages 19, 39, 49 et 52
+// est identique, seul le pied de page change (« v1.2 · octobre 2026 ») ; la
+// couverture dit « Version 1.2 / mise à jour du 9 octobre 2026 » et le
+// sommaire « ce qui change en version 1.2 ». Les captures v1.1 restent dans
+// public/produits/ (anciennes URL toujours servies).
+// Pages 22 (les courtiers) et 34 (le premier ordre) : revérifiées le
+// 09/10/2026 (grille BoursoBank au 5 octobre), pas encore montrées ici.
 const guidePage = (
   fichier: string,
   page: number,
@@ -606,11 +614,11 @@ const GUIDE: Product = {
     { valeur: "3", libelle: "arbres de décision numérotés : enveloppe, courtier, exposition" },
     { valeur: "7", libelle: "erreurs chiffrées en euros" },
   ],
-  chiffresClesNote: `Chiffres vérifiés au ${GUIDE_DATE_VERIF} · version ${GUIDE_VERSION}`,
+  chiffresClesNote: `Chiffres vérifiés au ${GUIDE_DATE_VERIF} · version ${GUIDE_VERSION}, mise à jour du ${GUIDE_MAJ}`,
   sommaire: GUIDE_SOMMAIRE,
   pages: GUIDE_PAGES,
   version: GUIDE_VERSION,
-  dateVerification: GUIDE_DATE_VERIF,
+  dateVerification: GUIDE_DATE_VERIF_DETAIL,
   slug: "guide-demarrer-dca",
   name: "Guide PDF — Démarrer le DCA en France",
   titreHero: { principal: "Guide PDF", complement: "Démarrer le DCA en France", principalEnPetit: true },
@@ -631,8 +639,8 @@ const GUIDE: Product = {
   livePriceId: "price_1UL1rCLVB4yZ8CXvoFZG1wOj",
   screenshots: [
     {
-      src: "/produits/guide-v1-1-couverture.png",
-      alt: `Couverture du guide « Démarrer le DCA en France », édition septembre 2026 : chiffres vérifiés au ${GUIDE_DATE_VERIF}, version ${GUIDE_VERSION} mise à jour du ${GUIDE_MAJ}`,
+      src: "/produits/guide-v1-2-couverture.png",
+      alt: `Couverture du guide « Démarrer le DCA en France », édition ${GUIDE_MOIS} : chiffres vérifiés au ${GUIDE_DATE_VERIF}, version ${GUIDE_VERSION} mise à jour du ${GUIDE_MAJ}`,
       width: 1600,
       height: 2265,
       repere: "p. 1",
@@ -642,15 +650,16 @@ const GUIDE: Product = {
     // Le sommaire : en éventail dans le hero, pas dans « Feuilleter » (il
     // est déjà sur la page en HTML).
     guidePage(
-      "guide-v1-1-sommaire", 2, "Sommaire, parties 1 à 3",
+      "guide-v1-2-sommaire", 2, "Sommaire, parties 1 à 3",
       "Sommaire du guide, page 2 : Comment lire ce guide, puis les parties Comprendre, Choisir et Mettre en place, chapitres 1 à 11 avec leurs numéros de page",
       { eventail: true, horsFeuilleter: true },
     ),
     // Extrait lisible de la p. 19 (du titre au bas de l'encadré), rendu à
-    // 3 px par point : même rectangle de pixels qu'avec la v1.0, contenu
-    // identique au pixel près ; le zoom ouvre la page entière.
+    // 3 px par point : même rectangle de pixels qu'avec la v1.0 (x 122,
+    // y 850, 1 543 × 1 184), contenu identique au pixel près en v1.2 ; le zoom
+    // ouvre la page entière.
     {
-      src: "/produits/guide-v1-1-arbre-enveloppe-extrait.png",
+      src: "/produits/guide-v1-2-arbre-enveloppe-extrait.png",
       alt: "Arbre de décision n° 1, page 19 : « Où loger votre DCA ? », cinq lignes, de « Si vous n'êtes pas fiscalement domicilié en France » à « Dans tous les autres cas : le PEA d'abord »",
       width: 1543,
       height: 1184,
@@ -659,23 +668,23 @@ const GUIDE: Product = {
       version: GUIDE_VERSION,
       extrait: true,
       complete: {
-        src: "/produits/guide-v1-1-arbre-enveloppe.png",
+        src: "/produits/guide-v1-2-arbre-enveloppe.png",
         alt: "Page 19 : l'encadré « À retenir — prendre date, même avec peu », l'arbre de décision n° 1 pour choisir votre enveloppe, puis le début de « Et le CTO ? »",
         width: 1600,
         height: 2265,
       },
     },
     guidePage(
-      "guide-v1-1-baisses", 39, "Les baisses, chiffrées",
+      "guide-v1-2-baisses", 39, "Les baisses, chiffrées",
       "Page 39 : ouverture du chapitre 12 « Les baisses, chiffrées » et le tableau des quatre baisses d'un ETF MSCI World en euros, de la crise financière au printemps 2025, avec leur délai de retour",
     ),
     guidePage(
-      "guide-v1-1-sept-erreurs", 49, "Sept erreurs, classées par ce qu'elles coûtent",
+      "guide-v1-2-sept-erreurs", 49, "Sept erreurs, classées par ce qu'elles coûtent",
       "Page 49 : les sept erreurs classées par ce qu'elles coûtent pour 200 € par mois, d'attendre le « bon moment » (environ 25 100 €) à investir son épargne de précaution",
       { eventail: true },
     ),
     guidePage(
-      "guide-v1-1-charte", 52, "Annexe A : ma charte d'investisseur",
+      "guide-v1-2-charte", 52, "Annexe A : ma charte d'investisseur",
       "Annexe A, page 52 : la charte d'investisseur à remplir, avec vos fondations (épargne de précaution, objectif), votre dispositif (enveloppe, courtier, ETF) et votre rythme",
     ),
   ],
@@ -684,10 +693,10 @@ const GUIDE: Product = {
     `Lancer un DCA en France pas à pas\u00a0: PEA ou CTO, 3 courtiers et ${GUIDE_ETF} ETF vérifiés, baisses chiffrées, 7 erreurs à éviter. PDF de ${GUIDE_PAGES} pages, ${GUIDE_PRIX}\u00a0€.`,
   abstract: [
     "Tout ce qu'il faut pour démarrer un DCA existe gratuitement, éparpillé sur de nombreux sites qui se contredisent, et beaucoup ne sont pas à jour : fiscalité 2026, tarifs des courtiers. Ce guide assemble le parcours dans l'ordre, de « je ne sais pas par où commencer » à votre premier investissement, puis à une routine mensuelle.",
-    `Chaque chiffre est sourcé et daté, vérifié au ${GUIDE_DATE_VERIF} : prélèvements sociaux à 18,6 %, grilles officielles de Trade Republic, BoursoBank et Fortuneo, ${GUIDE_ETF} ETF éligibles au PEA vérifiés un par un, baisses passées chiffrées en euros. Il ne vous dit pas quoi acheter : il vous donne des critères, des arbres de décision et des outils à remplir.`,
+    `Chaque chiffre est sourcé et daté, vérifié au ${GUIDE_DATE_VERIF_DETAIL} : prélèvements sociaux à 18,6 %, grilles officielles de Trade Republic, BoursoBank et Fortuneo, ${GUIDE_ETF} ETF éligibles au PEA vérifiés un par un, baisses passées chiffrées en euros. Il ne vous dit pas quoi acheter : il vous donne des critères, des arbres de décision et des outils à remplir.`,
   ],
   features: [
-    `PDF de ${GUIDE_PAGES} pages, chiffres vérifiés au ${GUIDE_DATE_VERIF}, chaque source citée`,
+    `PDF de ${GUIDE_PAGES} pages, chiffres vérifiés au ${GUIDE_DATE_VERIF_DETAIL}, chaque source citée`,
     "PEA ou CTO : les règles de 2026 et l'écart en euros, ramenés à quelques critères que vous appliquez à votre situation",
     "Trois courtiers (Trade Republic, BoursoBank, Fortuneo) comparés sur leurs grilles officielles, et le coût d'un achat selon votre montant",
     `Les ${GUIDE_ETF} ETF éligibles au PEA vérifiés (ISIN, frais), et les pièges : fonds non éligibles, versions plus chères du même indice`,

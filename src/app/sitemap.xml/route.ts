@@ -64,7 +64,8 @@ const REV = {
   methodologie: "2026-08-03",
   // pages Ressources refaites, Cockpit v2.0 et guide v1.1 (01/10/2026) ;
   // 02/10/2026 : captures et légendes du Cockpit sur l'exemple aux cours réels.
-  produits: "2026-10-02",
+  // 09/10/2026 : guide v1.2 (BoursoBank au 5 octobre), captures et sommaire.
+  produits: "2026-10-09",
   // Vercel Web Analytics remplace Plausible (mention dans la page)
   analytics: "2026-08-23",
   // /confidentialite : page d'origine jointe aux achats (3.3 et 4), puis le
