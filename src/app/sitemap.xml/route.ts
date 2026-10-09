@@ -179,7 +179,8 @@ export async function GET(): Promise<NextResponse> {
       priority: 0.8,
       lastmod: b.updatedAt,
     })),
-    { url: `${base}/comparatif-etf`,           changeFreq: "monthly", priority: 0.8,  lastmod: REV.etf },
+    // 09/10/2026 : le hub change quand un comparatif s'ajoute ou change.
+    { url: `${base}/comparatif-etf`,           changeFreq: "monthly", priority: 0.8,  lastmod: plusRecente(REV.etf, ...ETF_COMPARISON_LIST.map((c) => c.updatedAt)) },
     ...ETF_COMPARISON_LIST.map((c) => ({
       url: `${base}/comparatif-etf/${c.slug}`,
       changeFreq: "monthly",

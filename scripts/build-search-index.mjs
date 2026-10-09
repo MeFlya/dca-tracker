@@ -584,9 +584,10 @@ function motsCles(u, texte, fiches) {
   const k = new Set();
   if (u.startsWith("/etf/")) k.add(u.slice(5));
   if (u.startsWith("/comparatif-etf/")) {
-    // Seuls les tickers qui ont une fiche, plus ESE (comparé sans fiche).
+    // Seuls les tickers qui ont une fiche, plus ESE et GPEA (comparés sans
+    // fiche ; GPEA depuis le 09/10/2026, /comparatif-etf/gpea-vs-dcam).
     for (const t of u.slice(16).split("-vs-").map((t) => t.toUpperCase())) {
-      if (fiches.has(t) || t === "ESE") k.add(t);
+      if (fiches.has(t) || t === "ESE" || t === "GPEA") k.add(t);
     }
   }
   if (u.startsWith("/comparatif/")) {

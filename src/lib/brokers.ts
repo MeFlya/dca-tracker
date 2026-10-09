@@ -522,7 +522,7 @@ function euros(v: number): string {
 }
 
 /** Plafond légal des frais d'ordre dans un PEA : 0,5 % du montant (CMF art. D221-111-1). */
-const PLAFOND_ORDRE_PEA = 0.005;
+export const PLAFOND_ORDRE_PEA = 0.005;
 
 /**
  * BoursoBank : montant minimum d'un ordre d'achat d'ETF, Boursomarkets ou non

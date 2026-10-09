@@ -18,6 +18,7 @@ import { ArticleByline } from "@/components/ui/ArticleByline";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { reponseFiche } from "@/lib/reponse-fiche-etf";
 import { FICHE_ETF, FICHES_ETF_MAJ_LE } from "@/lib/sources-etf";
+import { ETF_COMPARISON_LIST } from "@/lib/etf-comparisons";
 
 // ─── Dates de publication des fiches (30/09/2026) ──────────────────────────
 //
@@ -158,6 +159,12 @@ export default async function ETFDetailPage({
   const demo = isDemo();
 
   const otherETFs = ETF_LIST.filter((e) => e.displaySymbol !== etf.displaySymbol);
+  // 09/10/2026 : les comparatifs où cet ETF est l'un des deux côtés, avec
+  // leur H1 comme texte de lien (« cw8 vs dcam » était servi par cette fiche,
+  // sans lien vers la page dédiée).
+  const comparatifs = ETF_COMPARISON_LIST.filter(
+    (c) => c.left.heading === etf.displaySymbol || c.right.heading === etf.displaySymbol,
+  );
   const lienPea = lienListePea(etf.displaySymbol);
   const reponse = reponseFiche(etf);
   const ficheSource = FICHE_ETF[etf.displaySymbol];
@@ -489,6 +496,28 @@ export default async function ETFDetailPage({
           }
           className="mb-10"
         />
+      )}
+
+      {/* ── Comparatifs de cet ETF ─────────────────────────────────────── */}
+      {/* data-nosearch : comme « Autres ETF », ce bloc nomme d'autres fonds. */}
+      {comparatifs.length > 0 && (
+        <section data-nosearch="" data-reveal aria-labelledby="comparatifs-etf-heading" className="mb-10">
+          <h2 id="comparatifs-etf-heading" className="text-base font-semibold text-gray-700 mb-4">
+            Comparatifs avec {etf.displaySymbol}
+          </h2>
+          <ul className="space-y-2">
+            {comparatifs.map((c) => (
+              <li key={c.slug}>
+                <Link
+                  href={`/comparatif-etf/${c.slug}`}
+                  className="text-sm font-medium text-primary-700 hover:underline"
+                >
+                  {c.title}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
       )}
 
       {/* ── Autres ETF ─────────────────────────────────────────────────── */}

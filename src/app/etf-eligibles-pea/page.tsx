@@ -9,6 +9,7 @@ import { SourcesReferences } from "@/components/ui/SourcesReferences";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { RenvoiProduit } from "@/components/products/RenvoiProduit";
 import { formatTer } from "@/lib/utils";
+import { ETF_COMPARISON_LIST } from "@/lib/etf-comparisons";
 import {
   CORRESPONDANCES_PEA,
   DATE_VERIFICATION_PEA,
@@ -841,6 +842,20 @@ function TableauFonds({ fonds, titre }: { fonds: EtfEligiblePea[]; titre: string
                 {f.precision && (
                   <span className="block text-xs text-gray-500 leading-snug mt-1">{f.precision}</span>
                 )}
+                {/* 09/10/2026 : un fonds sans fiche (GPEA, ESE) renvoie à ses
+                    comparatifs, faute de fiche qui le ferait. */}
+                {!f.aUneFiche &&
+                  ETF_COMPARISON_LIST.filter(
+                    (c) => c.left.heading === f.displaySymbol || c.right.heading === f.displaySymbol,
+                  ).map((c) => (
+                    <Link
+                      key={c.slug}
+                      href={`/comparatif-etf/${c.slug}`}
+                      className="block text-xs font-medium text-primary-700 hover:underline mt-1"
+                    >
+                      Comparatif {c.left.heading} vs {c.right.heading}
+                    </Link>
+                  ))}
               </td>
               <td className={td}>
                 <span className={intitule}>ISIN</span>

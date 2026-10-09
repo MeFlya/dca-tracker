@@ -20,6 +20,19 @@ import { gainsBruts, HYPOTHESES_COMPARATIFS, capitalPour, coutFrais, ecartCapita
 // le verdict, les cartes et le tableau ne peuvent plus diverger.
 import { TAILLE_ETF } from "@/lib/sources-etf";
 
+// Comparatifs du 09/10/2026 (cw8-vs-dcam, gpea-vs-dcam) : encours et prix de
+// part publiés par Amundi, à la même date pour les deux fonds d'un duel, et
+// documents de l'émetteur cités sous le tableau. Voir sources-etf.ts.
+import {
+  DOCUMENTS_AMUNDI_2026_10,
+  TAILLE_AMUNDI_8_OCTOBRE,
+  encoursEnviron,
+  prixPartEnviron,
+  type FicheCitee,
+} from "@/lib/sources-etf";
+import { PLAFOND_ORDRE_PEA } from "@/lib/brokers";
+import { dateEnToutesLettres } from "@/lib/etf-pea-verifies";
+
 const WPEA_TAILLE = TAILLE_ETF.WPEA;
 const DCAM_TAILLE = TAILLE_ETF.DCAM;
 
@@ -133,6 +146,36 @@ export type ETFComparison = {
   analysis: string;             // longer prose analysis
   faq: { q: string; a: string }[];
   tags: string[];               // e.g. ["PEA", "débutant"]
+  /**
+   * Vérification propre au duel (09/10/2026), affichée sous le tableau à la
+   * place de celle du 28/09/2026 : date, émetteur, sources de recoupement et
+   * documents cités. Absent pour les huit premiers duels, dont la note ne
+   * change pas.
+   */
+  verification?: {
+    /** Date ISO du relevé. */
+    le: string;
+    /** « d'Amundi » — complète « vérifiés … sur les documents ». */
+    aupres: string;
+    /** « justETF et Boursorama » */
+    recoupeSur: string;
+    sources: { symbole: string; fiche: FicheCitee }[];
+  };
+  /**
+   * Liens vers les duels voisins, rendus après l'analyse (09/10/2026). Texte
+   * d'ancre descriptif ; liens sortants seulement, rien n'est ajouté aux
+   * pages ciblées en dehors du bloc automatique « Autres comparatifs ».
+   */
+  voirAussi?: { avant: string; ancre: string; href: string; apres?: string }[];
+  /**
+   * Présent : le tableau « Frais d'un ordre sur ces ETF selon le courtier »
+   * n'est pas affiché. La valeur dit pourquoi (non affichée). 09/10/2026 :
+   * la gamme Boursomarkets de BoursoBank est passée d'iShares à Amundi le
+   * 5 octobre 2026 et FRAIS_ORDRE_ETF_PEA (brokers.ts) décrit encore la
+   * grille du 30 septembre ; les deux duels datés du 9 octobre ne publient
+   * pas ce tableau tant que la grille partagée n'est pas mise à jour.
+   */
+  sansFraisOrdre?: string;
 };
 
 // ─── MSCI World vs S&P 500 ────────────────────────────────────────────────────
@@ -1236,6 +1279,385 @@ const VWCE_VS_WPEA: ETFComparison = {
   tags: ["PEA", "CTO", "MSCI World", "All-World", "émergents"],
 };
 
+// ─── Duels du 09/10/2026 : CW8 vs DCAM, GPEA vs DCAM ──────────────────────────
+//
+// Pourquoi ces deux paires (Search Console, 28 jours au 06/10/2026) :
+// · CW8/DCAM : environ 95 impressions sur quatre variantes (« cw8 vs dcam »,
+//   « dcam vs cw8 », « cw8 ou dcam », « dcam ou cw8 »), servies en position
+//   6 à 10 par des pages qui ne leur sont pas consacrées. 51 impressions avec
+//   CW8 en premier contre 44 : slug cw8-vs-dcam, convention du site
+//   (cw8-vs-wpea, cw8-vs-ese). Le metaTitle met DCAM en tête et dit « ou »
+//   pour couvrir l'autre ordre, sans créer une seconde URL pour la même paire.
+// · GPEA/DCAM : 15 impressions, position 6,5 ; GPEA a été créé le 06/07/2026,
+//   même schéma que la paire WPEA/DCAM (fonds récents, peu de concurrence).
+//
+// Une intention par URL : wpea-vs-dcam = les deux jumeaux à 0,20 % (iShares ou
+// Amundi) ; cw8-vs-wpea = quitter CW8 pour iShares ; cw8-vs-dcam = rester chez
+// Amundi et passer à sa part à 0,20 % ; gpea-vs-dcam = World ou ACWI. Les H1
+// ne contiennent pas « WPEA » : ils s'affichent au pied de wpea-vs-dcam.
+// Après la surveillance de wpea-vs-dcam (~23/10/2026), lot séparé : retirer
+// « et où se place DCAM » de la meta de cw8-vs-wpea et faire pointer sa FAQ
+// « Et DCAM dans tout ça ? » aussi vers cw8-vs-dcam.
+//
+// Tous les faits viennent de private-assets/raw/geo/faits-cw8-dcam-gpea-
+// 2026-10-09.json (émetteur, recoupé sur justETF et Boursorama, relevé le
+// 09/10/2026), relus le 09/10/2026. Ce qui n'y figure pas n'est pas écrit :
+// ni part totale des émergents dans le MSCI ACWI (Amundi ne la publie pas),
+// ni performance de GPEA, ni « depuis 2009 » sans préciser que la classe
+// actuelle de CW8 date de 2018. PAEEM (TER, variante « ESG Transition ») :
+// catalogue du site, table de vérité du 28/09/2026.
+// Amundi publie un « nombre de composants » : une société cotée sous deux
+// lignes (Alphabet A et C) compte deux fois. On écrit donc « titres ».
+// ⚠️ CW8 : son DIC du 28/04/2026 ne mentionne pas le PEA. La preuve citée est
+// la ligne « Enveloppe fiscale » du reporting pour professionnels, ou la page
+// amundietf.fr — jamais « c'est écrit dans son DIC ».
+// ⚠️ GPEA : aucun reporting mensuel publié au 09/10/2026 (404). Preuve
+// d'éligibilité : DIC du 06/07/2026, prospectus, page amundietf.fr. À relire
+// au premier reporting (fin octobre ou novembre 2026).
+// ⚠️ Frais d'ordre : pas de tableau par courtier sur ces deux pages
+// (sansFraisOrdre), tant que la grille BoursoBank du 5/10/2026 n'est pas
+// reportée dans brokers.ts. Aucun tarif de courtier n'est écrit ici.
+
+/** Encours et prix de part : Amundi, 8 octobre 2026, pour les trois fonds. */
+const TAILLE = TAILLE_AMUNDI_8_OCTOBRE;
+const { monthlyAmount: VERSEMENT, durationYears: DUREE, annualReturnPct: RENDEMENT } = HYPOTHESES_COMPARATIFS;
+
+/** « au 8 octobre 2026 selon Amundi » */
+const auSelon = (t: { au: string; source: string }) => `au ${dateEnToutesLettres(t.au)} selon ${t.source}`;
+/** « 2026-10-08 » → « 8/10/2026 », pour les intitulés du tableau. */
+const dateCourte = (iso: string) => {
+  const [a, m, j] = iso.split("-");
+  return `${Number(j)}/${m}/${a}`;
+};
+/** « (8/10/2026, Amundi) » */
+const dateSource = (t: { au: string; source: string }) => `(${dateCourte(t.au)}, ${t.source})`;
+
+/**
+ * Arbitrage CW8 → DCAM au plafond légal des frais d'ordre en PEA : vente et
+ * rachat coûtent au plus 2 × 0,5 % du montant ; l'écart de TER rapporte
+ * 0,18 point par an sur ce montant. 1 % / 0,18 % ≈ 5,6 ans. Hors écart entre
+ * prix d'achat et de vente, et hors effet de la capitalisation.
+ */
+const FRAIS_ALLER_RETOUR_PLAFOND = `${(2 * PLAFOND_ORDRE_PEA * 100).toLocaleString("fr-FR")} %`;
+const ANNEES_AMORTISSEMENT_PLAFOND = ((2 * PLAFOND_ORDRE_PEA) / ((0.38 - 0.2) / 100)).toLocaleString("fr-FR", {
+  maximumFractionDigits: 1,
+});
+
+/**
+ * Versements nécessaires pour une part entière de CW8. La phrase qui l'emploie
+ * (« un versement n'en achète pas une entière ») n'est vraie que si le
+ * versement des hypothèses est sous le prix d'une part : sinon, le build
+ * s'arrête plutôt que de publier une phrase fausse.
+ */
+if (VERSEMENT >= TAILLE.CW8.vlEur) {
+  throw new Error(
+    "etf-comparisons.ts (cw8-vs-dcam) : le versement des hypothèses dépasse le prix d'une part de CW8 — réécrire le cas « petit versement mensuel ».",
+  );
+}
+const VERSEMENTS_POUR_UNE_PART_CW8 = Math.ceil(TAILLE.CW8.vlEur / VERSEMENT);
+
+/** Rapport des encours DCAM / GPEA au 08/10/2026 (environ 23). */
+const RAPPORT_ENCOURS_DCAM_GPEA = Math.round(TAILLE.DCAM.encoursMEur / TAILLE.GPEA.encoursMEur);
+
+const SANS_FRAIS_ORDRE_BOURSO =
+  "Grille BoursoBank du 5 octobre 2026 (gamme Boursomarkets passée chez Amundi, nouveau minimum d'ordre) pas encore reportée dans FRAIS_ORDRE_ETF_PEA.";
+
+const CW8_VS_DCAM: ETFComparison = {
+  slug: "cw8-vs-dcam",
+  publishedAt: "2026-10-09",
+  updatedAt: "2026-10-09",
+  title: "CW8 vs DCAM : le MSCI World d'Amundi à 0,38 % ou à 0,20 % ?",
+  metaTitle: "DCAM ou CW8 : même MSCI World Amundi, 0,20 % contre 0,38 %",
+  // Pas d'écart en euros ici : ecartCapital(0.38, 0.2) donnerait le même
+  // montant que la meta de cw8-vs-wpea. Les angles propres à la page : prix
+  // d'une part et durée d'amortissement d'un arbitrage, tous deux calculés.
+  metaDescription:
+    `Même indice, même émetteur : DCAM coûte 0,20 % par an, CW8 0,38 %. Une part à ${prixPartEnviron(TAILLE.CW8)} contre ${prixPartEnviron(TAILLE.DCAM)}, un arbitrage amorti en ${ANNEES_AMORTISSEMENT_PLAFOND} ans au plus.`,
+
+  left: {
+    heading: "CW8",
+    subheading: "Amundi MSCI World Swap UCITS ETF EUR Acc — ISIN LU1681043599",
+    type: "ETF",
+    coverage: "MSCI World — 1\u00a0248 titres de 23 pays développés (7 octobre 2026)",
+    issuer: "Amundi",
+    ter: "0,38 %/an",
+    replication: "Synthétique (swap)",
+    distribution: "Capitalisant",
+    currency: "EUR",
+    peaEligible: "Oui",
+    strongPoint: `Historique depuis juin 2009 · ${encoursEnviron(TAILLE.CW8)} d'encours pour cette part ${auSelon(TAILLE.CW8)}`,
+    weakPoint: "Frais de 0,38\u00a0% par an, contre 0,20\u00a0% pour DCAM sur le même indice",
+  },
+
+  right: {
+    heading: "DCAM",
+    subheading: "Amundi PEA Monde (MSCI World) UCITS ETF Acc — ISIN FR001400U5Q4",
+    type: "ETF",
+    coverage: "MSCI World — 1\u00a0248 titres de 23 pays développés (7 octobre 2026)",
+    issuer: "Amundi",
+    ter: "0,20 %/an",
+    replication: "Synthétique (swap)",
+    distribution: "Capitalisant",
+    currency: "EUR",
+    peaEligible: "Oui",
+    strongPoint: "Frais de 0,20\u00a0% par an, pour le même indice et le même émetteur que CW8",
+    weakPoint: "Créé le 4 mars 2025\u00a0: un peu plus d'un an et demi d'historique",
+  },
+
+  verdict:
+    `À exposition identique (même MSCI World, même émetteur, même réplication par swap, tous deux éligibles au PEA), DCAM coûte 0,20\u00a0% par an contre 0,38\u00a0% pour CW8 (documents d'informations clés du 28 avril 2026, vérifiés le 9 octobre 2026)\u00a0: pour de nouveaux versements, DCAM revient moins cher. Les chiffres publiés vont dans le même sens\u00a0: sur un an au 30 septembre 2026, CW8 a fait 0,42 point de moins que son indice, DCAM 0,18 point (reportings Amundi). Pour un CW8 déjà détenu, un arbitrage dans le PEA ne déclenche aucun impôt\u00a0: il coûte deux frais d'ordre et l'écart entre prix d'achat et de vente.`,
+
+  intro:
+    "CW8 est la ligne historique d'Amundi sur le MSCI World\u00a0: sa première valeur liquidative date du 16 juin 2009, et sa classe actuelle a été créée le 18 avril 2018. Le 4 mars 2025, le même émetteur a créé DCAM, sur le même indice, pour un peu plus de la moitié des frais. Ni l'indice ni l'émetteur ne changent\u00a0: la question est de savoir ce que vaut l'écart de frais, et ce que coûte le passage de l'un à l'autre dans un PEA. Reste une différence de structure\u00a0: CW8 est une SICAV de droit luxembourgeois, DCAM un fonds commun de placement de droit français.",
+
+  // Cellules courtes (09/10/2026) : la date et la source vont dans l'intitulé,
+  // et pas de ligne ISIN (dans les cartes et la FAQ) : sinon le tableau
+  // déborde à 390 px de large (deux ISIN de 12 caractères insécables).
+  keyDifferences: [
+    { criterion: "Indice répliqué", leftValue: "MSCI World, dividendes nets réinvestis, en euros", rightValue: "MSCI World (identique)" },
+    { criterion: "Émetteur", leftValue: "Amundi", rightValue: "Amundi (identique)" },
+    { criterion: "TER", leftValue: "0,38\u00a0%/an", rightValue: "0,20\u00a0%/an" },
+    { criterion: "Écart avec l'indice sur un an au 30/09/2026 (Amundi)", leftValue: "−0,42 point", rightValue: "−0,18 point" },
+    { criterion: "Régularité du suivi (écart-type) sur un an au 30/09/2026", leftValue: "0,03\u00a0%", rightValue: "0,03\u00a0%" },
+    { criterion: "Domicile et structure", leftValue: "Luxembourg, SICAV", rightValue: "France, fonds commun de placement" },
+    { criterion: "Historique", leftValue: "Depuis juin 2009\u00a0; classe actuelle d'avril 2018", rightValue: "Créé le 4 mars 2025, coté le 11 mars" },
+    { criterion: `Prix d'une part ${dateSource(TAILLE.CW8)}`, leftValue: prixPartEnviron(TAILLE.CW8), rightValue: prixPartEnviron(TAILLE.DCAM) },
+    { criterion: `Encours de la part ${dateSource(TAILLE.CW8)}`, leftValue: encoursEnviron(TAILLE.CW8), rightValue: encoursEnviron(TAILLE.DCAM) },
+    { criterion: "Réplication", leftValue: "Synthétique (swap)", rightValue: "Synthétique (swap)" },
+    { criterion: "Éligibilité PEA", leftValue: "Oui", rightValue: "Oui" },
+    { criterion: `Impact TER sur ${DUREE} ans (${VERSEMENT} €/mois, ${RENDEMENT}\u00a0%)`, leftValue: `${coutFrais(0.38)} €`, rightValue: `${coutFrais(0.2)} €` },
+  ],
+
+  useCases: [
+    {
+      profile: "Premier MSCI World dans votre PEA",
+      winner: "right",
+      explanation:
+        `À indice, émetteur et éligibilité identiques, DCAM facture 0,18 point de moins par an. Aux hypothèses de cette page (${VERSEMENT} €/mois pendant ${DUREE} ans, ${RENDEMENT}\u00a0%/an), cet écart représente environ ${ecartCapital(0.38, 0.2)} € de capital final.`,
+    },
+    {
+      // « both » : sur un site non-CIF, un badge « CW8 » adressé à un
+      // détenteur se lirait comme « gardez-le ».
+      profile: "Du CW8 déjà détenu",
+      winner: "both",
+      explanation:
+        "Même émetteur, même indice\u00a0: passer à DCAM ne diversifie rien, cela ne change que les frais et la forme juridique du fonds. CW8 suit le MSCI World aussi régulièrement que DCAM (même écart-type de suivi sur un an au 30 septembre 2026, selon Amundi). Deux voies coexistent\u00a0: garder la ligne et faire les versements suivants sur DCAM, ou arbitrer, dont le coût est détaillé dans l'analyse plus bas.",
+    },
+    {
+      profile: "Petit versement mensuel, sans achat fractionné",
+      winner: "right",
+      explanation:
+        `Une part de CW8 valait ${prixPartEnviron(TAILLE.CW8)} ${auSelon(TAILLE.CW8)}\u00a0: un versement de ${VERSEMENT} € n'en achète pas une entière, il en faut ${VERSEMENTS_POUR_UNE_PART_CW8} pour une part. Une part de DCAM valait ${prixPartEnviron(TAILLE.DCAM)}\u00a0: le versement s'investit presque entièrement chaque mois.`,
+    },
+    {
+      profile: "Plus long historique, plus gros encours",
+      winner: "left",
+      explanation:
+        `CW8 publie une valeur liquidative depuis juin 2009, et sa part gérait ${encoursEnviron(TAILLE.CW8)} ${auSelon(TAILLE.CW8)}, contre ${encoursEnviron(TAILLE.DCAM)} pour DCAM, créé en mars 2025. L'ancienneté ne change ni l'indice ni le cadre du swap\u00a0: les deux sont des fonds européens (OPCVM) soumis aux mêmes plafonds de contrepartie.`,
+    },
+  ],
+
+  analysis:
+    `Amundi propose deux ETF sur le même MSCI World dans le PEA, à deux niveaux de frais. CW8, antérieur à l'arrivée des ETF à 0,20\u00a0%, facture 0,38\u00a0% par an selon son DIC du 28 avril 2026\u00a0; DCAM, créé en mars 2025, 0,20\u00a0%. Leurs reportings du 30 septembre 2026 montrent un suivi aussi régulier l'un que l'autre (0,03\u00a0% d'écart-type entre le fonds et son indice sur un an, ce que le reporting appelle « tracking error ») et un retard annuel sur l'indice proche de leurs frais\u00a0: −0,42 point pour CW8, −0,18 point pour DCAM. Passer de l'un à l'autre ne change ni l'indice ni l'émetteur\u00a0: surtout les frais, et la forme juridique du fonds. L'argument de la diversification entre émetteurs, qui vaut face à un fonds iShares, ne joue pas ici. Le calcul d'un arbitrage tient en deux nombres. D'un côté, la vente et le rachat coûtent au plus ${FRAIS_ALLER_RETOUR_PLAFOND} du montant arbitré au plafond légal de 0,5\u00a0% par ordre (souvent moins, selon le courtier), plus l'écart entre prix d'achat et de vente. De l'autre, l'écart de frais rapporte 0,18 point par an sur ce même montant. Au plafond, l'économie met environ ${ANNEES_AMORTISSEMENT_PLAFOND} ans à couvrir les frais d'ordre\u00a0; avec des frais d'ordre plus bas, moins longtemps. Les performances passées ne préjugent pas des performances futures.`,
+
+  voirAussi: [
+    { avant: "Si vous envisagez de quitter CW8 pour un autre émetteur\u00a0:", ancre: "CW8 vs WPEA, le MSCI World d'iShares face à CW8", href: "/comparatif-etf/cw8-vs-wpea" },
+    { avant: "Si l'hésitation porte sur les deux ETF MSCI World à 0,20\u00a0%\u00a0:", ancre: "WPEA vs DCAM, iShares ou Amundi", href: "/comparatif-etf/wpea-vs-dcam" },
+    { avant: "Pour ajouter les pays émergents dans une seule ligne\u00a0:", ancre: "GPEA vs DCAM, MSCI ACWI ou MSCI World", href: "/comparatif-etf/gpea-vs-dcam" },
+  ],
+
+  faq: [
+    {
+      q: "CW8 et DCAM ont-ils la même performance ?",
+      a: "Ils suivent le même indice, donc la même trajectoire, à leurs frais près. Sur un an au 30 septembre 2026, le MSCI World a fait 19,21\u00a0%, DCAM 19,03\u00a0% et CW8 18,79\u00a0%, selon les reportings Amundi\u00a0: 0,24 point d'écart entre les deux, du même ordre que leur différence de frais (0,18 point). Les performances passées ne préjugent pas des performances futures.",
+    },
+    {
+      q: "Pourquoi Amundi a-t-il deux ETF MSCI World dans le PEA ?",
+      a: "Ce sont deux fonds distincts, chacun avec ses frais fixés dans son document d'informations clés. CW8 est une SICAV luxembourgeoise gérée par Amundi Luxembourg, dont la classe actuelle date d'avril 2018, à 0,38\u00a0%\u00a0; DCAM, un fonds commun de placement français géré par Amundi Asset Management, créé en mars 2025, à 0,20\u00a0%. Les documents de l'émetteur consultés (DIC et reportings) donnent les frais de chacun, pas la raison de l'écart.",
+    },
+    {
+      // Propre à cette paire (09/10/2026) : même émetteur, rien à
+      // diversifier, durée d'amortissement calculée. La trame « impôt, deux
+      // frais d'ordre » de cw8-vs-wpea n'est reprise qu'en une phrase.
+      q: "Faut-il vendre son CW8 pour acheter du DCAM ?",
+      a: `Le site ne peut pas trancher à votre place\u00a0: la réponse dépend du montant, de votre courtier et de votre horizon. Ce qui est propre à ce cas\u00a0: CW8 et DCAM ont le même émetteur et le même indice, donc l'arbitrage ne change pas ce que vous détenez, seulement les frais, soit 0,18 point par an sur le montant arbitré. En face, deux frais d'ordre, au plus 0,5\u00a0% du montant chacun dans un PEA (article D221-111-1 du code monétaire et financier), et l'écart entre prix d'achat et de vente\u00a0; pas d'impôt tant que l'argent reste dans le plan. Au plafond légal, l'économie met environ ${ANNEES_AMORTISSEMENT_PLAFOND} ans à couvrir ces frais, moins chez un courtier moins cher.`,
+    },
+    {
+      q: "Peut-on garder son CW8 et verser sur DCAM ?",
+      a: "Oui. Les deux lignes cohabitent dans le même PEA. Elles suivent le même indice\u00a0: la seconde n'ajoute aucune diversification, seulement une ligne de plus à suivre. Les nouveaux versements sont facturés 0,20\u00a0% par an au lieu de 0,38\u00a0%, et l'encours de CW8 garde ses frais.",
+    },
+    {
+      q: "CW8 et DCAM sont-ils bien éligibles au PEA ?",
+      a: "Oui, tous les deux. Les reportings Amundi du 30 septembre 2026, dans leur version pour professionnels, portent la mention « Eligible au PEA » sur la ligne « Enveloppe fiscale », pour CW8 comme pour DCAM. Le document d'informations clés de DCAM le dit aussi\u00a0; celui de CW8 ne parle pas du PEA, et c'est sa page sur amundietf.fr qui indique « Eligibilité au PEA\u00a0: Oui ».",
+    },
+    {
+      q: "Quels ISIN saisir pour ne pas se tromper de fonds ?",
+      a: "CW8\u00a0: LU1681043599 (Amundi MSCI World Swap UCITS ETF EUR Acc). DCAM\u00a0: FR001400U5Q4 (Amundi PEA Monde (MSCI World) UCITS ETF Acc). Les deux premières lettres disent le pays du fonds\u00a0: LU pour le Luxembourg, FR pour la France.",
+    },
+  ],
+
+  tags: ["PEA", "CW8", "DCAM", "MSCI World", "Amundi"],
+
+  // Boursorama affiche 0,28 % de « frais de gestion maximum » pour CW8
+  // (09/10/2026) : il ne recoupe donc pas son TER, seulement ISIN et PEA.
+  verification: {
+    le: "2026-10-09",
+    aupres: "d'Amundi",
+    recoupeSur: "justETF, et sur Boursorama pour l'ISIN et l'éligibilité",
+    sources: [
+      { symbole: "CW8", fiche: DOCUMENTS_AMUNDI_2026_10.CW8_DIC },
+      { symbole: "CW8", fiche: DOCUMENTS_AMUNDI_2026_10.CW8_REPORTING },
+      { symbole: "CW8", fiche: DOCUMENTS_AMUNDI_2026_10.CW8_PAGE },
+      { symbole: "DCAM", fiche: DOCUMENTS_AMUNDI_2026_10.DCAM_DIC },
+      { symbole: "DCAM", fiche: DOCUMENTS_AMUNDI_2026_10.DCAM_REPORTING },
+      { symbole: "DCAM", fiche: DOCUMENTS_AMUNDI_2026_10.DCAM_PAGE },
+    ],
+  },
+
+  sansFraisOrdre: SANS_FRAIS_ORDRE_BOURSO,
+};
+
+const GPEA_VS_DCAM: ETFComparison = {
+  slug: "gpea-vs-dcam",
+  publishedAt: "2026-10-09",
+  updatedAt: "2026-10-09",
+  title: "GPEA vs DCAM : les émergents valent-ils 0,10 point de frais ?",
+  metaTitle: "GPEA ou DCAM : monde entier à 0,30 % ou MSCI World à 0,20 %",
+  metaDescription:
+    "GPEA (MSCI ACWI, 0,30 %) ajoute les pays émergents à DCAM (MSCI World, 0,20 %) : ce qu'ils changent, l'encours, l'ancienneté, l'option DCAM + PAEEM.",
+
+  left: {
+    heading: "GPEA",
+    subheading: "Amundi PEA Global (MSCI ACWI) UCITS ETF Acc — ISIN FR0014017NX3",
+    type: "ETF",
+    coverage: "MSCI ACWI — 2\u00a0413 titres, pays développés et émergents (7 octobre 2026)",
+    issuer: "Amundi",
+    ter: "0,30 %/an",
+    replication: "Synthétique (swap)",
+    distribution: "Capitalisant",
+    currency: "EUR",
+    peaEligible: "Oui",
+    strongPoint: "Pays développés et pays émergents dans une seule ligne du PEA",
+    weakPoint: `Créé le 6 juillet 2026\u00a0: aucune performance publiée par Amundi, ${encoursEnviron(TAILLE.GPEA)} d'encours ${auSelon(TAILLE.GPEA)}`,
+  },
+
+  right: {
+    heading: "DCAM",
+    subheading: "Amundi PEA Monde (MSCI World) UCITS ETF Acc — ISIN FR001400U5Q4",
+    type: "ETF",
+    coverage: "MSCI World — 1\u00a0248 titres de 23 pays développés (7 octobre 2026)",
+    issuer: "Amundi",
+    ter: "0,20 %/an",
+    replication: "Synthétique (swap)",
+    distribution: "Capitalisant",
+    currency: "EUR",
+    peaEligible: "Oui",
+    strongPoint: `Frais de 0,20\u00a0% par an · ${encoursEnviron(TAILLE.DCAM)} d'encours ${auSelon(TAILLE.DCAM)}`,
+    weakPoint: "Aucun pays émergent\u00a0: Taïwan, la Corée du Sud, la Chine, l'Inde ou le Brésil en sont absents",
+  },
+
+  verdict:
+    `GPEA ajoute les pays émergents au MSCI World de DCAM pour 0,10 point de frais de plus (0,30\u00a0% contre 0,20\u00a0% par an, documents d'informations clés vérifiés le 9 octobre 2026), mais n'a encore ni un an d'historique ni performance publiée par Amundi. Les deux sont des ETF Amundi du PEA de même structure\u00a0: fonds français, réplication par swap, capitalisation. Le MSCI ACWI de GPEA compte 2\u00a0413 titres contre 1\u00a0248 pour le MSCI World de DCAM au 7 octobre 2026, selon Amundi. GPEA n'existe que depuis le 6 juillet 2026, et son encours (${encoursEnviron(TAILLE.GPEA)}) est environ ${RAPPORT_ENCOURS_DCAM_GPEA} fois plus petit que celui de DCAM (${encoursEnviron(TAILLE.DCAM)}) au ${dateEnToutesLettres(TAILLE.GPEA.au)}\u00a0: le choix porte sur l'envie d'avoir les émergents dans une seule ligne, pas sur un historique que GPEA n'a pas encore.`,
+
+  intro:
+    "GPEA (Amundi PEA Global) a été créé le 6 juillet 2026 et coté à Paris le 15 juillet. Il suit le MSCI ACWI, qui réunit les pays développés et les pays émergents. DCAM (Amundi PEA Monde), créé par le même émetteur le 4 mars 2025, suit le MSCI World, limité aux pays développés. Même émetteur, même structure, même réplication par swap\u00a0: la différence est l'indice, et elle coûte 0,10 point de frais par an. Reste à voir ce que les émergents changent au portefeuille.",
+
+  keyDifferences: [
+    { criterion: "Indice répliqué", leftValue: "MSCI ACWI (pays développés et émergents)", rightValue: "MSCI World (pays développés seulement)" },
+    { criterion: "Nombre de titres (7/10/2026, Amundi)", leftValue: "2\u00a0413", rightValue: "1\u00a0248" },
+    { criterion: "Poids des États-Unis (7/10/2026, Amundi)", leftValue: "64,73\u00a0%", rightValue: "73,54\u00a0%" },
+    { criterion: "Pays émergents, exemples (7/10/2026)", leftValue: "Taïwan 3,56\u00a0%, Corée du Sud 2,54\u00a0%, Chine 2,32\u00a0%, Inde 1,25\u00a0%, Brésil 0,55\u00a0%", rightValue: "Aucun" },
+    { criterion: "TER", leftValue: "0,30\u00a0%/an (estimation du DIC)", rightValue: "0,20\u00a0%/an" },
+    { criterion: "Création", leftValue: "6 juillet 2026 (coté le 15 juillet)", rightValue: "4 mars 2025 (coté le 11 mars)" },
+    { criterion: "Écart avec l'indice sur un an au 30/09/2026", leftValue: "Non publié (moins d'un an)", rightValue: "−0,18 point" },
+    { criterion: `Encours ${dateSource(TAILLE.GPEA)}`, leftValue: encoursEnviron(TAILLE.GPEA), rightValue: encoursEnviron(TAILLE.DCAM) },
+    { criterion: `Prix d'une part ${dateSource(TAILLE.GPEA)}`, leftValue: prixPartEnviron(TAILLE.GPEA), rightValue: prixPartEnviron(TAILLE.DCAM) },
+    { criterion: "Structure", leftValue: "Fonds français, swap", rightValue: "Fonds français, swap (identique)" },
+    { criterion: "Éligibilité PEA", leftValue: "Oui (DIC du 6 juillet 2026)", rightValue: "Oui" },
+    { criterion: `Impact TER sur ${DUREE} ans (${VERSEMENT} €/mois, ${RENDEMENT}\u00a0%)`, leftValue: `${coutFrais(0.3)} €`, rightValue: `${coutFrais(0.2)} €` },
+  ],
+
+  useCases: [
+    {
+      profile: "Une seule ligne pour les pays développés et émergents",
+      winner: "left",
+      explanation:
+        "GPEA met dans une seule ligne du PEA ce que DCAM laisse de côté\u00a0: Taïwan (3,56\u00a0% de son indice au 7 octobre 2026), la Corée du Sud (2,54\u00a0%), la Chine (2,32\u00a0%), l'Inde (1,25\u00a0%), le Brésil (0,55\u00a0%)… Aucun rééquilibrage à faire entre deux fonds\u00a0: c'est l'indice qui fixe les poids.",
+    },
+    {
+      profile: "Frais au plus bas",
+      winner: "right",
+      explanation:
+        `DCAM coûte 0,10 point de moins par an. Aux hypothèses de cette page (${VERSEMENT} €/mois pendant ${DUREE} ans, ${RENDEMENT}\u00a0%/an), cet écart représente environ ${ecartCapital(0.3, 0.2)} € de capital final, à mettre en regard de ce que les émergents rapporteront, que personne ne connaît d'avance.`,
+    },
+    {
+      profile: "Besoin d'un historique publié",
+      winner: "right",
+      explanation:
+        "DCAM publie ses chiffres chaque mois\u00a0: écart de −0,18 point avec son indice sur un an au 30 septembre 2026, pour un suivi régulier (0,03\u00a0% d'écart-type, ce que le reporting Amundi appelle « tracking error »). Pour GPEA, Amundi n'affiche aucune performance avant un an d'historique, et aucun reporting mensuel n'est publié au 9 octobre 2026.",
+    },
+    {
+      profile: "DCAM déjà détenu, envie d'ajouter les émergents",
+      winner: "both",
+      explanation:
+        "Deux voies coexistent. Passer à GPEA, ce qui change l'indice et relève les frais de 0,10 point. Ou garder DCAM et ajouter un ETF émergents éligible au PEA, comme PAEEM (Amundi, 0,30\u00a0%)\u00a0: les frais moyens restent entre 0,20 et 0,30\u00a0%, d'autant plus près de 0,20\u00a0% que la part des émergents est petite, mais il faut fixer et rééquilibrer soi-même la part de chaque ligne. Et PAEEM suit une variante « ESG Transition » de l'indice MSCI des pays émergents, pas l'indice standard\u00a0: DCAM + PAEEM n'est pas le MSCI ACWI de GPEA.",
+    },
+  ],
+
+  analysis:
+    "Le MSCI ACWI, c'est le MSCI World plus les pays émergents. L'effet le plus visible est une moindre concentration sur les États-Unis\u00a0: 64,73\u00a0% de l'indice de GPEA au 7 octobre 2026, contre 73,54\u00a0% du MSCI World de DCAM, selon Amundi. Les pays développés restent largement majoritaires\u00a0; parmi les émergents, Taïwan pèse 3,56\u00a0%, la Corée du Sud 2,54\u00a0%, la Chine 2,32\u00a0%, l'Inde 1,25\u00a0%. GPEA est éligible au PEA malgré ses actions non européennes par le même mécanisme que DCAM\u00a0: le fonds détient au moins 75\u00a0% d'actions de sociétés de l'Union européenne et échange leur performance, par un swap, contre celle de son indice. Sur le prix, l'écart est de 0,10 point par an, et les 0,30\u00a0% de GPEA sont encore une estimation, faute d'une année complète d'existence. Sur l'ancienneté, GPEA part de zéro\u00a0: ni performance ni écart de suivi publiés par Amundi au 9 octobre 2026. Son premier reporting mensuel dira comment il suit son indice. Les performances passées ne préjugent pas des performances futures.",
+
+  voirAussi: [
+    { avant: "Pour départager les deux ETF MSCI World à 0,20\u00a0% d'émetteurs différents\u00a0:", ancre: "WPEA vs DCAM, iShares ou Amundi", href: "/comparatif-etf/wpea-vs-dcam" },
+    { avant: "Si vous détenez déjà l'ancien MSCI World d'Amundi\u00a0:", ancre: "CW8 vs DCAM, ce que coûte le passage à 0,20\u00a0%", href: "/comparatif-etf/cw8-vs-dcam" },
+    { avant: "Si c'est entre CW8 et le MSCI World d'iShares\u00a0:", ancre: "CW8 vs WPEA", href: "/comparatif-etf/cw8-vs-wpea" },
+  ],
+
+  faq: [
+    {
+      q: "Quelle différence entre le MSCI World et le MSCI ACWI ?",
+      a: "Le MSCI World couvre les grandes et moyennes entreprises des 23 pays développés\u00a0: 1\u00a0248 titres au 7 octobre 2026. Le MSCI ACWI (All Country World Index) y ajoute celles des pays émergents\u00a0: 2\u00a0413 titres à la même date, selon Amundi (une société cotée sous deux lignes, comme Alphabet, compte deux fois). Les États-Unis pèsent 64,73\u00a0% du MSCI ACWI, contre 73,54\u00a0% du MSCI World.",
+    },
+    {
+      q: "Comment GPEA peut-il être éligible au PEA avec des pays émergents ?",
+      a: "Par réplication synthétique. D'après son document d'informations clés du 6 juillet 2026, le fonds investit au moins 75\u00a0% de ses actifs en actions de sociétés de l'Union européenne, ce qui le rend éligible au PEA, et un swap lui verse la performance du MSCI ACWI. La preuve qu'on cite d'habitude pour un ETF Amundi, la ligne « Enveloppe fiscale » de son reporting mensuel pour professionnels, n'existe pas encore pour GPEA\u00a0: aucun reporting n'est publié au 9 octobre 2026. Son DIC, son prospectus et sa page sur amundietf.fr (« Eligibilité au PEA\u00a0: Oui ») le disent.",
+    },
+    {
+      q: "DCAM + PAEEM, est-ce la même chose que GPEA ?",
+      a: "Pas tout à fait. PAEEM (Amundi PEA Emergent, 0,30\u00a0%) suit une variante « ESG Transition » de l'indice MSCI des pays émergents, pas l'indice standard\u00a0: DCAM + PAEEM ne reproduit donc pas le MSCI ACWI. Il faut aussi choisir soi-même la part de chaque ligne et la rééquilibrer. En frais, le mélange coûte entre 0,20 et 0,30\u00a0% selon cette part\u00a0; GPEA coûte 0,30\u00a0% pour l'indice complet, sans rééquilibrage à faire.",
+    },
+    {
+      q: "Faut-il vendre son DCAM pour passer à GPEA ?",
+      a: "Le site ne peut pas trancher à votre place. Dans un PEA, vendre DCAM pour racheter GPEA ne déclenche pas d'impôt\u00a0; cela coûte deux frais d'ordre et l'écart entre prix d'achat et de vente. À la différence d'un arbitrage entre deux MSCI World, ce passage change l'indice détenu et augmente les frais de 0,10 point par an\u00a0: il se juge sur l'envie d'avoir les émergents, pas sur une économie.",
+    },
+    {
+      q: "Pourquoi aucune performance n'est-elle affichée pour GPEA ?",
+      a: "Parce que le fonds a moins d'un an. Sa page sur amundietf.fr indique que les performances ne s'afficheront qu'avec plus d'un an d'historique, et aucun reporting mensuel n'est publié au 9 octobre 2026. DCAM, lui, publie un reporting chaque mois\u00a0: −0,18 point d'écart avec son indice sur un an au 30 septembre 2026.",
+    },
+    {
+      q: "Et GPEA face à WPEA ?",
+      a: "WPEA (iShares) suit le même MSCI World que DCAM, au même tarif de 0,20\u00a0% par an\u00a0: face à GPEA, la comparaison est la même qu'avec DCAM, les émergents d'un côté, 0,10 point de frais de l'autre. Ce qui sépare WPEA de DCAM est l'objet de notre comparatif WPEA vs DCAM.",
+    },
+  ],
+
+  tags: ["PEA", "MSCI ACWI", "MSCI World", "émergents", "Amundi"],
+
+  verification: {
+    le: "2026-10-09",
+    aupres: "d'Amundi",
+    recoupeSur: "justETF et Boursorama",
+    sources: [
+      { symbole: "GPEA", fiche: DOCUMENTS_AMUNDI_2026_10.GPEA_DIC },
+      { symbole: "GPEA", fiche: DOCUMENTS_AMUNDI_2026_10.GPEA_PAGE },
+      { symbole: "DCAM", fiche: DOCUMENTS_AMUNDI_2026_10.DCAM_DIC },
+      { symbole: "DCAM", fiche: DOCUMENTS_AMUNDI_2026_10.DCAM_REPORTING },
+      { symbole: "DCAM", fiche: DOCUMENTS_AMUNDI_2026_10.DCAM_PAGE },
+    ],
+  },
+
+  sansFraisOrdre: SANS_FRAIS_ORDRE_BOURSO,
+};
+
 export const ETF_COMPARISONS: Record<string, ETFComparison> = {
   [MSCI_WORLD_VS_SP500.slug]: MSCI_WORLD_VS_SP500,
   [CW8_VS_ESE.slug]: CW8_VS_ESE,
@@ -1245,6 +1667,10 @@ export const ETF_COMPARISONS: Record<string, ETFComparison> = {
   [IWDA_VS_CW8.slug]: IWDA_VS_CW8,
   [ESE_VS_PSP5.slug]: ESE_VS_PSP5,
   [VWCE_VS_WPEA.slug]: VWCE_VS_WPEA,
+  // 09/10/2026 — ajoutés EN FIN de registre : l'ordre des huit premiers
+  // dans le hub et dans « Autres comparatifs » ne bouge pas.
+  [CW8_VS_DCAM.slug]: CW8_VS_DCAM,
+  [GPEA_VS_DCAM.slug]: GPEA_VS_DCAM,
 };
 
 export const ETF_COMPARISON_LIST: ETFComparison[] = Object.values(ETF_COMPARISONS);

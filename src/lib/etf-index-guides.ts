@@ -273,6 +273,11 @@ const MSCI_WORLD: IndexGuide = {
   ],
   related: [
     { label: "CW8 vs WPEA : le comparatif détaillé", href: "/comparatif-etf/cw8-vs-wpea" },
+    // 09/10/2026 : les autres duels du MSCI World en PEA (liens seulement ;
+    // la FAQ « CW8, WPEA ou DCAM » garde son renvoi vers cw8-vs-wpea).
+    { label: "WPEA vs DCAM : iShares ou Amundi, à 0,20 %", href: "/comparatif-etf/wpea-vs-dcam" },
+    { label: "CW8 vs DCAM : rester chez Amundi, à 0,20 %", href: "/comparatif-etf/cw8-vs-dcam" },
+    { label: "GPEA vs DCAM : ajouter les pays émergents", href: "/comparatif-etf/gpea-vs-dcam" },
     { label: "MSCI World vs S&P 500", href: "/comparatif-etf/msci-world-vs-sp500" },
     { label: "PEA ou CTO : quelle enveloppe ?", href: "/pea-ou-cto" },
     { label: "Chez quel courtier ouvrir votre PEA ?", href: "/comparatif" },

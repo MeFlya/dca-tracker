@@ -235,12 +235,23 @@ export function ETFComparisonPage({ comparison }: { comparison: ETFComparison })
   const parleDuMsciWorld = [comparison.left, comparison.right].some(
     (side) => side.heading === "MSCI World" || side.coverage.startsWith("MSCI World"),
   );
-  const aUnEncours = comparison.keyDifferences.some((row) => row.criterion === "Encours");
+  // 09/10/2026 : un duel qui déclare sa propre vérification (date, documents
+  // de l'émetteur cités) l'affiche à la place de celle du 28/09/2026 ; ses
+  // cellules d'encours portent leur source, la note justETF ne s'applique pas.
+  // Les huit premiers duels n'ont pas ce champ : leur note ne change pas.
+  const verif = comparison.verification;
+  const aUnEncours = !verif && comparison.keyDifferences.some((row) => row.criterion === "Encours");
   // Tableau des frais d'ordre : seulement quand les deux côtés sont des ETF
   // éligibles au PEA. Face à un fonds hors PEA (IWDA, VWCE), l'ordre se passe
   // en compte-titres, où les trois grilles ne sont pas celles-là (pas de
   // plafond légal, autres bourses) : on ne les a pas relevées, on n'affiche rien.
-  const fraisOrdreVisibles = comparison.left.type === "ETF" && estPea(comparison.left) && estPea(comparison.right);
+  // 09/10/2026 : un duel peut écarter ce tableau (champ sansFraisOrdre),
+  // quand la grille d'un courtier a changé depuis le relevé du 30/09/2026.
+  const fraisOrdreVisibles =
+    !comparison.sansFraisOrdre &&
+    comparison.left.type === "ETF" &&
+    estPea(comparison.left) &&
+    estPea(comparison.right);
   const montantOrdre = HYPOTHESES_COMPARATIFS.monthlyAmount;
 
   const accrocheGuide = enveloppeEnJeu
@@ -356,6 +367,23 @@ export function ETFComparisonPage({ comparison }: { comparison: ETFComparison })
 
       {/* Date et sources de ce qui précède (30/09/2026). Hors recherche
           interne : c'est une note de méthode, pas un passage à trouver. */}
+      {verif ? (
+        <p data-nosearch="" className="mb-10 text-xs text-gray-500 leading-relaxed">
+          ISIN, frais (TER) et{" "}
+          <Link href={URL_LISTE_PEA} className="text-gray-600 underline underline-offset-2 hover:text-primary-700">
+            éligibilité au PEA
+          </Link>{" "}
+          vérifiés le {dateEnToutesLettres(verif.le)} sur les documents {verif.aupres}, recoupés sur{" "}
+          {verif.recoupeSur}. Sources&nbsp;:{" "}
+          {verif.sources.map(({ symbole, fiche }, i) => (
+            <span key={fiche.url}>
+              {i > 0 && " · "}
+              {symbole}, <LienSource fiche={fiche} />
+            </span>
+          ))}
+          .
+        </p>
+      ) : (
       <p data-nosearch="" className="mb-10 text-xs text-gray-500 leading-relaxed">
         {comparison.left.type === "ETF" ? (
           <>
@@ -386,6 +414,7 @@ export function ETFComparisonPage({ comparison }: { comparison: ETFComparison })
         )}
         {(fiches.length > 0 || parleDuMsciWorld) && "."}
       </p>
+      )}
 
       {fraisOrdreVisibles && (
         <FraisOrdreParCourtier
@@ -412,9 +441,26 @@ export function ETFComparisonPage({ comparison }: { comparison: ETFComparison })
 
       {/* Long-form analysis */}
       <h2 className="text-xl font-bold text-gray-900 mb-4">Analyse approfondie</h2>
-      <p className={`text-base text-gray-700 leading-relaxed ${comparison.slug === "cw8-vs-wpea" ? "mb-4" : "mb-10"}`}>
+      <p className={`text-base text-gray-700 leading-relaxed ${comparison.slug === "cw8-vs-wpea" || comparison.voirAussi ? "mb-4" : "mb-10"}`}>
         {comparison.analysis}
       </p>
+      {/* Liens vers les duels voisins (09/10/2026), écrits par le duel
+          lui-même : un texte d'ancre qui dit ce qu'on trouvera de l'autre
+          côté. Liens sortants seulement ; les huit premiers duels n'ont pas
+          ce champ et ne changent pas. */}
+      {comparison.voirAussi && (
+        <ul className="mb-10 space-y-2 text-base text-gray-700 leading-relaxed">
+          {comparison.voirAussi.map((l) => (
+            <li key={l.href}>
+              {l.avant}{" "}
+              <Link href={l.href} className="text-primary-700 font-medium hover:underline">
+                {l.ancre}
+              </Link>
+              {l.apres ?? "."}
+            </li>
+          ))}
+        </ul>
+      )}
       {comparison.slug === "cw8-vs-wpea" && (
         <p className="text-base text-gray-700 leading-relaxed mb-10">
           Pour situer ce face-à-face dans l&apos;univers plus large des trackers
