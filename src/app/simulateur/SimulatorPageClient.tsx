@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useUser } from "@clerk/nextjs";
+import { useCompte } from "@/components/compte/etat-compte";
 import { SimulatorForm } from "@/components/simulator/SimulatorForm";
 import type { SimulatorMode } from "@/components/simulator/SimulatorForm";
 import { SimulatorHero } from "@/components/simulator/SimulatorHero";
@@ -59,19 +59,20 @@ interface Props {
    */
   initialOutput: SimulatorOutput;
   /**
-   * Décidé par le serveur (cf. page.tsx). Ne JAMAIS revenir à une lecture de
-   * useUser().publicMetadata pour ça : c'est falsifiable depuis la console.
+   * Décidé par le serveur (cf. page.tsx). Ne JAMAIS revenir à une lecture du
+   * plan côté navigateur (useCompte, publicMetadata) pour ça : c'est
+   * falsifiable depuis la console.
    */
   isPremium: boolean;
 }
 
 export function SimulatorPageClient({ initialOutput, isPremium }: Props) {
   const router = useRouter();
-  const { user } = useUser();
+  const compte = useCompte();
 
   // `plan` ne sert plus qu'à l'affichage (libellés, boutons). L'autorisation,
   // elle, vient de la prop `isPremium` calculée côté serveur.
-  const plan = isPremium ? "premium" : ((user?.publicMetadata?.plan as string) ?? "free");
+  const plan = isPremium ? "premium" : compte.plan;
 
   // Derive inflation-enabled from the server output itself (presence of
   // inflationAdjustedValue on any scenario = inflation was in the input).

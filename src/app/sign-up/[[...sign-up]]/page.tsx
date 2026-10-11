@@ -1,7 +1,7 @@
-import { SignUp } from "@clerk/nextjs";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { LogoMark } from "@/components/ui/LogoMark";
+import { EmplacementClerk } from "@/components/compte/EmplacementClerk";
 
 export const metadata: Metadata = {
   title: "Créer un compte — DCA Tracker",
@@ -26,10 +26,10 @@ export default function SignUpPage() {
           </p>
         </div>
 
-        {/* Clerk form (themed via global appearance) */}
-        <SignUp
-          signInUrl="/sign-in"
-          fallbackRedirectUrl="/account"
+        {/* Clerk form (themed via global appearance), rendu par l'îlot Clerk
+            dans cet emplacement (voir la page de connexion). */}
+        <EmplacementClerk
+          widget={{ type: "sign-up", signInUrl: "/sign-in", fallbackRedirectUrl: "/account" }}
         />
 
         {/* Footer trust line */}

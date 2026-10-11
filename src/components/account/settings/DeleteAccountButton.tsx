@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useClerk } from "@clerk/nextjs";
 import { Trash2, AlertTriangle, X } from "lucide-react";
 import { track } from "@/lib/analytics";
+import { deconnecter } from "@/components/compte/etat-compte";
 
 interface Props {
   userEmail: string;
@@ -12,7 +12,6 @@ interface Props {
 
 export function DeleteAccountButton({ userEmail }: Props) {
   const router = useRouter();
-  const { signOut } = useClerk();
   const [open, setOpen] = useState(false);
   const [confirmation, setConfirmation] = useState("");
   const [deleting, setDeleting] = useState(false);
@@ -34,8 +33,9 @@ export function DeleteAccountButton({ userEmail }: Props) {
         return;
       }
       track({ name: "delete_account" });
-      // Sign out and redirect home
-      await signOut();
+      // Sign out and redirect home (Clerk est chargé par l'îlot : la page
+      // n'est servie qu'à une session)
+      await deconnecter();
       router.push("/");
       router.refresh();
     } catch {

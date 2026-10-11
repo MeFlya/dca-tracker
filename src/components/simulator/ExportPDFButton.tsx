@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useUser } from "@clerk/nextjs";
+import { useCompte } from "@/components/compte/etat-compte";
 import { SimulatorOutput } from "@/lib/simulator";
 import { generateSimulationPDF } from "@/lib/pdf-export";
 import { buildUpgradeUrl } from "@/lib/upgrade-link";
@@ -11,10 +11,9 @@ type ExportState = "idle" | "generating" | "error";
 
 export function ExportPDFButton({ output }: { output: SimulatorOutput }) {
   const [state, setState] = useState<ExportState>("idle");
-  const { user } = useUser();
+  const { plan } = useCompte();
   const router = useRouter();
 
-  const plan = (user?.publicMetadata?.plan as string) ?? "free";
   const isPremium = plan === "premium";
 
   async function handleClick() {

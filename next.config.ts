@@ -1,7 +1,27 @@
+import path from "node:path";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+
+  // Clerk n'est plus chargé que par l'îlot compte/ClerkActif.tsx, qui importe
+  // ClerkProvider depuis un composant client. @clerk/nextjs y embarque alors
+  // aussi son provider « Pages Router », jamais utilisé ici (App Router
+  // seulement), et avec lui tout next/router. On le remplace dans le bundle
+  // navigateur par src/lib/clerk-sans-routeur-pages.js.
+  // Si Clerk déplace ce fichier, l'expression ne correspond plus à rien et
+  // le routeur Pages revient dans le morceau Clerk : du poids, pas une panne.
+  webpack(config, { isServer, webpack }) {
+    if (!isServer) {
+      config.plugins.push(
+        new webpack.NormalModuleReplacementPlugin(
+          /[\\/]@clerk[\\/]nextjs[\\/]dist[\\/]esm[\\/]pages[\\/]ClerkProvider\.js$/,
+          path.join(__dirname, "src/lib/clerk-sans-routeur-pages.js"),
+        ),
+      );
+    }
+    return config;
+  },
 
   // Le projet vit sur ~/Desktop, synchronisé par iCloud Drive : le daemon
   // de sync (bird) tient des handles sur les fichiers de .next pendant les
