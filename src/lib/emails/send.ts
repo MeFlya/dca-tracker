@@ -2,6 +2,7 @@
 // la désinscription est respectée et que le pied de page obligatoire est
 // ajouté. Ne jamais rappeler resend.emails.send directement ici.
 import { sendEmail } from "./dispatch";
+import { enteteEmailSimple, ligneEnteteEmail } from "./entete";
 import { resend } from "@/lib/resend-client";
 import { formatEur, runSimulation } from "@/lib/simulator";
 import {
@@ -35,6 +36,7 @@ export async function sendSubscriptionConfirmed(
 <!DOCTYPE html>
 <html lang="fr">
 <body style="font-family:sans-serif;color:#1f2937;max-width:600px;margin:0 auto;padding:32px 16px">
+  ${enteteEmailSimple()}
   <h1 style="font-size:22px;font-weight:700;margin-bottom:8px">Votre abonnement Premium est actif</h1>
   <p style="color:#6b7280;margin-bottom:16px">Bonjour ${firstName},</p>
   <p>Merci pour votre confiance. Votre plan <strong>Premium</strong> est actif sur <a href="https://dcatracker.fr" style="color:#2563eb">dcatracker.fr</a>.</p>
@@ -74,6 +76,7 @@ export async function sendOnboardingDay1(
 <!DOCTYPE html>
 <html lang="fr">
 <body style="font-family:sans-serif;color:#1f2937;max-width:600px;margin:0 auto;padding:32px 16px">
+  ${enteteEmailSimple()}
   <h1 style="font-size:20px;font-weight:700;margin-bottom:8px">Bonjour ${firstName}, avez-vous essayé le Monte Carlo ?</h1>
   <p style="color:#6b7280;font-size:14px">
     C'est la fonctionnalité Premium la plus puissante — voici comment en tirer le maximum en 2 minutes.
@@ -120,6 +123,7 @@ export async function sendSubscriptionCancelled(
 <!DOCTYPE html>
 <html lang="fr">
 <body style="font-family:sans-serif;color:#1f2937;max-width:600px;margin:0 auto;padding:32px 16px">
+  ${enteteEmailSimple()}
   <h1 style="font-size:24px;font-weight:700;margin-bottom:8px">Abonnement annulé</h1>
   <p style="color:#6b7280">Bonjour ${firstName},</p>
   <p>Votre abonnement DCA Tracker a bien été annulé. Vous conservez l'accès jusqu'à la fin de la période payée.</p>
@@ -149,6 +153,7 @@ export async function sendWinBackJ7(email: string, firstName: string) {
     html: `<!DOCTYPE html>
 <html lang="fr">
 <body style="font-family:sans-serif;color:#1f2937;max-width:560px;margin:0 auto;padding:32px 16px">
+  ${enteteEmailSimple()}
   <p style="color:#6b7280;margin-bottom:4px;font-size:14px">Une semaine après votre annulation</p>
   <h1 style="font-size:22px;font-weight:700;margin:0 0 20px 0;line-height:1.3">
     Bonjour ${firstName}, comment ça se passe ?
@@ -211,6 +216,7 @@ export async function sendWinBackJ30(email: string, firstName: string) {
     html: `<!DOCTYPE html>
 <html lang="fr">
 <body style="font-family:sans-serif;color:#1f2937;max-width:560px;margin:0 auto;padding:32px 16px">
+  ${enteteEmailSimple()}
   <p style="color:#6b7280;margin-bottom:4px;font-size:14px">Récap produit · 1 mois après annulation</p>
   <h1 style="font-size:22px;font-weight:700;margin:0 0 20px 0;line-height:1.3">
     ${firstName}, 1 mois plus tard
@@ -271,6 +277,7 @@ export async function sendWelcome(email: string, firstName: string) {
 <!DOCTYPE html>
 <html lang="fr">
 <body style="font-family:sans-serif;color:#1f2937;max-width:600px;margin:0 auto;padding:32px 16px">
+  ${enteteEmailSimple()}
   <h1 style="font-size:24px;font-weight:700;margin-bottom:8px">Bienvenue, ${firstName} 👋</h1>
   <p>Votre compte DCA Tracker est prêt. Commencez à simuler votre stratégie d'investissement progressif en ETF — gratuit, sans engagement.</p>
   <a href="https://dcatracker.fr/simulateur" style="display:inline-block;background:#2563eb;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:600">Démarrer la simulation →</a>
@@ -290,13 +297,7 @@ function emailShell(body: string): string {
     <tr>
       <td align="center">
         <table width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:16px;border:1px solid #e2e8f0;overflow:hidden">
-          <tr>
-            <td style="padding:24px 32px;border-bottom:1px solid #f1f5f9">
-              <a href="https://dcatracker.fr" style="text-decoration:none">
-                <span style="font-size:16px;font-weight:700;color:#1d4ed8">DCA</span><span style="font-size:16px;color:#6b7280">Tracker</span>
-              </a>
-            </td>
-          </tr>
+          ${ligneEnteteEmail()}
           <tr><td style="padding:36px 32px 28px">${body}</td></tr>
           <tr>
             <td style="padding:16px 32px;background:#f8fafc;border-top:1px solid #f1f5f9">
@@ -700,6 +701,7 @@ export async function sendAnnualPush({
     html: `<!DOCTYPE html>
 <html lang="fr">
 <body style="font-family:sans-serif;color:#1f2937;max-width:560px;margin:0 auto;padding:32px 16px">
+  ${enteteEmailSimple()}
   <p style="color:#6b7280;margin-bottom:4px;font-size:14px">${planLabel} · Offre annuelle</p>
   <h1 style="font-size:22px;font-weight:700;margin:0 0 20px 0;line-height:1.3">
     ${firstName}, ${m.headline}
@@ -785,6 +787,7 @@ export async function sendMissedMonth({
     html: `<!DOCTYPE html>
 <html lang="fr">
 <body style="font-family:sans-serif;color:#1f2937;max-width:560px;margin:0 auto;padding:32px 16px">
+  ${enteteEmailSimple()}
   <p style="color:#6b7280;margin-bottom:4px;font-size:14px">Rappel mensuel</p>
   <h1 style="font-size:22px;font-weight:700;margin:0 0 20px 0">Bonjour ${firstName} 👋</h1>
 
@@ -915,6 +918,7 @@ export async function sendMonthlyUpdate({
     html: `<!DOCTYPE html>
 <html lang="fr">
 <body style="font-family:sans-serif;color:#1f2937;max-width:560px;margin:0 auto;padding:32px 16px">
+  ${enteteEmailSimple()}
   <p style="color:#6b7280;margin-bottom:4px;font-size:14px">Mois ${monthNumber} de votre stratégie</p>
   <h1 style="font-size:22px;font-weight:700;margin:0 0 24px 0">Bonjour ${firstName} 👋</h1>
 ${headline}
@@ -1023,13 +1027,7 @@ export async function sendTrialEndingSoon({
       <td align="center">
         <table width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:16px;border:1px solid #e2e8f0;overflow:hidden">
 
-          <tr>
-            <td style="padding:24px 32px;border-bottom:1px solid #f1f5f9">
-              <a href="${SITE_URL}" style="text-decoration:none">
-                <span style="font-size:16px;font-weight:700;color:#1d4ed8">DCA</span><span style="font-size:16px;color:#6b7280">Tracker</span>
-              </a>
-            </td>
-          </tr>
+          ${ligneEnteteEmail()}
 
           <tr>
             <td style="padding:36px 32px 16px">

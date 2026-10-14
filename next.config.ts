@@ -128,6 +128,14 @@ const nextConfig: NextConfig = {
           { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
         ],
       },
+      {
+        // Logo des emails (14/10/2026) : même règle, le nom porte l'empreinte
+        // du fichier (scripts/generer-logo-email.mjs, src/lib/emails/entete.ts).
+        source: "/email/:path*",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+        ],
+      },
     ];
   },
 };

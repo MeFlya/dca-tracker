@@ -7,6 +7,7 @@
 
 import { createDownloadToken } from "@/lib/download-token";
 import { getProduct } from "@/lib/products";
+import { ligneEnteteEmail } from "./entete";
 import {
   echapperHtml,
   MODELE_GRATUIT_FICHIER,
@@ -63,13 +64,7 @@ export function contenuModeleGratuit(email: string, source: string) {
     <tr>
       <td align="center">
         <table width="100%" cellpadding="0" cellspacing="0" style="max-width:580px;background:#ffffff;border-radius:16px;border:1px solid #e2e8f0;overflow:hidden">
-          <tr>
-            <td style="padding:24px 32px;border-bottom:1px solid #f1f5f9">
-              <a href="${h(SITE_URL)}" style="text-decoration:none">
-                <span style="font-size:16px;font-weight:700;color:#1d4ed8">DCA</span><span style="font-size:16px;color:#6b7280">Tracker</span>
-              </a>
-            </td>
-          </tr>
+          ${ligneEnteteEmail()}
           <tr>
             <td style="padding:36px 32px 8px">
               <p style="margin:0 0 6px 0;font-size:12px;font-weight:600;color:#1d4ed8;text-transform:uppercase;letter-spacing:0.06em">Modèle gratuit</p>

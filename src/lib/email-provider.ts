@@ -6,6 +6,7 @@ import { sendEmail } from "./emails/dispatch";
 import { resend } from "./resend-client";
 import { echapperHtml, type RessourceGratuite } from "./ressources-gratuites";
 import { contenuModeleGratuit } from "./emails/modele-gratuit";
+import { ligneEnteteEmail } from "./emails/entete";
 
 const SITE_URL = "https://dcatracker.fr";
 const GUIDE_URL = `${SITE_URL}/guide-5-etf-pea-premium`;
@@ -112,13 +113,7 @@ function buildHtml(sourceBrute: string): string {
       <td align="center">
         <table width="100%" cellpadding="0" cellspacing="0" style="max-width:580px;background:#ffffff;border-radius:16px;border:1px solid #e2e8f0;overflow:hidden">
 
-          <tr>
-            <td style="padding:24px 32px;border-bottom:1px solid #f1f5f9">
-              <a href="${echapperHtml(SITE_URL)}" style="text-decoration:none">
-                <span style="font-size:16px;font-weight:700;color:#1d4ed8">DCA</span><span style="font-size:16px;color:#6b7280">Tracker</span>
-              </a>
-            </td>
-          </tr>
+          ${ligneEnteteEmail()}
 
           <tr>
             <td style="padding:36px 32px 16px">
