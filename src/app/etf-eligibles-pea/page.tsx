@@ -1,82 +1,88 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Fragment } from "react";
-import { ListChecks } from "lucide-react";
+import { Download, ListChecks } from "lucide-react";
 import { EducationalHeader } from "@/components/ui/EducationalHeader";
 import { ArticleByline } from "@/components/ui/ArticleByline";
 import { BreadcrumbSchema } from "@/components/ui/BreadcrumbSchema";
 import { SourcesReferences } from "@/components/ui/SourcesReferences";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { RenvoiProduit } from "@/components/products/RenvoiProduit";
+import { FiltresListePea } from "@/components/liste-pea/FiltresListePea";
 import { formatTer } from "@/lib/utils";
 import { ETF_COMPARISON_LIST } from "@/lib/etf-comparisons";
 import {
-  AJOUTS_APRES_LA_TABLE,
   CORRESPONDANCES_PEA,
   DATE_VERIFICATION_PEA,
-  DERNIERE_VERIFICATION_PEA,
   ETF_NON_ELIGIBLES,
   ETF_PEA_VERIFIES,
-  FAMILLES,
-  MAJ_LISTE_PEA,
   URL_LISTE_PEA,
   ancreFonds,
   ancreHorsPea,
   dateEnToutesLettres,
-  dateVerification,
-  type EtfEligiblePea,
   type EtfNonEligible,
-  type FamilleIndice,
   type RaisonHorsPea,
 } from "@/lib/etf-pea-verifies";
+import {
+  A_UNE_FICHE,
+  CHEMIN_CSV_LISTE_PEA,
+  DATE_RELEVE_LISTE_PEA,
+  DECOMPTE_RELEVE,
+  EMETTEURS_LISTE,
+  FIRDS,
+  GROUPES_LISTE,
+  LIBELLE_REPLICATION,
+  LIGNES_PEA,
+  MISE_EN_LIGNE_LISTE_PEA,
+  avecReserve,
+  type CategorieId,
+  type GroupeListe,
+  type LignePea,
+} from "@/lib/liste-pea";
+import styles from "./liste.module.css";
 
-// ─── Pourquoi cette page (29/09/2026) ────────────────────────────────────────
+// ─── Pourquoi cette page ─────────────────────────────────────────────────────
 //
-// Aucune page du site n'était consacrée à la liste des ETF éligibles au PEA,
-// et c'est précisément ce qui se périme partout : jusqu'au 28/09/2026, notre
-// propre catalogue donnait 500, ANX, AEEM et JPNK pour éligibles. Une liste
-// qu'on peut citer doit porter sa date, sa méthode et son périmètre — ici,
-// NOTRE sélection vérifiée, pas le marché entier.
+// 29/09/2026 : aucune page du site n'était consacrée à la liste des ETF
+// éligibles au PEA, et c'est précisément ce qui se périme partout. Première
+// version : 14 fonds vérifiés (table de vérité du 28/09/2026, complétée le
+// 14/10 par PTPXE).
 //
-// Tous les nombres de la page (fonds éligibles, non éligibles, exemples de la
-// section « le P ne prouve rien ») sont CALCULÉS sur les données de
-// etf-pea-verifies.ts. Aucun n'est écrit à la main : ajouter un fonds vérifié
-// met la page à jour, titre et description compris.
+// 28/10/2026 : la liste complète. Les 128 lignes cotées à Paris dont
+// l'éligibilité est prouvée par un document daté de l'émetteur et recoupée
+// par une source indépendante (relevé du 14/10/2026, src/lib/liste-pea/).
+// Les 14 fonds de la première version y sont tous, avec les mêmes ISIN, frais
+// et groupes (contrôlé par src/lib/liste-pea/index.ts).
+//
+// Tous les nombres de la page sont CALCULÉS sur les données : aucun n'est
+// écrit à la main. Aucun cours ni aucune performance n'est affiché : la liste
+// dit ce qu'est chaque ligne, pas comment elle s'est comportée.
 
-const N_ELIGIBLES = ETF_PEA_VERIFIES.length;
+const N = LIGNES_PEA.length;
 const N_NON_ELIGIBLES = ETF_NON_ELIGIBLES.length;
-/** « 28 septembre 2026 » */
-const DATE_VERIF = dateEnToutesLettres(DATE_VERIFICATION_PEA);
-/** « septembre 2026 » */
-// 01/10/2026 : dateEnToutesLettres écrit désormais « 1er » le premier du mois.
-const MOIS_VERIF = DATE_VERIF.replace(/^\d+(?:er)?\s/, "");
+/** « 14 octobre 2026 » */
+const DATE_RELEVE = dateEnToutesLettres(DATE_RELEVE_LISTE_PEA);
+/** « octobre 2026 » (dateEnToutesLettres écrit « 1er » le premier du mois). */
+const MOIS_RELEVE = DATE_RELEVE.replace(/^\d+(?:er)?\s/, "");
+/** « 28 septembre 2026 » : la première liste, celle de la table de vérité. */
+const DATE_TABLE = dateEnToutesLettres(DATE_VERIFICATION_PEA);
+const URL_CSV_ABSOLUE = `https://dcatracker.fr${CHEMIN_CSV_LISTE_PEA}`;
 
-// 14/10/2026 — fonds vérifiés après la table du 28/09 (PTPXE, le premier ETF
-// Japon de la liste : la page disait jusque-là n'en avoir vérifié aucun).
-// La page ne les dit pas « contrôlés le 28 septembre » : chacun porte sa date.
-const AJOUTS = AJOUTS_APRES_LA_TABLE.filter((a) => ETF_PEA_VERIFIES.some((f) => f.displaySymbol === a.symbole));
-/** « 14 octobre 2026 » : la vérification la plus récente de la liste. */
-const DATE_DERNIERE_VERIF = dateEnToutesLettres(DERNIERE_VERIFICATION_PEA);
-/** «  (PTPXE le 14 octobre 2026) », ou rien. */
-const MENTION_AJOUTS = AJOUTS.length
-  ? ` (${enumerer(AJOUTS.map((a) => `${a.symbole} le ${dateEnToutesLettres(a.date)}`))})`
-  : "";
+const N_EMETTEURS = EMETTEURS_LISTE.length;
+const N_SANS_RESERVE = LIGNES_PEA.filter((l) => !avecReserve(l)).length;
+const N_AVEC_RESERVE = N - N_SANS_RESERVE;
+const N_USD = LIGNES_PEA.filter((l) => l.devise === "USD").length;
+const LEVIER = LIGNES_PEA.filter((l) => l.levier);
+const LEVIER_QUOTIDIEN = LEVIER.filter((l) => l.levier!.quotidien);
 
 // Requête visée : « ETF éligibles PEA » / « liste ETF PEA ». Les pages voisines
 // visent autre chose : /guide-5-etf-pea-premium une sélection courte,
 // /etf-msci-world le choix d'un tracker, /pea-ou-cto l'enveloppe,
 // /comparatif-etf les face-à-face, /meilleurs-etf-debutants le premier ETF.
-const TITLE = `ETF éligibles au PEA\u00a0: la liste vérifiée (${MOIS_VERIF})`;
-// « (ISIN, frais) » et pas « réplication » : pour la plupart des fonds, la
-// réplication vient de justETF seul (note sous les tableaux). La description
-// ne présente comme vérifié un par un que ce qui a été recoupé.
-// 14/10/2026 : avec un fonds ajouté après la table, « vérifiés un par un le
-// 28 septembre » ne vaut plus pour tous ; la description donne l'intervalle.
-const DESCRIPTION = AJOUTS.length
-  ? `${N_ELIGIBLES} ETF éligibles au PEA vérifiés un par un (ISIN, frais) du ${DATE_VERIF} au ${DATE_DERNIERE_VERIF}, ` +
-    `et ${N_NON_ELIGIBLES} fonds qui ne le sont pas, dont 500, IWDA et VWCE.`
-  : `${N_ELIGIBLES} ETF éligibles au PEA vérifiés un par un le ${DATE_VERIF} (ISIN, frais), ` +
-    `et ${N_NON_ELIGIBLES} fonds qui ne le sont pas, dont 500, IWDA et VWCE.`;
+const TITLE = `ETF éligibles au PEA : la liste vérifiée (${MOIS_RELEVE})`;
+const DESCRIPTION =
+  `${N} ETF cotés à Paris et éligibles au PEA, vérifiés un par un sur les documents de l'émetteur (ISIN, frais, indice). ` +
+  `Et ${N_NON_ELIGIBLES} fonds qui ne le sont pas.`;
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -109,7 +115,12 @@ const symboles = (fonds: { displaySymbol: string }[]) => enumerer(fonds.map((f) 
 /** Accord du verbe avec un nombre calculé. */
 const accord = (n: number, singulier: string, pluriel: string) => (n > 1 ? pluriel : singulier);
 
-const frais = (f: { ter: number }) => formatTer(f.ter);
+/** « 2026-04-18 » → « 18/04/2026 » ; la date longue est dans le détail de la ligne. */
+const dateCourte = (iso: string) => iso.split("-").reverse().join("/");
+
+/** Date d'un document : « 30 septembre 2026 », ou « août 2026 » quand il ne porte qu'un mois. */
+const dateDocument = (d: string) =>
+  d.length === 7 ? dateEnToutesLettres(`${d}-01`).replace(/^1er\s/, "") : dateEnToutesLettres(d);
 
 /** Mnémoniques en gras, séparés comme dans une phrase : « A, B et C ». */
 function Mnemoniques({ fonds }: { fonds: { displaySymbol: string }[] }) {
@@ -125,40 +136,56 @@ function Mnemoniques({ fonds }: { fonds: { displaySymbol: string }[] }) {
   );
 }
 
+/** Libellé de l'effet de levier : « Levier x2, recalculé chaque jour ». */
+function libelleLevier(l: LignePea): string {
+  const lv = l.levier!;
+  const base =
+    lv.facteur === "x2"
+      ? "Levier x2"
+      : lv.facteur === "x-2"
+        ? "Inverse (x-2)"
+        : lv.facteur === "x-1"
+          ? "Inverse (x-1)"
+          : "Exposition d'environ 150 % (actions et contrats à terme obligataires)";
+  return [
+    base + (lv.quotidien ? ", recalculé chaque jour" : ""),
+    lv.risqueDic ? `indicateur de risque du DIC : ${lv.risqueDic}` : null,
+    lv.detentionDic ? `durée de détention recommandée par le DIC : ${lv.detentionDic}` : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+}
+
 // ─── Données dérivées ────────────────────────────────────────────────────────
 
-// Ordre alphabétique dans chaque groupe : un classement par frais se lirait
-// comme une recommandation, et le site n'a pas le statut CIF.
-const GROUPES = FAMILLES.map((famille) => ({
-  ...famille,
-  fonds: ETF_PEA_VERIFIES.filter((f) => f.famille === famille.id).sort((a, b) =>
-    a.displaySymbol.localeCompare(b.displaySymbol, "fr"),
-  ),
-})).filter((g) => g.fonds.length > 0);
+const parTicker = (t: string) => LIGNES_PEA.find((l) => l.ticker === t)!;
+const groupe = (id: CategorieId) => GROUPES_LISTE.find((g) => g.id === id)!;
 
-const parFamille = (id: FamilleIndice) => GROUPES.find((g) => g.id === id)?.fonds ?? [];
+/** Les 14 fonds de la première liste, par ordre alphabétique : les exemples de la page. */
+const PREMIERE_LISTE = [...ETF_PEA_VERIFIES].sort((a, b) => a.displaySymbol.localeCompare(b.displaySymbol, "fr"));
 
-/** Guide d'indice existant, pour comparer les fonds d'un groupe. */
-const GUIDE_INDICE: Partial<Record<FamilleIndice, { href: string; label: string }>> = {
-  "msci-world": { href: "/etf-msci-world", label: "notre guide des ETF MSCI World" },
-  sp500: { href: "/etf-sp500", label: "notre guide des ETF S&P 500" },
-  "nasdaq-100": { href: "/etf-nasdaq", label: "notre guide des ETF Nasdaq 100" },
-};
-
-/** Les éligibles par ordre alphabétique, pour les énumérations et les sources. */
-const ELIGIBLES_TRIES = [...ETF_PEA_VERIFIES].sort((a, b) => a.displaySymbol.localeCompare(b.displaySymbol, "fr"));
-
-// Section « le P ne prouve rien » : exemples tirés des données, pas choisis.
-const commenceParP = (f: { displaySymbol: string }) => f.displaySymbol.startsWith("P");
-const ELIGIBLES_SANS_P = ELIGIBLES_TRIES.filter((f) => !commenceParP(f));
-const AMUNDI_ELIGIBLES = ELIGIBLES_TRIES.filter((f) => f.name.startsWith("Amundi "));
-const AMUNDI_AVEC_P = AMUNDI_ELIGIBLES.filter(commenceParP);
-const AMUNDI_SANS_P = AMUNDI_ELIGIBLES.filter((f) => !commenceParP(f));
-const ELIGIBLES_SANS_MOT_PEA = ELIGIBLES_TRIES.filter((f) => !/\bPEA\b/.test(f.name));
-const SWAP_ELIGIBLES = ELIGIBLES_TRIES.filter((f) => /\bSwap\b/.test(f.name));
+// Section « le P ne prouve rien » : comptes sur la liste complète, exemples
+// pris parmi les fonds de la première liste (les plus connus).
+const commenceParP = (t: string) => t.startsWith("P");
+const N_SANS_P = LIGNES_PEA.filter((l) => !commenceParP(l.ticker)).length;
+const EXEMPLES_SANS_P = PREMIERE_LISTE.filter((f) => !commenceParP(f.displaySymbol));
+const AMUNDI = LIGNES_PEA.filter((l) => l.emetteur === "Amundi");
+const N_AMUNDI_P = AMUNDI.filter((l) => commenceParP(l.ticker)).length;
+const N_AMUNDI_SANS_P = AMUNDI.length - N_AMUNDI_P;
+const N_SANS_MOT_PEA = LIGNES_PEA.filter((l) => !/\bPEA\b/.test(l.nom)).length;
+const SWAP_ELIGIBLES = PREMIERE_LISTE.filter((f) => /\bSwap\b/.test(f.name));
 const SWAP_NON_ELIGIBLES = ETF_NON_ELIGIBLES.filter((f) => /\bSwap\b/.test(f.name));
 
-const N_SYNTHETIQUES = ETF_PEA_VERIFIES.filter((f) => f.replicationMethod.startsWith("Synthétique")).length;
+// Section « pourquoi un ETF monde » : synthétique et physique, par indice.
+const HORS_EUROPE: CategorieId[] = [
+  "msci-world", "msci-acwi", "sp500", "nasdaq-100", "etats-unis", "russell-2000", "themes-monde", "emergents", "japon",
+];
+const LIGNES_HORS_EUROPE = LIGNES_PEA.filter((l) => HORS_EUROPE.includes(l.categorie));
+const TOUTES_HORS_EUROPE_SYNTHETIQUES = LIGNES_HORS_EUROPE.every((l) => l.replication === "synthetique");
+const PHYSIQUES = LIGNES_PEA.filter((l) => l.replication === "physique");
+const PHYSIQUES_EUROPEENNES = PHYSIQUES.every((l) => !HORS_EUROPE.includes(l.categorie) && l.categorie !== "levier");
+const N_SYNTHETIQUES = LIGNES_PEA.filter((l) => l.replication === "synthetique").length;
+
 const SWAP_HORS_PEA = ETF_NON_ELIGIBLES.filter((f) => f.raison === "swap-hors-pea");
 // Chez Amundi, chaque fonds « Swap » non éligible face à sa version « PEA »,
 // éligible, sur le même indice : 500 / PSP5, ANX / PUST, AEEM / PAEEM.
@@ -176,92 +203,123 @@ const PRESENTES_ELIGIBLES_ICI = ETF_NON_ELIGIBLES.filter((f) => f.presenteEligib
 
 const RAISON: Record<RaisonHorsPea, string> = {
   "swap-hors-pea":
-    "Réplication synthétique (swap), et pourtant non éligible\u00a0: le reporting mensuel d'Amundi du 31 août 2026, dans sa version pour professionnels, indique «\u00a0Enveloppe fiscale\u00a0: -\u00a0», sans aucune mention du PEA, là où celui de CW8 affiche «\u00a0Enveloppe fiscale\u00a0: Eligible au PEA\u00a0». La page du fonds chez Amundi indique «\u00a0Eligibilité au PEA\u00a0: Non\u00a0».",
+    "Réplication synthétique (swap), et pourtant non éligible : le reporting mensuel d'Amundi du 31 août 2026, dans sa version pour professionnels, indique « Enveloppe fiscale : - », sans aucune mention du PEA, là où celui de CW8 affiche « Enveloppe fiscale : Eligible au PEA ». La page du fonds chez Amundi indique « Eligibilité au PEA : Non ».",
   physique:
-    "Réplication physique\u00a0: le fonds détient lui-même les actions de son indice, et ce ne sont pas, à plus de 75\u00a0%, des actions de sociétés de l'Union européenne ou de l'Espace économique européen, comme l'exige le PEA.",
+    "Réplication physique : le fonds détient lui-même les actions de son indice, et ce ne sont pas, à plus de 75 %, des actions de sociétés de l'Union européenne ou de l'Espace économique européen, comme l'exige le PEA.",
   // Ce qui l'exclut du PEA, c'est d'être un fonds américain (fait
   // pea-regle-75 : SICAV, FCP ou OPCVM européen). L'absence de DIC dit
   // seulement qu'on ne peut pas l'acheter, même en compte-titres.
   "sans-dic":
-    "Fonds américain\u00a0: la loi ne prévoit dans un PEA que des fonds français ou européens (SICAV, FCP, OPCVM européens), et celui-ci n'en est pas un. " +
-    "Il n'a pas non plus de document d'informations clés (DIC)\u00a0: depuis le 1er janvier 2018, il ne peut plus être proposé aux particuliers de l'Espace économique européen, " +
+    "Fonds américain : la loi ne prévoit dans un PEA que des fonds français ou européens (SICAV, FCP, OPCVM européens), et celui-ci n'en est pas un. " +
+    "Il n'a pas non plus de document d'informations clés (DIC) : depuis le 1er janvier 2018, il ne peut plus être proposé aux particuliers de l'Espace économique européen, " +
     "et un courtier européen en refuse en principe l'achat, même en compte-titres.",
-  "non-eligible": `Non éligible au PEA d'après les documents de l'émetteur, recoupés le ${DATE_VERIF}.`,
+  "non-eligible": `Non éligible au PEA d'après les documents de l'émetteur, recoupés le ${DATE_TABLE}.`,
 };
 
 // ─── FAQ ─────────────────────────────────────────────────────────────────────
 //
-// Réponses calculées sur les mêmes données que le tableau : une FAQ écrite à
-// la main contredirait la liste au premier fonds ajouté. `id` : ancre stable
-// pour qui cite une réponse (#faq-japon), indépendante du libellé.
+// Réponses calculées sur les mêmes données que la liste : une FAQ écrite à la
+// main la contredirait à la première ligne ajoutée. `id` : ancre stable pour
+// qui cite une réponse (#faq-japon), indépendante du libellé.
 
-const MSCI_WORLD = parFamille("msci-world");
-const SP500 = parFamille("sp500");
-const SP500_MEME_INDICE = SP500.filter((f) => CORRESPONDANCES_PEA.sp500.symboles.includes(f.displaySymbol));
-const SP500_AUTRES = SP500.filter((f) => !CORRESPONDANCES_PEA.sp500.symboles.includes(f.displaySymbol));
+/** « CW8 (0,38 %), CW8U (0,38 %, cotée en dollars) » */
+function avecFrais(lignes: LignePea[]): string {
+  return enumerer(
+    lignes.map((l) => {
+      const precisions = [
+        formatTer(l.frais),
+        l.devise === "USD" ? "cotée en dollars" : null,
+        /couvert en euros/.test(l.indice) ? "couverte contre le change" : null,
+        /\bDist\b/.test(l.nom) ? "distribuante" : null,
+      ].filter(Boolean);
+      return `${l.ticker} (${precisions.join(", ")})`;
+    }),
+  );
+}
+
+const MSCI_WORLD = groupe("msci-world").lignes;
+const SP500 = groupe("sp500").lignes;
+const SP500_INDICE = SP500.filter((l) => /^S&P 500( \(|$)/.test(l.indice));
+const SP500_FILTRES = SP500.filter((l) => !SP500_INDICE.includes(l));
 const SP500_HORS_PEA = ETF_NON_ELIGIBLES.filter((f) => f.correspondance === "sp500");
-const JAPON = CORRESPONDANCES_PEA.japon.symboles;
-/** « PSP5 (0,12 %), SPEA (0,10 %) et ESE (0,14 %) » */
-const avecFrais = (fonds: { displaySymbol: string; ter: number }[]) =>
-  enumerer(fonds.map((f) => `${f.displaySymbol} (${frais(f)})`));
+const JAPON = groupe("japon").lignes;
+const MONETAIRE = groupe("monetaire").lignes;
+const RISQUES_LEVIER = [...new Set(LEVIER.flatMap((l) => (l.levier!.risqueDic ? [l.levier!.risqueDic] : [])))].sort();
+const N_DETENTION_1_JOUR = LEVIER.filter((l) => l.levier!.detentionDic === "1 jour").length;
+const LEVIER_HORS_BOURSORAMA = LEVIER_QUOTIDIEN.filter((l) => !l.recoupe.includes("Boursorama")).length;
+const LWLD = LIGNES_PEA.find((l) => l.ticker === "LWLD");
 
 const FAQ: { id: string; q: string; a: string }[] = [
   {
     id: "faq-combien",
-    q: "Combien d'ETF sont éligibles au PEA\u00a0?",
+    q: "Combien d'ETF sont éligibles au PEA ?",
     a:
-      `Nous ne le savons pas pour le marché entier\u00a0: nous avons vérifié notre sélection, pas tous les ETF cotés. ` +
-      `Au ${DATE_DERNIERE_VERIF}, ${N_ELIGIBLES} ETF de cette sélection sont éligibles, répartis en ${GROUPES.length} groupes d'indices. ` +
-      // 14/10/2026 : « PNAS… que nous n'avons pas vérifiée » ; PNAS est vérifié
-      // le même jour (seconde part du fonds de PUST, voir PRECISIONS.PUST).
-      `D'autres existent\u00a0: PNAS, par exemple, est une seconde part du fonds de PUST (reporting Amundi au 30 septembre 2026), que ce tableau ne détaille pas sur une ligne à part.`,
+      `À Euronext Paris, nous en avons vérifié ${N} au ${DATE_RELEVE}, un par ISIN, sur ${DECOMPTE_RELEVE.examinees} cotations examinées : ` +
+      `chacun est déclaré éligible par un document daté de son émetteur, et recoupé par une source indépendante. ` +
+      `Ce n'est pas un compte exhaustif : ${DECOMPTE_RELEVE.douteuses} lignes ne sont pas publiées, parce que les documents de leur émetteur n'établissent pas leur éligibilité ou un fait essentiel, et un lancement récent peut manquer. ` +
+      `Plusieurs lignes sont des parts d'un même fonds : PUST et PNAS, par exemple.`,
   },
   {
     id: "faq-msci-world",
-    q: "Quels ETF MSCI World sont éligibles au PEA\u00a0?",
+    q: "Quels ETF MSCI World sont éligibles au PEA ?",
     a:
-      `Nous en avons vérifié ${MSCI_WORLD.length} le ${DATE_VERIF}\u00a0: ${avecFrais(MSCI_WORLD)}. ` +
+      `Notre liste en compte ${MSCI_WORLD.length}, relevés le ${DATE_RELEVE} : ${avecFrais(MSCI_WORLD)}. ` +
       `EWLD est la part distribuante du même fonds que CW8. ` +
+      (LWLD ? `LWLD, à effet de levier, est rangé avec les ETF à levier. ` : "") +
       `IWDA (iShares Core MSCI World), qui suit le même indice en réplication physique, n'est pas éligible.`,
   },
   // « Quels ETF S&P 500… » et non « Peut-on mettre un S&P 500… » : c'est déjà
   // la question de /etf-sp500. Même forme que la question MSCI World.
   {
     id: "faq-sp500",
-    q: "Quels ETF S&P 500 sont éligibles au PEA\u00a0?",
+    q: "Quels ETF S&P 500 sont éligibles au PEA ?",
     a:
-      `Nous en avons vérifié ${SP500.length} le ${DATE_VERIF}. ` +
-      `${avecFrais(SP500_MEME_INDICE)} ${accord(SP500_MEME_INDICE.length, "suit", "suivent")} le S&P 500` +
-      (SP500_AUTRES.length
-        ? `, ${avecFrais(SP500_AUTRES)} une version de l'indice filtrée sur des critères ESG. `
+      `Notre liste en compte ${SP500.length}, relevés le ${DATE_RELEVE}. ` +
+      `${avecFrais(SP500_INDICE)} ${accord(SP500_INDICE.length, "suit", "suivent")} le S&P 500` +
+      (SP500_FILTRES.length
+        ? ` ; ${avecFrais(SP500_FILTRES)}, une version de l'indice filtrée sur des critères ESG. `
         : ". ") +
       `En revanche, ${symboles(SP500_HORS_PEA)} ${accord(SP500_HORS_PEA.length, "n'est pas éligible", "ne sont pas éligibles")}.`,
   },
   {
     id: "faq-japon",
-    q: "Existe-t-il un ETF Japon éligible au PEA\u00a0?",
+    q: "Existe-t-il un ETF Japon éligible au PEA ?",
     // 14/10/2026 : la réponse disait « Nous n'en avons vérifié aucun » ;
     // PTPXE l'est (reporting Amundi au 30/09/2026, prospectus du 05/06/2026,
     // recoupés sur justETF et Boursorama). La réponse dit la correction.
-    a: JAPON.length
-      ? `Oui\u00a0: ${enumerer(
-          JAPON.map((s) => {
-            const f = ETF_PEA_VERIFIES.find((x) => x.displaySymbol === s)!;
-            return `${s} (${f.name}, ISIN ${f.isin}, ${frais(f)} de frais courants), vérifié le ${dateEnToutesLettres(dateVerification(s))}`;
-          }),
-        )} sur les documents de son émetteur, recoupés sur justETF et Boursorama. ` +
-        `${CORRESPONDANCES_PEA.japon.nuance ?? ""} JPNK (Amundi JPX-Nikkei 400), lui, n'est pas éligible. ` +
-        `Jusqu'au ${dateEnToutesLettres(dateVerification(JAPON[0]))}, cette réponse disait que nous n'en avions vérifié aucun.`
-      : `Nous n'en avons vérifié aucun. JPNK (Amundi JPX-Nikkei 400) n'est pas éligible, alors que notre site le présentait comme tel jusqu'au ${DATE_VERIF}. ` +
-        `Cela ne prouve pas qu'il n'en existe aucun\u00a0: nous ne l'avons pas établi.`,
+    a:
+      `Oui : ${enumerer(JAPON.map((l) => `${l.ticker} (${l.nom}, ISIN ${l.isin}, ${formatTer(l.frais)} de frais courants)`))}, ` +
+      `tous deux sur l'indice TOPIX, la seconde couverte contre le change. ` +
+      `${CORRESPONDANCES_PEA.japon.nuance ?? ""} JPNK (Amundi JPX-Nikkei 400), lui, n'est pas éligible. ` +
+      `Jusqu'au 14 octobre 2026, cette réponse disait que nous n'en avions vérifié aucun.`,
   },
   {
     id: "faq-p",
-    q: "Un ETF dont le mnémonique commence par P est-il éligible au PEA\u00a0?",
+    q: "Un ETF dont le mnémonique commence par P est-il éligible au PEA ?",
     a:
-      `Le P n'est pas une règle. Sur les ${N_ELIGIBLES} ETF éligibles de notre liste, ${ELIGIBLES_SANS_P.length} ` +
-      `${accord(ELIGIBLES_SANS_P.length, "ne commence", "ne commencent")} pas par P\u00a0: ${symboles(ELIGIBLES_SANS_P)}. ` +
-      `Et rien ne permet de dire qu'un P suffise\u00a0: seul un document de l'émetteur, lu sur l'ISIN du fonds, établit l'éligibilité.`,
+      `Le P n'est pas une règle. Sur les ${N} lignes de notre liste, ${N_SANS_P} ` +
+      `${accord(N_SANS_P, "ne commence", "ne commencent")} pas par P, dont ${symboles(EXEMPLES_SANS_P)}. ` +
+      `Et rien ne permet de dire qu'un P suffise : seul un document de l'émetteur, lu sur l'ISIN du fonds, établit l'éligibilité.`,
+  },
+  {
+    id: "faq-levier",
+    q: "Les ETF à effet de levier sont-ils éligibles au PEA ?",
+    a:
+      `Certains, oui : notre liste en compte ${LEVIER.length}, dont ${LEVIER_QUOTIDIEN.length} dont le multiple (x2, ou l'inverse de l'indice) est recalculé chaque jour. ` +
+      `Sur plusieurs jours, leur performance peut alors s'écarter fortement de ce multiple, y compris dans le mauvais sens. ` +
+      `Pour ${N_DETENTION_1_JOUR} d'entre eux, le document d'informations clés recommande une durée de détention d'un jour ; ` +
+      `leur indicateur de risque y est de ${enumerer(RISQUES_LEVIER)}. ` +
+      (LEVIER_HORS_BOURSORAMA === LEVIER_QUOTIDIEN.length
+        ? `Au ${DATE_RELEVE}, le filtre PEA de Boursorama n'en affichait aucun.`
+        : ""),
+  },
+  {
+    id: "faq-monetaire",
+    q: "Existe-t-il des ETF monétaires éligibles au PEA ?",
+    a:
+      `Oui, notre liste en compte ${MONETAIRE.length} : ${avecFrais(MONETAIRE)}. ` +
+      `Ils ne suivent pas la Bourse mais un taux d'intérêt au jour le jour, l'€STR, par un contrat d'échange, et détiennent des actions européennes pour rester éligibles. ` +
+      `Leur valeur suit ce taux, moins les frais : une poche de liquidités à l'intérieur du PEA, sans garantie en capital.`,
   },
 ];
 
@@ -286,18 +344,18 @@ export default function EtfEligiblesPeaPage() {
 
       <EducationalHeader
         icon={ListChecks}
-        eyebrow={AJOUTS.length ? `Vérifiée le ${DATE_VERIF}, complétée le ${DATE_DERNIERE_VERIF}` : `Vérifiée le ${DATE_VERIF}`}
-        title={"ETF éligibles au PEA\u00a0: la liste vérifiée"}
+        eyebrow={`Relevé du ${DATE_RELEVE}`}
+        title={"ETF éligibles au PEA : la liste vérifiée"}
         subtitle={
-          `${N_ELIGIBLES} ETF éligibles au PEA, vérifiés un par un avec leur ISIN et leurs frais. ` +
+          `${N} ETF cotés à Paris et éligibles au PEA, chacun avec son ISIN, ses frais et le document de l'émetteur qui le prouve. ` +
           `Et ${N_NON_ELIGIBLES} fonds qui ne le sont pas, avec la raison pour chacun.`
         }
       />
 
       <ArticleByline
         publishedAt="2026-09-30"
-        updatedAt={MAJ_LISTE_PEA}
-        readingMinutes={8}
+        updatedAt={MISE_EN_LIGNE_LISTE_PEA}
+        readingMinutes={10}
         url={URL_LISTE_PEA}
         headline={TITLE}
         description={DESCRIPTION}
@@ -316,29 +374,50 @@ export default function EtfEligiblesPeaPage() {
         </h2>
         <div className="space-y-3 text-sm text-gray-700 leading-relaxed">
           <p>
-            <strong className="text-gray-900">Notre sélection vérifiée, pas le marché entier.</strong>{" "}
-            {N_ELIGIBLES} ETF éligibles au PEA et {N_NON_ELIGIBLES} fonds qui ne le
-            sont pas, contrôlés un par un le {DATE_VERIF}{MENTION_AJOUTS}. D&apos;autres ETF
-            éligibles existent&nbsp;: s&apos;ils ne sont pas ici, c&apos;est que
-            nous ne les avons pas vérifiés, pas qu&apos;ils seraient moins bons.
+            <strong className="text-gray-900">Les ETF cotés à Paris dont l&apos;éligibilité est prouvée.</strong>{" "}
+            {N} lignes de cotation, une par ISIN, de {N_EMETTEURS} émetteurs,
+            relevées le {DATE_RELEVE} sur {DECOMPTE_RELEVE.examinees} examinées.
+            Chacune a un document daté de son émetteur qui la dit éligible au
+            PEA, recoupé par au moins une source indépendante de lui.{" "}
+            {DECOMPTE_RELEVE.douteuses} autres ne sont pas publiées&nbsp;: les
+            documents de leur émetteur n&apos;établissent pas leur éligibilité,
+            ou un fait essentiel comme les frais. {DECOMPTE_RELEVE.exclues} ont
+            été écartées, non éligibles d&apos;après leur émetteur ou liquidées.
+            Ce n&apos;est pas un compte exhaustif&nbsp;: un lancement récent
+            peut manquer.
           </p>
           <p>
-            <strong className="text-gray-900">La méthode.</strong> Pour chaque
-            fonds, deux familles de sources indépendantes&nbsp;: l&apos;émetteur
-            d&apos;abord (page du fonds, document d&apos;informations clés,
-            reporting mensuel), puis justETF, Boursorama et Euronext. Le nom,
-            l&apos;ISIN, les frais et l&apos;éligibilité ne sont retenus que là
-            où les deux concordent. La réplication, que les documents recoupés
-            ne donnent pas toujours, vient pour plusieurs fonds de justETF
-            seul&nbsp;: nous le signalons sous les tableaux.
+            <strong className="text-gray-900">La méthode.</strong> Point de
+            départ&nbsp;: les ETF cotés à Euronext Paris (registre FIRDS de
+            l&apos;Autorité européenne des marchés financiers, liste
+            d&apos;Euronext), croisés avec le filtre PEA de Boursorama et les
+            fonds qu&apos;Amundi déclare éligibles. Pour chaque ligne&nbsp;:
+            l&apos;éligibilité lue dans un document de l&apos;émetteur (reporting
+            mensuel, document d&apos;informations clés, prospectus ou fiche
+            mensuelle), puis recoupée sur justETF ou Boursorama&nbsp;; la clé de
+            contrôle de l&apos;ISIN vérifiée&nbsp;; les frais courants lus dans
+            le document d&apos;informations clés. Quand un document contredit
+            l&apos;autre, la ligne porte une réserve qui le dit&nbsp;: {N_AVEC_RESERVE}{" "}
+            lignes sur {N} en ont une, dont les {LEVIER.length} à effet de levier.
+          </p>
+          <p>
+            <strong className="text-gray-900">Ce qu&apos;elle ne dit pas.</strong>{" "}
+            Ni cours, ni performance, ni encours&nbsp;: elle dit ce qu&apos;est
+            chaque fonds, pas comment il s&apos;est comporté. Dans chaque groupe,
+            les lignes sont rangées par ordre alphabétique, pas par préférence.
+            Ce n&apos;est pas un conseil d&apos;investissement&nbsp;: lisez le
+            document d&apos;informations clés d&apos;un fonds avant de
+            l&apos;acheter.
           </p>
           <p>
             <strong className="text-gray-900">Pourquoi cette page.</strong>{" "}
-            Jusqu&apos;au {DATE_VERIF}, notre propre site présentait{" "}
+            Jusqu&apos;au {DATE_TABLE}, notre propre site présentait{" "}
             <Mnemoniques fonds={PRESENTES_ELIGIBLES_ICI} /> comme éligibles au
             PEA. Aucun ne l&apos;est. Une liste d&apos;ETF se périme sans
-            prévenir&nbsp;: celle-ci porte sa date, et chaque ligne son ISIN,
-            pour que vous puissiez la vérifier à votre tour.
+            prévenir&nbsp;: celle-ci porte sa date, et chaque ligne son ISIN et
+            sa preuve, pour que vous puissiez la vérifier à votre tour. Les{" "}
+            {ETF_PEA_VERIFIES.length} fonds de notre première liste, vérifiés
+            le {DATE_TABLE}, y figurent tous.
           </p>
         </div>
       </section>
@@ -346,7 +425,7 @@ export default function EtfEligiblesPeaPage() {
       {/* Accès direct aux groupes : utile sur mobile, où la liste est longue.
           Un <nav> : l'index de recherche l'ignore, ce ne sont que des liens. */}
       <nav aria-label="Aller à un indice" className="mb-10 flex flex-wrap gap-2">
-        {GROUPES.map((g) => (
+        {GROUPES_LISTE.map((g) => (
           <a
             key={g.id}
             href={`#${g.id}`}
@@ -366,59 +445,78 @@ export default function EtfEligiblesPeaPage() {
       {/* ── 1. La liste ──────────────────────────────────────────────────── */}
       <section className="mb-14">
         <h2 id="liste" className="text-2xl font-bold text-gray-900 mb-4">
-          La liste&nbsp;: {N_ELIGIBLES} ETF éligibles au PEA, par indice
+          La liste&nbsp;: {N} ETF éligibles au PEA, par indice
         </h2>
-        <p className="text-gray-600 leading-relaxed mb-8">
-          Pour chaque fonds&nbsp;: son mnémonique (le code court sous lequel il
-          est coté, cliquable quand nous avons une fiche), son nom exact, son
-          ISIN (le code qui désigne sans ambiguïté une part précise du
-          fonds&nbsp;: c&apos;est lui que vous saisissez chez le courtier), ses
-          frais courants annuels (le TER, prélevé chaque jour sur l&apos;actif
-          du fonds), sa réplication et ce qu&apos;il fait des dividendes. La
-          réplication dit comment le fonds suit son indice&nbsp;: physique, il
-          détient les actions de l&apos;indice&nbsp;; synthétique, il en reçoit
-          la performance par un contrat d&apos;échange avec une banque, le
-          swap, expliqué plus bas. Capitalisant, le fonds réinvestit les
-          dividendes&nbsp;; distribuant, il vous les verse. Dans chaque groupe,
-          les fonds sont rangés par ordre alphabétique, pas par préférence.
-        </p>
-
-        <div className="space-y-10">
-          {GROUPES.map((g) => {
-            const guide = GUIDE_INDICE[g.id];
-            return (
-              <div key={g.id}>
-                <h3 id={g.id} className="text-lg font-bold text-gray-900 mb-1">
-                  {g.titre}
-                </h3>
-                <p className="text-sm text-gray-500 leading-relaxed mb-3">
-                  {g.description}
-                  {guide && (
-                    <>
-                      {" "}
-                      {g.fonds.length > 1 ? "Pour les comparer" : "Pour le comparer aux autres ETF de cet indice"}
-                      &nbsp;:{" "}
-                      <Link href={guide.href} className="text-primary-700 font-medium hover:underline">
-                        {guide.label}
-                      </Link>
-                      .
-                    </>
-                  )}
-                </p>
-                <TableauFonds fonds={g.fonds} titre={g.titre} />
-              </div>
-            );
-          })}
+        <div className="space-y-3 text-gray-600 leading-relaxed mb-6">
+          <p>
+            Pour chaque ligne&nbsp;: son mnémonique (le code court sous lequel
+            elle est cotée, cliquable quand nous avons une fiche), son nom
+            officiel, son émetteur et l&apos;indice suivi&nbsp;; son ISIN (le
+            code qui désigne sans ambiguïté une part précise du fonds&nbsp;:
+            c&apos;est lui que vous saisissez chez le courtier)&nbsp;; ses frais
+            courants annuels, prélevés chaque jour sur l&apos;actif du
+            fonds&nbsp;; sa réplication&nbsp;; et la date depuis laquelle cet
+            ISIN cote à Paris, d&apos;après le registre FIRDS.
+          </p>
+          <p>
+            La réplication dit comment le fonds suit son indice&nbsp;: physique,
+            il détient les actions de l&apos;indice&nbsp;; synthétique, il en
+            reçoit la performance par un contrat d&apos;échange avec une banque,
+            le swap, expliqué plus bas. Dans le nom officiel, «&nbsp;Acc&nbsp;»
+            ou «&nbsp;Capitalisation&nbsp;» signale une part qui réinvestit les
+            dividendes, «&nbsp;Dist&nbsp;» ou «&nbsp;Distribution&nbsp;» une part
+            qui les verse. Sous chaque ligne, «&nbsp;Preuve PEA&nbsp;» ouvre le
+            document de l&apos;émetteur, sa date, ce qu&apos;il dit, et la
+            réserve éventuelle.
+          </p>
         </div>
 
-        <p className="text-xs text-gray-500 leading-relaxed mt-6">
-          La réplication n&apos;est pas dans tous les documents recoupés&nbsp;:
-          pour la plupart de ces fonds, elle vient de justETF seul, ou du nom
-          officiel quand il contient «&nbsp;Swap&nbsp;». L&apos;encours (la
-          taille du fonds) n&apos;est pas affiché&nbsp;: nos deux familles de
-          sources ne donnent pas les mêmes montants, et nous ne publions pas un
-          chiffre que nous n&apos;avons pas pu trancher.
+        {/* Hors de la recherche interne : des contrôles, pas une réponse. */}
+        <div data-nosearch="" className="mb-4 lg:-mx-24">
+          <FiltresListePea
+            groupes={GROUPES_LISTE.map((g) => ({ id: g.id, titre: g.titre, n: g.lignes.length }))}
+            emetteurs={EMETTEURS_LISTE}
+            total={N}
+          />
+        </div>
+        <p data-nosearch="" className="mb-10 lg:-mx-24 text-sm">
+          <a
+            href={CHEMIN_CSV_LISTE_PEA}
+            download
+            className="inline-flex items-center gap-2 font-semibold text-primary-700 hover:underline"
+          >
+            <Download size={16} aria-hidden />
+            Télécharger la liste (CSV, {N} lignes, relevé du {DATE_RELEVE})
+          </a>
+          <span className="block text-xs text-gray-500 mt-1">
+            Une ligne par ISIN, avec la preuve de chacune. Licence CC BY 4.0&nbsp;:
+            réutilisation libre en citant DCA Tracker et la date du relevé.
+          </span>
         </p>
+
+        <div className="space-y-12 lg:-mx-24">
+          {GROUPES_LISTE.map((g) => (
+            <GroupeDeLaListe key={g.id} groupe={g} />
+          ))}
+        </div>
+
+        <div className="text-xs text-gray-500 leading-relaxed mt-8 space-y-2">
+          <p>
+            «&nbsp;Cotée à Paris depuis&nbsp;» est la date de 1re cotation de
+            l&apos;ISIN à Paris dans le registre FIRDS de l&apos;Autorité
+            européenne des marchés financiers ({FIRDS.fichier}). Elle peut être
+            plus récente que le fonds lui-même, quand une part a changé
+            d&apos;ISIN ou de place&nbsp;: la date de 1re valeur liquidative
+            publiée par l&apos;émetteur est dans le détail de la ligne, quand
+            justETF la confirme. {N_USD} lignes cotées en dollars n&apos;y ont
+            pas de date&nbsp;: elle n&apos;est pas établie.
+          </p>
+          <p>
+            L&apos;encours (la taille du fonds) n&apos;est pas affiché&nbsp;:
+            nos sources ne donnent pas toujours les mêmes montants, et nous ne
+            publions pas un chiffre que nous n&apos;avons pas pu trancher.
+          </p>
+        </div>
       </section>
 
       {/* ── 2. Les faux amis ─────────────────────────────────────────────── */}
@@ -444,49 +542,38 @@ export default function EtfEligiblesPeaPage() {
 
       {/* ── 3. Le P ne prouve rien ───────────────────────────────────────── */}
       {/* Répond à l'idée qu'un P devant le mnémonique signalerait un ETF
-          éligible. Chaque exemple est filtré dans les données : si la
-          gamme change, les exemples suivent, et un exemple qui cesserait
-          d'exister disparaîtrait au lieu de rester faux. */}
+          éligible. Comptes calculés sur la liste complète ; les exemples
+          nommés viennent de la première liste, la plus connue. */}
       <section className="mb-14">
         <h2 className="text-2xl font-bold text-gray-900 mb-4">
           Le P du mnémonique ne prouve rien, le nom non plus
         </h2>
         <div className="space-y-4 text-gray-600 leading-relaxed">
-          {ELIGIBLES_SANS_P.length > 0 && (
-            <p>
-              Le P devant un mnémonique n&apos;est pas une règle. Sur les{" "}
-              {N_ELIGIBLES} fonds éligibles de
-              notre liste, {ELIGIBLES_SANS_P.length}{" "}
-              {accord(ELIGIBLES_SANS_P.length, "ne commence", "ne commencent")} pas
-              par P&nbsp;: <Mnemoniques fonds={ELIGIBLES_SANS_P} />.
-              {AMUNDI_AVEC_P.length > 0 && AMUNDI_SANS_P.length > 0 && (
-                <>
-                  {" "}Chez Amundi même, {AMUNDI_AVEC_P.length} fonds éligibles
-                  portent un P (<Mnemoniques fonds={AMUNDI_AVEC_P} />) et{" "}
-                  {AMUNDI_SANS_P.length}{" "}
-                  {accord(AMUNDI_SANS_P.length, "n'en porte", "n'en portent")} pas
-                  (<Mnemoniques fonds={AMUNDI_SANS_P} />).
-                </>
-              )}
-            </p>
-          )}
-          {ELIGIBLES_SANS_MOT_PEA.length > 0 && (
-            <p>
-              Le nom ne suffit pas davantage&nbsp;:{" "}
-              {ELIGIBLES_SANS_MOT_PEA.length} fonds éligibles n&apos;ont pas le
-              mot «&nbsp;PEA&nbsp;» dans leur nom (
-              <Mnemoniques fonds={ELIGIBLES_SANS_MOT_PEA} />).
-              {SWAP_ELIGIBLES.length > 0 && SWAP_NON_ELIGIBLES.length > 0 && (
-                <>
-                  {" "}Et «&nbsp;Swap&nbsp;» ne dit rien de l&apos;éligibilité&nbsp;:{" "}
-                  <Mnemoniques fonds={SWAP_ELIGIBLES} />{" "}
-                  {accord(SWAP_ELIGIBLES.length, "le porte et est éligible", "le portent et sont éligibles")}
-                  ,{" "}<Mnemoniques fonds={SWAP_NON_ELIGIBLES} />{" "}
-                  {accord(SWAP_NON_ELIGIBLES.length, "le porte et ne l'est pas", "le portent et ne le sont pas")}.
-                </>
-              )}
-            </p>
-          )}
+          <p>
+            Le P devant un mnémonique n&apos;est pas une règle. Sur les {N}{" "}
+            lignes éligibles de notre liste, {N_SANS_P}{" "}
+            {accord(N_SANS_P, "ne commence", "ne commencent")} pas par P, dont{" "}
+            <Mnemoniques fonds={EXEMPLES_SANS_P} />.
+            {N_AMUNDI_P > 0 && N_AMUNDI_SANS_P > 0 && (
+              <>
+                {" "}Chez Amundi même, {N_AMUNDI_P} lignes éligibles portent un P
+                et {N_AMUNDI_SANS_P} n&apos;en portent pas.
+              </>
+            )}
+          </p>
+          <p>
+            Le nom ne suffit pas davantage&nbsp;: {N_SANS_MOT_PEA} lignes
+            éligibles n&apos;ont pas le mot «&nbsp;PEA&nbsp;» dans leur nom.
+            {SWAP_ELIGIBLES.length > 0 && SWAP_NON_ELIGIBLES.length > 0 && (
+              <>
+                {" "}Et «&nbsp;Swap&nbsp;» ne dit rien de l&apos;éligibilité&nbsp;:{" "}
+                <Mnemoniques fonds={SWAP_ELIGIBLES} />{" "}
+                {accord(SWAP_ELIGIBLES.length, "le porte et est éligible", "le portent et sont éligibles")}
+                ,{" "}<Mnemoniques fonds={SWAP_NON_ELIGIBLES} />{" "}
+                {accord(SWAP_NON_ELIGIBLES.length, "le porte et ne l'est pas", "le portent et ne le sont pas")}.
+              </>
+            )}
+          </p>
           <p className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-700">
             Ce qui fait foi&nbsp;: l&apos;ISIN, pour savoir de quel fonds on
             parle, et un document de l&apos;émetteur, pour savoir s&apos;il est
@@ -527,9 +614,21 @@ export default function EtfEligiblesPeaPage() {
             l&apos;Espace économique européen, pour plus de 75&nbsp;% de son
             actif, et signe avec une banque un contrat d&apos;échange, le swap,
             qui lui verse la performance de l&apos;indice.{" "}
-            {N_SYNTHETIQUES === N_ELIGIBLES
-              ? `Les ${N_ELIGIBLES} fonds éligibles de notre liste sont tous synthétiques.`
-              : `${N_SYNTHETIQUES} des ${N_ELIGIBLES} fonds éligibles de notre liste sont synthétiques.`}
+            {N_SYNTHETIQUES} des {N} lignes de notre liste sont synthétiques
+            {TOUTES_HORS_EUROPE_SYNTHETIQUES && (
+              <>
+                , dont les {LIGNES_HORS_EUROPE.length} qui suivent un indice
+                hors d&apos;Europe (monde, États-Unis, pays émergents, Japon…)
+              </>
+            )}
+            .
+            {PHYSIQUES_EUROPEENNES && (
+              <>
+                {" "}Les {PHYSIQUES.length} lignes en réplication physique suivent,
+                elles, des indices d&apos;actions européennes&nbsp;: le fonds peut
+                détenir directement leurs actions.
+              </>
+            )}
           </p>
           {SWAP_HORS_PEA.length > 0 && (
             <p>
@@ -576,8 +675,7 @@ export default function EtfEligiblesPeaPage() {
       </section>
 
       {/* ── 5. Vérifier soi-même ─────────────────────────────────────────── */}
-      {/* Seulement ce que les faits établissent. Rien sur une mention PEA
-          dans le DIC : la vérification du 28/09/2026 ne l'a pas établie. */}
+      {/* Seulement ce que les faits établissent. */}
       <section className="mb-14">
         <h2 className="text-2xl font-bold text-gray-900 mb-4">
           Vérifier vous-même avant d&apos;acheter
@@ -609,12 +707,17 @@ export default function EtfEligiblesPeaPage() {
               ligne «&nbsp;Éligibilité&nbsp;» ne prouve rien&nbsp;: elle affiche
               «&nbsp;Compte-titres, Assurance-vie&nbsp;» aussi bien pour CW8 et
               PAEEM, éligibles au PEA, que pour les fonds qui ne le sont pas.
+              Chaque ligne de notre liste donne le document qui fait foi pour
+              elle, et sa date.
             </>,
             <>
               <strong className="text-gray-900">Recoupez avec une source indépendante de l&apos;émetteur</strong>&nbsp;:
-              justETF, Boursorama ou Euronext. C&apos;est notre méthode&nbsp;:
-              l&apos;ISIN, les frais et l&apos;éligibilité n&apos;entrent dans
-              cette liste que si les deux concordent.
+              justETF, Boursorama ou Euronext. C&apos;est notre méthode&nbsp;: une
+              ligne n&apos;entre dans cette liste que si une source indépendante
+              confirme ce que dit l&apos;émetteur. Aucune n&apos;est
+              infaillible&nbsp;: au {DATE_RELEVE}, le filtre PEA de Boursorama
+              omettait les ETF à effet de levier d&apos;Amundi, et classait
+              éligibles des fonds que leur émetteur déclare non éligibles.
             </>,
             <>
               <strong className="text-gray-900">Vérifiez que le fonds a un DIC</strong>,
@@ -627,7 +730,7 @@ export default function EtfEligiblesPeaPage() {
               <strong className="text-gray-900">Regardez la date.</strong> Une
               gamme bouge&nbsp;: GPEA n&apos;existe que depuis le 6 juillet 2026,
               et notre propre catalogue s&apos;est trompé jusqu&apos;au{" "}
-              {DATE_VERIF}. Une liste sans date de vérification ne dit pas si
+              {DATE_TABLE}. Une liste sans date de vérification ne dit pas si
               elle est encore juste.
             </>,
           ].map((etape, i) => (
@@ -648,7 +751,7 @@ export default function EtfEligiblesPeaPage() {
       <RenvoiProduit
         produit="guide-demarrer-dca"
         contexte={
-          "Savoir qu'un fonds entre dans un PEA ne dit pas par où commencer\u00a0: ouvrir le plan, choisir un courtier " +
+          "Savoir qu'un fonds entre dans un PEA ne dit pas par où commencer : ouvrir le plan, choisir un courtier " +
           "dont les frais conviennent à votre montant, passer le premier ordre sur l'ISIN, puis tenir le rythme les mois de baisse."
         }
         className="mb-14"
@@ -681,19 +784,18 @@ export default function EtfEligiblesPeaPage() {
       </section>
 
       {/* ── Sources ──────────────────────────────────────────────────────── */}
-      {/* Textes officiels, documents Amundi (fait swap-non-eligible, 30/09/2026)
-          et fiche justETF de chaque fonds éligible (faits
-          etf-pea-*, consultés le 28/09/2026). L'adresse justETF se construit
-          sur l'ISIN : c'est celle que citent les faits, pour chaque fonds
-          (PTPXE : faits du 14/10/2026). */}
+      {/* Textes officiels, registre FIRDS, documents Amundi qui tranchent les
+          faux amis (fait swap-non-eligible, 30/09/2026) et PTPXE (14/10/2026).
+          Le document de l'émetteur de CHAQUE ligne est dans son détail et dans
+          le CSV : les 128 adresses ne sont pas répétées ici. */}
       <SourcesReferences
-        intro={`Chaque fonds a été vérifié le ${DATE_VERIF}${MENTION_AJOUTS} sur les documents de son émetteur, puis recoupé sur justETF, Boursorama et Euronext. Ci-dessous, les textes officiels cités, les documents d'Amundi qui tranchent l'éligibilité de 500, ANX et AEEM, et la fiche justETF de chaque fonds éligible.`}
+        intro={`Chaque ligne de la liste cite, dans son détail et dans le CSV, le document de son émetteur qui établit l'éligibilité, avec sa date. Ci-dessous, les textes officiels cités, le registre d'où viennent les dates de cotation, les sources de recoupement relevées le ${DATE_RELEVE}, et les documents d'Amundi qui tranchent l'éligibilité de 500, ANX et AEEM.`}
         sources={[
           {
             label: "Code monétaire et financier — article L221-31",
             url: "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000051218125",
             publisher: "Légifrance",
-            note: "Fonds éligibles au PEA\u00a0: plus de 75\u00a0% de l'actif en actions de sociétés de l'UE ou de l'EEE. Version en vigueur depuis le 16 février 2025, consultée le 28 septembre 2026.",
+            note: "Fonds éligibles au PEA : plus de 75 % de l'actif en actions de sociétés de l'UE ou de l'EEE. Version en vigueur depuis le 16 février 2025, consultée le 28 septembre 2026.",
           },
           {
             label: "Plan d'épargne en actions (PEA)",
@@ -702,7 +804,31 @@ export default function EtfEligiblesPeaPage() {
             note: "Titres et fonds que l'on peut placer dans un PEA. Fiche vérifiée le 22 mai 2026, consultée le 28 septembre 2026.",
           },
           {
-            label: "Les ETF\u00a0: caractéristiques, état des lieux et analyse des risques (février 2017)",
+            label: `Registre FIRDS — ${FIRDS.fichier}`,
+            url: FIRDS.url,
+            publisher: "Autorité européenne des marchés financiers (ESMA)",
+            note: `Liste des instruments cotés à Euronext Paris, avec leur date de 1re cotation : source de la colonne « Cotée à Paris depuis ». Réutilisation autorisée avec citation de la source. Téléchargé le ${DATE_RELEVE}.`,
+          },
+          {
+            label: "Liste des ETF cotés sur Euronext",
+            url: "https://live.euronext.com/fr/products/etfs/list",
+            publisher: "Euronext",
+            note: `Mnémoniques et devises de cotation à Paris, recoupés avec le registre FIRDS. Consultée le ${DATE_RELEVE}.`,
+          },
+          {
+            label: "justETF — fiche de chaque ETF",
+            url: "https://www.justetf.com/fr/",
+            publisher: "justETF",
+            note: `Source de recoupement : mention « Éligible au PEA », frais, réplication, date de lancement. Fiches consultées le ${DATE_RELEVE}, à l'adresse justetf.com/fr/etf-profile.html?isin= suivie de l'ISIN.`,
+          },
+          {
+            label: "Boursorama — recherche de trackers, filtre « Éligibilité PEA »",
+            url: "https://www.boursorama.com/bourse/trackers/recherche/",
+            publisher: "Boursorama",
+            note: `Source de recoupement de l'éligibilité. Relevé le ${DATE_RELEVE}.`,
+          },
+          {
+            label: "Les ETF : caractéristiques, état des lieux et analyse des risques (février 2017)",
             url: "https://www.amf-france.org/sites/institutionnel/files/contenu_simple/lettre_ou_cahier/risques_tendances/Les%20ETF%20%20caracteristiques,%20etat%20des%20lieux%20et%20analyse%20des%20risques%20-%20Le%20cas%20du%20marche%20francais.pdf",
             publisher: "Autorité des marchés financiers (AMF)",
             note: "Réplication physique et synthétique, contrat d'échange de performance. Consulté le 28 septembre 2026.",
@@ -711,19 +837,19 @@ export default function EtfEligiblesPeaPage() {
             label: "MSCI World Index — fiche de l'indice (données au 31 août 2026)",
             url: "https://www.msci.com/documents/10199/255599/msci-world-index.pdf",
             publisher: "MSCI Inc.",
-            note: "Poids des États-Unis\u00a0: 72,14\u00a0% au 31 août 2026. Consultée le 28 septembre 2026.",
+            note: "Poids des États-Unis : 72,14 % au 31 août 2026. Consultée le 28 septembre 2026.",
           },
           {
             label: "Code monétaire et financier — article R214-21",
             url: "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000027797309",
             publisher: "Légifrance",
-            note: "Plafond du risque de contrepartie d'un fonds\u00a0: 10\u00a0% de l'actif sur un établissement de crédit, 5\u00a0% sinon. Consulté le 28 septembre 2026.",
+            note: "Plafond du risque de contrepartie d'un fonds : 10 % de l'actif sur un établissement de crédit, 5 % sinon. Consulté le 28 septembre 2026.",
           },
           {
-            label: "Application du règlement PRIIPs\u00a0: quel sort pour les produits packagés américains\u00a0?",
+            label: "Application du règlement PRIIPs : quel sort pour les produits packagés américains ?",
             url: "https://www.amf-france.org/en/amf-ombudsman/ombudsman-online-diary/latest/application-priips-regulation-what-happens-us-packaged-products-subscribed-regulation-came-force",
             publisher: "AMF — journal de bord de la médiatrice, 9 mars 2023",
-            note: "Fonds américains sans DIC\u00a0: plus commercialisés auprès des particuliers de l'EEE depuis le 1er janvier 2018. Consulté le 28 septembre 2026.",
+            note: "Fonds américains sans DIC : plus commercialisés auprès des particuliers de l'EEE depuis le 1er janvier 2018. Consulté le 28 septembre 2026.",
           },
           // 30/09/2026 : …/particuliers/products/… répondait 404 (adresse du
           // fait etf-pea-pust, fausse) ; …/particuliers/produits/… répond 200.
@@ -741,95 +867,84 @@ export default function EtfEligiblesPeaPage() {
             label: "Amundi S&P 500 Swap UCITS ETF EUR Acc (500) — reporting mensuel au 31 août 2026, version pour professionnels",
             url: "https://www.amundietf.fr/pdfDocuments/monthly-factsheet/LU1681048804/FRA/FRA/INSTITUTIONNEL/ETF/20260831",
             publisher: "Amundi ETF",
-            note: "«\u00a0Enveloppe fiscale\u00a0: -\u00a0», aucune mention du PEA dans le document. Consulté le 30 septembre 2026.",
+            note: "« Enveloppe fiscale : - », aucune mention du PEA dans le document. Consulté le 30 septembre 2026.",
           },
           {
             label: "Amundi Nasdaq-100 Swap UCITS ETF EUR Acc (ANX) — reporting mensuel au 31 août 2026, version pour professionnels",
             url: "https://www.amundietf.fr/pdfDocuments/monthly-factsheet/LU1681038243/FRA/FRA/INSTITUTIONNEL/ETF/20260831",
             publisher: "Amundi ETF",
-            note: "«\u00a0Enveloppe fiscale\u00a0: -\u00a0», aucune mention du PEA dans le document. Consulté le 30 septembre 2026.",
+            note: "« Enveloppe fiscale : - », aucune mention du PEA dans le document. Consulté le 30 septembre 2026.",
           },
           {
             label: "Amundi MSCI Emerging Markets Swap UCITS ETF EUR Acc (AEEM) — reporting mensuel au 31 août 2026, version pour professionnels",
             url: "https://www.amundietf.fr/pdfDocuments/monthly-factsheet/LU1681045370/FRA/FRA/INSTITUTIONNEL/ETF/20260831",
             publisher: "Amundi ETF",
-            note: "«\u00a0Enveloppe fiscale\u00a0: -\u00a0», aucune mention du PEA dans le document. Consulté le 30 septembre 2026.",
+            note: "« Enveloppe fiscale : - », aucune mention du PEA dans le document. Consulté le 30 septembre 2026.",
           },
           {
             label: "Amundi MSCI World Swap UCITS ETF EUR Acc (CW8) — reporting mensuel au 31 août 2026, version pour professionnels",
             url: "https://www.amundietf.fr/pdfDocuments/monthly-factsheet/LU1681043599/FRA/FRA/INSTITUTIONNEL/ETF/20260831",
             publisher: "Amundi ETF",
-            note: "«\u00a0Enveloppe fiscale\u00a0: Eligible au PEA\u00a0». La ligne «\u00a0Éligibilité\u00a0» y indique pourtant «\u00a0Compte-titres, Assurance-vie\u00a0», comme pour 500, ANX et AEEM. Consulté le 30 septembre 2026.",
+            note: "« Enveloppe fiscale : Eligible au PEA ». La ligne « Éligibilité » y indique pourtant « Compte-titres, Assurance-vie », comme pour 500, ANX et AEEM. Consulté le 30 septembre 2026.",
           },
           {
             label: "Amundi PEA Emergent (MSCI Emerging) ESG Transition UCITS ETF Acc (PAEEM) — reporting mensuel au 31 août 2026, version pour professionnels",
             url: "https://www.amundietf.fr/pdfDocuments/monthly-factsheet/FR0013412020/FRA/FRA/INSTITUTIONNEL/ETF/20260831",
             publisher: "Amundi ETF",
-            note: "«\u00a0Enveloppe fiscale\u00a0: Eligible au PEA\u00a0». La ligne «\u00a0Éligibilité\u00a0» y indique pourtant «\u00a0Compte-titres, Assurance-vie\u00a0», comme pour 500, ANX et AEEM. Consulté le 30 septembre 2026.",
+            note: "« Enveloppe fiscale : Eligible au PEA ». La ligne « Éligibilité » y indique pourtant « Compte-titres, Assurance-vie », comme pour 500, ANX et AEEM. Consulté le 30 septembre 2026.",
           },
           {
             label: "Amundi S&P 500 Swap UCITS ETF EUR Acc (500) — page du fonds",
             url: "https://www.amundietf.fr/fr/particuliers/produits/equity/amundi-sp-500-swap-ucits-etf-eur-acc/lu1681048804",
             publisher: "Amundi ETF",
-            note: "«\u00a0Eligibilité au PEA\u00a0: Non\u00a0». Consultée le 30 septembre 2026.",
+            note: "« Eligibilité au PEA : Non ». Consultée le 30 septembre 2026.",
           },
           {
             label: "Amundi Nasdaq-100 Swap UCITS ETF EUR Acc (ANX) — page du fonds",
             url: "https://www.amundietf.fr/fr/particuliers/produits/equity/amundi-nasdaq100-swap-ucits-etf-eur-acc/lu1681038243",
             publisher: "Amundi ETF",
-            note: "«\u00a0Eligibilité au PEA\u00a0: Non\u00a0». Consultée le 30 septembre 2026.",
+            note: "« Eligibilité au PEA : Non ». Consultée le 30 septembre 2026.",
           },
           {
             label: "Amundi MSCI Emerging Markets Swap UCITS ETF EUR Acc (AEEM) — page du fonds",
             url: "https://www.amundietf.fr/fr/particuliers/produits/equity/amundi-msci-emerging-markets-swap-ucits-etf-eur-acc/lu1681045370",
             publisher: "Amundi ETF",
-            note: "«\u00a0Eligibilité au PEA\u00a0: Non\u00a0». Consultée le 30 septembre 2026.",
+            note: "« Eligibilité au PEA : Non ». Consultée le 30 septembre 2026.",
           },
           {
             label: "Amundi MSCI World Swap UCITS ETF EUR Acc (CW8) — page du fonds",
             url: "https://www.amundietf.fr/fr/particuliers/produits/equity/amundi-msci-world-swap-ucits-etf-eur-acc/lu1681043599",
             publisher: "Amundi ETF",
-            note: "«\u00a0Eligibilité au PEA\u00a0: Oui\u00a0». Consultée le 30 septembre 2026.",
+            note: "« Eligibilité au PEA : Oui ». Consultée le 30 septembre 2026.",
           },
           {
             label: "Amundi PEA Emergent (MSCI Emerging) ESG Transition UCITS ETF Acc (PAEEM) — page du fonds",
             url: "https://www.amundietf.fr/fr/particuliers/produits/equity/amundi-pea-emergent-msci-emerging-esg-transition-ucits-etf-acc/fr0013412020",
             publisher: "Amundi ETF",
-            note: "«\u00a0Eligibilité au PEA\u00a0: Oui\u00a0». Consultée le 30 septembre 2026.",
+            note: "« Eligibilité au PEA : Oui ». Consultée le 30 septembre 2026.",
           },
           // 14/10/2026 : les documents d'Amundi qui établissent l'éligibilité
           // et les frais de PTPXE (archives : private-assets/raw/geo/
-          // sources-vague1-2026-10/). Reporting : la version pour
-          // professionnels, seule à porter la ligne « Enveloppe fiscale ».
-          {
-            label: "Amundi PEA Japon (TOPIX) UCITS ETF EUR Acc (PTPXE) — reporting mensuel au 30 septembre 2026, version pour professionnels",
-            url: "https://www.amundietf.fr/pdfDocuments/monthly-factsheet/FR0013411980/FRA/FRA/INSTITUTIONNEL/ETF/20260930",
-            publisher: "Amundi ETF",
-            note: "«\u00a0Enveloppe fiscale\u00a0: Eligible au PEA\u00a0», frais 0,20\u00a0%, indice TOPIX. Consulté le 14 octobre 2026.",
-          },
+          // sources-vague1-2026-10/).
           {
             label: "Amundi PEA Japon (TOPIX) UCITS ETF — prospectus du 5 juin 2026",
             url: "https://www.amundietf.fr/pdfDocuments/prospectus/FR0013411980/FRA/FRA/20260605",
             publisher: "Amundi ETF",
-            note: "«\u00a0Le Fonds est éligible au Plan d'Epargne en Actions\u00a0». Consulté le 14 octobre 2026.",
+            note: "« Le Fonds est éligible au Plan d'Epargne en Actions ». Consulté le 14 octobre 2026.",
           },
           {
             label: "Amundi PEA Japon (TOPIX) UCITS ETF EUR Acc (PTPXE) — document d'informations clés du 5 juin 2026",
             url: "https://www.amundietf.fr/pdfDocuments/kid-priips/FR0013411980/FRA/FRA/20260605",
             publisher: "Amundi ETF",
-            note: "Frais courants\u00a0: 0,20\u00a0% de la valeur de l'investissement par an. Consulté le 14 octobre 2026.",
+            note: "Frais courants : 0,20 % de la valeur de l'investissement par an. Consulté le 14 octobre 2026.",
           },
-          ...ELIGIBLES_TRIES.map((f) => ({
-              label: `justETF — ${f.displaySymbol} (${f.isin})`,
-              url: `https://www.justetf.com/fr/etf-profile.html?isin=${f.isin}`,
-              publisher: "justETF",
-              note: `Source de recoupement\u00a0: nom, ISIN, frais, réplication. Consultée le ${dateEnToutesLettres(dateVerification(f.displaySymbol))}.`,
-            })),
         ]}
       />
 
       {/* ── JSON-LD ──────────────────────────────────────────────────────── */}
-      {/* FAQPage seul — l'Article est émis par ArticleByline. */}
+      {/* FAQPage et Dataset (le CSV) — l'Article est émis par ArticleByline.
+          Les deux portent la date de mise en ligne, comme la byline et le
+          sitemap (MISE_EN_LIGNE_LISTE_PEA). */}
       <JsonLd
         data={{
           "@context": "https://schema.org",
@@ -841,6 +956,30 @@ export default function EtfEligiblesPeaPage() {
           })),
         }}
       />
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "Dataset",
+          name: "ETF éligibles au PEA cotés à Euronext Paris",
+          description:
+            `${N} ETF cotés à Paris et éligibles au PEA au ${DATE_RELEVE}, un par ISIN : mnémonique, nom, émetteur, indice, réplication, frais courants, devise, ` +
+            `date de 1re cotation à Paris, effet de levier, et le document de l'émetteur qui établit l'éligibilité, avec sa date.`,
+          url: `https://dcatracker.fr${URL_LISTE_PEA}`,
+          inLanguage: "fr-FR",
+          isAccessibleForFree: true,
+          license: "https://creativecommons.org/licenses/by/4.0/",
+          creator: { "@id": "https://dcatracker.fr/a-propos#person" },
+          publisher: { "@id": "https://dcatracker.fr#organization" },
+          datePublished: MISE_EN_LIGNE_LISTE_PEA,
+          dateModified: MISE_EN_LIGNE_LISTE_PEA,
+          temporalCoverage: DATE_RELEVE_LISTE_PEA,
+          distribution: {
+            "@type": "DataDownload",
+            encodingFormat: "text/csv",
+            contentUrl: URL_CSV_ABSOLUE,
+          },
+        }}
+      />
     </div>
   );
 }
@@ -848,98 +987,175 @@ export default function EtfEligiblesPeaPage() {
 // ─── Sous-composants (propres à la page) ─────────────────────────────────────
 
 /**
- * Un vrai <table> sur écran large (copiable, lisible par un robot), qui se
- * replie en cartes sous 640 px : une ligne par fonds, chaque cellule sur sa
- * ligne avec son intitulé. Pas de défilement horizontal à 375 px, et un seul
- * DOM — les ancres #fonds-xxx n'existent qu'une fois.
+ * Un groupe de la liste : un vrai <table> sur écran large (copiable, lisible
+ * par un robot), qui se replie en cartes sous 640 px. Styles dans
+ * liste.module.css, posés une fois par sélecteurs descendants : les 128
+ * lignes n'ont presque pas de classes, et les textes sont assemblés en une
+ * seule chaîne par élément (pas de fragments React), pour que la page reste
+ * légère. Un seul DOM — les ancres #fonds-xxx n'existent qu'une fois.
  */
-function TableauFonds({ fonds, titre }: { fonds: EtfEligiblePea[]; titre: string }) {
-  // 14/10/2026 : la date de vérification du groupe (le Japon date du 14/10).
-  const verifie = dateEnToutesLettres(
-    fonds.map((f) => dateVerification(f.displaySymbol)).reduce((a, b) => (b > a ? b : a)),
-  );
-  const th = "px-3 py-3 text-left font-semibold text-gray-500 border-b border-gray-100";
-  const td = "flex gap-3 px-4 py-1 sm:table-cell sm:px-3 sm:py-3 sm:align-top";
-  const intitule = "w-24 shrink-0 text-gray-500 sm:hidden";
-
+function GroupeDeLaListe({ groupe: g }: { groupe: GroupeListe }) {
+  const guide: Partial<Record<CategorieId, { href: string; label: string }>> = {
+    "msci-world": { href: "/etf-msci-world", label: "notre guide des ETF MSCI World" },
+    sp500: { href: "/etf-sp500", label: "notre guide des ETF S&P 500" },
+    "nasdaq-100": { href: "/etf-nasdaq", label: "notre guide des ETF Nasdaq 100" },
+  };
+  const lien = guide[g.id];
   return (
-    <div className="rounded-2xl border border-gray-100 bg-white overflow-hidden">
-      <table className="w-full text-sm border-collapse">
-        <caption className="sr-only">
-          ETF {titre} éligibles au PEA, vérifiés le {verifie}
-        </caption>
-        <thead className="hidden sm:table-header-group bg-gray-50">
-          <tr>
-            <th scope="col" className={`${th} pl-4`}>Fonds</th>
-            <th scope="col" className={th}>ISIN</th>
-            <th scope="col" className={th}>Frais</th>
-            <th scope="col" className={th}>Réplication</th>
-            <th scope="col" className={th}>Dividendes</th>
-          </tr>
-        </thead>
-        <tbody className="block sm:table-row-group">
-          {fonds.map((f) => (
-            <tr
-              key={f.displaySymbol}
-              id={ancreFonds(f.displaySymbol)}
-              className="block py-3 border-b border-gray-100 last:border-b-0 sm:table-row sm:py-0"
-            >
-              <td className="block px-4 pb-2 sm:table-cell sm:py-3 sm:align-top">
-                {f.aUneFiche ? (
-                  <Link
-                    href={`/etf/${f.displaySymbol}`}
-                    className="font-bold text-primary-700 hover:underline"
-                  >
-                    {f.displaySymbol}
-                  </Link>
-                ) : (
-                  <span className="font-bold text-gray-900">{f.displaySymbol}</span>
-                )}
-                <span className="block text-gray-600 leading-snug mt-0.5">{f.name}</span>
-                {f.precision && (
-                  <span className="block text-xs text-gray-500 leading-snug mt-1">{f.precision}</span>
-                )}
-                {/* 09/10/2026 : un fonds sans fiche (GPEA, ESE) renvoie à ses
-                    comparatifs, faute de fiche qui le ferait. */}
-                {!f.aUneFiche &&
-                  ETF_COMPARISON_LIST.filter(
-                    (c) => c.left.heading === f.displaySymbol || c.right.heading === f.displaySymbol,
-                  ).map((c) => (
-                    <Link
-                      key={c.slug}
-                      href={`/comparatif-etf/${c.slug}`}
-                      className="block text-xs font-medium text-primary-700 hover:underline mt-1"
-                    >
-                      Comparatif {c.left.heading} vs {c.right.heading}
-                    </Link>
-                  ))}
-              </td>
-              <td className={td}>
-                <span className={intitule}>ISIN</span>
-                <span className="font-mono text-[13px] text-gray-900 select-all">{f.isin}</span>
-              </td>
-              <td className={`${td} sm:whitespace-nowrap`}>
-                <span className={intitule}>Frais</span>
-                <span className="font-semibold text-gray-900 tabular-nums">{frais(f)}</span>
-              </td>
-              <td className={td}>
-                <span className={intitule}>Réplication</span>
-                <span className="text-gray-600">{f.replicationMethod}</span>
-              </td>
-              <td className={td}>
-                <span className={intitule}>Dividendes</span>
-                <span className="text-gray-600">
-                  {f.distributionPolicy}
-                  {f.partCD && (
-                    <span className="block text-xs text-gray-500">part «&nbsp;C/D&nbsp;» selon Amundi</span>
-                  )}
-                </span>
-              </td>
+    <div data-groupe="">
+      <h3 id={g.id} className="text-lg font-bold text-gray-900 mb-1 scroll-mt-20">
+        {g.titre}{" "}
+        <span className="text-sm font-medium text-gray-500">
+          {`· ${g.lignes.length} ${accord(g.lignes.length, "ligne", "lignes")}`}
+        </span>
+      </h3>
+      <p className="text-sm text-gray-500 leading-relaxed mb-3">
+        {g.description}
+        {lien && (
+          <>
+            {" "}Pour les comparer&nbsp;:{" "}
+            <Link href={lien.href} className="text-primary-700 font-medium hover:underline">
+              {lien.label}
+            </Link>
+            .
+          </>
+        )}
+      </p>
+      {g.id === "levier" && (
+        <p className="text-sm text-amber-900 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 leading-relaxed mb-3">
+          Ces fonds sont éligibles au PEA, mais pour {N_DETENTION_1_JOUR}{" "}
+          d&apos;entre eux, le document d&apos;informations clés recommande une
+          durée de détention d&apos;un jour. L&apos;indicateur de risque de ce
+          document et cette durée sont donnés sur chaque ligne.
+        </p>
+      )}
+      <div className="rounded-2xl border border-gray-100 bg-white overflow-hidden">
+        <table className={styles.t}>
+          <caption className="sr-only">{`ETF ${g.titre} éligibles au PEA, relevés le ${DATE_RELEVE}`}</caption>
+          <thead>
+            <tr>
+              <th scope="col">Fonds</th>
+              <th scope="col">ISIN</th>
+              <th scope="col">Frais</th>
+              <th scope="col">Réplication</th>
+              <th scope="col">Cotée à Paris depuis</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {g.lignes.map((l) => (
+              <LigneDeLaListe key={l.ticker} l={l} />
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
+  );
+}
+
+function LigneDeLaListe({ l }: { l: LignePea }) {
+  const comparatifs = A_UNE_FICHE.has(l.ticker)
+    ? []
+    : ETF_COMPARISON_LIST.filter((c) => c.left.heading === l.ticker || c.right.heading === l.ticker);
+  return (
+    <tr
+      id={ancreFonds(l.ticker)}
+      data-ligne=""
+      data-cat={l.categorie}
+      data-em={l.emetteur}
+      data-dev={l.devise}
+      {...(l.levier ? { "data-lev": "1" } : {})}
+    >
+      <td>
+        <p>
+          {A_UNE_FICHE.has(l.ticker) ? (
+            <Link href={`/etf/${l.ticker}`}>{l.ticker}</Link>
+          ) : (
+            <strong>{l.ticker}</strong>
+          )}
+          {l.devise === "USD" && <em>en dollars</em>}
+          {l.partCD && <em>part C/D</em>}
+          {l.levier && <em className="r">{l.levier.quotidien ? "levier quotidien" : "levier"}</em>}
+        </p>
+        <p>{l.nom}</p>
+        <p>{`${l.emetteur} · ${l.indice}`}</p>
+        {l.levier && <p className="lv">{libelleLevier(l)}</p>}
+        {l.note && <p className="nt">{l.note}</p>}
+        {comparatifs.map((c) => (
+          <Link key={c.slug} href={`/comparatif-etf/${c.slug}`}>
+            {`Comparatif ${c.left.heading} vs ${c.right.heading}`}
+          </Link>
+        ))}
+        <DetailLigne l={l} />
+      </td>
+      <td>
+        <span className="l">ISIN</span>
+        <span className="i">{l.isin}</span>
+      </td>
+      <td>
+        <span className="l">Frais</span>
+        <b>
+          {formatTer(l.frais)}
+          {l.fraisEstimes && <small>estimés</small>}
+        </b>
+      </td>
+      <td>
+        <span className="l">Réplication</span>
+        {LIBELLE_REPLICATION[l.replication]}
+      </td>
+      <td>
+        <span className="l">Cotée à Paris depuis</span>
+        {l.coteeDepuis ? <time dateTime={l.coteeDepuis}>{dateCourte(l.coteeDepuis)}</time> : "non établie"}
+      </td>
+    </tr>
+  );
+}
+
+/** La preuve de la ligne, et ce qu'il faut savoir d'elle. Fermé par défaut. */
+function DetailLigne({ l }: { l: LignePea }) {
+  const p = l.preuve;
+  const mention = p.paraphrase ? p.mention : `« ${p.mention} »`;
+  const vl = l.premiereVl ? `${dateEnToutesLettres(l.premiereVl)}, selon l'émetteur` : "non établie";
+  const cotee = l.coteeDepuis
+    ? `cotée à Paris depuis le ${dateEnToutesLettres(l.coteeDepuis)} (registre FIRDS)`
+    : "date de 1re cotation à Paris non établie";
+  return (
+    <details>
+      <summary className={l.reserve ? "r" : undefined}>{l.reserve ? "Preuve PEA · réserve" : "Preuve PEA"}</summary>
+      <dl>
+        <div>
+          <dt>Éligibilité au PEA</dt>
+          <dd>
+            {`${p.document}, ${dateDocument(p.date)} : ${mention}. `}
+            <a href={p.url} target="_blank" rel="noopener">
+              Lire le document
+            </a>
+          </dd>
+        </div>
+        <div>
+          <dt>Recoupé par</dt>
+          <dd>{`${enumerer(l.recoupe)}, le ${DATE_RELEVE}`}</dd>
+        </div>
+        <div>
+          <dt>Dates</dt>
+          <dd>{`1re valeur liquidative : ${vl} ; ${cotee}.`}</dd>
+        </div>
+        {l.reserve && (
+          <div className="r">
+            <dt>Réserve</dt>
+            <dd>{l.reserve}</dd>
+          </div>
+        )}
+        {l.equivalentEuros && (
+          <div>
+            <dt>Ligne en euros du même fonds</dt>
+            <dd>
+              <a href={`#${ancreFonds(l.equivalentEuros)}`}>{l.equivalentEuros}</a>
+              {` (${parTicker(l.equivalentEuros).isin})`}
+            </dd>
+          </div>
+        )}
+      </dl>
+    </details>
   );
 }
 

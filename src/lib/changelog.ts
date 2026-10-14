@@ -1,3 +1,5 @@
+import { MISE_EN_LIGNE_LISTE_PEA } from "@/lib/liste-pea/mise-en-ligne";
+
 // Journal des changements publics.
 //
 // Règle de rédaction : on inscrit ici tout changement qui touche à un
@@ -39,8 +41,32 @@ export interface ChangelogEntry {
   why?: string;
 }
 
+/** « 2026-10-28 » → « 28 octobre 2026 » (« 1er » le premier du mois). */
+const enLettres = (iso: string) =>
+  new Date(`${iso}T00:00:00Z`)
+    .toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" })
+    .replace(/^1(?=\s)/, "1er");
+
 /** Du plus récent au plus ancien. Garder cet ordre à la main. */
 export const CHANGELOG: ChangelogEntry[] = [
+  // Liste complète des ETF éligibles au PEA (relevé du 14/10/2026 :
+  // private-assets/raw/geo/liste-pea-2026-10/liste-pea-consolidee.json).
+  // Date = MISE_EN_LIGNE_LISTE_PEA, la même que la byline, le JSON-LD et le
+  // sitemap de la page : à régler au jour réel du déploiement, et l'entrée
+  // suit. Nombres écrits en dur, comme les autres entrées : l'entrée dit ce
+  // qui était vrai ce jour-là, pas ce que dira la liste plus tard.
+  {
+    date: MISE_EN_LIGNE_LISTE_PEA,
+    kind: "produit",
+    title: "ETF éligibles au PEA\u00a0: la liste compte 128 lignes cotées à Paris, chacune avec sa preuve",
+    body:
+      `Jusqu'au ${enLettres(MISE_EN_LIGNE_LISTE_PEA)}, la liste des ETF éligibles au PEA comptait les 14 fonds que nous avions vérifiés entre le 28 septembre et le 14 octobre 2026. ` +
+      `Depuis le ${enLettres(MISE_EN_LIGNE_LISTE_PEA)}, elle compte 128 ETF cotés à Euronext Paris, relevés le 14 octobre 2026 sur 144 cotations examinées\u00a0: pour chacun, un document daté de son émetteur établit l'éligibilité au PEA, et justETF ou Boursorama le confirme. ` +
+      "Chaque ligne donne son ISIN, ses frais courants, l'indice suivi, sa date de 1re cotation à Paris et le document qui prouve l'éligibilité\u00a0; 65 portent une réserve, dont les 10 ETF à effet de levier, signalés avec l'indicateur de risque de leur document d'informations clés. " +
+      "Dix autres lignes ne sont pas publiées, faute d'un document de l'émetteur qui établisse leur éligibilité ou un fait essentiel comme les frais. La liste se télécharge en CSV, sans cours ni performance.",
+    why:
+      "Une liste limitée à notre sélection laissait sans réponse qui cherchait un fonds précis, et le filtre PEA d'un courtier ne suffit pas\u00a0: au 14 octobre 2026, celui de Boursorama omettait les ETF à effet de levier d'Amundi et classait éligibles des fonds que leur émetteur déclare non éligibles. Une liste complète ne vaut que si chaque ligne porte sa preuve et sa date.",
+  },
   // 14/10/2026 : décision de Maël de cesser d'utiliser Yahoo Finance (plan :
   // private-assets/raw/geo/remplacement-yahoo-2026-10.md). Fiches ETF hors de
   // ce lot : elles changent avec les fiches v2 (23/10/2026), l'entrée le dit

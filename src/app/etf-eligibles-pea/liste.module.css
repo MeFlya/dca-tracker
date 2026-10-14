@@ -1,0 +1,151 @@
+/*
+ * Tableau de la liste complète (/etf-eligibles-pea, 28/10/2026).
+ *
+ * 128 lignes : avec les classes Tailwind répétées sur chaque cellule, la page
+ * pesait 1,1 Mo de HTML (dont la moitié en classes, recopiées une seconde
+ * fois dans la charge React). Les styles sont posés ici une fois, par
+ * sélecteurs descendants de .t ; les lignes n'ont presque plus de classes.
+ * Les rares classes internes (:global) sont courtes et n'existent que sous .t.
+ */
+
+.t {
+  @apply w-full text-sm border-collapse;
+}
+.t thead {
+  @apply hidden bg-gray-50 sm:table-header-group;
+}
+.t th {
+  @apply px-3 py-3 text-left font-semibold text-gray-500 border-b border-gray-100;
+}
+.t th:first-child {
+  @apply pl-4;
+}
+.t tbody tr {
+  @apply border-b border-gray-100 scroll-mt-20;
+}
+.t tbody tr:last-child {
+  @apply border-b-0;
+}
+.t td {
+  @apply align-top text-gray-600;
+}
+
+/* Sous 640 px : une carte par ligne, chaque cellule sur sa ligne avec son intitulé. */
+@media (max-width: 639px) {
+  .t,
+  .t tbody,
+  .t tr {
+    display: block;
+  }
+  .t tbody tr {
+    @apply py-3;
+  }
+  .t td {
+    @apply flex gap-3 px-4 py-0.5;
+  }
+  .t td:first-child {
+    @apply block pb-2;
+  }
+}
+@media (min-width: 640px) {
+  .t td {
+    @apply px-3 py-3;
+  }
+  .t td:first-child {
+    @apply pl-4;
+    width: 44%;
+  }
+  .t td:nth-child(3),
+  .t td:nth-child(5) {
+    @apply whitespace-nowrap;
+  }
+  .t td > :global(.l) {
+    display: none;
+  }
+}
+
+/* Intitulé de cellule, sur mobile seulement. */
+.t td > :global(.l) {
+  @apply w-28 shrink-0 text-gray-500;
+}
+
+/* Première cellule : mnémonique et pastilles, nom, émetteur et indice. */
+.t td:first-child > p {
+  @apply text-xs text-gray-500 leading-snug mt-0.5;
+}
+.t td:first-child > p:first-child {
+  @apply flex flex-wrap items-center gap-x-2 gap-y-1 text-sm mt-0;
+}
+.t td:first-child > p:first-child > a {
+  @apply font-bold text-primary-700 hover:underline;
+}
+.t td:first-child > p:first-child > strong {
+  @apply font-bold text-gray-900;
+}
+.t td:first-child > p:nth-child(2) {
+  @apply text-sm text-gray-700;
+}
+.t td:first-child > p:global(.lv) {
+  @apply text-red-800 mt-1;
+}
+.t td:first-child > p:global(.nt) {
+  @apply mt-1;
+}
+.t td:first-child > a {
+  @apply block text-xs font-medium text-primary-700 hover:underline mt-1;
+}
+.t em {
+  @apply not-italic text-[11px] font-semibold px-1.5 py-0.5 rounded-full border text-gray-600 bg-gray-50 border-gray-200;
+}
+.t em:global(.r) {
+  @apply text-red-800 bg-red-50 border-red-200;
+}
+
+/* Autres cellules. */
+.t td > :global(.i) {
+  @apply font-mono text-[13px] text-gray-900 select-all;
+}
+.t td > b {
+  @apply font-semibold text-gray-900 tabular-nums;
+}
+.t td > b > small {
+  @apply block text-xs font-normal text-gray-500;
+}
+.t time {
+  @apply text-gray-600 tabular-nums;
+}
+
+/* Détail de la ligne : la preuve. */
+.t details {
+  @apply mt-2;
+}
+.t summary {
+  @apply inline-flex cursor-pointer list-none items-center gap-1 text-xs font-semibold text-primary-700 hover:underline;
+}
+.t summary::-webkit-details-marker {
+  display: none;
+}
+.t summary:global(.r) {
+  @apply text-amber-800;
+}
+.t summary::after {
+  content: "▾";
+  display: inline-block;
+  @apply transition-transform;
+}
+.t details[open] > summary::after {
+  @apply rotate-180;
+}
+.t dl {
+  @apply mt-2 space-y-1.5 rounded-xl bg-gray-50 px-3 py-2.5 text-xs leading-relaxed text-gray-600;
+}
+.t dt {
+  @apply font-semibold text-gray-800;
+}
+.t dl a {
+  @apply font-medium text-primary-700 hover:underline;
+}
+.t dl > :global(.r) dt,
+.t dl > :global(.r) dd {
+  @apply text-amber-900;
+}

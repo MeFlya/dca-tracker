@@ -27,6 +27,7 @@
 //     ou une correspondance PEA qui désigne un fonds absent de la liste.
 
 import { ETF_LIST, type ETFConfig } from "@/lib/etf-config";
+import { MISE_EN_LIGNE_LISTE_PEA } from "@/lib/liste-pea/mise-en-ligne";
 
 /** Date de la vérification (table de vérité ETF), YYYY-MM-DD. */
 export const DATE_VERIFICATION_PEA = "2026-09-28";
@@ -36,7 +37,9 @@ export const DATE_VERIFICATION_PEA = "2026-09-28";
  * byline ET par le sitemap : une seule date, pas deux qui divergent.
  */
 // 14/10/2026 : PTPXE ajouté, groupe Japon et FAQ Japon corrigés.
-export const MAJ_LISTE_PEA = "2026-10-14";
+// Liste complète (128 lignes, relevé du 14/10/2026) : la date de sa mise en
+// ligne, réglée au jour réel du déploiement (src/lib/liste-pea/mise-en-ligne.ts).
+export const MAJ_LISTE_PEA = MISE_EN_LIGNE_LISTE_PEA;
 
 export const URL_LISTE_PEA = "/etf-eligibles-pea";
 
@@ -416,7 +419,10 @@ export interface EtfEligiblePea extends FondsDeLaListe {
  * mention de l'émetteur, comme la fiche v2 de PAEEM : deux pages du site ne
  * doivent pas se contredire sur le même ISIN.
  */
-const PARTS_C_D = new Set(["PAEEM", "PE500", "PTPXE"]);
+// 14/10/2026 (relecture de la liste complète) : PCEU ajouté, son reporting
+// porte la même mention ; src/lib/liste-pea/index.ts contrôle que les deux
+// listes disent la même chose.
+const PARTS_C_D = new Set(["PAEEM", "PCEU", "PE500", "PTPXE"]);
 
 /** Les ETF éligibles au PEA vérifiés le 28/09/2026 : catalogue d'abord, puis hors catalogue. */
 export const ETF_PEA_VERIFIES: EtfEligiblePea[] = TOUS.filter((f) => f.peaEligible).map((f) => {

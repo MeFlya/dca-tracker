@@ -62,13 +62,11 @@ import { runSimulation, formatEur } from "@/lib/simulator";
 import { paramsFromSearch } from "@/lib/simulation-params";
 import {
   dateEnToutesLettres,
-  DATE_VERIFICATION_PEA,
-  DERNIERE_VERIFICATION_PEA,
   estDansLaTable,
-  ETF_PEA_VERIFIES,
   ETF_NON_ELIGIBLES,
   URL_LISTE_PEA,
 } from "@/lib/etf-pea-verifies";
+import { DATE_RELEVE_LISTE_PEA, LIGNES_PEA } from "@/lib/liste-pea/donnees";
 
 export const dynamic = "force-static";
 
@@ -317,14 +315,14 @@ function entree(chemin: string): Entree {
   if (chemin === URL_LISTE_PEA) {
     // Titre et description de la page sont des gabarits (lirePage ne les lit
     // pas) : on les recompose avec les mêmes données qu'elle.
-    // 14/10/2026 : PTPXE vérifié après la table du 28/09 — même intervalle
-    // que la description de la page.
-    const verifie = dateEnToutesLettres(DATE_VERIFICATION_PEA);
-    const derniere = dateEnToutesLettres(DERNIERE_VERIFICATION_PEA);
-    const quand = derniere === verifie ? `le ${verifie}` : `du ${verifie} au ${derniere}`;
+    // 28/10/2026 : la liste complète (relevé du 14/10/2026) remplace les 14
+    // fonds de la table de vérité — même contenu que la description de la page.
     return {
       titre: "ETF éligibles au PEA : la liste vérifiée",
-      note: `${ETF_PEA_VERIFIES.length} ETF éligibles au PEA vérifiés un par un ${quand} (ISIN, frais), et ${ETF_NON_ELIGIBLES.length} fonds qui ne le sont pas.`,
+      note:
+        `${LIGNES_PEA.length} ETF cotés à Paris et éligibles au PEA, vérifiés un par un sur les documents de l'émetteur ` +
+        `au ${dateEnToutesLettres(DATE_RELEVE_LISTE_PEA)} (ISIN, frais, indice, preuve datée ; CSV téléchargeable), ` +
+        `et ${ETF_NON_ELIGIBLES.length} fonds qui ne le sont pas.`,
     };
   }
   const fiche = ETF_LIST.find((e) => `/etf/${e.displaySymbol}` === chemin);

@@ -10,7 +10,7 @@
     "type-check": "tsc --noEmit",
     "refresh:backtest": "node scripts/refresh-backtest-data.mjs",
     "assets:encrypt": "node scripts/encrypt-product-assets.mjs",
-    "postbuild": "node scripts/check-seo-lengths.mjs && node scripts/check-montants-calcules.mjs && node scripts/build-search-index.mjs",
+    "postbuild": "node scripts/exporter-liste-pea-csv.mjs --verifier && node scripts/check-seo-lengths.mjs && node scripts/check-montants-calcules.mjs && node scripts/build-search-index.mjs",
     "search:index": "node scripts/build-search-index.mjs",
     "seo:check": "node scripts/check-seo-lengths.mjs --report",
     "montants:check": "node scripts/check-montants-calcules.mjs",

@@ -29,6 +29,14 @@
 // fonction existe côté client (src/lib/search/ancre.ts) : les deux doivent
 // rester identiques.
 //
+// Un élément marqué data-passage="titre" et pourvu d'un id (une ligne de la
+// liste des ETF éligibles au PEA, <tr id="fonds-cw8">) forme un passage à lui
+// seul, avec ce titre et cet id pour ancre ; les <summary> qu'il contient ne
+// sont pas des questions. Au 14/10/2026, les 128 « Preuve PEA » de la liste
+// devenaient 128 questions sans ancre réelle, et collaient l'ISIN d'un fonds
+// au nom du suivant. Un <summary> qui contient un titre h2/h3 (groupe replié)
+// compte comme ce titre.
+//
 // Une section longue est découpée en passages consécutifs de 1 600 caractères
 // au plus, qui gardent le titre et l'ancre de la section (voir
 // decouperTexte()). Une question de FAQ s'arrête à la fin de son <details> :
@@ -493,6 +501,9 @@ function sections(main) {
     return "";
   };
 
+  // Profondeur dans un élément data-passage : ses <summary> n'ouvrent rien.
+  let dansPassage = 0;
+
   const visiter = (noeud) => {
     if (noeud.nodeType === COMMENTAIRE) {
       // React sépare deux expressions JSX voisines par <!-- --> :
@@ -521,6 +532,26 @@ function sections(main) {
     if (noeud.hasAttribute?.("hidden")) return;
     if (noeud.hasAttribute?.("data-nosearch")) return;
 
+    if (noeud.hasAttribute?.("data-passage") && noeud.id) {
+      const avant = courante;
+      fermer();
+      courante = { h: noeud.getAttribute("data-passage") || titreAffiche(noeud), a: noeud.id, morceaux: [] };
+      dansPassage++;
+      for (const enfant of noeud.childNodes) visiter(enfant);
+      dansPassage--;
+      fermer();
+      courante = { h: avant.h, a: avant.a, morceaux: [], suite: true };
+      dernier = "element";
+      return;
+    }
+    if (tag === "summary") {
+      if (dansPassage) return;
+      const titre = noeud.querySelector?.("h2, h3");
+      if (titre) {
+        visiter(titre);
+        return;
+      }
+    }
     if (tag === "h1") {
       // Le h1 est le titre de la page : il reste dans l'introduction.
       courante.morceaux.push(titreAffiche(noeud), " ");
