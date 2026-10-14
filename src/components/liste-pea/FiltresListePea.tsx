@@ -12,6 +12,12 @@
 //
 // display: none en style plutôt que l'attribut hidden : les classes de mise
 // en page des lignes (block, sm:table-row) l'emporteraient sur [hidden].
+//
+// 14/10/2026 : 12 groupes sont repliés dans un <details> au chargement. Un
+// filtre actif ouvre ceux où il trouve une ligne (sinon « 3 lignes
+// affichées » ne montrerait que des titres) ; quand plus aucun filtre n'est
+// actif, il referme ceux qu'il a ouverts, et seulement ceux-là : un groupe
+// ouvert par le lecteur ou par une ancre (#monetaire) le reste.
 
 import { useEffect, useId, useState } from "react";
 import { normaliserRecherche } from "@/lib/liste-pea/recherche";
@@ -32,6 +38,7 @@ export function FiltresListePea({ groupes, emetteurs, total }: Props) {
   const [visibles, setVisibles] = useState(total);
 
   useEffect(() => {
+    const filtre = Boolean(q || cat || em || sansLevier || euros);
     const mots = normaliserRecherche(q).split(/\s+/).filter(Boolean);
     let n = 0;
     const lignes = document.querySelectorAll<HTMLElement>("[data-ligne]");
@@ -55,6 +62,14 @@ export function FiltresListePea({ groupes, emetteurs, total }: Props) {
     document.querySelectorAll<HTMLElement>("[data-groupe]").forEach((g) => {
       const une = Array.from(g.querySelectorAll<HTMLElement>("[data-ligne]")).some((el) => el.style.display !== "none");
       g.style.display = une ? "" : "none";
+      if (!(g instanceof HTMLDetailsElement)) return;
+      if (filtre && une && !g.open) {
+        g.open = true;
+        g.dataset.ouvertParFiltre = "1";
+      } else if (!filtre && g.dataset.ouvertParFiltre) {
+        g.open = false;
+        delete g.dataset.ouvertParFiltre;
+      }
     });
     setVisibles(n);
   }, [q, cat, em, sansLevier, euros]);

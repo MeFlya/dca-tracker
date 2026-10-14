@@ -24,8 +24,9 @@
 // qu'est chaque ligne, pas comment elle s'est comportée. Rien de justETF ni
 // d'Euronext n'y est recopié : ils ont servi à recouper, pas de source.
 //
-// ⚠️ Ce module n'importe rien : scripts/exporter-liste-pea-csv.mjs le charge
-// directement avec Node (types retirés à la volée), pour écrire le CSV publié.
+// ⚠️ Ce module n'importe rien : scripts/exporter-liste-pea-csv.mjs le
+// transpile seul (TypeScript) et le charge avec Node, pour écrire et contrôler
+// le CSV publié.
 
 /** Date du relevé (documents des émetteurs et recoupements), AAAA-MM-JJ. */
 export const DATE_RELEVE_LISTE_PEA = "2026-10-14";
@@ -2327,7 +2328,9 @@ export function csvListePea(): string {
       l.ticker, l.isin, l.nom, l.emetteur, titres[l.categorie], l.indice, LIBELLE_REPLICATION[l.replication],
       l.frais.toFixed(2).replace(".", ","), l.fraisEstimes ? "oui" : "", l.devise, l.coteeDepuis, l.premiereVl,
       l.levier ? l.levier.facteur + (l.levier.quotidien ? " quotidien" : "") : "",
-      l.levier?.risqueDic, l.levier?.detentionDic,
+      // Une durée absente du DIC relevé se dit « non relevée » : une case vide
+      // se lirait comme « pas de limite ».
+      l.levier?.risqueDic, l.levier ? (l.levier.detentionDic ?? "non relevée") : "",
       "oui", l.preuve.document, l.preuve.date, l.preuve.url, l.preuve.mention,
       l.recoupe.join(", "), DATE_RELEVE_LISTE_PEA, l.partCD ? "oui" : "", l.reserve,
     ]

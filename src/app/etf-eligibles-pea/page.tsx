@@ -14,6 +14,7 @@ import { ETF_COMPARISON_LIST } from "@/lib/etf-comparisons";
 import {
   CORRESPONDANCES_PEA,
   DATE_VERIFICATION_PEA,
+  DERNIERE_VERIFICATION_PEA,
   ETF_NON_ELIGIBLES,
   ETF_PEA_VERIFIES,
   URL_LISTE_PEA,
@@ -66,6 +67,15 @@ const DATE_RELEVE = dateEnToutesLettres(DATE_RELEVE_LISTE_PEA);
 const MOIS_RELEVE = DATE_RELEVE.replace(/^\d+(?:er)?\s/, "");
 /** « 28 septembre 2026 » : la première liste, celle de la table de vérité. */
 const DATE_TABLE = dateEnToutesLettres(DATE_VERIFICATION_PEA);
+/**
+ * « du 28 septembre 2026 au 14 octobre 2026 » : la première liste a été
+ * vérifiée le jour de la table, puis complétée (PTPXE, 14/10/2026). Même
+ * intervalle que llms.txt.
+ */
+const PERIODE_PREMIERE_LISTE = (() => {
+  const fin = dateEnToutesLettres(DERNIERE_VERIFICATION_PEA);
+  return fin === DATE_TABLE ? `le ${DATE_TABLE}` : `du ${DATE_TABLE} au ${fin}`;
+})();
 const URL_CSV_ABSOLUE = `https://dcatracker.fr${CHEMIN_CSV_LISTE_PEA}`;
 
 const N_EMETTEURS = EMETTEURS_LISTE.length;
@@ -74,12 +84,30 @@ const N_AVEC_RESERVE = N - N_SANS_RESERVE;
 const N_USD = LIGNES_PEA.filter((l) => l.devise === "USD").length;
 const LEVIER = LIGNES_PEA.filter((l) => l.levier);
 const LEVIER_QUOTIDIEN = LEVIER.filter((l) => l.levier!.quotidien);
+const LEVIER_NON_QUOTIDIEN = LEVIER.filter((l) => !l.levier!.quotidien);
+
+/**
+ * Groupes ouverts au chargement : les huit de la liste du 28/09/2026, ceux
+ * vers lesquels renvoient les fiches et les guides. Les autres sont repliés
+ * dans un <details>, leur contenu restant dans le HTML : sur téléphone, les
+ * 128 lignes dépliées repoussaient le premier ISIN à 3 662 px et la FAQ à
+ * 49 211 px (relecture du 14/10/2026). Les filtres ouvrent les groupes où ils
+ * trouvent une ligne, une ancre (#monetaire, #fonds-lqq) ouvre le sien.
+ */
+const GROUPES_OUVERTS: ReadonlySet<CategorieId> = new Set<CategorieId>([
+  "msci-world", "msci-acwi", "sp500", "nasdaq-100", "emergents", "europe", "russell-2000", "japon",
+]);
+const N_GROUPES_OUVERTS = GROUPES_LISTE.filter((g) => GROUPES_OUVERTS.has(g.id)).length;
+const N_GROUPES_REPLIES = GROUPES_LISTE.length - N_GROUPES_OUVERTS;
 
 // Requête visée : « ETF éligibles PEA » / « liste ETF PEA ». Les pages voisines
 // visent autre chose : /guide-5-etf-pea-premium une sélection courte,
 // /etf-msci-world le choix d'un tracker, /pea-ou-cto l'enveloppe,
 // /comparatif-etf les face-à-face, /meilleurs-etf-debutants le premier ETF.
-const TITLE = `ETF éligibles au PEA : la liste vérifiée (${MOIS_RELEVE})`;
+// 14/10/2026 : le nombre de lignes entre dans le title, pour que les résultats
+// de recherche disent que la liste est désormais complète. 60 caractères au
+// plus (scripts/check-seo-lengths.mjs) ; le site n'ajoute aucun suffixe.
+const TITLE = `Liste des ${N} ETF éligibles au PEA, vérifiés (${MOIS_RELEVE})`;
 const DESCRIPTION =
   `${N} ETF cotés à Paris et éligibles au PEA, vérifiés un par un sur les documents de l'émetteur (ISIN, frais, indice). ` +
   `Et ${N_NON_ELIGIBLES} fonds qui ne le sont pas.`;
@@ -104,10 +132,10 @@ export const metadata: Metadata = {
 
 // ─── Outils de rédaction ─────────────────────────────────────────────────────
 
-/** ["A", "B", "C"] → « A, B et C ». */
-function enumerer(mots: string[]): string {
+/** ["A", "B", "C"] → « A, B et C » ; avec « ou » : « A, B ou C ». */
+function enumerer(mots: string[], conjonction = "et"): string {
   if (mots.length <= 1) return mots.join("");
-  return `${mots.slice(0, -1).join(", ")} et ${mots[mots.length - 1]}`;
+  return `${mots.slice(0, -1).join(", ")} ${conjonction} ${mots[mots.length - 1]}`;
 }
 
 const symboles = (fonds: { displaySymbol: string }[]) => enumerer(fonds.map((f) => f.displaySymbol));
@@ -150,7 +178,10 @@ function libelleLevier(l: LignePea): string {
   return [
     base + (lv.quotidien ? ", recalculé chaque jour" : ""),
     lv.risqueDic ? `indicateur de risque du DIC : ${lv.risqueDic}` : null,
-    lv.detentionDic ? `durée de détention recommandée par le DIC : ${lv.detentionDic}` : null,
+    lv.detentionDic
+      ? `durée de détention recommandée par le DIC : ${lv.detentionDic}`
+      : // Sans durée relevée, le dire : une ligne muette se lirait « pas de limite ».
+        "durée de détention recommandée : non relevée, lisez le DIC avant tout achat",
   ]
     .filter(Boolean)
     .join(" · ");
@@ -180,7 +211,27 @@ const SWAP_NON_ELIGIBLES = ETF_NON_ELIGIBLES.filter((f) => /\bSwap\b/.test(f.nam
 const HORS_EUROPE: CategorieId[] = [
   "msci-world", "msci-acwi", "sp500", "nasdaq-100", "etats-unis", "russell-2000", "themes-monde", "emergents", "japon",
 ];
-const LIGNES_HORS_EUROPE = LIGNES_PEA.filter((l) => HORS_EUROPE.includes(l.categorie));
+// Les lignes à effet de levier sont rangées à part, quel que soit leur indice :
+// l'indice d'origine de chacune est donc écrit ici. 14/10/2026 : « les 39 qui
+// suivent un indice hors d'Europe » oubliait LQQ (Nasdaq-100), CL2 (MSCI USA)
+// et LWLD (MSCI World). Une ligne à levier non classée ici, ou classée deux
+// fois, arrête la construction du site.
+const LEVIER_INDICE_HORS_EUROPE = new Set(["CL2", "LQQ", "LWLD"]);
+const LEVIER_INDICE_EUROPEEN = new Set(["BSX", "BX4", "LVC", "LVD", "LVE", "NTSZ", "SHC"]);
+for (const l of LEVIER) {
+  if (LEVIER_INDICE_HORS_EUROPE.has(l.ticker) === LEVIER_INDICE_EUROPEEN.has(l.ticker)) {
+    throw new Error(
+      `etf-eligibles-pea : ${l.ticker}, à effet de levier, doit figurer dans LEVIER_INDICE_HORS_EUROPE ou LEVIER_INDICE_EUROPEEN (page.tsx), et dans un seul.`,
+    );
+  }
+}
+for (const t of [...LEVIER_INDICE_HORS_EUROPE, ...LEVIER_INDICE_EUROPEEN]) {
+  if (!LEVIER.some((l) => l.ticker === t)) throw new Error(`etf-eligibles-pea : ${t} n'est plus une ligne à effet de levier de la liste.`);
+}
+const LIGNES_HORS_EUROPE = LIGNES_PEA.filter(
+  (l) => HORS_EUROPE.includes(l.categorie) || LEVIER_INDICE_HORS_EUROPE.has(l.ticker),
+);
+const N_LEVIER_HORS_EUROPE = LIGNES_HORS_EUROPE.filter((l) => l.levier).length;
 const TOUTES_HORS_EUROPE_SYNTHETIQUES = LIGNES_HORS_EUROPE.every((l) => l.replication === "synthetique");
 const PHYSIQUES = LIGNES_PEA.filter((l) => l.replication === "physique");
 const PHYSIQUES_EUROPEENNES = PHYSIQUES.every((l) => !HORS_EUROPE.includes(l.categorie) && l.categorie !== "levier");
@@ -244,10 +295,46 @@ const SP500_FILTRES = SP500.filter((l) => !SP500_INDICE.includes(l));
 const SP500_HORS_PEA = ETF_NON_ELIGIBLES.filter((f) => f.correspondance === "sp500");
 const JAPON = groupe("japon").lignes;
 const MONETAIRE = groupe("monetaire").lignes;
-const RISQUES_LEVIER = [...new Set(LEVIER.flatMap((l) => (l.levier!.risqueDic ? [l.levier!.risqueDic] : [])))].sort();
-const N_DETENTION_1_JOUR = LEVIER.filter((l) => l.levier!.detentionDic === "1 jour").length;
+// ETF à effet de levier. 14/10/2026 : l'indicateur de risque est celui des
+// seules lignes à détention d'un jour ; NTSZ (4/7, 5 ans, sans recalcul
+// quotidien) est décrit à part.
+const DETENTION_1_JOUR = LEVIER.filter((l) => l.levier!.detentionDic === "1 jour");
+const N_DETENTION_1_JOUR = DETENTION_1_JOUR.length;
+/** Toutes les lignes à recalcul quotidien, et elles seules, ont une détention d'un jour. */
+const QUOTIDIEN_1_JOUR =
+  N_DETENTION_1_JOUR === LEVIER_QUOTIDIEN.length && DETENTION_1_JOUR.every((l) => l.levier!.quotidien);
+const RISQUES_LEVIER = [
+  ...new Set(DETENTION_1_JOUR.flatMap((l) => (l.levier!.risqueDic ? [l.levier!.risqueDic] : []))),
+].sort();
+/** « x2, -1x ou -2x » : les multiples recalculés chaque jour, dans cet ordre. */
+const LIBELLE_MULTIPLE: Record<string, string> = { x2: "x2", "x-1": "-1x", "x-2": "-2x" };
+const MULTIPLES_QUOTIDIENS = Object.keys(LIBELLE_MULTIPLE)
+  .filter((f) => LEVIER_QUOTIDIEN.some((l) => l.levier!.facteur === f))
+  .map((f) => LIBELLE_MULTIPLE[f]);
+if (LEVIER_QUOTIDIEN.some((l) => !LIBELLE_MULTIPLE[l.levier!.facteur])) {
+  throw new Error("etf-eligibles-pea : multiple quotidien sans libellé (LIBELLE_MULTIPLE, page.tsx).");
+}
+/** Chaque ligne à levier a son indicateur de risque et sa durée de détention relevés. */
+const LEVIER_DOCUMENTE = LEVIER.every((l) => l.levier!.risqueDic && l.levier!.detentionDic);
 const LEVIER_HORS_BOURSORAMA = LEVIER_QUOTIDIEN.filter((l) => !l.recoupe.includes("Boursorama")).length;
 const LWLD = LIGNES_PEA.find((l) => l.ticker === "LWLD");
+
+/** « NTSZ, lui, expose à environ 150 % (…), sans recalcul quotidien : son DIC… » */
+function phraseNonQuotidien(l: LignePea): string {
+  const lv = l.levier!;
+  const exposition =
+    lv.facteur === "x1,5"
+      ? "expose à environ 150 % (actions et contrats à terme obligataires)"
+      : `a un effet de levier ${lv.facteur}`;
+  const dic = [
+    lv.risqueDic ? `lui donne un indicateur de risque de ${lv.risqueDic}` : null,
+    lv.detentionDic ? `recommande une durée de détention de ${lv.detentionDic}` : null,
+  ].filter(Boolean) as string[];
+  return (
+    `${l.ticker}, lui, ${exposition}, sans recalcul quotidien` +
+    (dic.length ? ` : son DIC ${enumerer(dic)}. ` : ". ")
+  );
+}
 
 const FAQ: { id: string; q: string; a: string }[] = [
   {
@@ -304,13 +391,19 @@ const FAQ: { id: string; q: string; a: string }[] = [
   {
     id: "faq-levier",
     q: "Les ETF à effet de levier sont-ils éligibles au PEA ?",
+    // 14/10/2026 : réécrite (« dont… dont », l'inverse x2 oublié, et un
+    // indicateur de risque calculé avec NTSZ). Les multiples, les indicateurs
+    // et la phrase sur Boursorama portent sur les seules lignes quotidiennes.
     a:
-      `Certains, oui : notre liste en compte ${LEVIER.length}, dont ${LEVIER_QUOTIDIEN.length} dont le multiple (x2, ou l'inverse de l'indice) est recalculé chaque jour. ` +
-      `Sur plusieurs jours, leur performance peut alors s'écarter fortement de ce multiple, y compris dans le mauvais sens. ` +
-      `Pour ${N_DETENTION_1_JOUR} d'entre eux, le document d'informations clés recommande une durée de détention d'un jour ; ` +
-      `leur indicateur de risque y est de ${enumerer(RISQUES_LEVIER)}. ` +
+      `Certains, oui : notre liste en compte ${LEVIER.length}. ` +
+      `Pour ${LEVIER_QUOTIDIEN.length} d'entre eux, l'exposition (${enumerer(MULTIPLES_QUOTIDIENS, "ou")}) est recalculée chaque jour : ` +
+      `sur plusieurs jours, leur performance peut s'écarter fortement de ce multiple, y compris dans le mauvais sens. ` +
+      (QUOTIDIEN_1_JOUR
+        ? `Leur document d'informations clés (DIC) recommande une durée de détention d'un jour, et leur indicateur de risque y est de ${enumerer(RISQUES_LEVIER, "ou")} selon le fonds. `
+        : `Pour ${N_DETENTION_1_JOUR} d'entre eux, le document d'informations clés (DIC) recommande une durée de détention d'un jour, avec un indicateur de risque de ${enumerer(RISQUES_LEVIER, "ou")}. `) +
+      LEVIER_NON_QUOTIDIEN.map(phraseNonQuotidien).join("") +
       (LEVIER_HORS_BOURSORAMA === LEVIER_QUOTIDIEN.length
-        ? `Au ${DATE_RELEVE}, le filtre PEA de Boursorama n'en affichait aucun.`
+        ? `Au ${DATE_RELEVE}, le filtre PEA de Boursorama n'affichait aucun des ${LEVIER_QUOTIDIEN.length} ETF à levier quotidien.`
         : ""),
   },
   {
@@ -347,7 +440,7 @@ export default function EtfEligiblesPeaPage() {
         eyebrow={`Relevé du ${DATE_RELEVE}`}
         title={"ETF éligibles au PEA : la liste vérifiée"}
         subtitle={
-          `${N} ETF cotés à Paris et éligibles au PEA, chacun avec son ISIN, ses frais et le document de l'émetteur qui le prouve. ` +
+          `${N} ETF (ou trackers) cotés à Paris et éligibles au PEA, chacun avec son ISIN, ses frais et le document de l'émetteur qui le prouve. ` +
           `Et ${N_NON_ELIGIBLES} fonds qui ne le sont pas, avec la raison pour chacun.`
         }
       />
@@ -361,13 +454,16 @@ export default function EtfEligiblesPeaPage() {
         description={DESCRIPTION}
       />
 
-      {/* ── Périmètre et méthode ─────────────────────────────────────────── */}
+      {/* ── Périmètre ────────────────────────────────────────────────────── */}
       {/* En tête, pas en note de bas de page : c'est ce qui distingue cette
           liste d'une liste périmée, et ce qu'un site qui la cite doit pouvoir
-          reprendre avec elle. */}
+          reprendre avec elle. 14/10/2026 : seulement le périmètre et la mise
+          en garde ; la méthode et la raison d'être de la page sont après la
+          liste (#methode). Sur téléphone, les quatre paragraphes et les
+          pastilles repoussaient le premier ISIN de 2 136 à 3 662 px. */}
       <section
         aria-labelledby="perimetre"
-        className="mb-12 rounded-2xl border border-primary-100 bg-primary-50/40 p-5 sm:p-6"
+        className="mb-10 rounded-2xl border border-primary-100 bg-primary-50/40 p-5 sm:p-6"
       >
         <h2 id="perimetre" className="text-lg font-bold text-gray-900 mb-3">
           Ce que cette liste est, et ce qu&apos;elle n&apos;est pas
@@ -383,48 +479,25 @@ export default function EtfEligiblesPeaPage() {
             documents de leur émetteur n&apos;établissent pas leur éligibilité,
             ou un fait essentiel comme les frais. {DECOMPTE_RELEVE.exclues} ont
             été écartées, non éligibles d&apos;après leur émetteur ou liquidées.
-            Ce n&apos;est pas un compte exhaustif&nbsp;: un lancement récent
-            peut manquer.
           </p>
           <p>
-            <strong className="text-gray-900">La méthode.</strong> Point de
-            départ&nbsp;: les ETF cotés à Euronext Paris (registre FIRDS de
-            l&apos;Autorité européenne des marchés financiers, liste
-            d&apos;Euronext), croisés avec le filtre PEA de Boursorama et les
-            fonds qu&apos;Amundi déclare éligibles. Pour chaque ligne&nbsp;:
-            l&apos;éligibilité lue dans un document de l&apos;émetteur (reporting
-            mensuel, document d&apos;informations clés, prospectus ou fiche
-            mensuelle), puis recoupée sur justETF ou Boursorama&nbsp;; la clé de
-            contrôle de l&apos;ISIN vérifiée&nbsp;; les frais courants lus dans
-            le document d&apos;informations clés. Quand un document contredit
-            l&apos;autre, la ligne porte une réserve qui le dit&nbsp;: {N_AVEC_RESERVE}{" "}
-            lignes sur {N} en ont une, dont les {LEVIER.length} à effet de levier.
-          </p>
-          <p>
-            <strong className="text-gray-900">Ce qu&apos;elle ne dit pas.</strong>{" "}
-            Ni cours, ni performance, ni encours&nbsp;: elle dit ce qu&apos;est
-            chaque fonds, pas comment il s&apos;est comporté. Dans chaque groupe,
-            les lignes sont rangées par ordre alphabétique, pas par préférence.
-            Ce n&apos;est pas un conseil d&apos;investissement&nbsp;: lisez le
+            Ce n&apos;est ni une liste exhaustive (un lancement récent peut
+            manquer), ni un conseil d&apos;investissement&nbsp;: lisez le
             document d&apos;informations clés d&apos;un fonds avant de
-            l&apos;acheter.
-          </p>
-          <p>
-            <strong className="text-gray-900">Pourquoi cette page.</strong>{" "}
-            Jusqu&apos;au {DATE_TABLE}, notre propre site présentait{" "}
-            <Mnemoniques fonds={PRESENTES_ELIGIBLES_ICI} /> comme éligibles au
-            PEA. Aucun ne l&apos;est. Une liste d&apos;ETF se périme sans
-            prévenir&nbsp;: celle-ci porte sa date, et chaque ligne son ISIN et
-            sa preuve, pour que vous puissiez la vérifier à votre tour. Les{" "}
-            {ETF_PEA_VERIFIES.length} fonds de notre première liste, vérifiés
-            le {DATE_TABLE}, y figurent tous.
+            l&apos;acheter.{" "}
+            <a href="#methode" className="font-medium text-primary-700 hover:underline">
+              Notre méthode
+            </a>{" "}
+            est détaillée après la liste.
           </p>
         </div>
       </section>
 
-      {/* Accès direct aux groupes : utile sur mobile, où la liste est longue.
-          Un <nav> : l'index de recherche l'ignore, ce ne sont que des liens. */}
-      <nav aria-label="Aller à un indice" className="mb-10 flex flex-wrap gap-2">
+      {/* Accès direct aux groupes, sur écran large seulement : sous 640 px,
+          les 21 pastilles occupaient un écran entier, et le menu « Indice ou
+          catégorie » des filtres fait le même travail. Un <nav> : l'index de
+          recherche l'ignore, ce ne sont que des liens. */}
+      <nav aria-label="Aller à un indice" className="mb-10 hidden flex-wrap gap-2 sm:flex">
         {GROUPES_LISTE.map((g) => (
           <a
             key={g.id}
@@ -447,7 +520,21 @@ export default function EtfEligiblesPeaPage() {
         <h2 id="liste" className="text-2xl font-bold text-gray-900 mb-4">
           La liste&nbsp;: {N} ETF éligibles au PEA, par indice
         </h2>
-        <div className="space-y-3 text-gray-600 leading-relaxed mb-6">
+        <p className="text-gray-600 leading-relaxed mb-4">
+          Rangées par indice, puis par ordre alphabétique.{" "}
+          {N_GROUPES_OUVERTS} groupes sont ouverts&nbsp;; les {N_GROUPES_REPLIES}{" "}
+          autres s&apos;ouvrent d&apos;un clic sur leur titre, ou dès qu&apos;un
+          filtre y trouve une ligne.
+        </p>
+        {/* Replié : le mode d'emploi passait avant le premier ISIN. */}
+        <details className="group mb-6 rounded-2xl border border-gray-100 bg-white">
+          <summary className="flex items-center justify-between gap-4 px-5 py-3 cursor-pointer font-semibold text-gray-900 text-sm hover:bg-gray-50 transition-colors list-none [&::-webkit-details-marker]:hidden">
+            Comment lire la liste
+            <span aria-hidden className="shrink-0 text-gray-500 group-open:rotate-180 transition-transform">
+              ▾
+            </span>
+          </summary>
+          <div className="px-5 pb-4 pt-1 space-y-3 text-sm text-gray-600 leading-relaxed">
           <p>
             Pour chaque ligne&nbsp;: son mnémonique (le code court sous lequel
             elle est cotée, cliquable quand nous avons une fiche), son nom
@@ -469,7 +556,8 @@ export default function EtfEligiblesPeaPage() {
             document de l&apos;émetteur, sa date, ce qu&apos;il dit, et la
             réserve éventuelle.
           </p>
-        </div>
+          </div>
+        </details>
 
         {/* Hors de la recherche interne : des contrôles, pas une réponse. */}
         <div data-nosearch="" className="mb-4 lg:-mx-24">
@@ -494,7 +582,7 @@ export default function EtfEligiblesPeaPage() {
           </span>
         </p>
 
-        <div className="space-y-12 lg:-mx-24">
+        <div className={`${styles.groupes} lg:-mx-24`}>
           {GROUPES_LISTE.map((g) => (
             <GroupeDeLaListe key={g.id} groupe={g} />
           ))}
@@ -515,6 +603,48 @@ export default function EtfEligiblesPeaPage() {
             L&apos;encours (la taille du fonds) n&apos;est pas affiché&nbsp;:
             nos sources ne donnent pas toujours les mêmes montants, et nous ne
             publions pas un chiffre que nous n&apos;avons pas pu trancher.
+          </p>
+        </div>
+      </section>
+
+      {/* ── Méthode ──────────────────────────────────────────────────────── */}
+      {/* 14/10/2026 : déplacée du haut de la page (bloc #perimetre), qui ne
+          garde que le périmètre et la mise en garde. Les liens vers
+          #perimetre restent valables. */}
+      <section aria-labelledby="methode" className="mb-14">
+        <h2 id="methode" className="text-2xl font-bold text-gray-900 mb-4 scroll-mt-20">
+          Comment cette liste a été établie
+        </h2>
+        <div className="space-y-4 text-gray-600 leading-relaxed">
+          <p>
+            <strong className="text-gray-900">La méthode.</strong> Point de
+            départ&nbsp;: les ETF cotés à Euronext Paris (registre FIRDS de
+            l&apos;Autorité européenne des marchés financiers, liste
+            d&apos;Euronext), croisés avec le filtre PEA de Boursorama et les
+            fonds qu&apos;Amundi déclare éligibles. Pour chaque ligne&nbsp;:
+            l&apos;éligibilité lue dans un document de l&apos;émetteur (reporting
+            mensuel, document d&apos;informations clés, prospectus ou fiche
+            mensuelle), puis recoupée sur justETF ou Boursorama&nbsp;; la clé de
+            contrôle de l&apos;ISIN vérifiée&nbsp;; les frais courants lus dans
+            le document d&apos;informations clés. Quand un document contredit
+            l&apos;autre, la ligne porte une réserve qui le dit&nbsp;: {N_AVEC_RESERVE}{" "}
+            lignes sur {N} en ont une, dont les {LEVIER.length} à effet de levier.
+          </p>
+          <p>
+            <strong className="text-gray-900">Ce qu&apos;elle ne dit pas.</strong>{" "}
+            Ni cours, ni performance, ni encours&nbsp;: elle dit ce qu&apos;est
+            chaque fonds, pas comment il s&apos;est comporté. Dans chaque groupe,
+            les lignes sont rangées par ordre alphabétique, pas par préférence.
+          </p>
+          <p>
+            <strong className="text-gray-900">Pourquoi cette page.</strong>{" "}
+            Jusqu&apos;au {DATE_TABLE}, notre propre site présentait{" "}
+            <Mnemoniques fonds={PRESENTES_ELIGIBLES_ICI} /> comme éligibles au
+            PEA. Aucun ne l&apos;est. Une liste d&apos;ETF se périme sans
+            prévenir&nbsp;: celle-ci porte sa date, et chaque ligne son ISIN et
+            sa preuve, pour que vous puissiez la vérifier à votre tour. Les{" "}
+            {ETF_PEA_VERIFIES.length} fonds de notre première liste, vérifiés{" "}
+            {PERIODE_PREMIERE_LISTE}, y figurent tous.
           </p>
         </div>
       </section>
@@ -619,6 +749,9 @@ export default function EtfEligiblesPeaPage() {
               <>
                 , dont les {LIGNES_HORS_EUROPE.length} qui suivent un indice
                 hors d&apos;Europe (monde, États-Unis, pays émergents, Japon…)
+                {N_LEVIER_HORS_EUROPE > 0 && (
+                  <>, y compris {N_LEVIER_HORS_EUROPE} à effet de levier</>
+                )}
               </>
             )}
             .
@@ -993,6 +1126,10 @@ export default function EtfEligiblesPeaPage() {
  * lignes n'ont presque pas de classes, et les textes sont assemblés en une
  * seule chaîne par élément (pas de fragments React), pour que la page reste
  * légère. Un seul DOM — les ancres #fonds-xxx n'existent qu'une fois.
+ *
+ * Les groupes hors de GROUPES_OUVERTS sont dans un <details> fermé, leur titre
+ * (h3 avec son id) dans le <summary> : le contenu reste dans le HTML, pour les
+ * robots, la recherche du navigateur et les filtres.
  */
 function GroupeDeLaListe({ groupe: g }: { groupe: GroupeListe }) {
   const guide: Partial<Record<CategorieId, { href: string; label: string }>> = {
@@ -1001,14 +1138,17 @@ function GroupeDeLaListe({ groupe: g }: { groupe: GroupeListe }) {
     "nasdaq-100": { href: "/etf-nasdaq", label: "notre guide des ETF Nasdaq 100" },
   };
   const lien = guide[g.id];
-  return (
-    <div data-groupe="">
-      <h3 id={g.id} className="text-lg font-bold text-gray-900 mb-1 scroll-mt-20">
-        {g.titre}{" "}
-        <span className="text-sm font-medium text-gray-500">
-          {`· ${g.lignes.length} ${accord(g.lignes.length, "ligne", "lignes")}`}
-        </span>
-      </h3>
+  const ouvert = GROUPES_OUVERTS.has(g.id);
+  const titre = (
+    <h3 id={g.id} className={`text-lg font-bold text-gray-900 scroll-mt-20${ouvert ? " mb-1" : ""}`}>
+      {g.titre}{" "}
+      <span className="text-sm font-medium text-gray-500">
+        {`· ${g.lignes.length} ${accord(g.lignes.length, "ligne", "lignes")}`}
+      </span>
+    </h3>
+  );
+  const contenu = (
+    <>
       <p className="text-sm text-gray-500 leading-relaxed mb-3">
         {g.description}
         {lien && (
@@ -1021,14 +1161,7 @@ function GroupeDeLaListe({ groupe: g }: { groupe: GroupeListe }) {
           </>
         )}
       </p>
-      {g.id === "levier" && (
-        <p className="text-sm text-amber-900 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 leading-relaxed mb-3">
-          Ces fonds sont éligibles au PEA, mais pour {N_DETENTION_1_JOUR}{" "}
-          d&apos;entre eux, le document d&apos;informations clés recommande une
-          durée de détention d&apos;un jour. L&apos;indicateur de risque de ce
-          document et cette durée sont donnés sur chaque ligne.
-        </p>
-      )}
+      {g.id === "levier" && <BandeauLevier />}
       <div className="rounded-2xl border border-gray-100 bg-white overflow-hidden">
         <table className={styles.t}>
           <caption className="sr-only">{`ETF ${g.titre} éligibles au PEA, relevés le ${DATE_RELEVE}`}</caption>
@@ -1048,7 +1181,61 @@ function GroupeDeLaListe({ groupe: g }: { groupe: GroupeListe }) {
           </tbody>
         </table>
       </div>
-    </div>
+    </>
+  );
+  if (ouvert) {
+    return (
+      <div data-groupe="">
+        {titre}
+        {contenu}
+      </div>
+    );
+  }
+  return (
+    <details data-groupe="" className={styles.replie}>
+      <summary>
+        {titre}
+        <span aria-hidden>▾</span>
+      </summary>
+      <div>{contenu}</div>
+    </details>
+  );
+}
+
+/**
+ * Mise en garde du groupe « levier ». 14/10/2026 : elle annonçait 7 lignes à
+ * détention d'un jour ; les DIC de LWLD et LVD en recommandent aussi un (9),
+ * et celui de NTSZ, 5 ans. Tout est calculé sur les lignes.
+ */
+function BandeauLevier() {
+  return (
+    <p className="text-sm text-amber-900 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 leading-relaxed mb-3">
+      Ces fonds sont éligibles au PEA, mais{" "}
+      {QUOTIDIEN_1_JOUR ? (
+        <>
+          {LEVIER_QUOTIDIEN.length} d&apos;entre eux ont une exposition
+          recalculée chaque jour, et leur document d&apos;informations clés
+          (DIC) recommande une durée de détention d&apos;un jour.
+        </>
+      ) : (
+        <>
+          pour {N_DETENTION_1_JOUR} d&apos;entre eux, le document
+          d&apos;informations clés (DIC) recommande une durée de détention
+          d&apos;un jour.
+        </>
+      )}
+      {LEVIER_NON_QUOTIDIEN.map((l) =>
+        l.levier!.detentionDic ? (
+          <Fragment key={l.ticker}>
+            {" "}{l.ticker}, sans recalcul quotidien, a une durée recommandée de{" "}
+            {l.levier!.detentionDic}.
+          </Fragment>
+        ) : null,
+      )}{" "}
+      {LEVIER_DOCUMENTE
+        ? "L'indicateur de risque du DIC et cette durée sont donnés sur chaque ligne."
+        : "L'indicateur de risque du DIC et cette durée sont donnés sur chaque ligne où nous les avons relevés."}
+    </p>
   );
 }
 
@@ -1056,9 +1243,14 @@ function LigneDeLaListe({ l }: { l: LignePea }) {
   const comparatifs = A_UNE_FICHE.has(l.ticker)
     ? []
     : ETF_COMPARISON_LIST.filter((c) => c.left.heading === l.ticker || c.right.heading === l.ticker);
+  // data-passage : la ligne est un passage de la recherche interne à elle
+  // seule, titré « CW8 — Amundi MSCI World… », ancre #fonds-cw8
+  // (scripts/build-search-index.mjs). data-l : intitulé de la cellule, affiché
+  // sur téléphone par td::before (liste.module.css), sans élément en plus.
   return (
     <tr
       id={ancreFonds(l.ticker)}
+      data-passage={`${l.ticker} — ${l.nom}`}
       data-ligne=""
       data-cat={l.categorie}
       data-em={l.emetteur}
@@ -1087,30 +1279,30 @@ function LigneDeLaListe({ l }: { l: LignePea }) {
         ))}
         <DetailLigne l={l} />
       </td>
-      <td>
-        <span className="l">ISIN</span>
+      <td data-l="ISIN">
         <span className="i">{l.isin}</span>
       </td>
-      <td>
-        <span className="l">Frais</span>
+      <td data-l="Frais">
         <b>
           {formatTer(l.frais)}
           {l.fraisEstimes && <small>estimés</small>}
         </b>
       </td>
-      <td>
-        <span className="l">Réplication</span>
-        {LIBELLE_REPLICATION[l.replication]}
-      </td>
-      <td>
-        <span className="l">Cotée à Paris depuis</span>
+      <td data-l="Réplication">{LIBELLE_REPLICATION[l.replication]}</td>
+      <td data-l="Cotée à Paris depuis">
         {l.coteeDepuis ? <time dateTime={l.coteeDepuis}>{dateCourte(l.coteeDepuis)}</time> : "non établie"}
       </td>
     </tr>
   );
 }
 
-/** La preuve de la ligne, et ce qu'il faut savoir d'elle. Fermé par défaut. */
+/**
+ * La preuve de la ligne, et ce qu'il faut savoir d'elle. Fermé par défaut.
+ * Un <p> par fait, son intitulé en <b> (affiché en bloc) : 14/10/2026, le
+ * <dl> et ses <div>/<dt>/<dd> faisaient environ 1 500 éléments sur la page.
+ * L'espace finale de chaque intitulé sépare les mots dans le texte extrait
+ * (recherche interne, copier-coller) ; elle ne se voit pas.
+ */
 function DetailLigne({ l }: { l: LignePea }) {
   const p = l.preuve;
   const mention = p.paraphrase ? p.mention : `« ${p.mention} »`;
@@ -1120,41 +1312,40 @@ function DetailLigne({ l }: { l: LignePea }) {
     : "date de 1re cotation à Paris non établie";
   return (
     <details>
-      <summary className={l.reserve ? "r" : undefined}>{l.reserve ? "Preuve PEA · réserve" : "Preuve PEA"}</summary>
-      <dl>
-        <div>
-          <dt>Éligibilité au PEA</dt>
-          <dd>
-            {`${p.document}, ${dateDocument(p.date)} : ${mention}. `}
-            <a href={p.url} target="_blank" rel="noopener">
-              Lire le document
-            </a>
-          </dd>
-        </div>
-        <div>
-          <dt>Recoupé par</dt>
-          <dd>{`${enumerer(l.recoupe)}, le ${DATE_RELEVE}`}</dd>
-        </div>
-        <div>
-          <dt>Dates</dt>
-          <dd>{`1re valeur liquidative : ${vl} ; ${cotee}.`}</dd>
-        </div>
-        {l.reserve && (
-          <div className="r">
-            <dt>Réserve</dt>
-            <dd>{l.reserve}</dd>
-          </div>
-        )}
-        {l.equivalentEuros && (
-          <div>
-            <dt>Ligne en euros du même fonds</dt>
-            <dd>
-              <a href={`#${ancreFonds(l.equivalentEuros)}`}>{l.equivalentEuros}</a>
-              {` (${parTicker(l.equivalentEuros).isin})`}
-            </dd>
-          </div>
-        )}
-      </dl>
+      {/* Le mnémonique, pour les lecteurs d'écran : sinon 128 boutons
+          « Preuve PEA » identiques. */}
+      <summary className={l.reserve ? "r" : undefined}>
+        {l.reserve ? "Preuve PEA · réserve" : "Preuve PEA"}
+        <span className="sr-only">{` ${l.ticker}`}</span>
+      </summary>
+      <p>
+        <b>Éligibilité au PEA </b>
+        {`${p.document}, ${dateDocument(p.date)} : ${mention}. `}
+        <a href={p.url} target="_blank" rel="noopener">
+          Lire le document
+        </a>
+      </p>
+      <p>
+        <b>Recoupé par </b>
+        {`${enumerer(l.recoupe)}, le ${DATE_RELEVE}`}
+      </p>
+      <p>
+        <b>Dates </b>
+        {`1re valeur liquidative : ${vl} ; ${cotee}.`}
+      </p>
+      {l.reserve && (
+        <p className="r">
+          <b>Réserve </b>
+          {l.reserve}
+        </p>
+      )}
+      {l.equivalentEuros && (
+        <p>
+          <b>Ligne en euros du même fonds </b>
+          <a href={`#${ancreFonds(l.equivalentEuros)}`}>{l.equivalentEuros}</a>
+          {` (${parTicker(l.equivalentEuros).isin})`}
+        </p>
+      )}
     </details>
   );
 }

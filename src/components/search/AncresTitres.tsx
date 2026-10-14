@@ -16,6 +16,13 @@ import { ancre, texteTitre } from "@/lib/search/ancre";
  * question si elle est repliée, on fait défiler et on surligne brièvement.
  *
  * Tourne à chaque changement de page (navigation client) et d'ancre.
+ *
+ * 14/10/2026 (/etf-eligibles-pea) : une cible peut être dans plusieurs
+ * <details> imbriqués — une ligne #fonds-lqq dans le groupe replié #levier.
+ * Tous les <details> qui l'entourent sont ouverts, pas seulement le plus
+ * proche. Une ligne de tableau (<tr id>) est visée elle-même, pas le
+ * premier <summary> qu'elle contient : on défile jusqu'à son mnémonique, et
+ * son détail (« Preuve PEA ») est ouvert.
  */
 
 /** Temps laissé au contenu pour arriver après le squelette de chargement. */
@@ -28,8 +35,9 @@ function trouver(id: string): HTMLElement | null {
   if (cible) {
     // L'id peut être celui d'un conteneur (<section id>, <div id>) : viser
     // son premier titre (constat n° 44). Aligner le conteneur mettait son
-    // titre sous l'en-tête collant, et toute la section clignotait.
-    if (!TITRE.test(cible.tagName)) {
+    // titre sous l'en-tête collant, et toute la section clignotait. Une ligne
+    // de tableau est sa propre cible.
+    if (!TITRE.test(cible.tagName) && cible.tagName !== "TR") {
       const titre = cible.querySelector<HTMLElement>("h2, h3, summary");
       if (titre) cible = titre;
     }
@@ -56,9 +64,17 @@ export function AncresTitres() {
     };
 
     const viser = (cible: HTMLElement) => {
-      // Question de FAQ repliée, ou passage dans un bloc replié : on ouvre.
+      // Question de FAQ repliée, ou passage dans un bloc replié : on ouvre,
+      // jusqu'au plus extérieur des <details> qui l'entourent.
       const details = cible.closest("details");
-      if (details && !details.open) details.open = true;
+      for (let d: HTMLDetailsElement | null = details; d; d = d.parentElement?.closest("details") ?? null) {
+        if (!d.open) d.open = true;
+      }
+      // Ligne de tableau : son détail aussi.
+      if (cible.tagName === "TR") {
+        const detail = cible.querySelector("details");
+        if (detail && !detail.open) detail.open = true;
+      }
 
       // Après le défilement que tente Next.js à la navigation. Un seul
       // défilement en attente à la fois.

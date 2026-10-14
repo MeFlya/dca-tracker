@@ -7,6 +7,7 @@ import { SourcesReferences } from "@/components/ui/SourcesReferences";
 import {
   DATE_VERIFICATION_PEA,
   dateEnToutesLettres,
+  ETF_PEA_VERIFIES,
   NB_FONDS_TABLE_DE_VERITE,
   URL_LISTE_PEA,
 } from "@/lib/etf-pea-verifies";
@@ -120,7 +121,9 @@ export default function MethodologiePage() {
           mise à jour, état de l'affiliation), pour ne pas devenir faux en
           silence. Sources des affirmations :
           · documents émetteur + justETF/Boursorama/Euronext, garde-fous du
-            build : en-tête de src/lib/etf-pea-verifies.ts ;
+            build : en-têtes de src/lib/etf-pea-verifies.ts et de
+            src/lib/liste-pea/index.ts, contrôle du CSV en postbuild
+            (scripts/exporter-liste-pea-csv.mjs --verifier) ;
           · date et lien de la fiche citée : src/lib/reponse-fiche-etf.ts et
             src/lib/sources-etf.ts (un fonds sans adresse vérifiée n'a pas
             de lien, d'où « quand nous en avons une ») ;
@@ -159,13 +162,22 @@ export default function MethodologiePage() {
           </li>
           <li>
             <strong className="text-gray-900">Des garde-fous dans le code.</strong>{" "}
-            Le site refuse de se construire si{" "}
+            {/* 14/10/2026 : « cite un fonds absent de la table de vérité »
+                était devenu faux, la liste complète ayant 128 lignes. Ce
+                sont les contrôles de src/lib/liste-pea/index.ts. */}
+            Le site refuse de se construire si un ISIN de{" "}
             <Link href={URL_LISTE_PEA} className="text-primary-700 font-medium hover:underline">
               la liste des ETF éligibles au PEA
             </Link>{" "}
-            cite un fonds absent de la table de vérité, ou le cite deux fois.
-            Une liste fausse ne part pas en ligne sans que quelqu&apos;un la
-            corrige.
+            a une clé de contrôle fausse ou y figure deux fois, si une ligne
+            n&apos;a pas de document daté de son émetteur ou de recoupement
+            indépendant, ou si elle contredit nos vérifications précédentes
+            (ISIN, frais, nom, groupe) pour l&apos;un des{" "}
+            {ETF_PEA_VERIFIES.length} fonds éligibles déjà vérifiés&nbsp;: ceux
+            de la table de vérité et ceux ajoutés depuis. Il refuse aussi
+            qu&apos;un fonds connu comme non éligible y figure, et un fichier
+            CSV publié qui ne correspondrait plus à la liste. Une liste fausse
+            ne part pas en ligne sans que quelqu&apos;un la corrige.
           </li>
           <li>
             <strong className="text-gray-900">Les erreurs sont dites.</strong>{" "}

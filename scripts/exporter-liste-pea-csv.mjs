@@ -11,33 +11,30 @@
 // committer le CSV avec. (Contrôle hors de la page : lire public/ depuis un
 // module de page fait tracer tout public/ dans le bundle serveur.)
 //
-// donnees.ts n'importe rien : Node le charge directement en retirant les
-// types (Node 22.18 et plus).
+// donnees.ts n'importe rien : il est transpilé par TypeScript (dépendance du
+// projet, déjà nécessaire à next build) puis chargé comme un module JavaScript.
+// 14/10/2026 : le script comptait sur le retrait des types par Node (22.18 et
+// plus) et, sur un Node plus ancien, AVERTISSAIT sans bloquer. La version de
+// Node de Vercel n'est déclarée nulle part dans le dépôt : le contrôle ne doit
+// pas en dépendre. Il tourne désormais à l'identique sur toute version de Node.
 
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-
-// Avertissement de Node sur le format du module (.ts sans "type") : sans objet ici.
-process.removeAllListeners("warning");
+import ts from "typescript";
 
 const RACINE = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
-let module;
-try {
-  module = await import(path.join(RACINE, "src", "lib", "liste-pea", "donnees.ts"));
-} catch (e) {
-  // Node sans retrait des types (avant 22.18) : le contrôle ne peut pas
-  // tourner. Il le dit, sans bloquer un déploiement pour autant.
-  if (process.argv.includes("--verifier")) {
-    console.warn(
-      `⚠️  CSV de la liste PEA NON contrôlé : Node ${process.version} ne charge pas un module .ts ` +
-        `(${e.code ?? e.message}). Contrôlez en local : node scripts/exporter-liste-pea-csv.mjs --verifier`,
-    );
-    process.exit(0);
-  }
-  throw e;
+const SOURCE = path.join(RACINE, "src", "lib", "liste-pea", "donnees.ts");
+const { outputText } = ts.transpileModule(readFileSync(SOURCE, "utf8"), {
+  compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 },
+  fileName: SOURCE,
+});
+if (/^\s*import\s/m.test(outputText)) {
+  console.error(`✗ ${path.relative(RACINE, SOURCE)} importe un module : ce script ne sait pas le charger.`);
+  process.exit(1);
 }
-const { csvListePea, CHEMIN_CSV_LISTE_PEA, LIGNES_PEA } = module;
+const donnees = await import(`data:text/javascript;base64,${Buffer.from(outputText).toString("base64")}`);
+const { csvListePea, CHEMIN_CSV_LISTE_PEA, LIGNES_PEA } = donnees;
 
 const sortie = path.join(RACINE, "public", ...CHEMIN_CSV_LISTE_PEA.split("/").filter(Boolean));
 if (process.argv.includes("--verifier")) {

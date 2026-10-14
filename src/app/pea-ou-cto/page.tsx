@@ -7,7 +7,8 @@ import { ArticleByline } from "@/components/ui/ArticleByline";
 import { BreadcrumbSchema } from "@/components/ui/BreadcrumbSchema";
 import { SourcesReferences } from "@/components/ui/SourcesReferences";
 import { RenvoiProduit } from "@/components/products/RenvoiProduit";
-import { DATE_VERIFICATION_PEA, URL_LISTE_PEA, dateEnToutesLettres } from "@/lib/etf-pea-verifies";
+import { URL_LISTE_PEA, dateEnToutesLettres } from "@/lib/etf-pea-verifies";
+import { DATE_RELEVE_LISTE_PEA, LIGNES_PEA } from "@/lib/liste-pea";
 import { getETFBySymbol } from "@/lib/etf-config";
 import { runSimulation } from "@/lib/simulator";
 import { capitalPour, gainsPour, HYPOTHESES_COMPARATIFS } from "@/lib/ecart-frais";
@@ -400,15 +401,19 @@ export default function PEAouCTOPage() {
             contrôlé le même jour mais n'est pas dans la liste. Et
             « l'équivalent PEA, quand il en existe » : VWCE n'a qu'un
             équivalent approché, JPNK aussi (PTPXE,
-            TOPIX, vérifié le 14/10/2026 ; « aucun » jusque-là). */}
+            TOPIX, vérifié le 14/10/2026 ; « aucun » jusque-là).
+            14/10/2026 : la liste est devenue complète (ETF monétaires, de
+            matières premières, à effet de levier) ; le nombre de lignes et la
+            date du relevé sont lus dans src/lib/liste-pea. */}
         <p className="text-gray-600 leading-relaxed mt-6">
           Ces deux listes sont un extrait. Notre{" "}
           <Link href={URL_LISTE_PEA} className="text-primary-700 font-medium hover:underline">
             liste vérifiée des ETF éligibles au PEA
           </Link>
-          {" "}reprend les ETF d&apos;actions contrôlés le{" "}
-          {dateEnToutesLettres(DATE_VERIFICATION_PEA)}, avec leur ISIN et leurs
-          frais. Pour ceux qui ne sont pas éligibles, elle donne la raison et,
+          {" "}reprend les {LIGNES_PEA.length} ETF cotés à Paris relevés le{" "}
+          {dateEnToutesLettres(DATE_RELEVE_LISTE_PEA)}, avec leur ISIN, leurs
+          frais et le document de l&apos;émetteur qui prouve leur éligibilité.
+          Pour les fonds qui ne sont pas éligibles, elle donne la raison et,
           quand il en existe, l&apos;équivalent PEA vérifié.
         </p>
       </section>

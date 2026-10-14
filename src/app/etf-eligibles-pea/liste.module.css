@@ -6,7 +6,36 @@
  * fois dans la charge React). Les styles sont posés ici une fois, par
  * sélecteurs descendants de .t ; les lignes n'ont presque plus de classes.
  * Les rares classes internes (:global) sont courtes et n'existent que sous .t.
+ *
+ * 14/10/2026 : les intitulés de cellule sur téléphone viennent de l'attribut
+ * data-l de chaque <td> (td::before), et le détail de la preuve est fait de
+ * <p> : environ 1 100 éléments de moins, rien de changé à l'écran.
  */
+
+/* Les groupes : 3rem entre deux groupes, 0,75rem entre deux groupes repliés. */
+.groupes > * + * {
+  margin-top: 3rem;
+}
+.groupes > details + details {
+  margin-top: 0.75rem;
+}
+
+/* Groupe replié : son titre (h3) dans un <summary> qui ressemble à un bouton. */
+.replie > summary {
+  @apply flex cursor-pointer list-none items-center justify-between gap-3 rounded-2xl border border-gray-200 bg-white px-4 py-3 transition-colors hover:border-primary-300;
+}
+.replie > summary::-webkit-details-marker {
+  display: none;
+}
+.replie > summary > span {
+  @apply shrink-0 text-gray-500 transition-transform;
+}
+.replie[open] > summary {
+  @apply mb-3;
+}
+.replie[open] > summary > span {
+  @apply rotate-180;
+}
 
 .t {
   @apply w-full text-sm border-collapse;
@@ -46,6 +75,11 @@
   .t td:first-child {
     @apply block pb-2;
   }
+  /* Intitulé de cellule, sur téléphone seulement (thead masqué). */
+  .t td[data-l]::before {
+    content: attr(data-l);
+    @apply w-28 shrink-0 text-gray-500;
+  }
 }
 @media (min-width: 640px) {
   .t td {
@@ -59,14 +93,6 @@
   .t td:nth-child(5) {
     @apply whitespace-nowrap;
   }
-  .t td > :global(.l) {
-    display: none;
-  }
-}
-
-/* Intitulé de cellule, sur mobile seulement. */
-.t td > :global(.l) {
-  @apply w-28 shrink-0 text-gray-500;
 }
 
 /* Première cellule : mnémonique et pastilles, nom, émetteur et indice. */
@@ -136,16 +162,24 @@
 .t details[open] > summary::after {
   @apply rotate-180;
 }
-.t dl {
-  @apply mt-2 space-y-1.5 rounded-xl bg-gray-50 px-3 py-2.5 text-xs leading-relaxed text-gray-600;
+/* Un <p> par fait, sur un fond commun : arrondi en haut au premier, en bas au
+   dernier, 6 px entre deux faits (comme l'ancien <dl>). */
+.t details > p {
+  @apply bg-gray-50 px-3 py-[3px] text-xs leading-relaxed text-gray-600;
 }
-.t dt {
-  @apply font-semibold text-gray-800;
+.t summary + p {
+  @apply mt-2 rounded-t-xl pt-2.5;
 }
-.t dl a {
+.t details > p:last-child {
+  @apply rounded-b-xl pb-2.5;
+}
+.t details > p > b {
+  @apply block font-semibold text-gray-800;
+}
+.t details > p a {
   @apply font-medium text-primary-700 hover:underline;
 }
-.t dl > :global(.r) dt,
-.t dl > :global(.r) dd {
+.t details > p:global(.r),
+.t details > p:global(.r) > b {
   @apply text-amber-900;
 }

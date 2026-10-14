@@ -10,6 +10,7 @@ import { EtapeSuivante } from "@/components/ui/EtapeSuivante";
 import { formatTer } from "@/lib/utils";
 import { ecartCapital, HYPOTHESES_COMPARATIFS } from "@/lib/ecart-frais";
 import { DATE_VERIFICATION_PEA, ETF_PEA_VERIFIES, dateEnToutesLettres } from "@/lib/etf-pea-verifies";
+import { GROUPES_LISTE } from "@/lib/liste-pea";
 import { PFU_RATE, SOCIAL_CHARGES_RATE, tauxAffiche } from "@/lib/fiscal/pea-cto";
 import { BOURSO_BROCHURE_DU, BOURSO_MINIMUM_ORDRE_ETF } from "@/lib/brokers";
 
@@ -234,9 +235,15 @@ const PFU = tauxAffiche(PFU_RATE);
 // Fourchette de frais des ETF éligibles au PEA vérifiés, lue dans la liste
 // (30/09/2026) : elle remplace « Visez moins de 0,5 % », une consigne sans
 // source, et le « 13 ETF … de 0,10 % à 0,38 % » recopié dans la FAQ.
-const TER_PEA = ETF_PEA_VERIFIES.map((f) => f.ter);
+// 14/10/2026 : la liste compte désormais 128 lignes (monétaires, levier,
+// gestion active…), de frais très divers. La fourchette porte sur les deux
+// indices dont parle cette page, le MSCI World et le S&P 500 : leurs groupes
+// dans la liste complète (src/lib/liste-pea).
+const LIGNES_WORLD_SP500 = GROUPES_LISTE.filter((g) => g.id === "msci-world" || g.id === "sp500").flatMap((g) => g.lignes);
+if (LIGNES_WORLD_SP500.length === 0) throw new Error("meilleurs-etf-debutants : groupes msci-world et sp500 introuvables.");
+const TER_PEA = LIGNES_WORLD_SP500.map((l) => l.frais);
 const FOURCHETTE_PEA = {
-  nombre: ETF_PEA_VERIFIES.length,
+  nombre: LIGNES_WORLD_SP500.length,
   min: terAffiche(Math.min(...TER_PEA)),
   max: terAffiche(Math.max(...TER_PEA)),
 };
@@ -250,7 +257,7 @@ const CRITERIA = [
     // sourcés. Le 1,5 % devient une hypothèse d'illustration et l'écart est
     // CALCULÉ par le moteur (ecartCapital, faits BT-24 et BT-26). Le TER est
     // prélevé au jour le jour sur l'actif, pas « chaque année » (ter-definition).
-    body: `Le TER (Total Expense Ratio, ou frais courants) est prélevé au jour le jour sur l'actif du fonds : la performance affichée en est déjà nette. Sur la durée, l'écart pèse lourd : avec ${HYPOTHESES_COMPARATIFS.monthlyAmount} € par mois pendant ${HYPOTHESES_COMPARATIFS.durationYears} ans et un rendement brut hypothétique de ${HYPOTHESES_COMPARATIFS.annualReturnPct} % par an, des frais de 1,5 % par an au lieu de 0,20 % laissent environ ${ecartCapital(1.5, 0.2)} € de moins. Les ${FOURCHETTE_PEA.nombre} ETF éligibles au PEA que nous avons vérifiés coûtent de ${FOURCHETTE_PEA.min} à ${FOURCHETTE_PEA.max} par an.`,
+    body: `Le TER (Total Expense Ratio, ou frais courants) est prélevé au jour le jour sur l'actif du fonds : la performance affichée en est déjà nette. Sur la durée, l'écart pèse lourd : avec ${HYPOTHESES_COMPARATIFS.monthlyAmount} € par mois pendant ${HYPOTHESES_COMPARATIFS.durationYears} ans et un rendement brut hypothétique de ${HYPOTHESES_COMPARATIFS.annualReturnPct} % par an, des frais de 1,5 % par an au lieu de 0,20 % laissent environ ${ecartCapital(1.5, 0.2)} € de moins. Sur le MSCI World et le S&P 500, les ${FOURCHETTE_PEA.nombre} ETF éligibles au PEA de notre liste coûtent de ${FOURCHETTE_PEA.min} à ${FOURCHETTE_PEA.max} par an.`,
   },
   {
     title: "Diversification",
@@ -322,7 +329,7 @@ const FAQ = [
     // est celle des ETF vérifiés (fait selection-pea-fourchette-ter).
     // 30/09/2026 : fourchette lue dans la liste vérifiée (FOURCHETTE_PEA) ;
     // « Comparez toujours… » devient un renvoi vers le document qui fait foi.
-    a: `Un ETF passif suit mécaniquement un indice (MSCI World, S&P 500) sans chercher à le battre. Un fonds actif essaie de sélectionner des titres pour surperformer l'indice. Pour y parvenir, il doit d'abord regagner ses propres frais de gestion — ceux des ${FOURCHETTE_PEA.nombre} ETF éligibles au PEA que nous avons vérifiés vont de ${FOURCHETTE_PEA.min} à ${FOURCHETTE_PEA.max} par an — et rien ne garantit qu'il y arrive. Les frais courants de chaque produit figurent dans son document d'informations clés (DIC).`,
+    a: `Un ETF passif suit mécaniquement un indice (MSCI World, S&P 500) sans chercher à le battre. Un fonds actif essaie de sélectionner des titres pour surperformer l'indice. Pour y parvenir, il doit d'abord regagner ses propres frais de gestion — sur le MSCI World et le S&P 500, ceux des ${FOURCHETTE_PEA.nombre} ETF éligibles au PEA de notre liste vont de ${FOURCHETTE_PEA.min} à ${FOURCHETTE_PEA.max} par an — et rien ne garantit qu'il y arrive. Les frais courants de chaque produit figurent dans son document d'informations clés (DIC).`,
   },
   {
     q: "Comment acheter mon premier ETF ?",
