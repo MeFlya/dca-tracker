@@ -3,7 +3,8 @@ import { getBacktestStory } from "@/lib/backtest-stories";
 import { BacktestStoryPage } from "@/components/backtest/BacktestStoryPage";
 
 // Calculé au build sur le dataset statique — les chiffres (et la metadata)
-// se rafraîchissent à chaque deploy, le dataset étant mis à jour chaque mois.
+// se rafraîchissent à chaque deploy. Dataset gelé depuis le 14/10/2026 (fin
+// du relevé Yahoo Finance, voir SerieGelee) : les chiffres ne bougent plus.
 const story = getBacktestStory("backtest-covid-2020");
 
 export const metadata: Metadata = {

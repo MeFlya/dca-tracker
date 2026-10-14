@@ -13,11 +13,12 @@ import { BoutonRecherche, RechercheRacine } from "@/components/search/Recherche"
 
 // Note : "Guides" est désormais un mega-menu géré par <GuidesMenu /> et n'est
 // plus dans NAV_LINKS. Il est rendu explicitement entre "Comparer les ETF" et
-// "Marchés" (desktop) et dans le menu hamburger (mobile).
+// "Ressources" (desktop) et dans le menu hamburger (mobile).
+// 14/10/2026 : « Marchés » (/donnees-marche) retiré — la page n'affichait que
+// des cours Yahoo Finance ; elle redirige vers /comparer-etf.
 const NAV_LINKS = [
   { href: "/simulateur",     label: "Simulateur" },
   { href: "/comparer-etf",   label: "Comparer les ETF" },
-  { href: "/donnees-marche", label: "Marchés" },
   // Ajouté le 22/08/2026. Le Cockpit à 19 € n'avait AUCUN point d'entrée dans
   // le site : absent de l'en-tête, absent des 28 liens du pied de page, absent
   // de l'accueil. Le seul chemin passait par un bloc en bas de /tarifs intitulé
@@ -55,7 +56,7 @@ export function Header() {
           </Link>
 
           {/* Desktop nav.
-              Ordre : Simulateur · Comparer ETF · Guides ▾ (mega-menu) · Marchés · Tarifs
+              Ordre : Simulateur · Comparer ETF · Guides ▾ (mega-menu) · Ressources · Tarifs
               À partir de lg (1024 px) seulement. Mesuré le 28/09/2026 : logo,
               six entrées et Connexion/S'inscrire occupent 836 px ; entre 768 et
               1023 px la ligne débordait et « S'inscrire » sortait de l'écran.
@@ -77,10 +78,10 @@ export function Header() {
               </Link>
             ))}
 
-            {/* Mega-menu Guides — injecté entre Comparer ETF et Marchés */}
+            {/* Mega-menu Guides — injecté entre Comparer ETF et Ressources */}
             <GuidesMenu />
 
-            {/* Marchés + Tarifs (derniers items du NAV_LINKS) */}
+            {/* Ressources + Tarifs (derniers items du NAV_LINKS) */}
             {NAV_LINKS.slice(2).map((link) => (
               <Link
                 key={link.href}
@@ -196,7 +197,7 @@ export function Header() {
       </div>
 
       {/* Mobile menu.
-          Ordre identique au desktop : Simulateur · Comparer ETF · Guides ▸ (accordion) · Marchés · Tarifs */}
+          Ordre identique au desktop : Simulateur · Comparer ETF · Guides ▸ (accordion) · Ressources · Tarifs */}
       {mobileOpen && (
         <div className="lg:hidden border-t border-gray-100 bg-white px-4 py-3 space-y-1 animate-slide-up">
           {/* Simulateur + Comparer ETF */}
@@ -219,7 +220,7 @@ export function Header() {
           {/* Accordion Guides — referme le menu mobile quand l'user navigue */}
           <GuidesMenu mobile onNavigate={() => setMobileOpen(false)} />
 
-          {/* Marchés + Tarifs */}
+          {/* Ressources + Tarifs */}
           {NAV_LINKS.slice(2).map((link) => (
             <Link
               key={link.href}

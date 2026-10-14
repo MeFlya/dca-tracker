@@ -16,6 +16,22 @@
 //   - Exit 0 si OK (changé ou non), exit 1 si erreur (CI doit échouer fort
 //     plutôt que committer des données corrompues).
 
+// ─── DÉSACTIVÉ le 14/10/2026 ─────────────────────────────────────────────────
+// Ce script relevait les séries sur l'API chart de Yahoo Finance. Les
+// conditions de Yahoo interdisent l'usage commercial et la collecte
+// automatique : le site cesse d'utiliser ces données (décision du 14/10/2026).
+// La série publiée reste GELÉE à son relevé du 02/10/2026 (voir
+// mentionSerieGelee() dans src/lib/backtest.ts). Le script échoue donc
+// explicitement, AVANT toute requête réseau, quel que soit l'appelant
+// (npm run refresh:backtest, GitHub Action, lancement à la main). Le code
+// ci-dessous est conservé pour l'historique ; une nouvelle source fera l'objet
+// d'un autre script.
+console.error(
+  "[refresh-backtest] DÉSACTIVÉ depuis le 14/10/2026 : la série ne se relève plus sur Yahoo Finance " +
+    "(conditions d'utilisation : ni usage commercial, ni collecte automatique). Aucune requête envoyée, aucun fichier modifié."
+);
+process.exit(1);
+
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";

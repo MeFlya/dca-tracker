@@ -2,16 +2,14 @@
 
 import { useState, useMemo } from "react";
 import { ETFConfig, ETFRegion } from "@/lib/etf-config";
-import { AssetQuote } from "@/lib/market-data/types";
 import { ETFCard } from "@/components/etf/ETFCard";
 import { RegionMark } from "@/components/ui/RegionMark";
 import { formatTer } from "@/lib/utils";
 
+// 14/10/2026 : plus de cours (fin de Yahoo Finance) — la grille ne reçoit
+// plus que le catalogue.
 interface ETFGridProps {
   etfs: ETFConfig[];
-  quotes: Record<string, { quote: AssetQuote | null; error: string | null }>;
-  /** Optional provider label shown under each price (e.g. "Yahoo Finance") */
-  providerLabel?: string;
 }
 
 const REGIONS: { value: ETFRegion | "tous"; label: string }[] = [
@@ -67,7 +65,7 @@ function sortEtfs(etfs: ETFConfig[], mode: SortMode): ETFConfig[] {
   }
 }
 
-export function ETFGrid({ etfs, quotes, providerLabel }: ETFGridProps) {
+export function ETFGrid({ etfs }: ETFGridProps) {
   const [region, setRegion] = useState<ETFRegion | "tous">("tous");
   const [peaOnly, setPeaOnly] = useState(false);
   const [maxTer, setMaxTer] = useState<number | null>(null);
@@ -184,18 +182,9 @@ export function ETFGrid({ etfs, quotes, providerLabel }: ETFGridProps) {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {filtered.map((etf) => {
-            const result = quotes[etf.symbol];
-            return (
-              <ETFCard
-                key={etf.symbol}
-                etf={etf}
-                quote={result?.quote}
-                error={result?.error}
-                providerLabel={providerLabel}
-              />
-            );
-          })}
+          {filtered.map((etf) => (
+            <ETFCard key={etf.symbol} etf={etf} />
+          ))}
         </div>
       )}
     </div>

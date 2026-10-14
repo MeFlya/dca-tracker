@@ -51,7 +51,13 @@ import { GLOSSARY_TERM_LIST } from "@/lib/glossary-terms";
 import { PRODUCT_LIST } from "@/lib/products";
 import { INDEX_GUIDE_LIST } from "@/lib/etf-index-guides";
 import { BACKTEST_STORY_LIST, getBacktestStory } from "@/lib/backtest-stories";
-import { getAvailableRange, getDatasetMeta, formatEurBacktest, formatMonthFr } from "@/lib/backtest";
+import {
+  getAvailableRange,
+  getDatasetMeta,
+  formatEurBacktest,
+  formatMonthFr,
+  mentionSerieGeleeCourte,
+} from "@/lib/backtest";
 import { runSimulation, formatEur } from "@/lib/simulator";
 import { paramsFromSearch } from "@/lib/simulation-params";
 import {
@@ -161,7 +167,9 @@ function noteMontantMensuel(chemin: string): string | undefined {
     `Projection de ${formatEur(mensuel)} investis chaque mois en ETF : environ ${formatEur(Math.round(base.finalValue / 100) * 100)} après ${ans} ans ` +
     `pour ${formatEur(base.totalInvested)} versés, à ${pc(rendement)} par an avant frais et ${pc(TER_REFERENCE_SIMULATEUR)} de frais annuels. ` +
     "Une hypothèse, pas une prévision. La page donne aussi d'autres horizons, jusqu'à 30 ans, et ce qu'aurait donné le même versement " +
-    `sur les cours réels d'un ETF MSCI World, pour plusieurs mois de départ depuis ${formatMonthFr(min)}.`
+    `sur les cours réels d'un ETF MSCI World, pour plusieurs mois de départ depuis ${formatMonthFr(min)}. ` +
+    // 14/10/2026 : la série des backtests est gelée (fin du relevé Yahoo Finance).
+    mentionSerieGeleeCourte()
   );
 }
 
@@ -169,7 +177,9 @@ function noteMontantMensuel(chemin: string): string | undefined {
 function noteComparerEtf(): string {
   return (
     `Les ${ETF_LIST.length} ETF suivis par le site côte à côte (monde, S&P 500, Nasdaq-100, émergents, Europe, Japon, petites capitalisations américaines, obligations d'État à court terme) : ` +
-    "frais annuels (TER), éligibilité au PEA et cours indicatifs, avec des filtres par région, par éligibilité au PEA et par niveau de frais."
+    // 14/10/2026 : plus de cours affichés (fin de Yahoo Finance).
+    "frais annuels (TER), éligibilité au PEA et lien vers la page de l'émetteur quand son adresse a été vérifiée, avec des filtres par région, par éligibilité au PEA et par niveau de frais. " +
+    "Pas de cours en direct : le prix d'une part se lit dans la valeur liquidative publiée par l'émetteur."
   );
 }
 
@@ -205,6 +215,7 @@ function noteBacktest(): string {
   return (
     `DCA mensuel rejoué sur les cours de clôture réels d'un ETF MSCI World en euros, de ${formatMonthFr(min)} à ${formatMonthFr(max)} (relevés le ${dateEnToutesLettres(meta.fetchedAt)}). ` +
     `Exemple publié : ${formatEurBacktest(def.monthlyAmount)} par mois depuis ${formatMonthFr(def.startMonth)}, ${formatEurBacktest(result.totalInvested)} versés, ${formatEurBacktest(result.finalValue)} en ${formatMonthFr(max)}. ` +
+    `${mentionSerieGeleeCourte()} ` +
     "Exemples en accès libre ; l'outil qui rejoue votre montant et votre période est réservé à l'abonnement Premium. " +
     PERFORMANCES_PASSEES
   );
@@ -291,7 +302,7 @@ function entree(chemin: string): Entree {
   const story = BACKTEST_STORY_LIST.find((s) => `/${s.slug}` === chemin);
   if (story) {
     const { def, result } = getBacktestStory(story.slug);
-    return { titre: def.h1, note: `${def.metaDescription(result)} ${PERFORMANCES_PASSEES}` };
+    return { titre: def.h1, note: `${def.metaDescription(result)} ${mentionSerieGeleeCourte()} ${PERFORMANCES_PASSEES}` };
   }
   const guide = INDEX_GUIDE_LIST.find((g) => `/${g.slug}` === chemin);
   if (guide) return { titre: guide.h1, note: guide.metaDescription };

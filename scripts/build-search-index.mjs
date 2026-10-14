@@ -256,7 +256,6 @@ function categorie(u) {
       "/calculateur-fiscal-pea-cto",
       "/allocation-portefeuille",
       "/comparer-etf",
-      "/donnees-marche",
       "/interets-composes",
     ].includes(u)
   )

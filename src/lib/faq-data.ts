@@ -18,7 +18,9 @@ export const FAQ_ITEMS: FAQItem[] = [
   },
   {
     q: "Les données de marché sont-elles en temps réel ?",
-    a: "Non, les données de marché affichées sont différées (généralement fin de journée sur le plan gratuit). Chaque donnée indique clairement sa source et son horodatage. En mode démo (sans clé API configurée), les valeurs affichées sont illustratives et ne correspondent pas aux prix réels du marché.",
+    // 14/10/2026 : la réponse décrivait les cours Yahoo Finance (« fin de
+    // journée sur le plan gratuit ») ; le site cesse de les utiliser.
+    a: "Non. Le site n'affiche pas de cours en temps réel. Pour le prix d'une part d'ETF, la référence est la valeur liquidative publiée par l'émetteur du fonds (Amundi, iShares, Vanguard…), sur son site : le comparateur d'ETF y renvoie quand nous avons vérifié l'adresse de la page. Le simulateur, lui, n'utilise aucun cours : il part d'un rendement annuel supposé.",
   },
   {
     q: "Qu'est-ce qu'un ETF et pourquoi choisir cette approche ?",

@@ -136,6 +136,57 @@ export function getDatasetMeta() {
   };
 }
 
+// ─── Série gelée (14/10/2026) ────────────────────────────────────────────────
+//
+// Décision du 14/10/2026 : le site cesse d'utiliser les cours Yahoo Finance
+// (conditions d'utilisation : ni usage commercial, ni collecte automatique).
+// La série du backtest venait de là (scripts/refresh-backtest-data.mjs,
+// API chart de Yahoo, relevé mensuel par GitHub Action). Elle reste en ligne,
+// GELÉE : mêmes chiffres, plus aucune mise à jour automatique, en attendant une
+// source dont la réutilisation est autorisée (émetteur du fonds).
+//
+// Une seule phrase, construite ici, pour toutes les pages qui présentent la
+// série (/backtest, les trois histoires, « investir X € par mois », glossaire,
+// /tarifs, llms.txt) : un texte recopié page par page finit par diverger.
+// Les dates sortent du fichier de données (fetched_at, premier et dernier mois),
+// pas du texte.
+
+/** Date à laquelle la série a cessé d'être mise à jour. */
+export const SERIE_GELEE_LE = "2026-10-14";
+/** Fournisseur auprès duquel la série a été relevée (source historique). */
+export const SERIE_RELEVEE_SUR = "Yahoo Finance";
+
+/** « 2 octobre 2026 » — même rendu que dateEnToutesLettres(). */
+function dateLongue(iso: string): string {
+  return new Date(`${iso}T00:00:00Z`)
+    .toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" })
+    .replace(/^1(?=\s)/, "1er");
+}
+
+/**
+ * La mention complète : période, date et source du relevé, date du gel.
+ * « Série gelée : clôtures mensuelles de janvier 2008 à septembre 2026,
+ * relevées le 2 octobre 2026 sur Yahoo Finance. […] »
+ */
+export function mentionSerieGelee(): string {
+  const { min, max } = getAvailableRange();
+  return (
+    `Série gelée : clôtures mensuelles de ${formatMonthFr(min)} à ${formatMonthFr(max)}, ` +
+    `relevées le ${dateLongue(dataset.fetched_at)} sur ${SERIE_RELEVEE_SUR}. ` +
+    `Elle n'est plus mise à jour depuis le ${dateLongue(SERIE_GELEE_LE)}, en attendant une source dont la réutilisation est autorisée ; ` +
+    "les chiffres restent ceux de ce relevé."
+  );
+}
+
+/** Version courte, pour une ligne de tableau ou une carte. */
+export function mentionSerieGeleeCourte(): string {
+  const { min, max } = getAvailableRange();
+  return (
+    `Série gelée, de ${formatMonthFr(min)} à ${formatMonthFr(max)} (relevé du ${dateLongue(dataset.fetched_at)} sur ${SERIE_RELEVEE_SUR}), ` +
+    `sans mise à jour depuis le ${dateLongue(SERIE_GELEE_LE)}.`
+  );
+}
+
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 /** "2020-03" → 2020*12 + 2 = 24242 (mois absolu, pour comparer / itérer). */

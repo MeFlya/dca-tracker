@@ -66,6 +66,10 @@ const REV = {
   // taux fiscaux 2026 ; 14/10/2026 : sections « Comment nous vérifions les
   // données des ETF » et « Comment nous classons ».
   methodologie: "2026-10-14",
+  // /comparer-etf et /tarifs : 14/10/2026, fin des cours Yahoo Finance (plus
+  // de cours sur les cartes, lien vers la page de l'émetteur ; mention de la
+  // série gelée du backtest sur /tarifs). /donnees-marche retirée (301).
+  finYahoo: "2026-10-14",
   // pages Ressources refaites, Cockpit v2.0 et guide v1.1 (01/10/2026) ;
   // 02/10/2026 : captures et légendes du Cockpit sur l'exemple aux cours réels.
   // 09/10/2026 : guide v1.2 (BoursoBank au 5 octobre), captures et sommaire.
@@ -151,9 +155,8 @@ export async function GET(): Promise<NextResponse> {
     { url: `${base}/calculateur-fiscal-pea-cto`, changeFreq: "monthly", priority: 0.9, lastmod: REV.reponseDabord },
     { url: `${base}/allocation-portefeuille`,  changeFreq: "monthly", priority: 0.85, lastmod: REV.etf },
     { url: `${base}/investir-en-etf`,          changeFreq: "monthly", priority: 0.85, lastmod: REV.etf },
-    { url: `${base}/comparer-etf`,             changeFreq: "weekly",  priority: 0.8,  lastmod: REV.etf },
-    { url: `${base}/donnees-marche`,           changeFreq: "daily",   priority: 0.6,  lastmod: REV.etf },
-    { url: `${base}/tarifs`,                   changeFreq: "monthly", priority: 0.8,  lastmod: REV.etf },
+    { url: `${base}/comparer-etf`,             changeFreq: "weekly",  priority: 0.8,  lastmod: REV.finYahoo },
+    { url: `${base}/tarifs`,                   changeFreq: "monthly", priority: 0.8,  lastmod: REV.finYahoo },
     { url: `${base}/produits`,                 changeFreq: "monthly", priority: 0.8,  lastmod: REV.produits },
     ...PRODUCT_LIST.map((p) => ({
       url: `${base}/produits/${p.slug}`,

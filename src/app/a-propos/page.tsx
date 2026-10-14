@@ -412,11 +412,10 @@ export default function AboutPage() {
             Voilà ce qui est en cours de construction, par ordre de priorité :
           </p>
           <div className="space-y-3">
+            {/* 14/10/2026 : « Données de marché en direct — cours réels via
+                Yahoo Finance » retiré de la feuille de route : le site cesse
+                d'utiliser Yahoo (conditions d'utilisation). */}
             {[
-              {
-                title: "Données de marché en direct",
-                body: "Remplacement du mode démo actuel par des cours réels via Yahoo Finance.",
-              },
               {
                 title: "Simulateur retraite dédié",
                 body: "Saisie par âge cible plutôt que durée abstraite, avec intégration de la règle des 4 %.",

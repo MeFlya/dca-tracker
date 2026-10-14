@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { URL_LISTE_PEA } from "@/lib/etf-pea-verifies";
 
 // ─── Feature data ─────────────────────────────────────────────────────────────
 
@@ -21,7 +22,9 @@ const PRIMARY_FEATURES = [
       // table de vérité ETF, et EWLD comme PAEEM n'ont pas de fiche dans le
       // comparateur vers lequel pointe cette carte. La liste ne cite plus que
       // des ETF que /comparer-etf affiche réellement.
-      "CW8, IWDA, VWCE, CSPX, PCEU, RS2K et plus — TER réels, méthode de réplication, éligibilité PEA, derniers cours indicatifs. Chaque ETF détaillé avec son profil et ses points d'attention.",
+      // 14/10/2026 : « derniers cours indicatifs » retiré (fin de Yahoo
+      // Finance) ; la carte renvoie vers la page de l'émetteur.
+      "CW8, IWDA, VWCE, CSPX, PCEU, RS2K et plus — TER réels, méthode de réplication, éligibilité PEA, lien vers la page de l'émetteur. Chaque ETF détaillé avec son profil et ses points d'attention.",
     cta: "Comparer les ETF",
     href: "/comparer-etf",
   },
@@ -36,13 +39,16 @@ const PRIMARY_FEATURES = [
   },
 ] as const;
 
+// 14/10/2026 : la bande pointait vers /donnees-marche (« Données de marché en
+// direct »), page de cours Yahoo Finance retirée. Elle mène désormais à la
+// liste vérifiée des ETF éligibles au PEA.
 const SECONDARY_FEATURE = {
-  icon: <SignalIcon />,
-  title: "Données de marché en direct",
+  icon: <ListCheckIcon />,
+  title: "Les ETF éligibles au PEA, vérifiés un par un",
   description:
-    "Cours indicatifs de vos ETF préférés. Source et délai toujours affichés — aucune donnée simulée présentée comme réelle.",
-  cta: "Voir les marchés",
-  href: "/donnees-marche",
+    "ISIN et frais recoupés fonds par fonds, et la liste des fonds qui ne sont pas éligibles.",
+  cta: "Voir la liste",
+  href: URL_LISTE_PEA,
 } as const;
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -176,13 +182,12 @@ function BookIcon() {
   );
 }
 
-function SignalIcon() {
+function ListCheckIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-      <path d="M2 14c2.2-2.8 5-4 8-4s5.8 1.2 8 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-      <path d="M5.5 10.5C6.9 9.1 8.4 8.4 10 8.4s3.1.7 4.5 2.1" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-      <path d="M8.5 7.5C9 7.2 9.5 7 10 7s1 .2 1.5.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-      <circle cx="10" cy="16" r="1" fill="currentColor" />
+      <path d="M3 5.5l1.5 1.5L7.5 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M3 13.5l1.5 1.5 3-3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M10 6h7M10 14h7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
     </svg>
   );
 }

@@ -2,9 +2,12 @@
 // Server component PUR : les chiffres sont calculés au build (runBacktest sur
 // le dataset statique), le graphique est un SVG rendu côté serveur — zéro JS
 // client, zéro recharts, zéro coût Core Web Vitals. Les pages se régénèrent
-// à chaque deploy (le dataset est rafraîchi mensuellement par GitHub Action).
+// à chaque deploy. Le dataset était rafraîchi chaque mois par une GitHub
+// Action (relevé Yahoo Finance) ; depuis le 14/10/2026 il est GELÉ (voir
+// SerieGelee) et la mention s'affiche sous le graphique.
 
 import { MsciWorldEnPea } from "@/components/backtest/MsciWorldEnPea";
+import { SerieGelee } from "@/components/backtest/SerieGelee";
 import Link from "next/link";
 import { TrendingDown, ArrowRight, History } from "lucide-react";
 import { ArticleByline } from "@/components/ui/ArticleByline";
@@ -17,6 +20,7 @@ import {
   formatEurBacktest,
   formatMonthFr,
   getDatasetMeta,
+  mentionSerieGeleeCourte,
   type BacktestSeriesPoint,
 } from "@/lib/backtest";
 import { DataAnomalyNotice } from "@/components/backtest/DataAnomalyNotice";
@@ -162,7 +166,9 @@ export function BacktestStoryPage({ story }: { story: ComputedStory }) {
           <p className="text-xs text-gray-500 mt-0.5">{result.monthsInvested} mois</p>
         </div>
         <div className="rounded-xl border border-gray-100 bg-white px-4 py-3">
-          <p className="text-xs text-gray-500 mb-1">Valeur aujourd&apos;hui</p>
+          {/* 14/10/2026 : « Valeur aujourd'hui » → la série est gelée, la
+              valeur est celle du dernier mois relevé (affiché dessous). */}
+          <p className="text-xs text-gray-500 mb-1">Valeur finale</p>
           <p className="text-lg font-bold tabular-nums text-primary-700">
             <CountUp value={result.finalValue} as="eur" />
           </p>
@@ -191,6 +197,7 @@ export function BacktestStoryPage({ story }: { story: ComputedStory }) {
       {/* ── Chart SVG (zéro JS) ─────────────────────────────────────────────── */}
       <div className="mb-10">
         <StoryChart series={result.series} />
+        <SerieGelee className="mt-4" />
       </div>
 
       {/* ── Récit ───────────────────────────────────────────────────────────── */}
@@ -291,8 +298,9 @@ export function BacktestStoryPage({ story }: { story: ComputedStory }) {
               déjà dans ses cours (voir backtest.ts). */}
           <strong>Méthodologie</strong> — calcul sur les clôtures mensuelles
           réelles du MSCI World en euros (série : ETF Xtrackers MSCI World
-          Swap, XMWO, coté en euros à Milan), achat en fin de mois, données
-          mises à jour mensuellement. Les frais de gestion du fonds (
+          Swap, XMWO, coté en euros à Milan), achat en fin de mois. Série
+          gelée, sans mise à jour depuis le 14 octobre 2026 (voir sous le
+          graphique). Les frais de gestion du fonds (
           {getDatasetMeta().terAnnuelPct.toFixed(2).replace(".", ",")} %/an)
           sont déjà dans les cours ; ne tient pas compte des frais de
           courtage ni de la fiscalité. Les performances passées ne préjugent
@@ -322,7 +330,10 @@ export function BacktestStoryPage({ story }: { story: ComputedStory }) {
             label: "Xtrackers MSCI World Swap UCITS ETF 1C (XMWO, LU0274208692) — fiche de cotation",
             url: "https://www.borsaitaliana.it/borsa/etf/scheda/LU0274208692-ETFP.html?lang=it",
             publisher: "Borsa Italiana",
-            note: "Série de prix utilisée : clôtures mensuelles de cet ETF en euros, frais du fonds inclus. Consultée le 28/09/2026.",
+            // 14/10/2026 : la fiche identifie le fonds et sa cotation ; la
+            // série elle-même a été relevée sur Yahoo Finance, ce que la note
+            // dit désormais.
+            note: `Série de prix utilisée : clôtures mensuelles de cet ETF en euros, frais du fonds inclus. ${mentionSerieGeleeCourte()} Fiche consultée le 28/09/2026.`,
           },
           {
             // La page cite « selon MSCI, −12,78 % en 2022 » : sa source doit

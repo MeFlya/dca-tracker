@@ -33,6 +33,7 @@
 // BacktestClient qui le tient, avec le même booléen décidé côté serveur.
 
 import { MsciWorldEnPea } from "@/components/backtest/MsciWorldEnPea";
+import { SerieGelee } from "@/components/backtest/SerieGelee";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -42,6 +43,8 @@ import {
   getDatasetMeta,
   formatEurBacktest,
   formatMonthFr,
+  mentionSerieGelee,
+  SERIE_RELEVEE_SUR,
   type BacktestResult,
 } from "@/lib/backtest";
 import {
@@ -182,7 +185,8 @@ const FAQ: { id: string; q: string; a: string }[] = [
   {
     id: "faq-donnees",
     q: "Quelles données utilise ce backtest\u00a0?",
-    a: `Les cours de clôture mensuels en euros de l'ETF Xtrackers MSCI World Swap UCITS ETF 1C (XMWO, ISIN LU0274208692), coté à Milan, de ${formatMonthFr(RANGE.min)} à ${FIN}, relevés le ${RELEVE_LE}. Ce fonds suit le MSCI World et réinvestit ses dividendes. Achat supposé au cours de clôture du dernier jour de bourse de chaque mois.`,
+    // 14/10/2026 : la réponse dit d'où la série a été relevée, et qu'elle est gelée.
+    a: `Les cours de clôture mensuels en euros de l'ETF Xtrackers MSCI World Swap UCITS ETF 1C (XMWO, ISIN LU0274208692), coté à Milan, de ${formatMonthFr(RANGE.min)} à ${FIN}, relevés le ${RELEVE_LE} sur ${SERIE_RELEVEE_SUR}. Ce fonds suit le MSCI World et réinvestit ses dividendes. Achat supposé au cours de clôture du dernier jour de bourse de chaque mois. ${mentionSerieGelee()}`,
   },
   {
     id: "faq-frais",
@@ -307,6 +311,8 @@ export default function BacktestPage() {
             fonds compris, hors courtage et impôt. Les performances passées ne
             préjugent pas des performances futures.
           </p>
+          {/* 14/10/2026 : la série vient d'un relevé Yahoo Finance, gelé. */}
+          <SerieGelee className="mt-4" />
         </header>
 
         {/* ── Exemples déjà calculés — en texte ET en tableau ─────────────────
@@ -356,7 +362,7 @@ export default function BacktestPage() {
               Xtrackers MSCI World Swap UCITS ETF 1C (XMWO, LU0274208692)
             </a>
             , coté à Milan, de {formatMonthFr(range.min)} à {FIN}, relevées le{" "}
-            {RELEVE_LE}. Les frais de gestion du fonds ({TER_FONDS} par an) sont
+            {RELEVE_LE} sur {SERIE_RELEVEE_SUR} (série gelée depuis, voir plus haut). Les frais de gestion du fonds ({TER_FONDS} par an) sont
             déjà dans les cours&nbsp;; courtage et impôt non compris. Ces
             résultats passés ne préjugent pas des performances futures.
           </p>
@@ -419,8 +425,9 @@ export default function BacktestPage() {
           </h2>
           <ul className="text-sm text-gray-600 space-y-2 leading-relaxed">
             <li>
-              <strong>Source des données :</strong> {meta.source}. Récupéré le{" "}
-              {RELEVE_LE}.
+              <strong>Source des données :</strong> {meta.source}. Clôtures
+              relevées le {RELEVE_LE} sur {SERIE_RELEVEE_SUR}.{" "}
+              <SerieGelee variant="ligne" className="inline" />
             </li>
             <li>
               <strong>Hypothèse :</strong> achat le dernier jour de chaque mois

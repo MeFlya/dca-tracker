@@ -1,38 +1,25 @@
 import Link from "next/link";
 import { ETFConfig } from "@/lib/etf-config";
-import { AssetQuote } from "@/lib/market-data/types";
-import { formatCurrency, formatPercent, formatTer } from "@/lib/utils";
-import { DelayedBadge } from "@/components/ui/Disclaimer";
-import { IssuerLogoMark } from "@/components/ui/IssuerLogoMark";
+import { formatTer } from "@/lib/utils";
+import { IssuerLogoMark, issuerLabelFromName } from "@/components/ui/IssuerLogoMark";
 import { RegionMark } from "@/components/ui/RegionMark";
+import { PAGE_EMETTEUR } from "@/lib/sources-etf";
 import { cn } from "@/lib/utils";
+
+// 14/10/2026 : la carte n'affiche plus de cours ni de variation. Ils venaient
+// de Yahoo Finance, dont les conditions interdisent l'usage commercial et la
+// collecte automatique (décision du 14/10/2026). À la place : où lire la
+// valeur liquidative, publiée par l'émetteur — un lien quand l'adresse de la
+// page du fonds a été vérifiée (PAGE_EMETTEUR), sinon le nom de l'émetteur.
+// La ligne « Bourse », tirée du cours, est retirée avec lui.
 
 interface ETFCardProps {
   etf: ETFConfig;
-  quote?: AssetQuote | null;
-  error?: string | null;
-  /** Source label shown below the price (e.g. "Twelve Data", "Alpha Vantage") */
-  providerLabel?: string;
 }
 
-/** "il y a 12 min", "il y a 2h", "il y a 1j" — French relative time. */
-function formatRelativeTime(iso: string): string {
-  const diffMs = Date.now() - new Date(iso).getTime();
-  const diffMin = Math.max(0, Math.round(diffMs / 60_000));
-  if (diffMin < 1) return "à l'instant";
-  if (diffMin < 60) return `il y a ${diffMin} min`;
-  const diffH = Math.round(diffMin / 60);
-  if (diffH < 24) return `il y a ${diffH} h`;
-  const diffD = Math.round(diffH / 24);
-  return diffD === 1 ? "il y a 1 j" : `il y a ${diffD} j`;
-}
-
-export function ETFCard({ etf, quote, error, providerLabel }: ETFCardProps) {
-  const positive = (quote?.changePercent ?? 0) >= 0;
-  // "Cours non disponible" = couvert par notre catalogue mais pas par
-  // le provider (= ETF retiré de symbol-map). On masque le bloc prix
-  // entièrement (pas de message d'erreur agressif).
-  const hideQuoteSection = error === "Cours non disponible pour cet ETF";
+export function ETFCard({ etf }: ETFCardProps) {
+  const page = PAGE_EMETTEUR[etf.displaySymbol];
+  const emetteur = issuerLabelFromName(etf.name);
 
   return (
     <div className="card card-hover flex flex-col gap-4">
@@ -48,7 +35,6 @@ export function ETFCard({ etf, quote, error, providerLabel }: ETFCardProps) {
               <span className="text-lg font-bold text-gray-900 group-hover:text-primary-600 transition-colors">
                 {etf.displaySymbol}
               </span>
-              {quote?.isDelayed && <DelayedBadge />}
             </span>
             <span className="block text-sm text-gray-500 leading-snug group-hover:text-gray-700 transition-colors">
               {etf.name}
@@ -71,59 +57,34 @@ export function ETFCard({ etf, quote, error, providerLabel }: ETFCardProps) {
         </div>
       </div>
 
-      {/* Price block.
-          data-nosearch sur CHAQUE branche (recherche interne, 28/09/2026) :
-          cours, variation, « Mis à jour il y a N min », mais aussi « Cours
-          indisponible » sont l'état du moment du build. L'index ne change
-          qu'au déploiement suivant, la page se revalide toutes les heures :
-          un extrait afficherait un cours périmé, sans date. */}
-      {hideQuoteSection ? (
-        <div data-nosearch="" className="text-xs text-gray-500 italic">
-          Cours non disponible
-        </div>
-      ) : error ? (
-        // État erreur — container neutre slate, icône rouge pour signaler
-        // sans fond saturé (cohérent avec la règle des ConversionBlocks).
-        <div data-nosearch="" className="flex items-center gap-2 text-xs text-gray-600 bg-slate-50 border border-slate-200/70 rounded-lg px-3 py-2">
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="text-red-500 shrink-0" aria-hidden>
-            <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.4" />
-            <path d="M8 5v3.5M8 11.5v.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-          </svg>
-          Cours indisponible
-        </div>
-      ) : quote ? (
-        <div data-nosearch="" className="flex flex-col gap-1">
-          <div className="flex items-baseline gap-3">
-            <span className="text-2xl font-bold text-gray-900 tabular-nums">
-              {formatCurrency(quote.price, quote.currency)}
-            </span>
-            <span
-              className={cn(
-                "text-sm font-semibold tabular-nums",
-                positive ? "text-gain-dark" : "text-loss-dark"
-              )}
-            >
-              {formatPercent(quote.changePercent)}
-            </span>
-          </div>
-          {providerLabel && quote.lastUpdated && (
-            <p className="text-[11px] text-gray-500">
-              Source : {providerLabel} · Mis à jour {formatRelativeTime(quote.lastUpdated)}
-            </p>
-          )}
-        </div>
-      ) : (
-        <div data-nosearch="" className="h-8 bg-gray-100 rounded-lg animate-pulse w-32" />
-      )}
+      {/* Valeur liquidative — data-nosearch : ligne répétée sur chaque
+          carte, pas un contenu à trouver. */}
+      <div
+        data-nosearch=""
+        className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-xs bg-slate-50 border border-slate-200/70 rounded-lg px-3 py-2"
+      >
+        <span className="text-gray-600">Valeur liquidative</span>
+        {page ? (
+          <a
+            href={page.url}
+            target="_blank"
+            rel="noopener"
+            className="font-medium text-primary-700 hover:underline"
+          >
+            Voir la {page.libelle}
+            <span aria-hidden> ↗</span>
+            <span className="sr-only"> (nouvel onglet)</span>
+          </a>
+        ) : emetteur ? (
+          <span className="font-medium text-gray-700">publiée par {emetteur}</span>
+        ) : null}
+      </div>
 
       {/* Metadata */}
       <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
         <MetaRow label="TER" value={formatTer(etf.ter)} />
         <MetaRow label="Réplication" value={etf.replicationMethod} />
         <MetaRow label="Distribution" value={etf.distributionPolicy} />
-        {quote?.exchange && (
-          <MetaRow label="Bourse" value={quote.exchange} />
-        )}
         {etf.isin && <MetaRow label="ISIN" value={etf.isin} mono />}
       </div>
 

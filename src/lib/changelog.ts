@@ -41,6 +41,21 @@ export interface ChangelogEntry {
 
 /** Du plus récent au plus ancien. Garder cet ordre à la main. */
 export const CHANGELOG: ChangelogEntry[] = [
+  // 14/10/2026 : décision de Maël de cesser d'utiliser Yahoo Finance (plan :
+  // private-assets/raw/geo/remplacement-yahoo-2026-10.md). Fiches ETF hors de
+  // ce lot : elles changent avec les fiches v2 (23/10/2026), l'entrée le dit
+  // au futur. Si le déploiement part après le 14/10, avancer la date.
+  {
+    date: "2026-10-14",
+    kind: "produit",
+    title: "Fin des cours Yahoo Finance : plus de cours dans le comparateur, backtest gelé",
+    body:
+      "Jusqu'au 14 octobre 2026, le comparateur d'ETF et la page « Données de marché » affichaient des cours et des variations relevés sur Yahoo Finance, présentés comme des données de fin de journée alors qu'il s'agissait de cours de séance, et une adresse publique du site les redistribuait. " +
+      "Depuis le 14 octobre 2026, le comparateur n'affiche plus de cours : chaque carte indique où lire la valeur liquidative publiée par l'émetteur, avec un lien vers la page du fonds quand son adresse a été vérifiée. La page « Données de marché » est retirée et redirige vers le comparateur, et l'adresse publique qui redistribuait les cours est fermée. " +
+      "La série mensuelle du backtest, relevée elle aussi sur Yahoo Finance, reste en ligne mais gelée à son relevé du 2 octobre 2026 : ses chiffres ne changent pas, elle n'est plus mise à jour, et chaque page qui la présente le dit. Les fiches ETF afficheront encore un cours jusqu'à leur refonte, prévue fin octobre 2026, qui le retirera.",
+    why:
+      "Les conditions d'utilisation de Yahoo excluent l'usage commercial et la collecte automatique de ses données ; un site qui vend un abonnement ne peut pas s'y appuyer. Le prix d'une part se lit dans la valeur liquidative que publie l'émetteur ; la série du backtest sera remplacée par une source dont la réutilisation est autorisée.",
+  },
   // 14/10/2026 : une affirmation de la liste PEA était fausse par omission
   // (« Japon : aucun équivalent vérifié »). Preuves relevées le 14/10/2026 :
   // private-assets/raw/geo/faits-vague1-2026-10.json (verification_ptpxe),

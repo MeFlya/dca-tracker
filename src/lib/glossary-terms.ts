@@ -156,6 +156,12 @@ export type GlossaryTerm = {
    * des erreurs de fait. À bumper quand on touche le terme, pas au déploiement.
    */
   updatedAt: string;
+  /**
+   * Le terme cite des chiffres calculés sur la série des backtests (14/10/2026) :
+   * la page affiche alors la mention « série gelée » (SerieGelee), avec la date
+   * et la source du relevé.
+   */
+  serieBacktest?: true;
 };
 
 export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
@@ -553,7 +559,9 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
 
   volatilite: {
     slug: "volatilite",
-    updatedAt: "2026-09-29",
+    // 14/10/2026 : mention « série gelée » sous les chiffres du backtest.
+    updatedAt: "2026-10-14",
+    serieBacktest: true,
     term: "Volatilité",
     shortDef:
       "L'amplitude des variations d'un actif autour de sa tendance — la mesure standard du « risque » en finance.",
@@ -604,7 +612,9 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
 
   drawdown: {
     slug: "drawdown",
-    updatedAt: "2026-09-29",
+    // 14/10/2026 : mention « série gelée » sous les chiffres du backtest.
+    updatedAt: "2026-10-14",
+    serieBacktest: true,
     term: "Drawdown (perte maximale)",
     shortDef:
       "La baisse entre un sommet du portefeuille et le creux qui suit — la mesure la plus parlante du risque vécu.",
@@ -714,7 +724,9 @@ export const GLOSSARY_TERMS: Record<string, GlossaryTerm> = {
     slug: "tri",
     // 01/10/2026 : mise en place dans un tableur (/suivi-pea-excel#tri) et
     // piège de la plage qui commence par des flux nuls.
-    updatedAt: "2026-10-01",
+    // 14/10/2026 : mention « série gelée » sous les chiffres du backtest.
+    updatedAt: "2026-10-14",
+    serieBacktest: true,
     term: "TRI — Taux de Rendement Interne",
     shortDef:
       "Le rendement annualisé qui tient compte des dates et montants de chaque versement — la vraie mesure de performance d'un DCA.",

@@ -11,6 +11,7 @@ import { getGlossaryTerm, GLOSSARY_TERM_LIST } from "@/lib/glossary-terms";
 import { ArticleByline } from "@/components/ui/ArticleByline";
 import { BreadcrumbSchema } from "@/components/ui/BreadcrumbSchema";
 import { JsonLd } from "@/components/ui/JsonLd";
+import { SerieGelee } from "@/components/backtest/SerieGelee";
 
 const CANONICAL_ORIGIN = "https://dcatracker.fr";
 
@@ -131,6 +132,9 @@ export default async function GlossaryTermPage({ params }: Props) {
           <p className="text-sm text-primary-900 leading-relaxed">{term.example}</p>
         </div>
       )}
+
+      {/* 14/10/2026 : les chiffres de backtest de ce terme viennent d'une série gelée. */}
+      {term.serieBacktest && <SerieGelee className="mb-10" />}
 
       {/* ── FAQ ─────────────────────────────────────────────────────────────── */}
       <section className="mb-10">

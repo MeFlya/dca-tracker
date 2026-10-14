@@ -16,7 +16,7 @@
 
 import Link from "next/link";
 import { Sparkles } from "lucide-react";
-import { runBacktest, getAvailableRange, formatMonthFr } from "@/lib/backtest";
+import { runBacktest, getAvailableRange, formatMonthFr, mentionSerieGeleeCourte } from "@/lib/backtest";
 import { runMonteCarlo } from "@/lib/monte-carlo";
 import { paramsFromSearch } from "@/lib/simulation-params";
 import {
@@ -392,7 +392,8 @@ export function PremiumFeatureShowcase() {
           mockup={<BacktestMockup />}
           title="Backtest historique"
           badge="Nouveau"
-          desc="Ce qu'aurait VRAIMENT donné votre DCA sur les données réelles du MSCI World depuis 2008 — krach de 2008, COVID et 2022 inclus. TRI calculé, pire creux affiché. Pas une projection théorique : du réel."
+          // 14/10/2026 : la série est gelée (fin du relevé Yahoo Finance) — dit ici, là où l'outil est vendu.
+          desc={`Ce qu'aurait VRAIMENT donné votre DCA sur les données réelles du MSCI World depuis 2008 — krach de 2008, COVID et 2022 inclus. TRI calculé, pire creux affiché. Pas une projection théorique : du réel. ${mentionSerieGeleeCourte()}`}
         />
         <FeatureCard
           mockup={<FiscalMockup />}

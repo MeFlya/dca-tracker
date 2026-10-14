@@ -12,6 +12,7 @@ import {
 } from "@/lib/etf-pea-verifies";
 import { UPDATE_POLICY, RANKING_IS_PAID_INFLUENCED } from "@/lib/comparison-disclosure";
 import { isBrokerCTAActive, MENTION_AFFILIATION } from "@/lib/broker-config";
+import { mentionSerieGelee } from "@/lib/backtest";
 
 const TITLE = "Méthodologie DCA Tracker : formules, hypothèses et sources";
 // 14/10/2026 : la page dit aussi comment les données ETF sont vérifiées et
@@ -182,9 +183,9 @@ export default function MethodologiePage() {
           </li>
         </ol>
         <p>
-          Ce que nous ne vérifions pas à la main&nbsp;: les cours, fournis par
-          un service externe et différés (voir «&nbsp;Données de marché&nbsp;»
-          plus bas).
+          Ce que nous ne vérifions pas à la main&nbsp;: les cours encore
+          affichés sur les fiches ETF, fournis par un service externe (voir
+          «&nbsp;Données de marché&nbsp;» plus bas).
         </p>
       </Section>
 
@@ -314,30 +315,43 @@ Optimiste   : rendement_brut + 2 %`}
         </p>
       </Section>
 
+      {/* 14/10/2026 : section réécrite. Elle annonçait « Yahoo Finance (plan
+          gratuit) : données de fin de journée » — Yahoo n'a pas de plan
+          gratuit, et les cours servis étaient des cours de séance. Le site
+          cesse d'utiliser Yahoo (conditions : ni usage commercial, ni collecte
+          automatique). */}
       <Section title="Données de marché">
         <p>
-          Les données de marché (cours des ETF) sont récupérées via une API
-          externe configurée côté serveur. Selon le plan utilisé :
+          Depuis le 14 octobre 2026, le comparateur d&apos;ETF n&apos;affiche plus
+          de cours, et la page «&nbsp;Données de marché&nbsp;» a été retirée. Ces
+          cours venaient de Yahoo Finance, dont les conditions d&apos;utilisation
+          excluent l&apos;usage commercial et la collecte automatique.
         </p>
         <ul className="space-y-2 text-sm">
           <li>
-            <strong>Mode démo (sans clé API) :</strong> des valeurs illustratives
-            sont affichées. Elles ne correspondent pas à des cours réels.
+            <strong>Prix d&apos;une part :</strong> la référence est la valeur
+            liquidative publiée par l&apos;émetteur du fonds, sur son site. Le{" "}
+            <Link href="/comparer-etf" className="text-primary-700 font-medium hover:underline">
+              comparateur
+            </Link>{" "}
+            renvoie vers la page du fonds quand nous en avons vérifié
+            l&apos;adresse.
           </li>
           <li>
-            <strong>Yahoo Finance (plan gratuit) :</strong> données de fin de
-            journée (end-of-day), différées. Non adaptées au trading actif.
+            <strong>Fiches ETF :</strong> elles affichent encore un cours relevé
+            sur Yahoo Finance, jusqu&apos;à leur refonte prévue fin octobre 2026,
+            qui le retirera.
           </li>
           <li>
-            <strong>Source affichée :</strong> le fournisseur et l&apos;horodatage
-            de chaque cours sont toujours indiqués sur le site. Nous pouvons
-            faire évoluer la source si besoin, sans jamais fabriquer de prix.
+            <strong>Backtest :</strong> {mentionSerieGelee()}
+          </li>
+          <li>
+            <strong>Simulateur :</strong> il n&apos;utilise aucun cours. Ses
+            projections partent d&apos;un rendement annuel supposé, que vous
+            pouvez modifier.
           </li>
         </ul>
-        <p>
-          Le source et l&apos;horodatage de chaque donnée sont toujours affichés
-          sur le site. Nous ne fabriquons jamais de prix.
-        </p>
+        <p>Nous ne fabriquons jamais de prix.</p>
       </Section>
 
       <Section title="Ce que ce site n'est pas">

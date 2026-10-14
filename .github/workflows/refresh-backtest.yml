@@ -1,8 +1,20 @@
 name: Refresh backtest data (MSCI World EUR)
 
+# ─── DÉSACTIVÉ le 14/10/2026 ─────────────────────────────────────────────────
+# Ce workflow relevait chaque mois les cours de XMWO.MI et IWDA.AS sur l'API
+# chart de Yahoo Finance (query1.finance.yahoo.com). Les conditions de Yahoo
+# interdisent l'usage commercial et la collecte automatique : le site cesse
+# d'utiliser ces données (décision de Maël, 14/10/2026). La série du backtest
+# reste en ligne, GELÉE à son relevé du 02/10/2026, en attendant une source
+# autorisée (émetteur du fonds).
+#
+# · Plus de planification : le déclencheur `schedule` (« 0 6 2 * * », le 2 de
+#   chaque mois à 06:00 UTC) est retiré. Le fichier est gardé pour l'historique.
+# · Un lancement manuel échoue volontairement : la première étape sort en
+#   erreur, et scripts/refresh-backtest-data.mjs refuse lui aussi de tourner.
+# · Pour une nouvelle source : écrire un autre script, ne pas réactiver celui-ci.
+
 on:
-  schedule:
-    - cron: "0 6 2 * *"   # le 2 de chaque mois à 06:00 UTC
   workflow_dispatch: {}
 
 permissions:
@@ -12,6 +24,10 @@ jobs:
   refresh:
     runs-on: ubuntu-latest
     steps:
+      - name: Workflow désactivé (fin de Yahoo Finance, 14/10/2026)
+        run: |
+          echo "::error::Workflow désactivé le 14/10/2026 : la série du backtest ne se relève plus sur Yahoo Finance (conditions d'utilisation). Voir l'en-tête de .github/workflows/refresh-backtest.yml."
+          exit 1
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:

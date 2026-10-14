@@ -20,6 +20,17 @@
 import YahooFinance from "yahoo-finance2";
 import { ETF_LIST } from "../src/lib/etf-config";
 
+// ─── DÉSACTIVÉ le 14/10/2026 ─────────────────────────────────────────────────
+// Ce script interrogeait Yahoo Finance pour chaque ETF du catalogue. Les
+// conditions de Yahoo interdisent l'usage commercial et la collecte
+// automatique : le site cesse d'utiliser ces données (décision du 14/10/2026).
+// Il échoue donc explicitement, avant toute requête. Code conservé pour
+// l'historique.
+console.error(
+  "[audit-yahoo-finance] DÉSACTIVÉ depuis le 14/10/2026 : le site n'interroge plus Yahoo Finance. Aucune requête envoyée."
+);
+process.exit(1);
+
 // v3 API : require instantiation (v2's default function export is gone)
 const yahooFinance = new YahooFinance();
 

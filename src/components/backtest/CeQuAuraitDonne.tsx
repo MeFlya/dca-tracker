@@ -2,6 +2,7 @@ import Link from "next/link";
 import { runBacktest, getAvailableRange, getDatasetMeta } from "@/lib/backtest";
 import { paramsFromSearch } from "@/lib/simulation-params";
 import { formatEur } from "@/lib/simulator";
+import { SerieGelee } from "@/components/backtest/SerieGelee";
 
 /**
  * « Ce qu'auraient réellement donné N €/mois » — sur les vrais cours, pas sur
@@ -32,8 +33,8 @@ import { formatEur } from "@/lib/simulator";
  *   qui avait été versé. On affiche l'écart entre la valeur et le total versé,
  *   parce que c'est ce que l'épargnant voit sur son relevé.
  * · Aucun chiffre écrit à la main : tout vient de runBacktest, sur la série
- *   publiée, jusqu'au dernier mois disponible. Le cron mensuel met la série à
- *   jour ; le bloc suit au déploiement suivant.
+ *   publiée, jusqu'au dernier mois disponible. Depuis le 14/10/2026, la série
+ *   est GELÉE (fin du relevé Yahoo Finance) : le bloc l'affiche (SerieGelee).
  */
 
 const DEPARTS = [
@@ -141,6 +142,7 @@ export function CeQuAuraitDonne({ monthlyAmount }: { monthlyAmount: number }) {
         {pct(meta.terAnnuelPct, 2)} %/an) déjà inclus dans le cours ; ni
         courtage, ni fiscalité.
       </p>
+      <SerieGelee variant="ligne" className="text-xs text-gray-500 mt-2 leading-relaxed" />
       {toutesAuDessus ? (
         <p className="text-sm text-gray-700 mt-3 leading-relaxed">
           Sur toutes ces périodes, le résultat dépasse l&apos;hypothèse de{" "}

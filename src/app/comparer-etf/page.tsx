@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import { ETF_LIST } from "@/lib/etf-config";
-import { getMarketDataProvider, isDemo, libelleFournisseur } from "@/lib/market-data";
-import { DemoBadge } from "@/components/ui/Disclaimer";
 import { ETFGrid } from "./ETFGrid";
 import { ComparisonDisclosure } from "@/components/ui/ComparisonDisclosure";
 
@@ -9,7 +7,9 @@ const ETF_COUNT = ETF_LIST.length;
 // 28/09/2026 : le titre mettait en avant ANX et AEEM, deux ETF NON éligibles
 // PEA (table de vérité ETF), sur un site centré sur le PEA.
 const TITLE = "Comparer les ETF — CW8, WPEA, DCAM, VWCE, PSP5 et plus";
-const DESCRIPTION = `Comparez ${ETF_COUNT} ETF populaires pour investisseurs en France : monde, S&P 500, Nasdaq, émergents, Europe, small cap, obligations. Filtres PEA, région, TER. Cours indicatifs, frais réels et simulation DCA intégrée.`;
+// 14/10/2026 : « Cours indicatifs » retiré — la page n'affiche plus de cours
+// (fin de Yahoo Finance). Raccourcie sous 155 caractères au passage.
+const DESCRIPTION = `Comparez ${ETF_COUNT} ETF : monde, S&P 500, Nasdaq, émergents, Europe, small cap, obligations. Filtres PEA, région, TER. Frais réels et simulation DCA en un clic.`;
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -25,27 +25,16 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: TITLE,
-    description: `${ETF_COUNT} ETF côte à côte : TER, réplication, PEA, cours. Filtres région et PEA. Simulez le DCA en un clic.`,
+    description: `${ETF_COUNT} ETF côte à côte : TER, réplication, PEA, émetteur. Filtres région et PEA. Simulez le DCA en un clic.`,
   },
 };
 
-// Aligned with the cache TTL — re-render the SSR page every 60 min
-export const revalidate = 3600;
+// 14/10/2026 : plus de cours ni de variations (ils venaient de Yahoo Finance,
+// dont les conditions interdisent l'usage commercial et la collecte
+// automatique). La page ne dépend plus d'aucun appel externe : entièrement
+// statique, plus de revalidate.
 
-
-export default async function ComparerETFPage() {
-  const provider = getMarketDataProvider();
-  const symbols = ETF_LIST.map((e) => e.symbol);
-  const batch = await provider.getQuotes(symbols);
-  const demo = isDemo();
-  const providerLabel = libelleFournisseur(provider.name);
-
-  const quotes = Object.fromEntries(
-    Object.entries(batch.results).map(([symbol, result]) => [
-      symbol,
-      { quote: result.quote, error: result.error },
-    ])
-  );
+export default function ComparerETFPage() {
 
   return (
     // Wrapper bg-slate-50 opaque : page de consultation (fonctionnel/analytique)
@@ -64,12 +53,15 @@ export default async function ComparerETFPage() {
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
               Comparer les ETF
             </h1>
-            {demo && <DemoBadge />}
           </div>
 
           <p className="text-gray-600 text-lg max-w-2xl">
             {ETF_LIST.length} ETF analysés — monde, USA, Europe, émergents, small cap, obligations.
             Filtrez par région, éligibilité PEA ou niveau de frais.
+          </p>
+          <p className="text-sm text-gray-500 max-w-2xl mt-2">
+            Pas de cours en direct ici&nbsp;: le prix d&apos;une part se lit dans
+            la valeur liquidative que publie l&apos;émetteur du fonds, sur son site.
           </p>
         </div>
 
@@ -77,19 +69,18 @@ export default async function ComparerETFPage() {
         <ComparisonDisclosure kind="etf-list" className="mb-6" />
 
         {/* Filterable grid */}
-        <ETFGrid etfs={ETF_LIST} quotes={quotes} providerLabel={demo ? undefined : providerLabel} />
+        <ETFGrid etfs={ETF_LIST} />
 
         {/* Disclaimer — amber-50 conservé (disclaimer fintech officiel).
-            data-nosearch (recherche interne, 28/09/2026) : mention légale, et
-            l'heure des cours qu'elle cite est celle du build — l'index ne
-            change qu'au déploiement suivant, la page toutes les heures. */}
+            data-nosearch (recherche interne, 28/09/2026) : mention légale. */}
         <div data-nosearch="" className="mt-10 p-4 rounded-xl bg-amber-50 border border-amber-200">
           <p className="text-xs text-amber-800 leading-relaxed">
-            <strong>Information :</strong> Les cours affichés sont{" "}
-            {demo ? "illustratifs (mode démo)" : "différés (fin de journée)"} et
-            ne constituent pas un conseil d&apos;achat ou de vente. Les frais TER
-            indiqués proviennent des prospectus publics et peuvent évoluer.
-            Dernière mise à jour des cours : {new Date(batch.fetchedAt).toLocaleString("fr-FR")}.
+            <strong>Information :</strong> Cette page n&apos;affiche aucun cours.
+            Pour le prix d&apos;une part, consultez la valeur liquidative publiée
+            par l&apos;émetteur&nbsp;: un lien mène à la page du fonds quand nous
+            en avons vérifié l&apos;adresse. Les frais TER indiqués proviennent
+            des prospectus publics et peuvent évoluer. Rien ici ne constitue un
+            conseil d&apos;achat ou de vente.
           </p>
         </div>
       </div>

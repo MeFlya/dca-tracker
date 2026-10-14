@@ -67,7 +67,8 @@ const COMPARISON_SECTIONS = [
     rows: [
       { feature: "Accès à tous les ETF",                   free: true,        premium: true   },
       { feature: "Fiches ETF détaillées",                  free: true,        premium: true   },
-      { feature: "Données de marché (différées)",          free: true,        premium: true   },
+      // 14/10/2026 : « Données de marché (différées) » retiré — plus de cours
+      // Yahoo Finance hors des fiches ETF, qui les perdent fin octobre 2026.
     ],
   },
   {

@@ -300,7 +300,7 @@ export function BacktestClient({ isPremium, minMonth, maxMonth }: Props) {
           <PreviewHint />
         )
       ) : (
-        <PremiumPreview onCtaClick={handleLockedCtaClick} minMonth={minMonth} />
+        <PremiumPreview onCtaClick={handleLockedCtaClick} minMonth={minMonth} maxMonth={maxMonth} />
       )}
     </div>
   );
@@ -560,9 +560,11 @@ function PreviewHint() {
 function PremiumPreview({
   onCtaClick,
   minMonth,
+  maxMonth,
 }: {
   onCtaClick: () => void;
   minMonth: string;
+  maxMonth: string;
 }) {
   return (
     <div className="relative rounded-2xl border border-slate-800 bg-slate-950 p-7 overflow-hidden">
@@ -612,8 +614,10 @@ function PremiumPreview({
               aria-hidden
             />
             <span>
+              {/* 14/10/2026 : « jusqu'à aujourd'hui » → la série est gelée,
+                  elle s'arrête à son dernier mois relevé. */}
               <strong className="text-white">Période libre</strong> : depuis
-              {" "}{minMonth.slice(0, 4)}, par mois, jusqu&apos;à aujourd&apos;hui.
+              {" "}{minMonth.slice(0, 4)}, par mois, jusqu&apos;en {formatMonthFr(maxMonth)}.
             </span>
           </li>
           <li className="flex items-start gap-2">

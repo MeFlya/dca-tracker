@@ -269,3 +269,36 @@ export const DOCUMENTS_AMUNDI_2026_10 = {
     url: "https://www.amundietf.fr/fr/particuliers/produits/equity/amundi-pea-global-msci-acwi-ucits-etf-acc/fr0014017nx3",
   },
 } as const satisfies Record<string, FicheCitee>;
+
+// ─── Page du fonds chez l'émetteur (14/10/2026) ─────────────────────────────
+//
+// Le site n'affiche plus de cours (fin de Yahoo Finance, 14/10/2026) : pour le
+// prix d'une part, le lecteur est renvoyé vers la valeur liquidative que publie
+// l'émetteur, sur la page du fonds. Règle de ce module : aucune adresse devinée.
+// Seules figurent les pages déjà citées par le site et vérifiées (réponse 200,
+// bon fonds) : CW8 et DCAM le 09/10/2026 (DOCUMENTS_AMUNDI_2026_10), PUST, 500,
+// ANX, AEEM et PAEEM le 30/09/2026 (sources de /etf-eligibles-pea). Pour les
+// autres fonds, la carte nomme l'émetteur sans lien.
+
+/** Page du fonds sur le site de l'émetteur. Clé : le mnémonique affiché. */
+export const PAGE_EMETTEUR: Record<string, FicheCitee> = {
+  CW8: DOCUMENTS_AMUNDI_2026_10.CW8_PAGE,
+  DCAM: DOCUMENTS_AMUNDI_2026_10.DCAM_PAGE,
+  PUST: FICHE_ETF.PUST,
+  "500": {
+    libelle: "page Amundi ETF",
+    url: "https://www.amundietf.fr/fr/particuliers/produits/equity/amundi-sp-500-swap-ucits-etf-eur-acc/lu1681048804",
+  },
+  ANX: {
+    libelle: "page Amundi ETF",
+    url: "https://www.amundietf.fr/fr/particuliers/produits/equity/amundi-nasdaq100-swap-ucits-etf-eur-acc/lu1681038243",
+  },
+  AEEM: {
+    libelle: "page Amundi ETF",
+    url: "https://www.amundietf.fr/fr/particuliers/produits/equity/amundi-msci-emerging-markets-swap-ucits-etf-eur-acc/lu1681045370",
+  },
+  PAEEM: {
+    libelle: "page Amundi ETF",
+    url: "https://www.amundietf.fr/fr/particuliers/produits/equity/amundi-pea-emergent-msci-emerging-esg-transition-ucits-etf-acc/fr0013412020",
+  },
+};

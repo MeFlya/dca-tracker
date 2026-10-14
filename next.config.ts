@@ -73,6 +73,14 @@ const nextConfig: NextConfig = {
       // redirige vers la liste complète des ETF — pas d'équivalent direct.
       { source: "/etf/SMAE", destination: "/comparer-etf", permanent: true },
 
+      // ── Fin des cours Yahoo Finance (2026-10-14) ───────────────────────
+      // /donnees-marche n'affichait que les cours des ETF du catalogue, tirés
+      // de Yahoo Finance (conditions : ni usage commercial, ni collecte
+      // automatique). Page retirée ; /comparer-etf liste les mêmes fonds
+      // avec leurs frais, leur éligibilité PEA et le lien vers la page de
+      // l'émetteur, où se lit la valeur liquidative.
+      { source: "/donnees-marche", destination: "/comparer-etf", statusCode: 301 },
+
       // ── SEO thin content cleanup (2026-05-08) ──────────────────────────
       // /investir-1000-euros-mois-etf : page thin (317 lignes vs 619/653
       // pour les pages 100/300 €), niche faible volume FR (au-delà de
