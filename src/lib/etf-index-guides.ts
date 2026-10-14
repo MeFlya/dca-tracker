@@ -14,6 +14,7 @@
 // « le seul », prix de part au jugé) a été retiré plutôt que deviné : sur ces
 // pages, un lecteur recopie l'ISIN pour passer son ordre.
 
+import { MISE_EN_LIGNE_V2 } from "@/lib/fiche-etf-v2/textes";
 import { ecartCapital } from "@/lib/ecart-frais";
 import type { ProductId } from "@/lib/products";
 
@@ -301,7 +302,9 @@ const MSCI_WORLD: IndexGuide = {
   ],
   publishedAt: "2026-06-02",
   // 30/09/2026 : phrase sur le plafond de contrepartie corrigée (keyPoints).
-  updatedAt: "2026-09-30",
+  // Lot B (fiches v2) : liens vers les fiches CW8, DCAM, WPEA et PAEEM
+  // (IndexGuidePage) ; même date que la mise en ligne des fiches v2.
+  updatedAt: MISE_EN_LIGNE_V2,
   readingMinutes: 7,
 };
 

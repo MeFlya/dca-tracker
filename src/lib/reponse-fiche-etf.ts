@@ -125,16 +125,6 @@ export interface Equivalent {
   href: string;
 }
 
-/**
- * Précision gelée d'une fiche v1 (14/10/2026). La liste vérifiée a changé la
- * précision de PUST le 14/10 (PNAS vérifié) ; la fiche /etf/PUST, modifiée le
- * 09/10, garde la sienne jusqu'à son passage en v2 (règle des 14 jours entre
- * deux modifications d'une page). À retirer quand PUST passe en v2.
- */
-const PRECISION_FICHE_V1: Record<string, string> = {
-  PUST: "D'autres lignes Nasdaq-100 éligibles au PEA existent, PNAS par exemple\u00a0: nous ne les avons pas vérifiées.",
-};
-
 export interface ReponseFiche {
   /** Première phrase : le statut PEA, sans détour. */
   statut: string;
@@ -320,10 +310,7 @@ export function reponseFiche(etf: ETFConfig): ReponseFiche {
         : `${S} est éligible au PEA\u00a0; ses frais courants (TER) sont de ${frais} par an.`,
       equivalents: null,
       sansEquivalent: null,
-      precisions: (() => {
-        const p = PRECISION_FICHE_V1[s] ?? liste?.precision;
-        return p ? [enPhrase(p)] : [];
-      })(),
+      precisions: liste?.precision ? [enPhrase(liste.precision)] : [],
       verification,
       lienListe: lienListePea(s) ?? URL_LISTE_PEA,
       faq,

@@ -35,10 +35,19 @@ const CANONICAL_ORIGIN = "https://dcatracker.fr";
 //
 // Activé guide par guide : /etf-msci-world a été modifié le 09/10/2026 (liens
 // vers les comparatifs) ; la règle « une modification par page tous les 14
-// jours » le fait entrer au plus tôt le 23/10, avec les fiches v2.
-const GUIDES_RELIES_AUX_FICHES = new Set(["etf-nasdaq", "etf-sp500"]);
+// jours » le fait entrer au plus tôt le 23/10, avec les fiches v2 (lot B).
+const GUIDES_RELIES_AUX_FICHES = new Set(["etf-nasdaq", "etf-sp500", "etf-msci-world"]);
 
 const AVEC_FICHE = new Set(ETF_LIST.map((e) => e.displaySymbol));
+
+/**
+ * Fonds cités par un guide sans être l'un de ses trackers, reliés eux aussi à
+ * leur première mention (relecture SEO du 14/10/2026) : /etf-msci-world cite
+ * « PAEEM en PEA » pour les pays émergents, sans lien. Lot B (23/10).
+ */
+const AUSSI_RELIES: Record<string, string[]> = {
+  "etf-msci-world": ["PAEEM"],
+};
 
 /** Le mnémonique, seul (pas « PUSTX », pas « S&P 500 » pour « 500 »). */
 const motif = (ticker: string) =>
@@ -89,7 +98,7 @@ export function IndexGuidePage({ guide }: { guide: IndexGuide }) {
   // Fonds de ce guide qui ont une fiche, à relier une fois chacun.
   const restants = new Set(
     GUIDES_RELIES_AUX_FICHES.has(guide.slug)
-      ? guide.trackers.map((t) => t.ticker).filter((t) => AVEC_FICHE.has(t))
+      ? [...guide.trackers.map((t) => t.ticker), ...(AUSSI_RELIES[guide.slug] ?? [])].filter((t) => AVEC_FICHE.has(t))
       : [],
   );
   const lier = (texte: string) => lierLesFiches(texte, restants);

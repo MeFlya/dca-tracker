@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { LogoMark } from "@/components/ui/LogoMark";
+import { SaufFichesV2 } from "@/components/layout/SaufFichesV2";
+import { MNEMOS_V2 } from "@/data/etf";
 
 export function Footer() {
   const year = new Date().getFullYear();
@@ -16,8 +18,8 @@ export function Footer() {
             <strong>Avertissement légal :</strong> DCA Tracker est un outil
             pédagogique et informatif. Il ne constitue pas un conseil en
             investissement financier personnalisé. Les simulations sont
-            hypothétiques et ne garantissent pas les performances futures. Les
-            données de marché peuvent être différées. Investir comporte un
+            hypothétiques et ne garantissent pas les performances futures.
+            <SaufFichesV2 mnemos={MNEMOS_V2}> Les données de marché peuvent être différées.</SaufFichesV2> Investir comporte un
             risque de perte en capital. Consultez un conseiller financier
             agréé avant toute décision d&apos;investissement.
           </p>
@@ -233,9 +235,11 @@ export function Footer() {
             <p className="text-xs text-gray-500">
               © {year} DCA Tracker. Outil éducatif — pas de conseil en investissement.
             </p>
-            <p className="text-xs text-gray-500">
-              Données de marché potentiellement différées.
-            </p>
+            <SaufFichesV2 mnemos={MNEMOS_V2}>
+              <p className="text-xs text-gray-500">
+                Données de marché potentiellement différées.
+              </p>
+            </SaufFichesV2>
           </div>
         </div>
       </div>

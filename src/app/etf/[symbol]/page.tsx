@@ -17,6 +17,9 @@ import { JsonLd } from "@/components/ui/JsonLd";
 import { reponseFiche } from "@/lib/reponse-fiche-etf";
 import { FICHE_ETF, majFiche } from "@/lib/sources-etf";
 import { ETF_COMPARISON_LIST } from "@/lib/etf-comparisons";
+import { ficheV2 } from "@/data/etf";
+import { descriptionV2, titreV2 } from "@/lib/fiche-etf-v2/textes";
+import { FicheEtfV2 } from "@/components/etf/FicheEtfV2";
 
 // ─── Dates de publication des fiches (30/09/2026) ──────────────────────────
 //
@@ -93,8 +96,12 @@ export async function generateMetadata({
   const etf = getETFBySymbol(symbol);
   if (!etf) return { title: "ETF introuvable" };
 
-  const title = titreFiche(etf);
-  const description = descriptionFiche(etf);
+  // Fiche v2 (14/10/2026) : son title et sa meta partent avec son contenu,
+  // dans le même déploiement (plan §1.7, règle 9). Les autres fiches gardent
+  // les leurs tant que leurs faits v2 n'existent pas.
+  const v2 = ficheV2(etf.displaySymbol);
+  const title = v2 ? titreV2(v2) : titreFiche(etf);
+  const description = v2 ? descriptionV2(v2) : descriptionFiche(etf);
 
   return {
     title,
@@ -163,6 +170,12 @@ export default async function ETFDetailPage({
   const { symbol } = await params;
   const etf = getETFBySymbol(symbol);
   if (!etf) notFound();
+
+  // ── Fiche v2 (14/10/2026) : les chiffres de l'émetteur, datés et sourcés,
+  // sans cours de bourse (src/data/etf/, src/components/etf/FicheEtfV2.tsx).
+  // Aucun appel au fournisseur de cours pour ces fiches.
+  const v2 = ficheV2(etf.displaySymbol);
+  if (v2) return <FicheEtfV2 fiche={v2} etf={etf} publieeLe={PUBLIEE_LE[etf.displaySymbol]} />;
 
   const detail = getETFDetailContent(etf.displaySymbol);
 

@@ -9,6 +9,8 @@ import { BACKTEST_STORY_LIST, storyUpdatedAt, backtestUpdatedAt } from "@/lib/ba
 import { getDatasetMeta } from "@/lib/backtest";
 import { MAJ_LISTE_PEA, URL_LISTE_PEA } from "@/lib/etf-pea-verifies";
 import { majFiche } from "@/lib/sources-etf";
+import { ficheV2 } from "@/data/etf";
+import { dateModifieeV2 } from "@/lib/fiche-etf-v2/textes";
 
 export const dynamic = "force-static";
 
@@ -202,8 +204,13 @@ export async function GET(): Promise<NextResponse> {
       url: `${base}/etf/${etf.displaySymbol}`,
       changeFreq: "weekly",
       priority: 0.7,
-      // Même date que la byline des fiches (sources-etf.ts, majFiche).
-      lastmod: majFiche(etf.displaySymbol),
+      // Même date que la byline des fiches (sources-etf.ts, majFiche) ; pour
+      // une fiche v2 (14/10/2026), celle de son dateModified : la plus récente
+      // de sa relecture complète et de sa mise en ligne (dateModifieeV2).
+      lastmod: (() => {
+        const v2 = ficheV2(etf.displaySymbol);
+        return v2 ? dateModifieeV2(v2) : majFiche(etf.displaySymbol);
+      })(),
     })),
   ];
 
