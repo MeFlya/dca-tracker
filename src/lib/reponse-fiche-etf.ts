@@ -17,7 +17,9 @@
 //   · pour un fonds non éligible, les équivalents sont ceux de la règle 4 de
 //     la table de vérité (CORRESPONDANCES_PEA) — une correspondance d'INDICE,
 //     dite comme telle, jamais une recommandation, et « approchée » quand
-//     l'indice diffère (VWCE, émergents ; 30/09/2026) ; Japon : aucun, et on le dit ;
+//     l'indice diffère (VWCE, émergents ; 30/09/2026) ; Japon : PTPXE depuis le
+//     14/10/2026, correspondance approchée (TOPIX contre JPX-Nikkei 400) ; s'il
+//     n'y en a aucun, on le dit ;
 //   · la FAQ « même indice » d'un fonds éligible lit le groupe d'indice de la
 //     liste vérifiée, pas CORRESPONDANCES_PEA (30/09/2026 : EWLD y manquait) ;
 //   · « vérifié le 28 septembre 2026 » n'apparaît que pour un fonds de la
@@ -95,6 +97,7 @@ const INDICE_DU_GROUPE: Record<FamilleIndice, string> = {
   emergents: "le même indice des marchés émergents",
   europe: "le MSCI Europe",
   "russell-2000": "le Russell 2000",
+  japon: "le TOPIX",
 };
 
 /** Ce que la FAQ dit de l'écart de suivi, sans jargon. */
@@ -122,6 +125,16 @@ export interface Equivalent {
   href: string;
 }
 
+/**
+ * Précision gelée d'une fiche v1 (14/10/2026). La liste vérifiée a changé la
+ * précision de PUST le 14/10 (PNAS vérifié) ; la fiche /etf/PUST, modifiée le
+ * 09/10, garde la sienne jusqu'à son passage en v2 (règle des 14 jours entre
+ * deux modifications d'une page). À retirer quand PUST passe en v2.
+ */
+const PRECISION_FICHE_V1: Record<string, string> = {
+  PUST: "D'autres lignes Nasdaq-100 éligibles au PEA existent, PNAS par exemple\u00a0: nous ne les avons pas vérifiées.",
+};
+
 export interface ReponseFiche {
   /** Première phrase : le statut PEA, sans détour. */
   statut: string;
@@ -136,7 +149,7 @@ export interface ReponseFiche {
     /** « une correspondance d'indice », ou « une correspondance approchée » quand l'indice diffère. */
     correspondance: string;
   } | null;
-  /** Quand la règle 4 ne donne aucun équivalent vérifié (Japon). */
+  /** Quand la règle 4 ne donne aucun équivalent vérifié (le Japon, jusqu'au 14/10/2026). */
   sansEquivalent: string | null;
   /** Précisions vérifiées (liste vérifiée) et nuance de la correspondance. */
   precisions: string[];
@@ -307,7 +320,10 @@ export function reponseFiche(etf: ETFConfig): ReponseFiche {
         : `${S} est éligible au PEA\u00a0; ses frais courants (TER) sont de ${frais} par an.`,
       equivalents: null,
       sansEquivalent: null,
-      precisions: liste?.precision ? [enPhrase(liste.precision)] : [],
+      precisions: (() => {
+        const p = PRECISION_FICHE_V1[s] ?? liste?.precision;
+        return p ? [enPhrase(p)] : [];
+      })(),
       verification,
       lienListe: lienListePea(s) ?? URL_LISTE_PEA,
       faq,

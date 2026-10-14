@@ -17,7 +17,7 @@ import { lienListePea } from "@/lib/etf-pea-verifies";
 import { ArticleByline } from "@/components/ui/ArticleByline";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { reponseFiche } from "@/lib/reponse-fiche-etf";
-import { FICHE_ETF, FICHES_ETF_MAJ_LE } from "@/lib/sources-etf";
+import { FICHE_ETF, majFiche } from "@/lib/sources-etf";
 import { ETF_COMPARISON_LIST } from "@/lib/etf-comparisons";
 
 // ─── Dates de publication des fiches (30/09/2026) ──────────────────────────
@@ -266,7 +266,7 @@ export default async function ETFDetailPage({
       {/* ── Signature, date et JSON-LD Article (30/09/2026) ────────────── */}
       <ArticleByline
         publishedAt={PUBLIEE_LE[etf.displaySymbol]}
-        updatedAt={FICHES_ETF_MAJ_LE}
+        updatedAt={majFiche(etf.displaySymbol)}
         url={`/etf/${etf.displaySymbol}`}
         headline={titreFiche(etf)}
         description={descriptionFiche(etf)}

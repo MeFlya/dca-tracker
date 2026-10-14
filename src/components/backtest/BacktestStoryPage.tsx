@@ -4,6 +4,7 @@
 // client, zéro recharts, zéro coût Core Web Vitals. Les pages se régénèrent
 // à chaque deploy (le dataset est rafraîchi mensuellement par GitHub Action).
 
+import { MsciWorldEnPea } from "@/components/backtest/MsciWorldEnPea";
 import Link from "next/link";
 import { TrendingDown, ArrowRight, History } from "lucide-react";
 import { ArticleByline } from "@/components/ui/ArticleByline";
@@ -302,6 +303,7 @@ export function BacktestStoryPage({ story }: { story: ComputedStory }) {
           </Link>
           .
         </p>
+        <MsciWorldEnPea className="text-xs text-gray-600 leading-relaxed mt-3" />
       </div>
 
       <SourcesReferences

@@ -141,6 +141,20 @@ export const TAILLE_ETF: Record<string, TailleEtf> = {
 export const FICHES_ETF_MAJ_LE = "2026-09-30";
 
 /**
+ * Fiches révisées après FICHES_ETF_MAJ_LE, avec leur propre date (14/10/2026).
+ * JPNK : son équivalent PEA (PTPXE, correction « Japon » du 14/10/2026).
+ * Lue par la byline, l'Article JSON-LD et le sitemap, comme FICHES_ETF_MAJ_LE.
+ */
+const MAJ_FICHE_PAR_SYMBOLE: Record<string, string> = {
+  JPNK: "2026-10-14",
+};
+
+/** Date de dernière révision de la fiche /etf/<symbole> (rendu v1). */
+export function majFiche(symbole: string): string {
+  return MAJ_FICHE_PAR_SYMBOLE[symbole] ?? FICHES_ETF_MAJ_LE;
+}
+
+/**
  * D'où vient l'encours, en une phrase, pour les notes sous tableau.
  * 30/09/2026 : ne cite plus « notre table de vérité », document interne que
  * le lecteur ne peut ni ouvrir ni vérifier.

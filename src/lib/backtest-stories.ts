@@ -57,7 +57,8 @@ export type BacktestStoryDef = {
  * date honnête est la plus récente entre la dernière révision du texte et le
  * dernier rafraîchissement de la série.
  */
-const TEXTE_REVISE_LE = "2026-09-28";
+// 14/10/2026 : phrase « ce même indice dans un PEA » (MsciWorldEnPea).
+const TEXTE_REVISE_LE = "2026-10-14";
 export function storyUpdatedAt(): string {
   const serie = getDatasetMeta().fetchedAt;
   return serie > TEXTE_REVISE_LE ? serie : TEXTE_REVISE_LE;
@@ -551,7 +552,8 @@ export function getBacktestStory(slug: string): ComputedStory {
 // ici, sur la série publiée, jamais à la main.
 
 /** Dernière révision du TEXTE de /backtest (la série a sa propre date). */
-const BACKTEST_OUTIL_REVISE_LE = "2026-09-30";
+// 14/10/2026 : phrase « ce même indice dans un PEA » (MsciWorldEnPea).
+const BACKTEST_OUTIL_REVISE_LE = "2026-10-14";
 
 /**
  * Date de révision de /backtest (byline, dateModified, sitemap) : ses exemples

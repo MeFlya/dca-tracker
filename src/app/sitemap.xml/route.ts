@@ -8,7 +8,7 @@ import { INDEX_GUIDES } from "@/lib/etf-index-guides";
 import { BACKTEST_STORY_LIST, storyUpdatedAt, backtestUpdatedAt } from "@/lib/backtest-stories";
 import { getDatasetMeta } from "@/lib/backtest";
 import { MAJ_LISTE_PEA, URL_LISTE_PEA } from "@/lib/etf-pea-verifies";
-import { FICHES_ETF_MAJ_LE } from "@/lib/sources-etf";
+import { majFiche } from "@/lib/sources-etf";
 
 export const dynamic = "force-static";
 
@@ -53,6 +53,9 @@ const REV = {
   // d'abord » pour les trois, ce que le sous-titre de /pea-ou-cto ne faisait
   // pas ; la date, elle, reste juste (la page a bien été modifiée ce jour-là).
   reponseDabord: "2026-09-30",
+  // /meilleurs-etf-debutants seule : 14/10/2026, « 13 ETF vérifiés » devient
+  // 14 (PTPXE, correction « Japon »). Même date que sa byline.
+  meilleursEtf: "2026-10-14",
   // /fiscalite-pea-cto-2026 : publiée le 30/09/2026 (hausse des prélèvements
   // sociaux, PFU à 31,4 %, ce qui reste à 17,2 %). Même date que sa byline.
   fiscalite2026: "2026-09-30",
@@ -81,7 +84,8 @@ const REV = {
   cgv: "2026-10-01",
   // /changelog : corrections du TRI du Cockpit et de la mention de TVA ;
   // 02/10/2026 : exemple du Cockpit et du modèle gratuit aux cours réels.
-  changelog: "2026-10-02",
+  // 14/10/2026 : correction « Japon » (PTPXE éligible au PEA).
+  changelog: "2026-10-14",
   glossaireHub: "2026-06-10",
   glossaireDca: "2026-05-09",
   // /glossaire/interets-composes et /communaute
@@ -128,7 +132,7 @@ export async function GET(): Promise<NextResponse> {
       // bloc « ce qu'auraient donné N €/mois » calculé sur la série publiée
       lastmod: plusRecente(REV.etf, SERIE),
     })),
-    { url: `${base}/meilleurs-etf-debutants`,  changeFreq: "monthly", priority: 0.9,  lastmod: REV.reponseDabord },
+    { url: `${base}/meilleurs-etf-debutants`,  changeFreq: "monthly", priority: 0.9,  lastmod: REV.meilleursEtf },
     ...Object.values(INDEX_GUIDES).map((g) => ({
       url: `${base}/${g.slug}`,
       changeFreq: "monthly",
@@ -195,8 +199,8 @@ export async function GET(): Promise<NextResponse> {
       url: `${base}/etf/${etf.displaySymbol}`,
       changeFreq: "weekly",
       priority: 0.7,
-      // Même date que la byline des fiches (sources-etf.ts).
-      lastmod: FICHES_ETF_MAJ_LE,
+      // Même date que la byline des fiches (sources-etf.ts, majFiche).
+      lastmod: majFiche(etf.displaySymbol),
     })),
   ];
 

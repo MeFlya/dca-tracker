@@ -14,6 +14,7 @@ import { IssuerLogoMark } from "@/components/ui/IssuerLogoMark";
 import { AuroraSweep } from "@/components/ui/AuroraSweep";
 import { RenvoiProduit } from "@/components/products/RenvoiProduit";
 import type { IndexGuide } from "@/lib/etf-index-guides";
+import { ETF_LIST } from "@/lib/etf-config";
 
 const ICONS: Record<IndexGuide["icon"], LucideIcon> = {
   Globe,
@@ -22,6 +23,56 @@ const ICONS: Record<IndexGuide["icon"], LucideIcon> = {
 };
 
 const CANONICAL_ORIGIN = "https://dcatracker.fr";
+
+// ─── Liens vers les fiches ETF (14/10/2026, backlog SEO QW-01) ───────────────
+//
+// Les guides d'indice ne renvoyaient vers aucune fiche de leur indice (relevé
+// du 14/10/2026) : /etf-nasdaq ne citait /etf/PUST nulle part en lien. Chaque
+// fonds de la page qui a une fiche reçoit UN lien, à sa première mention dans
+// l'ordre de lecture (texte « Qu'est-ce que l'indice », puis carte du fonds,
+// verdict, à retenir, FAQ), avec le mnémonique pour ancre. Pas de bloc de
+// liens en vrac.
+//
+// Activé guide par guide : /etf-msci-world a été modifié le 09/10/2026 (liens
+// vers les comparatifs) ; la règle « une modification par page tous les 14
+// jours » le fait entrer au plus tôt le 23/10, avec les fiches v2.
+const GUIDES_RELIES_AUX_FICHES = new Set(["etf-nasdaq", "etf-sp500"]);
+
+const AVEC_FICHE = new Set(ETF_LIST.map((e) => e.displaySymbol));
+
+/** Le mnémonique, seul (pas « PUSTX », pas « S&P 500 » pour « 500 »). */
+const motif = (ticker: string) =>
+  new RegExp(`(?<![A-Za-z0-9&-])${ticker.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?![A-Za-z0-9-])`);
+
+/**
+ * Remplace la première mention de chaque mnémonique encore non relié par un
+ * lien vers sa fiche. `restants` est consommé au fil du rendu : l'ordre des
+ * appels dans IndexGuidePage est l'ordre de lecture.
+ */
+function lierLesFiches(texte: string, restants: Set<string>): React.ReactNode {
+  const morceaux: React.ReactNode[] = [];
+  let reste = texte;
+  let cle = 0;
+  for (;;) {
+    let premier: { ticker: string; index: number } | null = null;
+    for (const ticker of restants) {
+      const m = motif(ticker).exec(reste);
+      if (m && (premier === null || m.index < premier.index)) premier = { ticker, index: m.index };
+    }
+    if (!premier) break;
+    restants.delete(premier.ticker);
+    morceaux.push(reste.slice(0, premier.index));
+    morceaux.push(
+      <Link key={cle++} href={`/etf/${premier.ticker}`} className="font-semibold text-primary-700 hover:underline">
+        {premier.ticker}
+      </Link>,
+    );
+    reste = reste.slice(premier.index + premier.ticker.length);
+  }
+  if (morceaux.length === 0) return texte;
+  morceaux.push(reste);
+  return morceaux;
+}
 
 export function IndexGuidePage({ guide }: { guide: IndexGuide }) {
   const Icon = ICONS[guide.icon];
@@ -34,6 +85,14 @@ export function IndexGuidePage({ guide }: { guide: IndexGuide }) {
   const simEtfHref = `/simulateur?etfs=${guide.allocationTicker}:100&monthly=${s.monthly}&years=${s.years}`;
   // CTA secondaire → mode "Rapide" (valeurs directes : rendement + frais).
   const simRapidHref = `/simulateur?monthly=${s.monthly}&years=${s.years}&return=${s.returnPct}&fees=${s.feesPct}`;
+
+  // Fonds de ce guide qui ont une fiche, à relier une fois chacun.
+  const restants = new Set(
+    GUIDES_RELIES_AUX_FICHES.has(guide.slug)
+      ? guide.trackers.map((t) => t.ticker).filter((t) => AVEC_FICHE.has(t))
+      : [],
+  );
+  const lier = (texte: string) => lierLesFiches(texte, restants);
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -80,7 +139,7 @@ export function IndexGuidePage({ guide }: { guide: IndexGuide }) {
         </h2>
         <div className="space-y-4 text-gray-600 leading-relaxed">
           {guide.whatItIs.map((p, i) => (
-            <p key={i}>{p}</p>
+            <p key={i}>{lier(p)}</p>
           ))}
         </div>
       </section>
@@ -109,7 +168,16 @@ export function IndexGuidePage({ guide }: { guide: IndexGuide }) {
                   <IssuerLogoMark name={t.issuer} height={34} className="mt-0.5" />
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-0.5">
-                      <span className="text-base font-bold text-gray-900">{t.ticker}</span>
+                      {restants.delete(t.ticker) ? (
+                        <Link
+                          href={`/etf/${t.ticker}`}
+                          className="text-base font-bold text-primary-700 hover:underline"
+                        >
+                          {t.ticker}
+                        </Link>
+                      ) : (
+                        <span className="text-base font-bold text-gray-900">{t.ticker}</span>
+                      )}
                       {t.recommended && (
                         <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide text-primary-700 bg-primary-100 border border-primary-200 px-1.5 py-0.5 rounded">
                           <Check size={10} strokeWidth={3} /> Notre choix
@@ -134,7 +202,7 @@ export function IndexGuidePage({ guide }: { guide: IndexGuide }) {
                   </span>
                 </div>
               </div>
-              <p className="text-sm text-gray-600 leading-relaxed mb-1">{t.note}</p>
+              <p className="text-sm text-gray-600 leading-relaxed mb-1">{lier(t.note)}</p>
               <p className="text-xs text-gray-400">
                 {t.issuer} · Réplication {t.replication.toLowerCase()}
                 {t.isin ? ` · ${t.isin}` : ""}
@@ -168,7 +236,7 @@ export function IndexGuidePage({ guide }: { guide: IndexGuide }) {
           {guide.verdict.map((v, i) => (
             <div key={i} className="rounded-2xl border border-gray-100 bg-white p-5">
               <p className="text-sm font-bold text-primary-700 mb-1.5">{v.label}</p>
-              <p className="text-sm text-gray-600 leading-relaxed">{v.text}</p>
+              <p className="text-sm text-gray-600 leading-relaxed">{lier(v.text)}</p>
             </div>
           ))}
         </div>
@@ -181,7 +249,7 @@ export function IndexGuidePage({ guide }: { guide: IndexGuide }) {
           {guide.keyPoints.map((k, i) => (
             <li key={i} className="flex items-start gap-3">
               <Check size={16} className="text-emerald-600 mt-0.5 shrink-0" strokeWidth={2.5} />
-              <span className="text-sm text-gray-600 leading-relaxed">{k}</span>
+              <span className="text-sm text-gray-600 leading-relaxed">{lier(k)}</span>
             </li>
           ))}
         </ul>
@@ -228,7 +296,7 @@ export function IndexGuidePage({ guide }: { guide: IndexGuide }) {
                 <span aria-hidden className="shrink-0 text-gray-400 group-open:rotate-180 transition-transform">▾</span>
               </summary>
               <div className="px-5 pb-4 pt-1 text-sm text-gray-600 leading-relaxed border-t border-gray-50">
-                {a}
+                {lier(a)}
               </div>
             </details>
           ))}

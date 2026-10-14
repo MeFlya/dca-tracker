@@ -11,8 +11,10 @@ import { RenvoiProduit } from "@/components/products/RenvoiProduit";
 import { formatTer } from "@/lib/utils";
 import { ETF_COMPARISON_LIST } from "@/lib/etf-comparisons";
 import {
+  AJOUTS_APRES_LA_TABLE,
   CORRESPONDANCES_PEA,
   DATE_VERIFICATION_PEA,
+  DERNIERE_VERIFICATION_PEA,
   ETF_NON_ELIGIBLES,
   ETF_PEA_VERIFIES,
   FAMILLES,
@@ -21,6 +23,7 @@ import {
   ancreFonds,
   ancreHorsPea,
   dateEnToutesLettres,
+  dateVerification,
   type EtfEligiblePea,
   type EtfNonEligible,
   type FamilleIndice,
@@ -48,6 +51,17 @@ const DATE_VERIF = dateEnToutesLettres(DATE_VERIFICATION_PEA);
 // 01/10/2026 : dateEnToutesLettres écrit désormais « 1er » le premier du mois.
 const MOIS_VERIF = DATE_VERIF.replace(/^\d+(?:er)?\s/, "");
 
+// 14/10/2026 — fonds vérifiés après la table du 28/09 (PTPXE, le premier ETF
+// Japon de la liste : la page disait jusque-là n'en avoir vérifié aucun).
+// La page ne les dit pas « contrôlés le 28 septembre » : chacun porte sa date.
+const AJOUTS = AJOUTS_APRES_LA_TABLE.filter((a) => ETF_PEA_VERIFIES.some((f) => f.displaySymbol === a.symbole));
+/** « 14 octobre 2026 » : la vérification la plus récente de la liste. */
+const DATE_DERNIERE_VERIF = dateEnToutesLettres(DERNIERE_VERIFICATION_PEA);
+/** «  (PTPXE le 14 octobre 2026) », ou rien. */
+const MENTION_AJOUTS = AJOUTS.length
+  ? ` (${enumerer(AJOUTS.map((a) => `${a.symbole} le ${dateEnToutesLettres(a.date)}`))})`
+  : "";
+
 // Requête visée : « ETF éligibles PEA » / « liste ETF PEA ». Les pages voisines
 // visent autre chose : /guide-5-etf-pea-premium une sélection courte,
 // /etf-msci-world le choix d'un tracker, /pea-ou-cto l'enveloppe,
@@ -56,9 +70,13 @@ const TITLE = `ETF éligibles au PEA\u00a0: la liste vérifiée (${MOIS_VERIF})`
 // « (ISIN, frais) » et pas « réplication » : pour la plupart des fonds, la
 // réplication vient de justETF seul (note sous les tableaux). La description
 // ne présente comme vérifié un par un que ce qui a été recoupé.
-const DESCRIPTION =
-  `${N_ELIGIBLES} ETF éligibles au PEA vérifiés un par un le ${DATE_VERIF} (ISIN, frais), ` +
-  `et ${N_NON_ELIGIBLES} fonds qui ne le sont pas, dont 500, IWDA et VWCE.`;
+// 14/10/2026 : avec un fonds ajouté après la table, « vérifiés un par un le
+// 28 septembre » ne vaut plus pour tous ; la description donne l'intervalle.
+const DESCRIPTION = AJOUTS.length
+  ? `${N_ELIGIBLES} ETF éligibles au PEA vérifiés un par un (ISIN, frais) du ${DATE_VERIF} au ${DATE_DERNIERE_VERIF}, ` +
+    `et ${N_NON_ELIGIBLES} fonds qui ne le sont pas, dont 500, IWDA et VWCE.`
+  : `${N_ELIGIBLES} ETF éligibles au PEA vérifiés un par un le ${DATE_VERIF} (ISIN, frais), ` +
+    `et ${N_NON_ELIGIBLES} fonds qui ne le sont pas, dont 500, IWDA et VWCE.`;
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -193,8 +211,10 @@ const FAQ: { id: string; q: string; a: string }[] = [
     q: "Combien d'ETF sont éligibles au PEA\u00a0?",
     a:
       `Nous ne le savons pas pour le marché entier\u00a0: nous avons vérifié notre sélection, pas tous les ETF cotés. ` +
-      `Au ${DATE_VERIF}, ${N_ELIGIBLES} ETF de cette sélection sont éligibles, répartis en ${GROUPES.length} groupes d'indices. ` +
-      `D'autres existent\u00a0: PNAS, par exemple, est une ligne Nasdaq-100 éligible au PEA que nous n'avons pas vérifiée.`,
+      `Au ${DATE_DERNIERE_VERIF}, ${N_ELIGIBLES} ETF de cette sélection sont éligibles, répartis en ${GROUPES.length} groupes d'indices. ` +
+      // 14/10/2026 : « PNAS… que nous n'avons pas vérifiée » ; PNAS est vérifié
+      // le même jour (seconde part du fonds de PUST, voir PRECISIONS.PUST).
+      `D'autres existent\u00a0: PNAS, par exemple, est une seconde part du fonds de PUST (reporting Amundi au 30 septembre 2026), que ce tableau ne détaille pas sur une ligne à part.`,
   },
   {
     id: "faq-msci-world",
@@ -220,8 +240,18 @@ const FAQ: { id: string; q: string; a: string }[] = [
   {
     id: "faq-japon",
     q: "Existe-t-il un ETF Japon éligible au PEA\u00a0?",
+    // 14/10/2026 : la réponse disait « Nous n'en avons vérifié aucun » ;
+    // PTPXE l'est (reporting Amundi au 30/09/2026, prospectus du 05/06/2026,
+    // recoupés sur justETF et Boursorama). La réponse dit la correction.
     a: JAPON.length
-      ? `Oui\u00a0: ${enumerer(JAPON)}, vérifié le ${DATE_VERIF}. JPNK (Amundi JPX-Nikkei 400), lui, n'est pas éligible.`
+      ? `Oui\u00a0: ${enumerer(
+          JAPON.map((s) => {
+            const f = ETF_PEA_VERIFIES.find((x) => x.displaySymbol === s)!;
+            return `${s} (${f.name}, ISIN ${f.isin}, ${frais(f)} de frais courants), vérifié le ${dateEnToutesLettres(dateVerification(s))}`;
+          }),
+        )} sur les documents de son émetteur, recoupés sur justETF et Boursorama. ` +
+        `${CORRESPONDANCES_PEA.japon.nuance ?? ""} JPNK (Amundi JPX-Nikkei 400), lui, n'est pas éligible. ` +
+        `Jusqu'au ${dateEnToutesLettres(dateVerification(JAPON[0]))}, cette réponse disait que nous n'en avions vérifié aucun.`
       : `Nous n'en avons vérifié aucun. JPNK (Amundi JPX-Nikkei 400) n'est pas éligible, alors que notre site le présentait comme tel jusqu'au ${DATE_VERIF}. ` +
         `Cela ne prouve pas qu'il n'en existe aucun\u00a0: nous ne l'avons pas établi.`,
   },
@@ -256,7 +286,7 @@ export default function EtfEligiblesPeaPage() {
 
       <EducationalHeader
         icon={ListChecks}
-        eyebrow={`Vérifiée le ${DATE_VERIF}`}
+        eyebrow={AJOUTS.length ? `Vérifiée le ${DATE_VERIF}, complétée le ${DATE_DERNIERE_VERIF}` : `Vérifiée le ${DATE_VERIF}`}
         title={"ETF éligibles au PEA\u00a0: la liste vérifiée"}
         subtitle={
           `${N_ELIGIBLES} ETF éligibles au PEA, vérifiés un par un avec leur ISIN et leurs frais. ` +
@@ -288,7 +318,7 @@ export default function EtfEligiblesPeaPage() {
           <p>
             <strong className="text-gray-900">Notre sélection vérifiée, pas le marché entier.</strong>{" "}
             {N_ELIGIBLES} ETF éligibles au PEA et {N_NON_ELIGIBLES} fonds qui ne le
-            sont pas, contrôlés un par un le {DATE_VERIF}. D&apos;autres ETF
+            sont pas, contrôlés un par un le {DATE_VERIF}{MENTION_AJOUTS}. D&apos;autres ETF
             éligibles existent&nbsp;: s&apos;ils ne sont pas ici, c&apos;est que
             nous ne les avons pas vérifiés, pas qu&apos;ils seraient moins bons.
           </p>
@@ -654,9 +684,10 @@ export default function EtfEligiblesPeaPage() {
       {/* Textes officiels, documents Amundi (fait swap-non-eligible, 30/09/2026)
           et fiche justETF de chaque fonds éligible (faits
           etf-pea-*, consultés le 28/09/2026). L'adresse justETF se construit
-          sur l'ISIN : c'est celle que citent les faits, pour les treize. */}
+          sur l'ISIN : c'est celle que citent les faits, pour chaque fonds
+          (PTPXE : faits du 14/10/2026). */}
       <SourcesReferences
-        intro={`Chaque fonds a été vérifié le ${DATE_VERIF} sur les documents de son émetteur, puis recoupé sur justETF, Boursorama et Euronext. Ci-dessous, les textes officiels cités, les documents d'Amundi qui tranchent l'éligibilité de 500, ANX et AEEM, et la fiche justETF de chaque fonds éligible.`}
+        intro={`Chaque fonds a été vérifié le ${DATE_VERIF}${MENTION_AJOUTS} sur les documents de son émetteur, puis recoupé sur justETF, Boursorama et Euronext. Ci-dessous, les textes officiels cités, les documents d'Amundi qui tranchent l'éligibilité de 500, ANX et AEEM, et la fiche justETF de chaque fonds éligible.`}
         sources={[
           {
             label: "Code monétaire et financier — article L221-31",
@@ -766,11 +797,33 @@ export default function EtfEligiblesPeaPage() {
             publisher: "Amundi ETF",
             note: "«\u00a0Eligibilité au PEA\u00a0: Oui\u00a0». Consultée le 30 septembre 2026.",
           },
+          // 14/10/2026 : les documents d'Amundi qui établissent l'éligibilité
+          // et les frais de PTPXE (archives : private-assets/raw/geo/
+          // sources-vague1-2026-10/). Reporting : la version pour
+          // professionnels, seule à porter la ligne « Enveloppe fiscale ».
+          {
+            label: "Amundi PEA Japon (TOPIX) UCITS ETF EUR Acc (PTPXE) — reporting mensuel au 30 septembre 2026, version pour professionnels",
+            url: "https://www.amundietf.fr/pdfDocuments/monthly-factsheet/FR0013411980/FRA/FRA/INSTITUTIONNEL/ETF/20260930",
+            publisher: "Amundi ETF",
+            note: "«\u00a0Enveloppe fiscale\u00a0: Eligible au PEA\u00a0», frais 0,20\u00a0%, indice TOPIX. Consulté le 14 octobre 2026.",
+          },
+          {
+            label: "Amundi PEA Japon (TOPIX) UCITS ETF — prospectus du 5 juin 2026",
+            url: "https://www.amundietf.fr/pdfDocuments/prospectus/FR0013411980/FRA/FRA/20260605",
+            publisher: "Amundi ETF",
+            note: "«\u00a0Le Fonds est éligible au Plan d'Epargne en Actions\u00a0». Consulté le 14 octobre 2026.",
+          },
+          {
+            label: "Amundi PEA Japon (TOPIX) UCITS ETF EUR Acc (PTPXE) — document d'informations clés du 5 juin 2026",
+            url: "https://www.amundietf.fr/pdfDocuments/kid-priips/FR0013411980/FRA/FRA/20260605",
+            publisher: "Amundi ETF",
+            note: "Frais courants\u00a0: 0,20\u00a0% de la valeur de l'investissement par an. Consulté le 14 octobre 2026.",
+          },
           ...ELIGIBLES_TRIES.map((f) => ({
               label: `justETF — ${f.displaySymbol} (${f.isin})`,
               url: `https://www.justetf.com/fr/etf-profile.html?isin=${f.isin}`,
               publisher: "justETF",
-              note: `Source de recoupement\u00a0: nom, ISIN, frais, réplication. Consultée le ${DATE_VERIF}.`,
+              note: `Source de recoupement\u00a0: nom, ISIN, frais, réplication. Consultée le ${dateEnToutesLettres(dateVerification(f.displaySymbol))}.`,
             })),
         ]}
       />
@@ -801,6 +854,10 @@ export default function EtfEligiblesPeaPage() {
  * DOM — les ancres #fonds-xxx n'existent qu'une fois.
  */
 function TableauFonds({ fonds, titre }: { fonds: EtfEligiblePea[]; titre: string }) {
+  // 14/10/2026 : la date de vérification du groupe (le Japon date du 14/10).
+  const verifie = dateEnToutesLettres(
+    fonds.map((f) => dateVerification(f.displaySymbol)).reduce((a, b) => (b > a ? b : a)),
+  );
   const th = "px-3 py-3 text-left font-semibold text-gray-500 border-b border-gray-100";
   const td = "flex gap-3 px-4 py-1 sm:table-cell sm:px-3 sm:py-3 sm:align-top";
   const intitule = "w-24 shrink-0 text-gray-500 sm:hidden";
@@ -809,7 +866,7 @@ function TableauFonds({ fonds, titre }: { fonds: EtfEligiblePea[]; titre: string
     <div className="rounded-2xl border border-gray-100 bg-white overflow-hidden">
       <table className="w-full text-sm border-collapse">
         <caption className="sr-only">
-          ETF {titre} éligibles au PEA, vérifiés le {DATE_VERIF}
+          ETF {titre} éligibles au PEA, vérifiés le {verifie}
         </caption>
         <thead className="hidden sm:table-header-group bg-gray-50">
           <tr>
@@ -871,7 +928,12 @@ function TableauFonds({ fonds, titre }: { fonds: EtfEligiblePea[]; titre: string
               </td>
               <td className={td}>
                 <span className={intitule}>Dividendes</span>
-                <span className="text-gray-600">{f.distributionPolicy}</span>
+                <span className="text-gray-600">
+                  {f.distributionPolicy}
+                  {f.partCD && (
+                    <span className="block text-xs text-gray-500">part «&nbsp;C/D&nbsp;» selon Amundi</span>
+                  )}
+                </span>
               </td>
             </tr>
           ))}

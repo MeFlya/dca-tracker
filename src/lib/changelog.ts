@@ -41,6 +41,22 @@ export interface ChangelogEntry {
 
 /** Du plus récent au plus ancien. Garder cet ordre à la main. */
 export const CHANGELOG: ChangelogEntry[] = [
+  // 14/10/2026 : une affirmation de la liste PEA était fausse par omission
+  // (« Japon : aucun équivalent vérifié »). Preuves relevées le 14/10/2026 :
+  // private-assets/raw/geo/faits-vague1-2026-10.json (verification_ptpxe),
+  // documents archivés dans private-assets/raw/geo/sources-vague1-2026-10/.
+  // Si le déploiement part après le 14/10, avancer la date ET « Depuis le… ».
+  {
+    date: "2026-10-14",
+    kind: "correction",
+    title: "Japon\u00a0: PTPXE est un ETF éligible au PEA, la liste disait n'en connaître aucun",
+    body:
+      "Jusqu'au 14 octobre 2026, la liste des ETF éligibles au PEA répondait qu'aucun ETF Japon éligible n'avait été vérifié, et la fiche de JPNK, qui ne l'est pas, ne citait aucun équivalent en PEA. " +
+      "Or PTPXE (Amundi PEA Japon (TOPIX) UCITS ETF EUR Acc, ISIN FR0013411980, frais courants de 0,20\u00a0% par an) est éligible au PEA\u00a0: le reporting mensuel d'Amundi au 30 septembre 2026, dans sa version pour professionnels, indique «\u00a0Enveloppe fiscale\u00a0: Eligible au PEA\u00a0», et le prospectus du 5 juin 2026 «\u00a0Le Fonds est éligible au Plan d'Epargne en Actions\u00a0»\u00a0; justETF et Boursorama concordent. " +
+      "Depuis le 14 octobre 2026, PTPXE figure dans la liste, dans un groupe Japon, avec sa date de vérification, et la fiche de JPNK le donne comme équivalent PEA approché\u00a0: PTPXE suit le TOPIX, JPNK le JPX-Nikkei 400. Les pages qui citent le nombre d'ETF éligibles vérifiés par le site en comptent un de plus.",
+    why:
+      "La phrase ne prétendait pas qu'il n'en existait aucun, mais un lecteur qui cherchait le Japon dans un PEA repartait sans réponse, alors que l'émetteur la publie.",
+  },
   // 09/10/2026 : chiffres affichés changés (frais d'ordre BoursoBank) : règle
   // de ce fichier. Grille relevée le 09/10/2026 sur la brochure tarifaire au
   // 05/10/2026 (p. 20 et 23), la page Boursomarkets et les fiches Boursorama

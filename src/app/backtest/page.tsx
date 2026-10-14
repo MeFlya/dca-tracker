@@ -32,6 +32,7 @@
 // qu'affichait loading.tsx. Le verrou Premium n'a pas bougé : c'est toujours
 // BacktestClient qui le tient, avec le même booléen décidé côté serveur.
 
+import { MsciWorldEnPea } from "@/components/backtest/MsciWorldEnPea";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -359,6 +360,7 @@ export default function BacktestPage() {
             déjà dans les cours&nbsp;; courtage et impôt non compris. Ces
             résultats passés ne préjugent pas des performances futures.
           </p>
+          <MsciWorldEnPea className="text-sm text-gray-500 leading-relaxed mt-3" />
         </section>
 
         {/* ── L'outil Premium — après les exemples ──────────────────────────── */}

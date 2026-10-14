@@ -399,7 +399,8 @@ export default function PEAouCTOPage() {
             « ETF d'actions » (30/09/2026) : C3M, quasi monétaire, a été
             contrôlé le même jour mais n'est pas dans la liste. Et
             « l'équivalent PEA, quand il en existe » : VWCE n'a qu'un
-            équivalent approché, JPNK aucun. */}
+            équivalent approché, JPNK aussi (PTPXE,
+            TOPIX, vérifié le 14/10/2026 ; « aucun » jusque-là). */}
         <p className="text-gray-600 leading-relaxed mt-6">
           Ces deux listes sont un extrait. Notre{" "}
           <Link href={URL_LISTE_PEA} className="text-primary-700 font-medium hover:underline">

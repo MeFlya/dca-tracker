@@ -411,7 +411,7 @@ export default function MeilleursETFDebutantsPage() {
 
       <ArticleByline
         publishedAt="2026-04-20"
-        updatedAt="2026-09-30"
+        updatedAt="2026-10-14"
         readingMinutes={11}
         url="/meilleurs-etf-debutants"
         headline={TITLE}

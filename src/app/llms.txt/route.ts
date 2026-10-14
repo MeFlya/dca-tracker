@@ -57,6 +57,7 @@ import { paramsFromSearch } from "@/lib/simulation-params";
 import {
   dateEnToutesLettres,
   DATE_VERIFICATION_PEA,
+  DERNIERE_VERIFICATION_PEA,
   estDansLaTable,
   ETF_PEA_VERIFIES,
   ETF_NON_ELIGIBLES,
@@ -305,10 +306,14 @@ function entree(chemin: string): Entree {
   if (chemin === URL_LISTE_PEA) {
     // Titre et description de la page sont des gabarits (lirePage ne les lit
     // pas) : on les recompose avec les mêmes données qu'elle.
+    // 14/10/2026 : PTPXE vérifié après la table du 28/09 — même intervalle
+    // que la description de la page.
     const verifie = dateEnToutesLettres(DATE_VERIFICATION_PEA);
+    const derniere = dateEnToutesLettres(DERNIERE_VERIFICATION_PEA);
+    const quand = derniere === verifie ? `le ${verifie}` : `du ${verifie} au ${derniere}`;
     return {
       titre: "ETF éligibles au PEA : la liste vérifiée",
-      note: `${ETF_PEA_VERIFIES.length} ETF éligibles au PEA vérifiés un par un le ${verifie} (ISIN, frais), et ${ETF_NON_ELIGIBLES.length} fonds qui ne le sont pas.`,
+      note: `${ETF_PEA_VERIFIES.length} ETF éligibles au PEA vérifiés un par un ${quand} (ISIN, frais), et ${ETF_NON_ELIGIBLES.length} fonds qui ne le sont pas.`,
     };
   }
   const fiche = ETF_LIST.find((e) => `/etf/${e.displaySymbol}` === chemin);

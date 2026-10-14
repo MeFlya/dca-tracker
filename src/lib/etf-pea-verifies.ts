@@ -35,7 +35,8 @@ export const DATE_VERIFICATION_PEA = "2026-09-28";
  * Dernière révision du contenu de /etf-eligibles-pea, YYYY-MM-DD. Lue par la
  * byline ET par le sitemap : une seule date, pas deux qui divergent.
  */
-export const MAJ_LISTE_PEA = "2026-09-30";
+// 14/10/2026 : PTPXE ajouté, groupe Japon et FAQ Japon corrigés.
+export const MAJ_LISTE_PEA = "2026-10-14";
 
 export const URL_LISTE_PEA = "/etf-eligibles-pea";
 
@@ -81,6 +82,41 @@ const TABLE_DE_VERITE = new Set([
 ]);
 
 /**
+ * Fonds vérifiés APRÈS la table du 28/09/2026, avec la date de leur propre
+ * vérification (YYYY-MM-DD). Même méthode que la table : l'émetteur, puis une
+ * seconde famille de sources. Ils ne sont pas ajoutés à TABLE_DE_VERITE, qui
+ * reste la photographie du 28/09 (NB_FONDS_TABLE_DE_VERITE, lu par
+ * /methodologie) : la page qui les liste dit, pour eux, leur propre date.
+ *
+ * PTPXE (14/10/2026) : la liste disait « Japon : aucun équivalent vérifié ».
+ * Preuves (private-assets/raw/geo/faits-vague1-2026-10.json, verification_ptpxe) :
+ * reporting Amundi au 30/09/2026, version pour professionnels, « Enveloppe
+ * fiscale Eligible au PEA » ; prospectus du 05/06/2026, « Le Fonds est éligible
+ * au Plan d'Epargne en Actions » ; DIC du 05/06/2026, frais courants 0,20 % ;
+ * recoupés sur justETF (« Éligible au PEA », TER 0,20 %, 14/10/2026) et le
+ * filtre PEA de Boursorama (14/10/2026).
+ */
+const VERIFIES_APRES_LA_TABLE: Record<string, string> = {
+  PTPXE: "2026-10-14",
+};
+
+/** Date de vérification d'un fonds de la liste : la sienne s'il a été ajouté après la table. */
+export function dateVerification(symbole: string): string {
+  return VERIFIES_APRES_LA_TABLE[symbole] ?? DATE_VERIFICATION_PEA;
+}
+
+/** Les fonds ajoutés après la table, avec leur date, du plus ancien au plus récent. */
+export const AJOUTS_APRES_LA_TABLE: { symbole: string; date: string }[] = Object.entries(VERIFIES_APRES_LA_TABLE)
+  .map(([symbole, date]) => ({ symbole, date }))
+  .sort((a, b) => a.date.localeCompare(b.date));
+
+/** Date de la vérification la plus récente de la liste (table ou ajout). */
+export const DERNIERE_VERIFICATION_PEA = AJOUTS_APRES_LA_TABLE.reduce(
+  (d, a) => (a.date > d ? a.date : d),
+  DATE_VERIFICATION_PEA,
+);
+
+/**
  * Nombre de fonds de la table de vérité, lu par /methodologie (14/10/2026) :
  * la page cite ce nombre, il suit la table au lieu d'être recopié.
  */
@@ -96,7 +132,7 @@ export function estDansLaTable(symbole: string): boolean {
 }
 
 function dansLaTable(symbole: string): void {
-  if (!TABLE_DE_VERITE.has(symbole)) {
+  if (!TABLE_DE_VERITE.has(symbole) && !VERIFIES_APRES_LA_TABLE[symbole]) {
     throw new Error(
       `etf-pea-verifies.ts : ${symbole} n'est pas dans la table de vérité du ${DATE_VERIFICATION_PEA}. ` +
         "La page le donnerait pour « contrôlé un par un » : vérifiez-le d'abord, ou retirez-le de la liste.",
@@ -142,6 +178,11 @@ type FondsHorsCatalogue = Omit<FondsVerifie, "aUneFiche" | "isin"> & { isin: str
 // ne donne pas toujours, d'après le nom officiel (« Swap ») ou justETF
 // (faits etf-pea-ewld, -gpea, -pe500, -spea, -ese, non-pea-nasdaq).
 // CNDX n'est pas éligible : il est ici pour la liste des « faux amis ».
+// PTPXE (vérifié le 14/10/2026, voir VERIFIES_APRES_LA_TABLE) : nom, ISIN,
+// frais et réplication d'après le reporting Amundi au 30/09/2026 et le DIC du
+// 05/06/2026, recoupés sur justETF. « Capitalisant » : le nom officiel porte
+// « Acc », et justETF le classe « à accumulation » ; le reporting parle d'une
+// part « C/D » (capitalisation et/ou distribution), comme pour PAEEM.
 const HORS_CATALOGUE: FondsHorsCatalogue[] = [
   {
     displaySymbol: "EWLD",
@@ -184,6 +225,15 @@ const HORS_CATALOGUE: FondsHorsCatalogue[] = [
     name: "BNP Paribas Easy S&P 500 UCITS ETF EUR C",
     isin: "FR0011550185",
     ter: 0.14,
+    replicationMethod: "Synthétique (swap)",
+    distributionPolicy: "Capitalisant",
+    peaEligible: true,
+  },
+  {
+    displaySymbol: "PTPXE",
+    name: "Amundi PEA Japon (TOPIX) UCITS ETF EUR Acc",
+    isin: "FR0013411980",
+    ter: 0.2,
     replicationMethod: "Synthétique (swap)",
     distributionPolicy: "Capitalisant",
     peaEligible: true,
@@ -246,7 +296,8 @@ export type FamilleIndice =
   | "nasdaq-100"
   | "emergents"
   | "europe"
-  | "russell-2000";
+  | "russell-2000"
+  | "japon";
 
 /**
  * Groupes du tableau, dans l'ordre d'affichage. `id` sert d'ancre
@@ -292,6 +343,13 @@ export const FAMILLES: { id: FamilleIndice; titre: string; description: string }
     titre: "Russell 2000",
     description: "Environ 2\u00a0000 petites entreprises américaines.",
   },
+  // 14/10/2026 : PTPXE, premier fonds Japon vérifié (reporting Amundi au
+  // 30/09/2026 : indice TOPIX, actions cotées à la Bourse de Tokyo).
+  {
+    id: "japon",
+    titre: "Japon",
+    description: "Actions de sociétés japonaises cotées à la Bourse de Tokyo.",
+  },
 ];
 
 // Groupe de chaque fonds éligible. Choix éditorial explicite plutôt que
@@ -312,6 +370,7 @@ const FAMILLE: Record<string, FamilleIndice> = {
   PAEEM: "emergents",
   PCEU: "europe",
   RS2K: "russell-2000",
+  PTPXE: "japon",
 };
 
 // Ce que la ligne du tableau doit dire en plus des colonnes (remarques de la
@@ -326,15 +385,38 @@ const PRECISIONS: Record<string, string> = {
   ESE: "Émetteur\u00a0: BNP Paribas Asset Management (gamme BNP Paribas Easy), pas Amundi.",
   PE500:
     "Suit une version du S&P 500 filtrée sur des critères ESG (environnementaux, sociaux et de gouvernance), pas l'indice classique. Ancien nom\u00a0: Amundi PEA S&P 500 ESG.",
-  PUST: "D'autres lignes Nasdaq-100 éligibles au PEA existent, PNAS par exemple\u00a0: nous ne les avons pas vérifiées.",
+  // 14/10/2026 : PNAS vérifié (reporting Amundi au 30/09/2026, « Code ISIN C :
+  // FR001400ZGR7 », même « Actif géré 1 284,38 » que PUST ; DIC du 05/06/2026,
+  // frais 0,30 % ; prospectus commun du 12/06/2026). La ligne disait « nous ne
+  // les avons pas vérifiées ». La fiche PUST v1 garde l'ancienne phrase
+  // jusqu'à son passage en v2 (reponse-fiche-etf.ts, PRECISION_FICHE_V1).
+  PUST: "PNAS (FR001400ZGR7) est une seconde part du même fonds, avec les mêmes frais courants\u00a0: ce n'est pas un fonds concurrent. Vérifié le 14 octobre 2026.",
   PAEEM:
     "Suit une variante «\u00a0ESG Transition\u00a0» de l'indice MSCI Emerging Markets, pas l'indice standard.",
+  // 14/10/2026 : le TOPIX et la part non couverte, d'après le reporting
+  // Amundi au 30/09/2026 (indice « dividendes bruts réinvestis, libellé en
+  // yen ») ; la date, parce que le reste de la liste date du 28/09.
+  PTPXE:
+    "Suit le TOPIX, l'indice large de la Bourse de Tokyo, pas le JPX-Nikkei 400 de JPNK. Part non couverte\u00a0: exposée au yen. Vérifié le 14 octobre 2026.",
 };
 
 export interface EtfEligiblePea extends FondsDeLaListe {
   famille: FamilleIndice;
   precision?: string;
+  /** Part « C/D » selon l'émetteur (voir PARTS_C_D). */
+  partCD?: true;
 }
+
+/**
+ * Parts que l'émetteur déclare « C/D » (14/10/2026). Leur reporting Amundi au
+ * 30/09/2026 imprime « VL Part C/D » et « Affectation des sommes distribuables
+ * Capitalisation et/ou Distribution » ; leur nom officiel porte « Acc » et
+ * justETF classe PAEEM et PTPXE à accumulation (14/10/2026). La liste dit
+ * « Capitalisant » ET la
+ * mention de l'émetteur, comme la fiche v2 de PAEEM : deux pages du site ne
+ * doivent pas se contredire sur le même ISIN.
+ */
+const PARTS_C_D = new Set(["PAEEM", "PE500", "PTPXE"]);
 
 /** Les ETF éligibles au PEA vérifiés le 28/09/2026 : catalogue d'abord, puis hors catalogue. */
 export const ETF_PEA_VERIFIES: EtfEligiblePea[] = TOUS.filter((f) => f.peaEligible).map((f) => {
@@ -345,7 +427,12 @@ export const ETF_PEA_VERIFIES: EtfEligiblePea[] = TOUS.filter((f) => f.peaEligib
         "Ajoutez-le à FAMILLE : sans groupe, il disparaîtrait de /etf-eligibles-pea.",
     );
   }
-  return { ...deLaListe(f), famille, precision: PRECISIONS[f.displaySymbol] };
+  return {
+    ...deLaListe(f),
+    famille,
+    precision: PRECISIONS[f.displaySymbol],
+    ...(PARTS_C_D.has(f.displaySymbol) ? { partCD: true as const } : {}),
+  };
 });
 
 // ─── Non éligibles : les « faux amis » ───────────────────────────────────────
@@ -357,7 +444,12 @@ export type CorrespondanceId = "sp500" | "nasdaq-100" | "emergents" | "monde" | 
  * éligible, nommer l'équivalent PEA vérifié s'il existe. C'est une
  * correspondance d'INDICE, pas une recommandation. L'ordre est celui de la
  * règle. Europe → PCEU n'y figure pas : aucun fonds Europe dans la liste des
- * non éligibles. Japon : aucun équivalent vérifié — ne pas en inventer.
+ * non éligibles.
+ * Japon : jusqu'au 14/10/2026, « aucun équivalent vérifié ». C'était faux :
+ * PTPXE (Amundi PEA Japon, TOPIX) est éligible, sur deux familles de sources
+ * (voir VERIFIES_APRES_LA_TABLE). Correspondance approchée : JPNK suit le
+ * JPX-Nikkei 400, PTPXE le TOPIX, qui compte bien plus de valeurs (1 636
+ * au 30/09/2026 selon le reporting Amundi, contre 400 par construction).
  */
 export const CORRESPONDANCES_PEA: Record<
   CorrespondanceId,
@@ -372,7 +464,14 @@ export const CORRESPONDANCES_PEA: Record<
       "PAEEM suit une variante «\u00a0ESG Transition\u00a0» de l'indice émergents, pas l'indice standard\u00a0: la correspondance est approchée.",
   },
   monde: { libelle: "le MSCI World", symboles: ["WPEA", "DCAM", "CW8"] },
-  japon: { libelle: "le Japon", symboles: [] },
+  japon: {
+    libelle: "le Japon",
+    symboles: ["PTPXE"],
+    // Nombre de valeurs : reporting Amundi de PTPXE au 30/09/2026, « Nombre
+    // de valeurs : 1636 » ; le JPX-Nikkei 400 en compte 400 par construction.
+    nuance:
+      "PTPXE suit le TOPIX, un indice plus large que le JPX-Nikkei 400 de JPNK\u00a0: 1\u00a0636 valeurs au 30 septembre 2026 selon Amundi, contre 400.",
+  },
 };
 
 /**
@@ -418,7 +517,8 @@ const LISTE_NON_ELIGIBLES: {
     symbole: "JPNK",
     raison: "non-eligible",
     correspondance: "japon",
-    precision: "Il suit le JPX-Nikkei 400, pas le TOPIX.",
+    // 14/10/2026 : « Il suit le JPX-Nikkei 400, pas le TOPIX » retiré : la
+    // nuance de CORRESPONDANCES_PEA.japon le dit, la fiche le répétait deux fois.
     presenteEligibleParLeSite: true,
   },
   {

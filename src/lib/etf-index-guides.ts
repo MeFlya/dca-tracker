@@ -493,7 +493,8 @@ const SP500: IndexGuide = {
     { label: "Plan d'Épargne en Actions — éligibilité", url: "https://www.service-public.fr/particuliers/vosdroits/F2385", publisher: "service-public.fr" },
   ],
   publishedAt: "2026-06-02",
-  updatedAt: "2026-09-28",
+  // 14/10/2026 : liens vers les fiches des fonds cités (IndexGuidePage).
+  updatedAt: "2026-10-14",
   readingMinutes: 7,
 };
 
@@ -547,7 +548,11 @@ const NASDAQ: IndexGuide = {
       pea: true,
       // 29/09/2026 : encours chiffré (≈ 1,2 Md€) retiré — table 1,17 Md€,
       // justETF 1 255 M€ (fait encours-a-trancher) : écart non tranché.
-      note: "Le Nasdaq-100 classique d'Amundi en PEA, par swap. D'autres lignes Nasdaq-100 éligibles PEA existent (PNAS par exemple) : nous ne les détaillons pas tant que leurs données ne sont pas vérifiées.",
+      // 14/10/2026 : PNAS vérifié (reporting Amundi au 30/09/2026, même
+      // « Actif géré » que PUST ; DIC du 05/06/2026, frais 0,30 %). La note
+      // disait « nous ne les détaillons pas tant que leurs données ne sont pas
+      // vérifiées ».
+      note: "Le Nasdaq-100 classique d'Amundi en PEA, par swap. PNAS (FR001400ZGR7) n'est pas un autre fonds : c'est une seconde part du même fonds, aux mêmes frais courants, selon Amundi.",
       recommended: true,
     },
     // 28/09/2026 : PNAS et PANX RETIRÉS du tableau. Leurs lignes affirmaient
@@ -619,7 +624,9 @@ const NASDAQ: IndexGuide = {
       // 28/09/2026 : « quasiment le seul » et la part PNAS « même fonds, ~5 € »
       // retirés (faux pour le premier, non vérifié pour le second).
       // 29/09/2026 : encours chiffré retiré (écart table / justETF non tranché).
-      a: "PUST (Amundi PEA Nasdaq-100, TER 0,30 %, ISIN FR0011871110) réplique le Nasdaq-100 classique en PEA. Ce n'est pas la seule ligne Nasdaq-100 éligible PEA (PNAS en est une autre) : à indice identique, c'est le TER qui les départage.",
+      // 14/10/2026 : « à indice identique, c'est le TER qui les départage »
+      // était faux pour PNAS : même fonds, mêmes frais (voir la note de PUST).
+      a: "PUST (Amundi PEA Nasdaq-100, TER 0,30 %, ISIN FR0011871110) réplique le Nasdaq-100 classique en PEA. PNAS (FR001400ZGR7) est une seconde part du même fonds, aux mêmes frais courants selon Amundi : ce n'est pas un fonds concurrent. D'autres ETF Nasdaq-100 éligibles au PEA peuvent exister : nous ne les avons pas vérifiés.",
     },
     {
       q: "Tous les ETF « Nasdaq » éligibles PEA suivent-ils le Nasdaq-100 ?",
@@ -660,7 +667,8 @@ const NASDAQ: IndexGuide = {
     { label: "Plan d'Épargne en Actions — éligibilité", url: "https://www.service-public.fr/particuliers/vosdroits/F2385", publisher: "service-public.fr" },
   ],
   publishedAt: "2026-06-02",
-  updatedAt: "2026-09-28",
+  // 14/10/2026 : PNAS vérifié (note et FAQ) ; liens vers les fiches.
+  updatedAt: "2026-10-14",
   readingMinutes: 6,
 };
 
