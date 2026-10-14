@@ -7,10 +7,12 @@ import { SourcesReferences } from "@/components/ui/SourcesReferences";
 import {
   DATE_VERIFICATION_PEA,
   dateEnToutesLettres,
+  ETF_NON_ELIGIBLES,
   ETF_PEA_VERIFIES,
   NB_FONDS_TABLE_DE_VERITE,
   URL_LISTE_PEA,
 } from "@/lib/etf-pea-verifies";
+import { MISE_EN_LIGNE_LISTE_PEA } from "@/lib/liste-pea/mise-en-ligne";
 import { UPDATE_POLICY, RANKING_IS_PAID_INFLUENCED } from "@/lib/comparison-disclosure";
 import { isBrokerCTAActive, MENTION_AFFILIATION } from "@/lib/broker-config";
 import { mentionSerieGelee } from "@/lib/backtest";
@@ -106,9 +108,12 @@ export default function MethodologiePage() {
         privilégions des hypothèses conservatrices.
       </p>
 
+      {/* Mise à jour : le texte des garde-fous change avec la liste complète
+          des ETF éligibles au PEA, et à la même date (sitemap :
+          REV.methodologie). */}
       <ArticleByline
         publishedAt="2026-04-01"
-        updatedAt="2026-10-14"
+        updatedAt={MISE_EN_LIGNE_LISTE_PEA}
         readingMinutes={6}
         url="/methodologie"
         headline={TITLE}
@@ -164,7 +169,10 @@ export default function MethodologiePage() {
             <strong className="text-gray-900">Des garde-fous dans le code.</strong>{" "}
             {/* 14/10/2026 : « cite un fonds absent de la table de vérité »
                 était devenu faux, la liste complète ayant 128 lignes. Ce
-                sont les contrôles de src/lib/liste-pea/index.ts. */}
+                sont les contrôles de src/lib/liste-pea/index.ts. 2e relecture
+                du 14/10 : « un fonds connu comme non éligible » promettait
+                plus que le code, qui ne compare la liste qu'aux fonds de
+                ETF_NON_ELIGIBLES (pas aux lignes écartées au relevé). */}
             Le site refuse de se construire si un ISIN de{" "}
             <Link href={URL_LISTE_PEA} className="text-primary-700 font-medium hover:underline">
               la liste des ETF éligibles au PEA
@@ -175,9 +183,10 @@ export default function MethodologiePage() {
             (ISIN, frais, nom, groupe) pour l&apos;un des{" "}
             {ETF_PEA_VERIFIES.length} fonds éligibles déjà vérifiés&nbsp;: ceux
             de la table de vérité et ceux ajoutés depuis. Il refuse aussi
-            qu&apos;un fonds connu comme non éligible y figure, et un fichier
-            CSV publié qui ne correspondrait plus à la liste. Une liste fausse
-            ne part pas en ligne sans que quelqu&apos;un la corrige.
+            qu&apos;y figure l&apos;un des {ETF_NON_ELIGIBLES.length} fonds que
+            la même page présente comme non éligibles, et un fichier CSV publié
+            qui ne correspondrait plus à la liste. Une liste fausse ne part pas
+            en ligne sans que quelqu&apos;un la corrige.
           </li>
           <li>
             <strong className="text-gray-900">Les erreurs sont dites.</strong>{" "}

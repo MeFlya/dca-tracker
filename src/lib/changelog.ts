@@ -55,6 +55,8 @@ export const CHANGELOG: ChangelogEntry[] = [
   // sitemap de la page : à régler au jour réel du déploiement, et l'entrée
   // suit. Nombres écrits en dur, comme les autres entrées : l'entrée dit ce
   // qui était vrai ce jour-là, pas ce que dira la liste plus tard.
+  // 14/10/2026 (2e relecture) : « 65 portent une réserve, dont les 10 ETF à
+  // effet de levier » comptait 8 lignes sans réserve affichée ; 57 en ont une.
   {
     date: MISE_EN_LIGNE_LISTE_PEA,
     kind: "produit",
@@ -62,7 +64,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     body:
       `Jusqu'au ${enLettres(MISE_EN_LIGNE_LISTE_PEA)}, la liste des ETF éligibles au PEA comptait les 14 fonds que nous avions vérifiés entre le 28 septembre et le 14 octobre 2026. ` +
       `Depuis le ${enLettres(MISE_EN_LIGNE_LISTE_PEA)}, elle compte 128 ETF cotés à Euronext Paris, relevés le 14 octobre 2026 sur 144 cotations examinées\u00a0: pour chacun, un document daté de son émetteur établit l'éligibilité au PEA, et justETF ou Boursorama le confirme. ` +
-      "Chaque ligne donne son ISIN, ses frais courants, l'indice suivi, sa date de 1re cotation à Paris et le document qui prouve l'éligibilité\u00a0; 65 portent une réserve, dont les 10 ETF à effet de levier, signalés avec l'indicateur de risque de leur document d'informations clés. " +
+      "Chaque ligne donne son ISIN, ses frais courants, l'indice suivi, sa date de 1re cotation à Paris et le document qui prouve l'éligibilité\u00a0; 57 portent une réserve, qui dit ce que les documents laissent à préciser, et les 10 ETF à effet de levier sont signalés avec l'indicateur de risque et la durée de détention de leur document d'informations clés. " +
       "Dix autres lignes ne sont pas publiées, faute d'un document de l'émetteur qui établisse leur éligibilité ou un fait essentiel comme les frais. La liste se télécharge en CSV, sans cours ni performance.",
     why:
       "Une liste limitée à notre sélection laissait sans réponse qui cherchait un fonds précis, et le filtre PEA d'un courtier ne suffit pas\u00a0: au 14 octobre 2026, celui de Boursorama omettait les ETF à effet de levier d'Amundi et classait éligibles des fonds que leur émetteur déclare non éligibles. Une liste complète ne vaut que si chaque ligne porte sa preuve et sa date.",

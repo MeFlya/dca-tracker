@@ -35,7 +35,6 @@ import {
   LIBELLE_REPLICATION,
   LIGNES_PEA,
   MISE_EN_LIGNE_LISTE_PEA,
-  avecReserve,
   type CategorieId,
   type GroupeListe,
   type LignePea,
@@ -79,8 +78,13 @@ const PERIODE_PREMIERE_LISTE = (() => {
 const URL_CSV_ABSOLUE = `https://dcatracker.fr${CHEMIN_CSV_LISTE_PEA}`;
 
 const N_EMETTEURS = EMETTEURS_LISTE.length;
-const N_SANS_RESERVE = LIGNES_PEA.filter((l) => !avecReserve(l)).length;
-const N_AVEC_RESERVE = N - N_SANS_RESERVE;
+/**
+ * Lignes qui affichent « Preuve PEA · réserve » (et dont la colonne reserve du
+ * CSV est remplie). 14/10/2026 : la page annonçait 65 réserves, le décompte du
+ * relevé (DECOMPTE_RELEVE.avecReserve), qui compte aussi les 8 lignes à effet
+ * de levier sans réserve écrite ; le lecteur n'en trouvait que 57.
+ */
+const N_RESERVE_ECRITE = LIGNES_PEA.filter((l) => l.reserve).length;
 const N_USD = LIGNES_PEA.filter((l) => l.devise === "USD").length;
 const LEVIER = LIGNES_PEA.filter((l) => l.levier);
 const LEVIER_QUOTIDIEN = LEVIER.filter((l) => l.levier!.quotidien);
@@ -99,6 +103,17 @@ const GROUPES_OUVERTS: ReadonlySet<CategorieId> = new Set<CategorieId>([
 ]);
 const N_GROUPES_OUVERTS = GROUPES_LISTE.filter((g) => GROUPES_OUVERTS.has(g.id)).length;
 const N_GROUPES_REPLIES = GROUPES_LISTE.length - N_GROUPES_OUVERTS;
+
+/**
+ * Exemples de fonds non éligibles cités avant la liste : sous 640 px, les
+ * pastilles sont masquées, et rien d'autre ne menait à #non-eligibles avant
+ * la fin de la liste (relecture du 14/10/2026).
+ */
+const EXEMPLES_NON_ELIGIBLES = ["IWDA", "VWCE", "500"].map((s) => {
+  const f = ETF_NON_ELIGIBLES.find((x) => x.displaySymbol === s);
+  if (!f) throw new Error(`etf-eligibles-pea : ${s} n'est plus dans ETF_NON_ELIGIBLES (EXEMPLES_NON_ELIGIBLES, page.tsx).`);
+  return f.displaySymbol;
+});
 
 // Requête visée : « ETF éligibles PEA » / « liste ETF PEA ». Les pages voisines
 // visent autre chose : /guide-5-etf-pea-premium une sélection courte,
@@ -524,7 +539,12 @@ export default function EtfEligiblesPeaPage() {
           Rangées par indice, puis par ordre alphabétique.{" "}
           {N_GROUPES_OUVERTS} groupes sont ouverts&nbsp;; les {N_GROUPES_REPLIES}{" "}
           autres s&apos;ouvrent d&apos;un clic sur leur titre, ou dès qu&apos;un
-          filtre y trouve une ligne.
+          filtre y trouve une ligne. Les {N_NON_ELIGIBLES} fonds qui ne sont
+          pas éligibles, comme {enumerer(EXEMPLES_NON_ELIGIBLES, "ou")}, sont{" "}
+          <a href="#non-eligibles" className="font-medium text-primary-700 hover:underline">
+            après la liste, avec la raison pour chacun
+          </a>
+          .
         </p>
         {/* Replié : le mode d'emploi passait avant le premier ISIN. */}
         <details className="group mb-6 rounded-2xl border border-gray-100 bg-white">
@@ -550,11 +570,24 @@ export default function EtfEligiblesPeaPage() {
             il détient les actions de l&apos;indice&nbsp;; synthétique, il en
             reçoit la performance par un contrat d&apos;échange avec une banque,
             le swap, expliqué plus bas. Dans le nom officiel, «&nbsp;Acc&nbsp;»
-            ou «&nbsp;Capitalisation&nbsp;» signale une part qui réinvestit les
-            dividendes, «&nbsp;Dist&nbsp;» ou «&nbsp;Distribution&nbsp;» une part
-            qui les verse. Sous chaque ligne, «&nbsp;Preuve PEA&nbsp;» ouvre le
-            document de l&apos;émetteur, sa date, ce qu&apos;il dit, et la
-            réserve éventuelle.
+            ou «&nbsp;Capitalisation&nbsp;» signale en principe une part qui
+            réinvestit les dividendes, «&nbsp;Dist&nbsp;» ou
+            «&nbsp;Distribution&nbsp;» une part qui les verse. La pastille
+            «&nbsp;part C/D&nbsp;» signale une part dont l&apos;émetteur se
+            réserve, dans ses documents, de capitaliser ou de distribuer les
+            revenus, quel que soit son nom.
+          </p>
+          {/* 14/10/2026 : la réserve n'était définie qu'après la liste, et
+              comme une contradiction entre documents, ce que la plupart des
+              réserves ne sont pas. */}
+          <p>
+            Sous chaque ligne, «&nbsp;Preuve PEA&nbsp;» ouvre le document de
+            l&apos;émetteur, sa date et ce qu&apos;il dit.
+            «&nbsp;Preuve PEA · réserve&nbsp;» signale en plus un point à
+            connaître, écrit dans le détail&nbsp;: une preuve tirée d&apos;un
+            seul document, un reporting ancien, une réplication non publiée, des
+            dates ou des frais qui divergent, une ligne cotée en dollars… Avec
+            ou sans réserve, chaque ligne a sa preuve.
           </p>
           </div>
         </details>
@@ -565,6 +598,12 @@ export default function EtfEligiblesPeaPage() {
             groupes={GROUPES_LISTE.map((g) => ({ id: g.id, titre: g.titre, n: g.lignes.length }))}
             emetteurs={EMETTEURS_LISTE}
             total={N}
+            horsPea={ETF_NON_ELIGIBLES.map((f) => ({
+              symbole: f.displaySymbol,
+              isin: f.isin,
+              nom: f.name,
+              ancre: ancreHorsPea(f.displaySymbol),
+            }))}
           />
         </div>
         <p data-nosearch="" className="mb-10 lg:-mx-24 text-sm">
@@ -588,7 +627,14 @@ export default function EtfEligiblesPeaPage() {
           ))}
         </div>
 
-        <div className="text-xs text-gray-500 leading-relaxed mt-8 space-y-2">
+        {/* Un passage à part dans la recherche interne (data-passage + id) :
+            rattachées au dernier groupe, ces notes renvoyaient au groupe
+            replié des ETF à effet de levier (relecture du 14/10/2026). */}
+        <div
+          id="notes-liste"
+          data-passage="Lire les colonnes : date de cotation et encours"
+          className="text-xs text-gray-500 leading-relaxed mt-8 space-y-2 scroll-mt-20"
+        >
           <p>
             «&nbsp;Cotée à Paris depuis&nbsp;» est la date de 1re cotation de
             l&apos;ISIN à Paris dans le registre FIRDS de l&apos;Autorité
@@ -626,9 +672,13 @@ export default function EtfEligiblesPeaPage() {
             mensuel, document d&apos;informations clés, prospectus ou fiche
             mensuelle), puis recoupée sur justETF ou Boursorama&nbsp;; la clé de
             contrôle de l&apos;ISIN vérifiée&nbsp;; les frais courants lus dans
-            le document d&apos;informations clés. Quand un document contredit
-            l&apos;autre, la ligne porte une réserve qui le dit&nbsp;: {N_AVEC_RESERVE}{" "}
-            lignes sur {N} en ont une, dont les {LEVIER.length} à effet de levier.
+            le document d&apos;informations clés. Quand un point reste à
+            préciser (une preuve tirée d&apos;un seul document, un reporting
+            ancien, une réplication non publiée, des dates ou des frais qui
+            divergent, une ligne cotée en dollars…), la ligne porte une réserve
+            qui le dit&nbsp;: {N_RESERVE_ECRITE} lignes sur {N} en ont une.
+            Chacune des {LEVIER.length} lignes à effet de levier porte aussi une
+            mention de risque, en rouge.
           </p>
           <p>
             <strong className="text-gray-900">Ce qu&apos;elle ne dit pas.</strong>{" "}

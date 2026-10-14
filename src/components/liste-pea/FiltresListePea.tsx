@@ -18,6 +18,14 @@
 // affichées » ne montrerait que des titres) ; quand plus aucun filtre n'est
 // actif, il referme ceux qu'il a ouverts, et seulement ceux-là : un groupe
 // ouvert par le lecteur ou par une ancre (#monetaire) le reste.
+//
+// 14/10/2026 (relecture « lecteur sur téléphone ») : qui tapait VWCE, IWDA ou
+// AEEM n'apprenait jamais que le fonds n'est pas éligible (« Aucune ligne ne
+// correspond », ou PAEEM pour AEEM). Le mnémonique ou l'ISIN exact d'un des
+// fonds non éligibles de la page fait afficher une phrase qui le dit, avec un
+// lien vers sa carte ; une recherche sans résultat renvoie vers la section.
+// Un mnémonique fait seulement de chiffres (500) ne compte que tapé seul :
+// « S&P 500 » cherche l'indice, pas ce fonds.
 
 import { useEffect, useId, useState } from "react";
 import { normaliserRecherche } from "@/lib/liste-pea/recherche";
@@ -26,9 +34,11 @@ interface Props {
   groupes: { id: string; titre: string; n: number }[];
   emetteurs: { nom: string; n: number }[];
   total: number;
+  /** Fonds non éligibles de la page, avec l'ancre de leur carte (#hors-pea-aeem). */
+  horsPea: { symbole: string; isin: string; nom: string; ancre: string }[];
 }
 
-export function FiltresListePea({ groupes, emetteurs, total }: Props) {
+export function FiltresListePea({ groupes, emetteurs, total, horsPea }: Props) {
   const id = useId();
   const [q, setQ] = useState("");
   const [cat, setCat] = useState("");
@@ -75,6 +85,14 @@ export function FiltresListePea({ groupes, emetteurs, total }: Props) {
   }, [q, cat, em, sansLevier, euros]);
 
   const actif = Boolean(q || cat || em || sansLevier || euros);
+  const motsSaisis = normaliserRecherche(q).split(/\s+/).filter(Boolean);
+  const horsPeaCites = horsPea.filter((h) =>
+    motsSaisis.some(
+      (m) =>
+        m === normaliserRecherche(h.isin) ||
+        (m === normaliserRecherche(h.symbole) && (motsSaisis.length === 1 || /[a-z]/.test(m))),
+    ),
+  );
   const reinitialiser = () => {
     setQ("");
     setCat("");
@@ -84,7 +102,9 @@ export function FiltresListePea({ groupes, emetteurs, total }: Props) {
   };
 
   const champ =
-    "w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-100";
+    // text-base sous 640 px : Safari iOS agrandit la page au toucher d'un
+    // champ écrit en moins de 16 px (relecture du 14/10/2026).
+    "w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-base sm:text-sm text-gray-900 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-100";
 
   return (
     <div role="search" aria-label="Filtrer la liste" className="rounded-2xl border border-gray-200 bg-gray-50 p-4 sm:p-5">
@@ -163,6 +183,27 @@ export function FiltresListePea({ groupes, emetteurs, total }: Props) {
           <button type="button" onClick={reinitialiser} className="font-semibold text-primary-700 hover:underline">
             Tout afficher
           </button>
+        )}
+      </div>
+      <div aria-live="polite" className="text-sm text-gray-700 leading-relaxed">
+        {horsPeaCites.map((h) => (
+          <p key={h.symbole} className="mt-2">
+            <strong className="font-semibold text-gray-900">{h.symbole}</strong>
+            {` (${h.nom}, ISIN ${h.isin}) n'est pas éligible au PEA\u00a0: `}
+            <a href={`#${h.ancre}`} className="font-semibold text-primary-700 hover:underline">
+              voir pourquoi
+            </a>
+            .
+          </p>
+        ))}
+        {visibles === 0 && horsPeaCites.length === 0 && (
+          <p className="mt-2">
+            Voir aussi{" "}
+            <a href="#non-eligibles" className="font-semibold text-primary-700 hover:underline">
+              {`les ${horsPea.length} fonds qui ne sont pas éligibles au PEA`}
+            </a>
+            , après la liste.
+          </p>
         )}
       </div>
     </div>

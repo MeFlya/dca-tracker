@@ -4,6 +4,7 @@ import { ArticleByline } from "@/components/ui/ArticleByline";
 import { BreadcrumbSchema } from "@/components/ui/BreadcrumbSchema";
 import { SourcesReferences } from "@/components/ui/SourcesReferences";
 import { ecartCapital, HYPOTHESES_COMPARATIFS } from "@/lib/ecart-frais";
+import { MISE_EN_LIGNE_LISTE_PEA } from "@/lib/liste-pea/mise-en-ligne";
 
 const TITLE = "5 ETF Premium pour PEA : la cheat sheet 2026";
 // Description réécrite le 28/09/2026 : « souvent retenus par les investisseurs
@@ -118,7 +119,10 @@ const ETFS: ETFRow[] = [
     ter: "0,30 %",
     // 29/09/2026 : encours chiffré (1,17 Md€) retiré — écart table / justETF
     // non tranché (fait encours-a-trancher).
-    why: "Le Nasdaq-100 dans un PEA pour 0,30 %. L'Amundi Nasdaq-100 Swap (ANX), moins cher, n'est PAS éligible au PEA. PUST n'est pas la seule ligne Nasdaq-100 éligible (il existe par exemple PNAS) : c'est celle dont nous avons vérifié les données.",
+    // Liste complète des ETF éligibles au PEA : « c'est celle dont nous avons
+    // vérifié les données » devenait faux, PNAS y figure avec sa preuve
+    // (reporting Amundi au 30/09/2026) et les mêmes frais (0,30 %).
+    why: "Le Nasdaq-100 dans un PEA pour 0,30 %. L'Amundi Nasdaq-100 Swap (ANX), moins cher, n'est PAS éligible au PEA. PNAS est une seconde part du même fonds, aux mêmes frais : les deux lignes figurent dans notre liste vérifiée des ETF éligibles au PEA.",
     watchOut: "Une ligne concentrée, surtout sur la technologie : au-delà de 20 à 30 % du portefeuille, c'est elle qui dicte les variations de l'ensemble. Une bonne partie de ses sociétés figure déjà dans WPEA et SPEA : l'ajouter concentre, ça ne diversifie pas.",
     role: "Boost croissance",
   },
@@ -230,7 +234,7 @@ export default function GuideCinqETFPEAPremiumPage() {
 
       <ArticleByline
         publishedAt="2026-04-29"
-        updatedAt="2026-09-28"
+        updatedAt={MISE_EN_LIGNE_LISTE_PEA}
         readingMinutes={6}
         url="/guide-5-etf-pea-premium"
         headline={TITLE}

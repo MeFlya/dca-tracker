@@ -159,6 +159,15 @@
   display: inline-block;
   @apply transition-transform;
 }
+/* Texte de remplacement vide : sans lui, la flèche entre dans le nom
+   accessible (« Preuve PEA CW8 ▾ », relecture du 14/10/2026). Dans un
+   @supports, pour qu'un navigateur qui ne connaît pas cette syntaxe garde la
+   flèche, et que la minification ne fusionne pas les deux déclarations. */
+@supports (content: "" / "") {
+  .t summary::after {
+    content: "▾" / "";
+  }
+}
 .t details[open] > summary::after {
   @apply rotate-180;
 }

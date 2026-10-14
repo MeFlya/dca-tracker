@@ -1220,6 +1220,12 @@ export const LIGNES_PEA: LignePea[] = [
     premiereVl: "2008-09-23",
     preuve: { document: "Prospectus d'Amundi", date: "2026-04-16", url: "https://www.amundietf.fr/pdfDocuments/prospectus/FR0010655712/FRA/FRA", mention: "Le Fonds est éligible au Plan d'Epargne en Actions" },
     recoupe: ["Boursorama", "justETF"],
+    // 14/10/2026 (relecture des faits) : DIC du 28/04/2026, « les revenus et
+    // plus-values de cessions pourront être capitalisés ou distribués à la
+    // discrétion de la société de gestion » ; prospectus du 16/04/2026,
+    // « Capitalisation et/ou distribution par décision de la Société de
+    // Gestion ». Oubliée faute de reporting pour professionnels.
+    partCD: true,
     reserve: "Pas de reporting pour professionnels\u00a0: l'éligibilité repose sur le prospectus.",
   },
   {
@@ -2312,7 +2318,7 @@ export function csvListePea(): string {
     "# ETF éligibles au PEA cotés à Euronext Paris, vérifiés un par un — DCA Tracker",
     `# Source : https://dcatracker.fr/etf-eligibles-pea — relevé du ${DATE_RELEVE_LISTE_PEA}`,
     "# Licence : Creative Commons Attribution 4.0 (CC BY 4.0). Réutilisation libre, y compris commerciale, en citant « DCA Tracker, dcatracker.fr/etf-eligibles-pea » et la date du relevé.",
-    `# Éligibilité : document daté de l'émetteur (colonnes preuve_*), recoupé par au moins une source indépendante (recoupe_par). Dates de 1re cotation : registre FIRDS de l'ESMA, ${FIRDS.fichier}, ${FIRDS.url}.`,
+    `# Éligibilité : document daté de l'émetteur (colonnes preuve_*), recoupé par au moins une source indépendante (recoupe_par). preuve_mention cite le document mot pour mot quand preuve_mention_exacte vaut « oui », et le résume quand elle vaut « non ». Dates de 1re cotation : registre FIRDS de l'ESMA, ${FIRDS.fichier}, ${FIRDS.url}.`,
     "# Aucun cours, aucune performance, aucun encours. Ce n'est pas un conseil en investissement. Vérifiez le DIC du fonds avant tout achat.",
     "# Séparateur « ; », décimales à virgule. frais_courants_pct : frais courants annuels en %, d'après le DIC.",
   ];
@@ -2320,7 +2326,7 @@ export function csvListePea(): string {
     "ticker", "isin", "nom", "emetteur", "categorie", "indice", "replication",
     "frais_courants_pct", "frais_estimes", "devise_cotation", "cotee_a_paris_depuis", "premiere_vl_emetteur",
     "effet_de_levier", "indicateur_risque_dic", "detention_recommandee_dic",
-    "eligible_pea", "preuve_document", "preuve_date", "preuve_url", "preuve_mention",
+    "eligible_pea", "preuve_document", "preuve_date", "preuve_url", "preuve_mention", "preuve_mention_exacte",
     "recoupe_par", "date_releve", "part_c_d", "reserve",
   ];
   const lignes = LIGNES_PEA.map((l) =>
@@ -2331,7 +2337,9 @@ export function csvListePea(): string {
       // Une durée absente du DIC relevé se dit « non relevée » : une case vide
       // se lirait comme « pas de limite ».
       l.levier?.risqueDic, l.levier ? (l.levier.detentionDic ?? "non relevée") : "",
-      "oui", l.preuve.document, l.preuve.date, l.preuve.url, l.preuve.mention,
+      // 14/10/2026 : trois mentions BNP Paribas Easy (QUED, VALD, VLED)
+      // résument le prospectus ; un réutilisateur doit pouvoir le savoir.
+      "oui", l.preuve.document, l.preuve.date, l.preuve.url, l.preuve.mention, l.preuve.paraphrase ? "non" : "oui",
       l.recoupe.join(", "), DATE_RELEVE_LISTE_PEA, l.partCD ? "oui" : "", l.reserve,
     ]
       .map(champ)

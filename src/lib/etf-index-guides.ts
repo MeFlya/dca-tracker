@@ -17,6 +17,7 @@
 import { MISE_EN_LIGNE_V2 } from "@/lib/fiche-etf-v2/textes";
 import { ecartCapital } from "@/lib/ecart-frais";
 import type { ProductId } from "@/lib/products";
+import { MISE_EN_LIGNE_LISTE_PEA } from "@/lib/liste-pea/mise-en-ligne";
 
 export type IndexTracker = {
   ticker: string;
@@ -629,7 +630,12 @@ const NASDAQ: IndexGuide = {
       // 29/09/2026 : encours chiffré retiré (écart table / justETF non tranché).
       // 14/10/2026 : « à indice identique, c'est le TER qui les départage »
       // était faux pour PNAS : même fonds, mêmes frais (voir la note de PUST).
-      a: "PUST (Amundi PEA Nasdaq-100, TER 0,30 %, ISIN FR0011871110) réplique le Nasdaq-100 classique en PEA. PNAS (FR001400ZGR7) est une seconde part du même fonds, aux mêmes frais courants selon Amundi : ce n'est pas un fonds concurrent. D'autres ETF Nasdaq-100 éligibles au PEA peuvent exister : nous ne les avons pas vérifiés.",
+      // Liste complète des ETF éligibles au PEA (relevé du 14/10/2026,
+      // src/lib/liste-pea) : « D'autres […] peuvent exister : nous ne les
+      // avons pas vérifiés » devenait faux, LQQ y figure. Elle compte PUST,
+      // PNAS et LQQ sur le Nasdaq-100 ; pas d'affirmation qu'il n'en existe
+      // pas d'autre (une ligne Amundi inverse, douteuse, n'est pas publiée).
+      a: "PUST (Amundi PEA Nasdaq-100, TER 0,30 %, ISIN FR0011871110) réplique le Nasdaq-100 classique en PEA. PNAS (FR001400ZGR7) est une seconde part du même fonds, aux mêmes frais courants selon Amundi : ce n'est pas un fonds concurrent. Sur le Nasdaq-100, notre liste des ETF éligibles au PEA (relevé du 14 octobre 2026) compte ces deux lignes et LQQ, un ETF à effet de levier x2 recalculé chaque jour, dont le document d'informations clés recommande une durée de détention d'un jour.",
     },
     {
       q: "Tous les ETF « Nasdaq » éligibles PEA suivent-ils le Nasdaq-100 ?",
@@ -671,7 +677,10 @@ const NASDAQ: IndexGuide = {
   ],
   publishedAt: "2026-06-02",
   // 14/10/2026 : PNAS vérifié (note et FAQ) ; liens vers les fiches.
-  updatedAt: "2026-10-14",
+  // Puis la FAQ « meilleur ETF Nasdaq 100 » renvoie à la liste complète des
+  // ETF éligibles au PEA : même date que sa mise en ligne (14 jours au moins
+  // après le 14/10, règle d'une modification par page tous les 14 jours).
+  updatedAt: MISE_EN_LIGNE_LISTE_PEA,
   readingMinutes: 6,
 };
 

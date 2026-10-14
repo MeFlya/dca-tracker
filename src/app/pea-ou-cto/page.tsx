@@ -8,7 +8,7 @@ import { BreadcrumbSchema } from "@/components/ui/BreadcrumbSchema";
 import { SourcesReferences } from "@/components/ui/SourcesReferences";
 import { RenvoiProduit } from "@/components/products/RenvoiProduit";
 import { URL_LISTE_PEA, dateEnToutesLettres } from "@/lib/etf-pea-verifies";
-import { DATE_RELEVE_LISTE_PEA, LIGNES_PEA } from "@/lib/liste-pea";
+import { DATE_RELEVE_LISTE_PEA, LIGNES_PEA, MISE_EN_LIGNE_LISTE_PEA } from "@/lib/liste-pea";
 import { getETFBySymbol } from "@/lib/etf-config";
 import { runSimulation } from "@/lib/simulator";
 import { capitalPour, gainsPour, HYPOTHESES_COMPARATIFS } from "@/lib/ecart-frais";
@@ -205,9 +205,12 @@ export default function PEAouCTOPage() {
         subtitle={SOUS_TITRE}
       />
 
+      {/* Mise à jour : le paragraphe qui renvoie à la liste des ETF
+          éligibles au PEA change avec la liste complète, et à la même date
+          (sitemap : lastmod de /pea-ou-cto). */}
       <ArticleByline
         publishedAt="2026-04-12"
-        updatedAt="2026-09-30"
+        updatedAt={MISE_EN_LIGNE_LISTE_PEA}
         readingMinutes={12}
         url="/pea-ou-cto"
         headline={TITLE}

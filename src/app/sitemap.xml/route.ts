@@ -56,8 +56,10 @@ const REV = {
   // pas ; la date, elle, reste juste (la page a bien été modifiée ce jour-là).
   reponseDabord: "2026-09-30",
   // /meilleurs-etf-debutants seule : 14/10/2026, « 13 ETF vérifiés » devient
-  // 14 (PTPXE, correction « Japon »). Même date que sa byline.
-  meilleursEtf: "2026-10-14",
+  // 14 (PTPXE, correction « Japon »). Même date que sa byline. Avec la liste
+  // complète des ETF éligibles au PEA, sa fourchette de frais est lue dans
+  // la liste : même date qu'elle (MAJ_LISTE_PEA, la date de mise en ligne).
+  meilleursEtf: MAJ_LISTE_PEA,
   // /fiscalite-pea-cto-2026 : publiée le 30/09/2026 (hausse des prélèvements
   // sociaux, PFU à 31,4 %, ce qui reste à 17,2 %). Même date que sa byline.
   fiscalite2026: "2026-09-30",
@@ -66,8 +68,9 @@ const REV = {
   // (chiffres, captures, sources) ; updatedAt de la byline à la même date.
   suiviPeaExcel: "2026-10-02",
   // taux fiscaux 2026 ; 14/10/2026 : sections « Comment nous vérifions les
-  // données des ETF » et « Comment nous classons ».
-  methodologie: "2026-10-14",
+  // données des ETF » et « Comment nous classons ». Puis les garde-fous de la
+  // liste complète des ETF éligibles au PEA, à sa date de mise en ligne.
+  methodologie: MAJ_LISTE_PEA,
   // /comparer-etf et /tarifs : 14/10/2026, fin des cours Yahoo Finance (plus
   // de cours sur les cartes, lien vers la page de l'émetteur ; mention de la
   // série gelée du backtest sur /tarifs). /donnees-marche retirée (301).
@@ -90,8 +93,9 @@ const REV = {
   cgv: "2026-10-01",
   // /changelog : corrections du TRI du Cockpit et de la mention de TVA ;
   // 02/10/2026 : exemple du Cockpit et du modèle gratuit aux cours réels.
-  // 14/10/2026 : correction « Japon » (PTPXE éligible au PEA).
-  changelog: "2026-10-14",
+  // 14/10/2026 : correction « Japon » (PTPXE éligible au PEA). Puis l'entrée
+  // de la liste complète des ETF éligibles au PEA, datée de sa mise en ligne.
+  changelog: MAJ_LISTE_PEA,
   glossaireHub: "2026-06-10",
   glossaireDca: "2026-05-09",
   // /glossaire/interets-composes et /communaute
@@ -147,13 +151,18 @@ export async function GET(): Promise<NextResponse> {
     })),
     { url: `${base}/strategie-dca`,            changeFreq: "monthly", priority: 0.9,  lastmod: REV.etf },
     { url: `${base}/interets-composes`,        changeFreq: "monthly", priority: 0.85, lastmod: REV.etf },
-    { url: `${base}/pea-ou-cto`,               changeFreq: "monthly", priority: 0.85, lastmod: REV.reponseDabord },
+    // Le renvoi vers la liste des ETF éligibles au PEA change avec elle : même
+    // date que sa byline (MISE_EN_LIGNE_LISTE_PEA). /calculateur-fiscal-pea-cto
+    // garde REV.reponseDabord.
+    { url: `${base}/pea-ou-cto`,               changeFreq: "monthly", priority: 0.85, lastmod: MAJ_LISTE_PEA },
     { url: `${base}/fiscalite-pea-cto-2026`,   changeFreq: "monthly", priority: 0.85, lastmod: REV.fiscalite2026 },
     { url: `${base}/suivi-pea-excel`,          changeFreq: "monthly", priority: 0.85, lastmod: REV.suiviPeaExcel },
     // Liste vérifiée des ETF éligibles au PEA (29/09/2026) : sa date vient de
     // son module de données, la même que celle de la byline.
     { url: `${base}${URL_LISTE_PEA}`,          changeFreq: "monthly", priority: 0.9,  lastmod: MAJ_LISTE_PEA },
-    { url: `${base}/guide-5-etf-pea-premium`,  changeFreq: "monthly", priority: 0.9,  lastmod: REV.etf },
+    // La note de PUST renvoie à la liste complète des ETF éligibles au PEA :
+    // même date que sa byline (MISE_EN_LIGNE_LISTE_PEA).
+    { url: `${base}/guide-5-etf-pea-premium`,  changeFreq: "monthly", priority: 0.9,  lastmod: MAJ_LISTE_PEA },
     { url: `${base}/calculateur-fiscal-pea-cto`, changeFreq: "monthly", priority: 0.9, lastmod: REV.reponseDabord },
     { url: `${base}/allocation-portefeuille`,  changeFreq: "monthly", priority: 0.85, lastmod: REV.etf },
     { url: `${base}/investir-en-etf`,          changeFreq: "monthly", priority: 0.85, lastmod: REV.etf },
