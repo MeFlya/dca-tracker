@@ -16,10 +16,24 @@
 // corps { productId, origine }, le suivi et l'état « Bientôt disponible » ne
 // changent pas. Le hero, l'appel final et la barre collante utilisent tous ce
 // même composant.
+//
+// 14/10/2026 — sessions de paiement doublées : la page porte trois instances
+// de ce bouton (hero, appel final, barre collante) et chacune avait son propre
+// `loading`. Un clic sur l'une puis sur une autre pendant l'attente ouvrait
+// deux sessions (reproduit en local). Le verrou est désormais partagé par
+// toute la page, avec une clé d'idempotence côté Stripe : voir
+// src/lib/verrou-paiement.ts. Le début de paiement est mesuré par une page vue
+// fictive (/evt/paiement/debut/<produit>, voir mesurerEtape dans analytics.ts).
 
-import { useState } from "react";
-import { track } from "@/lib/analytics";
+import { useEffect, useState } from "react";
+import { mesurerEtape, track } from "@/lib/analytics";
 import { figerOrigineDeLAchat } from "@/lib/origine-achat";
+import {
+  prendreVerrouPaiement,
+  rendreVerrouPaiement,
+  signalDelaiPaiement,
+  surRetourArriere,
+} from "@/lib/verrou-paiement";
 
 interface Props {
   productId: string;
@@ -53,6 +67,10 @@ export function ProductBuyButton({
   const [loading, setLoading] = useState(false);
   const couleurNote = ton === "sombre" ? "text-slate-400" : "text-gray-500";
 
+  // Retour depuis Stripe par le bouton Retour : la page revient du cache du
+  // navigateur avec « Redirection… » figé. On réactive.
+  useEffect(() => surRetourArriere(() => setLoading(false)), []);
+
   if (!available) {
     return (
       <div>
@@ -71,24 +89,33 @@ export function ProductBuyButton({
   }
 
   async function handleClick() {
+    // Verrou pris AVANT tout await : un second clic, sur ce bouton ou sur un
+    // autre bouton d'achat de la page, est ignoré tant que celui-ci court.
+    const tentative = prendreVerrouPaiement();
+    if (!tentative) return;
     track({ name: "product_checkout_click", props: { product_id: productId } });
     setLoading(true);
     try {
       const res = await fetch("/api/products/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId, origine: figerOrigineDeLAchat() }),
+        body: JSON.stringify({ productId, origine: figerOrigineDeLAchat(), tentative }),
+        signal: signalDelaiPaiement(),
       });
       const data = await res.json();
       if (data.url) {
+        mesurerEtape({ etape: "paiement-debut", offre: productId });
+        // Le verrou reste pris : la page part vers Stripe.
         window.location.href = data.url;
       } else {
-        alert(data.error ?? "Erreur lors de la création du paiement.");
+        rendreVerrouPaiement();
         setLoading(false);
+        alert(data.error ?? "Erreur lors de la création du paiement.");
       }
     } catch {
-      alert("Erreur réseau — réessayez dans quelques secondes.");
+      rendreVerrouPaiement();
       setLoading(false);
+      alert("Erreur réseau — réessayez dans quelques secondes.");
     }
   }
 

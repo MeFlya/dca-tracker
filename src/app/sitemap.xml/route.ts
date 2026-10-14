@@ -60,8 +60,9 @@ const REV = {
   // gratuit). Même date que sa byline. 02/10/2026 : exemple aux cours réels
   // (chiffres, captures, sources) ; updatedAt de la byline à la même date.
   suiviPeaExcel: "2026-10-02",
-  // taux fiscaux 2026
-  methodologie: "2026-08-03",
+  // taux fiscaux 2026 ; 14/10/2026 : sections « Comment nous vérifions les
+  // données des ETF » et « Comment nous classons ».
+  methodologie: "2026-10-14",
   // pages Ressources refaites, Cockpit v2.0 et guide v1.1 (01/10/2026) ;
   // 02/10/2026 : captures et légendes du Cockpit sur l'exemple aux cours réels.
   // 09/10/2026 : guide v1.2 (BoursoBank au 5 octobre), captures et sommaire.
@@ -73,8 +74,10 @@ const REV = {
   // désinscription (5). Même date que « Dernière mise à jour » affichée dans
   // la page (02/10/2026).
   confidentialite: "2026-10-02",
-  // entrée de changelog sur la régression de série du 2 août ; partenariats
-  affiliation: "2026-08-04",
+  // entrée de changelog sur la régression de série du 2 août ; partenariats.
+  // 14/10/2026 : mention « Publicité · lien affilié » et ancre #classement
+  // sur /transparence (même date que DISCLOSURE_REVISED_ON).
+  affiliation: "2026-10-14",
   cgv: "2026-10-01",
   // /changelog : corrections du TRI du Cockpit et de la mention de TVA ;
   // 02/10/2026 : exemple du Cockpit et du modèle gratuit aux cours réels.

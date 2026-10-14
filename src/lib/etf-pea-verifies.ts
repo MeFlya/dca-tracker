@@ -81,6 +81,12 @@ const TABLE_DE_VERITE = new Set([
 ]);
 
 /**
+ * Nombre de fonds de la table de vérité, lu par /methodologie (14/10/2026) :
+ * la page cite ce nombre, il suit la table au lieu d'être recopié.
+ */
+export const NB_FONDS_TABLE_DE_VERITE = TABLE_DE_VERITE.size;
+
+/**
  * Le fonds figure-t-il dans la table de vérité ? Exporté le 30/09/2026 pour
  * les fiches /etf/[symbole] : elles n'écrivent « vérifié le 28 septembre
  * 2026 » que pour un fonds réellement contrôlé ce jour-là (pas SPY).

@@ -79,7 +79,7 @@
      blocs centraux d'une section. Padding plus généreux, shadow plus marquée,
      border accent qui démarque de la card par défaut. À utiliser pour les
      cards qui doivent être le focal point (ex: card de récap fiscal sur
-     /account, card stratégie principale, card "le plus populaire" sur tarifs). */
+     /account, card stratégie principale, card Premium sur tarifs). */
   .card-primary {
     @apply bg-white rounded-3xl border border-primary-100 shadow-card-lg p-7 sm:p-9;
   }

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { VisitTracker } from "@/components/analytics/VisitTracker";
+import { MesureEtape } from "@/components/analytics/MesureEtape";
+import { stripe } from "@/lib/stripe";
 
 export const metadata: Metadata = {
   title: "Paiement confirmé — DCA Tracker",
@@ -19,17 +21,43 @@ const PREMIUM_CONTENT = {
   ],
 };
 
+/**
+ * 14/10/2026 — la session Stripe est-elle vraiment terminée ? Sert seulement
+ * à la mesure (/evt/paiement/reussi/premium-essai) : la page s'affiche comme
+ * avant dans tous les cas. Sans cette vérification, une simple visite de
+ * l'adresse aurait compté comme un abonnement.
+ */
+async function sessionPremiumTerminee(sessionId: string | undefined): Promise<boolean> {
+  if (!sessionId || !/^cs_[A-Za-z0-9_]{10,200}$/.test(sessionId)) return false;
+  try {
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    return session.mode === "subscription" && session.status === "complete";
+  } catch {
+    return false;
+  }
+}
+
 export default async function PaymentSuccessPage({
   searchParams,
 }: {
-  searchParams: Promise<{ plan?: string }>;
+  searchParams: Promise<{ plan?: string; session_id?: string }>;
 }) {
-  await searchParams;
+  const { session_id } = await searchParams;
   const content = PREMIUM_CONTENT;
+  const essaiDemarre = await sessionPremiumTerminee(session_id);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-200px)] py-16 px-4">
       <VisitTracker event={{ name: "complete_payment", props: { plan: "premium" } }} />
+      {/* Essai Premium démarré (carte enregistrée, aucun débit avant 7 jours) :
+          page vue fictive, une fois par session Stripe. Voir src/lib/analytics.ts. */}
+      {essaiDemarre && (
+        <MesureEtape
+          etape={{ etape: "paiement-reussi", offre: "premium-essai" }}
+          portee="navigateur"
+          cle={session_id}
+        />
+      )}
       <div className="max-w-lg w-full">
 
         {/* Success icon */}

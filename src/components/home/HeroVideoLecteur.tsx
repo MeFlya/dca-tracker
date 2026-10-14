@@ -390,7 +390,11 @@ export function HeroVideoLecteur({
     c.play().catch(() => {
       /* refus improbable après un clic : les contrôles restent disponibles */
     });
-    pageview({ path: "/video/son-ouvert" });
+    // `route` posé aussi (14/10/2026) : sans lui, le script de Vercel envoie
+    // la vue fictive avec la route de la page (« / », champ dp), et l'onglet
+    // Routes du tableau de bord risque de la compter comme une vue de plus de
+    // l'accueil. Même règle que mesurerEtape dans src/lib/analytics.ts.
+    pageview({ route: "/video/son-ouvert", path: "/video/son-ouvert" });
   }
 
   function surFermeture() {
@@ -414,7 +418,7 @@ export function HeroVideoLecteur({
   function surFinComplete() {
     if (r.current.finVue) return;
     r.current.finVue = true;
-    pageview({ path: "/video/son-fini" });
+    pageview({ route: "/video/son-fini", path: "/video/son-fini" });
   }
 
   // Focus piégé (showModal rend déjà le reste de la page inerte ; ceci évite

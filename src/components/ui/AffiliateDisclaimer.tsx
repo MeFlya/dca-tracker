@@ -8,16 +8,21 @@
 //
 // Wired by <InvestCTA /> when broker affiliate links are rendered.
 
+//
+// 14/10/2026 — le texte vient de MENTION_AFFILIATION (broker-config.ts) et
+// commence par « Publicité », le mot que cite l'art. 5-2 de la loi
+// n° 2023-451 du 9 juin 2023. Il était écrit ici, en dur, sans ce mot.
+
 import { Info } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { MENTION_AFFILIATION } from "@/lib/broker-config";
 
 interface Props {
   variant?: "inline" | "block";
   className?: string;
 }
 
-const TEXT =
-  "Lien affilié : DCA Tracker peut percevoir une commission si vous ouvrez un compte via ce lien. Cela ne change rien au coût pour vous.";
+const TEXT = `${MENTION_AFFILIATION.libelle} : ${MENTION_AFFILIATION.texte}`;
 
 export function AffiliateDisclaimer({
   variant = "block",

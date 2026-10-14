@@ -3,8 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
-import { track } from "@/lib/analytics";
+import { mesurerEtape, track } from "@/lib/analytics";
 import { figerOrigineDeLAchat } from "@/lib/origine-achat";
+import {
+  prendreVerrouPaiement,
+  rendreVerrouPaiement,
+  signalDelaiPaiement,
+  surRetourArriere,
+} from "@/lib/verrou-paiement";
 import { AuroraSweep } from "@/components/ui/AuroraSweep";
 
 type Feature = { label: string; included: boolean };
@@ -59,7 +65,10 @@ const PLANS: Plan[] = [
     monthlyPrice: 4.9,
     yearlyTotal: 49,
     yearlyPerMonth: 4.08,
-    badge: "Le plus populaire",
+    // 14/10/2026 : badge « Le plus populaire » retiré. Il ne reposait sur rien
+    // (6 comptes, aucun abonné au 11/10/2026) — une affirmation non prouvée
+    // sur un site dont l'argument est la preuve. Ne le remettre qu'avec un
+    // chiffre réel à l'appui. Le champ `badge` reste disponible.
     cta: "Choisir Premium",
     ctaHref: "#",
     features: [
@@ -93,6 +102,10 @@ function CheckoutButton({
   const isAlreadyPremium =
     (user?.publicMetadata?.plan as string | undefined) === "premium";
   const [loading, setLoading] = useState(false);
+
+  // Retour depuis Stripe par le bouton Retour (page restaurée du cache) :
+  // le verrou est rendu et le bouton réactivé.
+  useEffect(() => surRetourArriere(() => setLoading(false)), []);
 
   // Déjà Premium → aucun CTA d'essai (l'user a déjà tout). On propose la
   // gestion d'abonnement à la place. Évite l'absurdité "Essayer Premium —
@@ -137,6 +150,14 @@ function CheckoutButton({
     // with_cb: true → flux actuel = Stripe Checkout standard (CB collectée à
     // l'entrée). Le futur A/B test introduira un flux with_cb=false pour mesurer
     // l'impact sur conversion trial → paid.
+    // 14/10/2026 — verrou partagé, pris avant tout await (voir
+    // src/lib/verrou-paiement.ts). L'ancien `finally { setLoading(false) }`
+    // réactivait le bouton dès la réponse reçue, PENDANT le chargement de
+    // Stripe : un second clic dans cette fenêtre ouvrait une seconde session.
+    // Le bouton reste désormais sur « Chargement… » jusqu'au départ, et n'est
+    // réactivé qu'en cas d'échec ou de retour arrière.
+    const tentative = prendreVerrouPaiement();
+    if (!tentative) return;
     track({ name: "start_trial", props: { billing, with_cb: true } });
     setLoading(true);
     try {
@@ -145,18 +166,25 @@ function CheckoutButton({
         headers: { "Content-Type": "application/json" },
         // `origine` finit dans les métadonnées de l'abonnement Stripe
         // (30/09/2026) — voir src/lib/origine-achat.ts.
-        body: JSON.stringify({ planId: "premium", billing, origine: figerOrigineDeLAchat() }),
+        body: JSON.stringify({ planId: "premium", billing, origine: figerOrigineDeLAchat(), tentative }),
+        signal: signalDelaiPaiement(),
       });
       const data = await res.json();
       if (data.url) {
+        mesurerEtape({
+          etape: "paiement-debut",
+          offre: billing === "yearly" ? "premium-annuel" : "premium-mensuel",
+        });
         window.location.href = data.url;
-      } else {
-        alert(data.error ?? "Erreur lors de la création du paiement.");
+        return;
       }
-    } catch {
-      alert("Erreur réseau — réessayez dans quelques secondes.");
-    } finally {
+      rendreVerrouPaiement();
       setLoading(false);
+      alert(data.error ?? "Erreur lors de la création du paiement.");
+    } catch {
+      rendreVerrouPaiement();
+      setLoading(false);
+      alert("Erreur réseau — réessayez dans quelques secondes.");
     }
   }
 
@@ -252,7 +280,7 @@ export function PricingCards() {
           - Depth (slate-950 vs slate-900)
           - Radial primary glow behind
           - Animated gradient border
-          - "Le plus populaire" badge above card
+          - Badge above card when plan.badge is set (none since 14/10/2026)
           - Primary-filled CTA (vs ghost on Free)
       */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch max-w-3xl mx-auto">

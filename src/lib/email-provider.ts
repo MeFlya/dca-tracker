@@ -26,6 +26,14 @@ export interface EmailSubscription {
 export interface EmailProviderResult {
   success: boolean;
   error?: string;
+  /**
+   * Sort de l'ajout à la liste, quand la case était cochée (14/10/2026) :
+   * « ajoutee » si Resend a confirmé, « refusee » sinon. Absent quand la case
+   * n'était pas cochée. Ne contient rien sur la personne : il sert à la page
+   * vue fictive /evt/email/liste/<sort> (voir src/lib/analytics.ts), l'alarme
+   * d'une liste qui ne se remplit pas.
+   */
+  liste?: "ajoutee" | "refusee";
 }
 
 // ─── Templates ────────────────────────────────────────────────────────────────
@@ -230,6 +238,78 @@ Vous recevez cet email car vous avez demandé cette cheat sheet sur ${SITE_URL} 
 DCA Tracker est un outil pédagogique — pas de conseil en investissement.`;
 }
 
+// ─── Ajout à la liste (segment Resend) ───────────────────────────────────────
+//
+// 02/10/2026 : Resend a remplacé les « Audiences » par des « Segments »
+// (novembre 2025, guide « Migrating from Audiences to Segments ») ; l'ancienne
+// route POST /audiences/{id}/contacts n'est plus documentée.
+// RESEND_AUDIENCE_ID contient donc l'identifiant d'un SEGMENT (le nom de la
+// variable est gardé : le cron et la désinscription la lisent aussi).
+//
+// Relu le 14/10/2026 contre la documentation de l'API (pages « Create
+// Contact » et « Add Contact to Segment », consultées ce jour) :
+//   1. POST /contacts { email, segments: [{ id }] } crée le contact rattaché
+//      au segment ;
+//   2. s'il est refusé (contact déjà existant, par exemple), POST
+//      /contacts/{email}/segments/{segment_id}, sans corps, rattache le
+//      contact existant — la documentation accepte l'adresse à la place de
+//      l'identifiant dans le chemin.
+// Les deux exigent une clé « Full access » : une clé « Sending access » ne
+// peut qu'envoyer des emails, et répond 401/403 sur /contacts.
+//
+// 14/10/2026 : `unsubscribed: false` n'est PLUS envoyé à la création. La
+// documentation ne dit pas ce que fait POST /contacts sur une adresse déjà
+// connue ; si un jour il met le contact à jour au lieu de refuser, ce champ
+// réinscrirait quelqu'un qui s'est désinscrit — ce qu'un tiers pourrait
+// déclencher en tapant son adresse. Sans le champ, un contact neuf est inscrit
+// (valeur par défaut) et un contact existant garde son statut.
+//
+// Délai de 5 s par appel : l'email demandé part ensuite, il ne doit pas
+// attendre une liste qui ne répond pas.
+
+async function ajouterALaListe(email: string, segmentId: string, source: string): Promise<boolean> {
+  const entetes = {
+    Authorization: `Bearer ${process.env.RESEND_API_KEY ?? ""}`,
+    "Content-Type": "application/json",
+  };
+  // Même encodage que la désinscription (email-preferences.ts) : on encode ce
+  // qui casserait le chemin, en laissant « @ » et « + » comme la documentation.
+  const adresseChemin = encodeURIComponent(email).replace(/%40/g, "@").replace(/%2B/gi, "+");
+  try {
+    const res = await fetch("https://api.resend.com/contacts", {
+      method: "POST",
+      headers: entetes,
+      body: JSON.stringify({ email, segments: [{ id: segmentId }] }),
+      signal: AbortSignal.timeout(5_000),
+    });
+    if (res.ok) return true;
+    if (res.status === 401 || res.status === 403) {
+      console.error(
+        `[email-provider] Clé Resend sans droit sur les contacts (HTTP ${res.status}) — il faut une clé ` +
+          `« Full access » dans RESEND_API_KEY. Contact non enregistré (source : ${source}).`,
+      );
+      return false;
+    }
+    const rattache = await fetch(
+      `https://api.resend.com/contacts/${adresseChemin}/segments/${encodeURIComponent(segmentId)}`,
+      { method: "POST", headers: entetes, signal: AbortSignal.timeout(5_000) },
+    );
+    if (rattache.ok) return true;
+    // Statuts seulement : jamais l'adresse dans les journaux (confidentialité, 3.5).
+    console.error(
+      `[email-provider] Ajout à la liste refusé (création HTTP ${res.status}, ` +
+        `rattachement HTTP ${rattache.status}) — contact non enregistré (source : ${source}).`,
+    );
+    return false;
+  } catch (err) {
+    console.error(
+      "[email-provider] Ajout à la liste impossible :",
+      err instanceof Error ? err.name : "erreur inconnue",
+    );
+    return false;
+  }
+}
+
 // ─── Public API ───────────────────────────────────────────────────────────────
 
 export async function subscribeEmail({
@@ -271,53 +351,18 @@ export async function subscribeEmail({
     // conditionné à ce succès : le visiteur a demandé un document, il doit le
     // recevoir même si notre liste est mal configurée.
     const audienceId = process.env.RESEND_AUDIENCE_ID;
+    let liste: EmailProviderResult["liste"];
     if (!newsletter) {
       // Rien à inscrire : la personne a demandé la ressource, pas la liste.
       console.log(`[email-provider] Case non cochée — adresse non ajoutée à l'audience (source : ${source}).`);
     } else if (!audienceId) {
+      liste = "refusee";
       console.error(
         "[email-provider] RESEND_AUDIENCE_ID absent — le contact n'est enregistré NULLE PART. " +
           `Adresse récupérable uniquement dans le journal Resend (source : ${source}).`,
       );
     } else {
-      // 02/10/2026 : Resend a remplacé les « Audiences » par des « Segments »
-      // (novembre 2025, guide « Migrating from Audiences to Segments ») ;
-      // l'ancienne route POST /audiences/{id}/contacts n'est plus documentée.
-      // RESEND_AUDIENCE_ID contient donc l'identifiant d'un SEGMENT (le nom de
-      // la variable est gardé : le cron et la désinscription la lisent aussi).
-      // On crée le contact rattaché au segment (POST /contacts) ; s'il existe
-      // déjà (refus), on le rattache seulement (POST /contacts/{email}/segments/{id}).
-      // On ne remet JAMAIS `unsubscribed` à false sur un contact existant : un
-      // tiers pourrait réinscrire quelqu'un qui s'est désinscrit.
-      const entetes = {
-        Authorization: `Bearer ${process.env.RESEND_API_KEY ?? ""}`,
-        "Content-Type": "application/json",
-      };
-      try {
-        const res = await fetch("https://api.resend.com/contacts", {
-          method: "POST",
-          headers: entetes,
-          body: JSON.stringify({ email, unsubscribed: false, segments: [{ id: audienceId }] }),
-        });
-        if (!res.ok) {
-          const rattache = await fetch(
-            `https://api.resend.com/contacts/${encodeURIComponent(email)}/segments/${audienceId}`,
-            { method: "POST", headers: entetes },
-          );
-          if (!rattache.ok) {
-            // Statuts seulement : jamais l'adresse dans les journaux (confidentialité, 3.5).
-            console.error(
-              `[email-provider] Ajout à la liste refusé (création HTTP ${res.status}, ` +
-                `rattachement HTTP ${rattache.status}) — contact non enregistré (source : ${source}).`,
-            );
-          }
-        }
-      } catch (err) {
-        console.error(
-          "[email-provider] Ajout à la liste impossible :",
-          err instanceof Error ? err.name : "erreur inconnue",
-        );
-      }
+      liste = (await ajouterALaListe(email, audienceId, source)) ? "ajoutee" : "refusee";
     }
 
     // Passe par sendEmail() comme tous les autres envois : c'est un email
@@ -353,8 +398,8 @@ export async function subscribeEmail({
       };
     }
 
-    console.log("[email-provider] Email envoyé — source:", source, "ressource:", ressource, "newsletter:", newsletter);
-    return { success: true };
+    console.log("[email-provider] Email envoyé — source:", source, "ressource:", ressource, "newsletter:", newsletter, "liste:", liste ?? "-");
+    return { success: true, liste };
   } catch (err) {
     console.error("[email-provider] Unexpected error:", err);
     return { success: false, error: "Erreur lors de l'envoi. Réessayez dans un instant." };

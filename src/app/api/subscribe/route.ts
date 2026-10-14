@@ -136,5 +136,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  return NextResponse.json({ success: true });
+  // `liste` (14/10/2026) : « ajoutee » / « refusee » quand la case était
+  // cochée, pour la page vue fictive /evt/email/liste/… côté navigateur.
+  return NextResponse.json({ success: true, ...(result.liste ? { liste: result.liste } : {}) });
 }

@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import { cn } from "@/lib/utils";
-import { track } from "@/lib/analytics";
+import { mesurerEtape, track } from "@/lib/analytics";
 import { CHAMP_POT_DE_MIEL } from "@/lib/ressources-gratuites";
 
 type SubmitState = "idle" | "loading" | "success" | "error";
@@ -70,7 +70,7 @@ export function EmailCapture({
         }),
       });
 
-      const data: { success?: boolean; error?: string } = await res.json();
+      const data: { success?: boolean; error?: string; liste?: "ajoutee" | "refusee" } = await res.json();
 
       if (!res.ok || !data.success) {
         setErrorMsg(data.error ?? "Une erreur est survenue. Réessayez.");
@@ -82,6 +82,10 @@ export function EmailCapture({
       // Mesure de conversion : sans cet événement, impossible de savoir quelle
       // page capture des emails (la prop `source` porte déjà l'origine).
       track({ name: "email_signup", props: { source } });
+      // 14/10/2026 — pages vues fictives (Vercel Hobby, voir src/lib/analytics.ts) :
+      // ressource envoyée, et sort de l'ajout à la liste si la case était cochée.
+      mesurerEtape({ etape: "email-ressource", ressource: "cheat-sheet" });
+      if (data.liste) mesurerEtape({ etape: "email-liste", resultat: data.liste });
     } catch {
       setErrorMsg("Impossible de se connecter. Réessayez dans un instant.");
       setState("error");

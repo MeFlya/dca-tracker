@@ -13,6 +13,7 @@ import { stripe } from "@/lib/stripe";
 import { getProduct } from "@/lib/products";
 import { createDownloadToken } from "@/lib/download-token";
 import { VisitTracker } from "@/components/analytics/VisitTracker";
+import { MesureEtape } from "@/components/analytics/MesureEtape";
 
 export const metadata: Metadata = {
   title: "Merci pour votre achat — DCA Tracker",
@@ -79,6 +80,15 @@ export default async function MerciPage({ searchParams }: Props) {
     <div className="max-w-xl mx-auto px-4 sm:px-6 py-16">
       <VisitTracker
         event={{ name: "product_purchase", props: { product_id: state.productId } }}
+      />
+      {/* Paiement réussi (session « paid » vérifiée ci-dessus) : une page vue
+          fictive /evt/paiement/reussi/<produit>, une fois par session Stripe.
+          L'identifiant de session sert de clé dans le navigateur, il n'est
+          jamais envoyé à Vercel. Voir src/lib/analytics.ts. */}
+      <MesureEtape
+        etape={{ etape: "paiement-reussi", offre: state.productId }}
+        portee="navigateur"
+        cle={session_id}
       />
 
       <div className="text-center mb-10">

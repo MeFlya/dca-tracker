@@ -12,6 +12,7 @@ import { BreadcrumbSchema } from "@/components/ui/BreadcrumbSchema";
 import {
   BROKER_CONFIG,
   isBrokerCTAActive,
+  MENTION_AFFILIATION,
   type BrokerPartner,
 } from "@/lib/broker-config";
 import {
@@ -42,13 +43,16 @@ export const metadata: Metadata = {
 
 function Section({
   title,
+  id,
   children,
 }: {
   title: string;
+  /** Ancre, pour les liens depuis /methodologie (14/10/2026). */
+  id?: string;
   children: React.ReactNode;
 }) {
   return (
-    <section className="mb-12">
+    <section id={id} className="mb-12 scroll-mt-24">
       <h2 className="text-2xl font-bold text-gray-900 mb-4">{title}</h2>
       <div className="space-y-4 text-gray-600 leading-relaxed">{children}</div>
     </section>
@@ -147,6 +151,10 @@ export default function TransparencePage() {
               préfère ça à un ordre de grandeur inventé.
             </p>
             <PartnerTable partners={BROKER_CONFIG.partners} />
+            <p>
+              Au-dessus de chaque lien affilié, avant le clic, cette mention :
+            </p>
+            <MentionAffiliation />
           </>
         ) : (
           <>
@@ -160,16 +168,32 @@ export default function TransparencePage() {
             <p>
               Je l&apos;écris au futur parce que ce n&apos;est pas encore en
               place. Dès que ça le sera, cette page listera chaque partenaire et
-              chaque rémunération, et la mention « lien affilié » apparaîtra{" "}
-              <em>au-dessus</em> du lien concerné, pas en petit en bas de page.
+              chaque rémunération, et la mention ci-dessous apparaîtra{" "}
+              <em>au-dessus</em> du lien concerné, pas en petit en bas de page :
             </p>
+            <MentionAffiliation />
           </>
         )}
+        {/* 14/10/2026 — pourquoi « Publicité » : loi n° 2023-451 du 9 juin
+            2023, art. 5-2 (Légifrance, version en vigueur au 14/10/2026), et
+            communiqué AMF du 29/10/2021 sur les recommandations
+            d'investissement. Détail et limites dans broker-config.ts. */}
+        <p>
+          Pourquoi le mot « Publicité » : la loi du 9 juin 2023 sur
+          l&apos;influence commerciale demande que l&apos;intention commerciale
+          d&apos;un contenu soit signalée par une mention claire, lisible et
+          compréhensible, et cite « publicité » comme exemple. Les liens
+          affiliés {active ? "portent" : "porteront"} aussi l&apos;attribut
+          qui signale aux moteurs de recherche un lien rémunéré. Enfin, une
+          commission est un conflit d&apos;intérêts possible : c&apos;est pour
+          ça que chaque partenaire et ce qu&apos;il verse{" "}
+          {active ? "figurent" : "figureront"} sur cette page.
+        </p>
       </Section>
 
       {/* D.111-7 I 1° (critères + définition) et D.111-6 I 2° (critères par
           défaut + principaux paramètres). */}
-      <Section title="Comment je classe">
+      <Section title="Comment je classe" id="classement">
         <p>
           Aucun classement de ce site n&apos;est calculé automatiquement, et
           aucun n&apos;est à vendre. L&apos;ordre dans lequel les acteurs
@@ -496,6 +520,16 @@ export default function TransparencePage() {
         des performances futures.
       </p>
     </div>
+  );
+}
+
+// ─── Mention d'affiliation (texte unique : MENTION_AFFILIATION) ──────────────
+
+function MentionAffiliation() {
+  return (
+    <p className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+      <strong>{MENTION_AFFILIATION.libelle}</strong> : {MENTION_AFFILIATION.texte}
+    </p>
   );
 }
 

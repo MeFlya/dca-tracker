@@ -18,6 +18,11 @@
 //   Posée sur la session ET sur le PaymentIntent (payment_intent_data), pour
 //   qu'elle apparaisse dans Stripe > Paiements > un paiement > Métadonnées.
 //   Le webhook ne la lit pas. Formes possibles et lecture : src/lib/origine-achat.ts.
+// - tentative (14/10/2026) : identifiant aléatoire tiré au clic par le bouton
+//   (src/lib/verrou-paiement.ts), utilisé comme clé d'idempotence Stripe. Si
+//   la même demande arrive deux fois (nouvel essai réseau du navigateur),
+//   Stripe renvoie la même session au lieu d'en ouvrir une seconde. Absente ou
+//   non conforme (onglet ouvert avant ce déploiement) : pas de clé, comme avant.
 
 export const dynamic = "force-dynamic";
 
@@ -27,11 +32,13 @@ import { stripe } from "@/lib/stripe";
 import { getProduct, getProductPriceId } from "@/lib/products";
 import { log } from "@/lib/logger";
 import { nettoyerOrigine } from "@/lib/origine-achat";
+import { cleIdempotence } from "@/lib/verrou-paiement";
 
 export async function POST(req: Request) {
-  const { productId, origine: origineRecue } = (await req.json()) as {
+  const { productId, origine: origineRecue, tentative } = (await req.json()) as {
     productId?: string;
     origine?: unknown;
+    tentative?: unknown;
   };
   // Chaîne courte et propre, ou « inconnue » : le navigateur peut envoyer
   // n'importe quoi, et ce texte finit dans le tableau de bord Stripe.
@@ -65,6 +72,7 @@ export async function POST(req: Request) {
     // Pas de session Clerk — checkout invité, comportement normal.
   }
 
+  const idempotencyKey = cleIdempotence(`produit-${product.id}`, tentative);
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
     ...(customerId ? { customer: customerId } : { customer_creation: "always" }),
@@ -96,7 +104,7 @@ export async function POST(req: Request) {
           "Produit numérique livré immédiatement par email : en payant, vous demandez l'exécution immédiate et renoncez à votre droit légal de rétractation (art. L221-28 du Code de la consommation). Vous restez couvert par notre garantie « satisfait ou remboursé » de 14 jours.",
       },
     },
-  });
+  }, idempotencyKey ? { idempotencyKey } : undefined);
 
   log.event("products/checkout", "session_created", {
     productId: product.id,

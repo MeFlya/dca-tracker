@@ -253,4 +253,4 @@ export const UPDATE_POLICY = {
  * ⚠️ À bumper à CHAQUE modification de ce fichier ou de la liste des
  * partenaires. Une date saisie et oubliée est une date qui ment.
  */
-export const DISCLOSURE_REVISED_ON = "2026-09-29";
+export const DISCLOSURE_REVISED_ON = "2026-10-14";

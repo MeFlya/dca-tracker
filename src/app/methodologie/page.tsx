@@ -4,10 +4,21 @@ import { JsonLd } from "@/components/ui/JsonLd";
 import { ArticleByline } from "@/components/ui/ArticleByline";
 import { BreadcrumbSchema } from "@/components/ui/BreadcrumbSchema";
 import { SourcesReferences } from "@/components/ui/SourcesReferences";
+import {
+  DATE_VERIFICATION_PEA,
+  dateEnToutesLettres,
+  NB_FONDS_TABLE_DE_VERITE,
+  URL_LISTE_PEA,
+} from "@/lib/etf-pea-verifies";
+import { UPDATE_POLICY, RANKING_IS_PAID_INFLUENCED } from "@/lib/comparison-disclosure";
+import { isBrokerCTAActive, MENTION_AFFILIATION } from "@/lib/broker-config";
 
 const TITLE = "Méthodologie DCA Tracker : formules, hypothèses et sources";
+// 14/10/2026 : la page dit aussi comment les données ETF sont vérifiées et
+// classées (sections #verification et #classement). L'ancienne description
+// (198 caractères, tronquée par Google) ne parlait que du simulateur.
 const DESCRIPTION =
-  "Transparence totale sur le simulateur DCA : formule de capitalisation mensuelle, gestion des frais (TER), correction de l'inflation INSEE, sources de données et limites assumées. Aucune boîte noire.";
+  "Comment DCA Tracker vérifie les données des ETF (ISIN, frais, éligibilité PEA), les classe sans rémunération et calcule ses simulations. Sources datées.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -30,13 +41,16 @@ export const metadata: Metadata = {
 
 function Section({
   title,
+  id,
   children,
 }: {
   title: string;
+  /** Ancre, pour les liens directs (#verification, #classement). */
+  id?: string;
   children: React.ReactNode;
 }) {
   return (
-    <section className="mb-12">
+    <section id={id} className="mb-12 scroll-mt-24">
       <h2 className="text-2xl font-bold text-gray-900 mb-4">{title}</h2>
       <div className="space-y-4 text-gray-600 leading-relaxed">{children}</div>
     </section>
@@ -92,12 +106,135 @@ export default function MethodologiePage() {
 
       <ArticleByline
         publishedAt="2026-04-01"
-        updatedAt="2026-08-03"
+        updatedAt="2026-10-14"
         readingMinutes={6}
         url="/methodologie"
         headline={TITLE}
         description={DESCRIPTION}
       />
+
+      {/* ─── 14/10/2026 : comment nous vérifions et classons ─────────────
+          Tout ce qui suit est vrai au 14/10/2026 et LU dans le code quand
+          c'est possible (nombre de fonds, date de vérification, politique de
+          mise à jour, état de l'affiliation), pour ne pas devenir faux en
+          silence. Sources des affirmations :
+          · documents émetteur + justETF/Boursorama/Euronext, garde-fous du
+            build : en-tête de src/lib/etf-pea-verifies.ts ;
+          · date et lien de la fiche citée : src/lib/reponse-fiche-etf.ts et
+            src/lib/sources-etf.ts (un fonds sans adresse vérifiée n'a pas
+            de lien, d'où « quand nous en avons une ») ;
+          · correction du 28/09/2026 : src/lib/changelog.ts ;
+          · classement non rémunéré : RANKING_IS_PAID_INFLUENCED. */}
+      <Section title="Comment nous vérifions les données des ETF" id="verification">
+        <p>
+          Un ETF se choisit sur quelques faits&nbsp;: son code ISIN, ses frais
+          annuels (TER), l&apos;indice qu&apos;il suit, sa méthode de
+          réplication et, pour un PEA, son éligibilité. Une erreur sur l&apos;un
+          d&apos;eux peut coûter cher. Voici comment nous les établissons.
+        </p>
+        <ol className="space-y-3 list-decimal pl-5">
+          <li>
+            <strong className="text-gray-900">Le document de l&apos;émetteur d&apos;abord.</strong>{" "}
+            Chaque donnée vérifiée est lue sur l&apos;ISIN, dans les documents de la
+            société qui gère le fonds&nbsp;: page produit, document
+            d&apos;informations clés (DIC), reporting mensuel. Le nom commercial
+            ne suffit pas&nbsp;: un même gestionnaire peut proposer deux ETF
+            S&amp;P 500, l&apos;un éligible au PEA, l&apos;autre non.
+          </li>
+          <li>
+            <strong className="text-gray-900">Une seconde source ensuite.</strong>{" "}
+            Chaque donnée de la table de vérité est recoupée sur des sources
+            qui ne dépendent pas de l&apos;émetteur&nbsp;: justETF, Boursorama
+            et Euronext. Une fiche dont les frais ou l&apos;ISIN n&apos;ont pas
+            été recoupés le dit.
+          </li>
+          <li>
+            <strong className="text-gray-900">Une date, toujours.</strong>{" "}
+            Une donnée sans date ne dit pas si elle est encore juste. Notre
+            table de vérité compte {NB_FONDS_TABLE_DE_VERITE} fonds, vérifiés
+            le {dateEnToutesLettres(DATE_VERIFICATION_PEA)}. Les fiches ETF
+            indiquent cette date et renvoient, quand nous en avons une adresse
+            vérifiée, vers le document cité.
+          </li>
+          <li>
+            <strong className="text-gray-900">Des garde-fous dans le code.</strong>{" "}
+            Le site refuse de se construire si{" "}
+            <Link href={URL_LISTE_PEA} className="text-primary-700 font-medium hover:underline">
+              la liste des ETF éligibles au PEA
+            </Link>{" "}
+            cite un fonds absent de la table de vérité, ou le cite deux fois.
+            Une liste fausse ne part pas en ligne sans que quelqu&apos;un la
+            corrige.
+          </li>
+          <li>
+            <strong className="text-gray-900">Les erreurs sont dites.</strong>{" "}
+            Quand nous nous trompons, la correction est datée et expliquée dans
+            le{" "}
+            <Link href="/changelog" className="text-primary-700 font-medium hover:underline">
+              journal des changements
+            </Link>
+            . Le 28 septembre 2026, par exemple, cinq ETF présentés à tort
+            comme éligibles au PEA y ont été corrigés.
+          </li>
+          <li>
+            <strong className="text-gray-900">Une revérification régulière.</strong>{" "}
+            {UPDATE_POLICY.cadence}
+          </li>
+        </ol>
+        <p>
+          Ce que nous ne vérifions pas à la main&nbsp;: les cours, fournis par
+          un service externe et différés (voir «&nbsp;Données de marché&nbsp;»
+          plus bas).
+        </p>
+      </Section>
+
+      <Section title="Comment nous classons" id="classement">
+        <p>
+          Quand une page compare ou range des ETF ou des courtiers, l&apos;ordre
+          est une appréciation éditoriale fondée sur des critères publiés (le
+          coût, l&apos;adéquation à un investissement progressif sur le long
+          terme)
+          {RANKING_IS_PAID_INFLUENCED ? "." : ", jamais sur une rémunération."}{" "}
+          Le critère de chaque comparaison et ses paramètres sont détaillés
+          sur la page{" "}
+          <Link href="/transparence#classement" className="text-primary-700 font-medium hover:underline">
+            transparence
+          </Link>
+          .
+        </p>
+        <p>
+          Un classement ne dit pas quel fonds vous convient&nbsp;: cela dépend
+          de votre horizon, de votre enveloppe et du risque que vous acceptez.
+          DCA Tracker n&apos;est pas conseiller en investissements financiers
+          (CIF) et ne donne pas de conseil personnalisé.
+        </p>
+        <p>
+          {isBrokerCTAActive() ? (
+            <>
+              Certains liens vers des courtiers sont affiliés&nbsp;: ils portent
+              la mention «&nbsp;{MENTION_AFFILIATION.libelle}&nbsp;» avant le
+              clic, et la liste des partenaires et de ce qu&apos;ils versent est
+              publiée sur la page{" "}
+              <Link href="/transparence" className="text-primary-700 font-medium hover:underline">
+                transparence
+              </Link>
+              .
+            </>
+          ) : (
+            <>
+              Aucun courtier ne nous rémunère aujourd&apos;hui. Si cela change,
+              chaque lien concerné portera la mention «&nbsp;
+              {MENTION_AFFILIATION.libelle}&nbsp;» avant le clic, et la liste
+              des partenaires et de ce qu&apos;ils versent sera publiée sur la
+              page{" "}
+              <Link href="/transparence" className="text-primary-700 font-medium hover:underline">
+                transparence
+              </Link>
+              .
+            </>
+          )}
+        </p>
+      </Section>
 
       <Section title="Comment fonctionne le simulateur DCA ?">
         <p>

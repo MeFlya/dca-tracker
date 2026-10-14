@@ -7,6 +7,11 @@
 // sur l'abonnement qu'on la lit (Stripe > Clients > Abonnements > Métadonnées).
 // Le webhook ne lit que clerkUserId, inchangé. Formes possibles et lecture :
 // src/lib/origine-achat.ts.
+//
+// 14/10/2026 — `tentative` : identifiant tiré au clic (src/lib/verrou-paiement.ts),
+// clé d'idempotence Stripe du client ET de la session. Une même demande reçue
+// deux fois ne crée ni deux clients Stripe ni deux sessions. Absente ou non
+// conforme : pas de clé, comme avant.
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +21,7 @@ import { PLANS } from "@/lib/plans";
 import { NextResponse } from "next/server";
 import { log } from "@/lib/logger";
 import { nettoyerOrigine } from "@/lib/origine-achat";
+import { cleIdempotence } from "@/lib/verrou-paiement";
 
 export async function POST(req: Request) {
   const { userId } = await auth();
@@ -28,10 +34,11 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Utilisateur introuvable" }, { status: 404 });
   }
 
-  const { planId, billing, origine: origineRecue } = (await req.json()) as {
+  const { planId, billing, origine: origineRecue, tentative } = (await req.json()) as {
     planId: "premium";
     billing: "monthly" | "yearly";
     origine?: unknown;
+    tentative?: unknown;
   };
   // Chaîne courte et propre, ou « inconnue » (le navigateur peut envoyer
   // n'importe quoi).
@@ -57,12 +64,13 @@ export async function POST(req: Request) {
   let customerId = priv?.stripeCustomerId as string | undefined;
 
   if (!customerId) {
+    const cleClient = cleIdempotence(`client-${userId}`, tentative);
     const customer = await stripe.customers.create({
       email: user.emailAddresses[0]?.emailAddress,
       name:
         `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim() || undefined,
       metadata: { clerkUserId: userId },
-    });
+    }, cleClient ? { idempotencyKey: cleClient } : undefined);
     customerId = customer.id;
   }
 
@@ -70,6 +78,7 @@ export async function POST(req: Request) {
   // Stripe enforces this server-side; payment method is collected up-front.
   const TRIAL_DAYS = 7;
 
+  const cleSession = cleIdempotence(`premium-${billing}-${userId}`, tentative);
   const session = await stripe.checkout.sessions.create({
     customer: customerId,
     payment_method_types: ["card"],
@@ -84,7 +93,7 @@ export async function POST(req: Request) {
     metadata: { clerkUserId: userId, origine },
     allow_promotion_codes: true,
     locale: "fr",
-  });
+  }, cleSession ? { idempotencyKey: cleSession } : undefined);
 
   log.event("stripe/checkout", "session_created", {
     userId,

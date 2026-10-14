@@ -22,11 +22,17 @@
 // Pourquoi un composant séparé : isolement total du reste du pricing pour
 // pouvoir l'enlever / le modifier / l'A/B-tester sans toucher au flow Premium.
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
-import { track } from "@/lib/analytics";
+import { mesurerEtape, track } from "@/lib/analytics";
 import { figerOrigineDeLAchat } from "@/lib/origine-achat";
+import {
+  prendreVerrouPaiement,
+  rendreVerrouPaiement,
+  signalDelaiPaiement,
+  surRetourArriere,
+} from "@/lib/verrou-paiement";
 
 export function LifetimePricingCard() {
   // Flag exposé au build (NEXT_PUBLIC_…). À ne pas confondre avec
@@ -41,6 +47,7 @@ export function LifetimePricingCard() {
 function LifetimeCardInner() {
   const { isSignedIn, isLoaded } = useUser();
   const [loading, setLoading] = useState(false);
+  useEffect(() => surRetourArriere(() => setLoading(false)), []);
 
   const priceEur = process.env.NEXT_PUBLIC_LIFETIME_PRICE_EUR ?? "99";
   const cap = Number(process.env.NEXT_PUBLIC_LIFETIME_CAP ?? "50");
@@ -63,6 +70,11 @@ function LifetimeCardInner() {
       window.location.href = `/sign-up?redirect_url=${encodeURIComponent("/tarifs")}`;
       return;
     }
+    // 14/10/2026 — même verrou que les autres boutons de paiement (voir
+    // src/lib/verrou-paiement.ts) : le `finally` réactivait le bouton pendant
+    // le chargement de Stripe.
+    const tentative = prendreVerrouPaiement();
+    if (!tentative) return;
     track({ name: "open_upgrade", props: { feature: "lifetime" } });
     setLoading(true);
     try {
@@ -71,17 +83,21 @@ function LifetimeCardInner() {
         headers: { "Content-Type": "application/json" },
         // `origine` finit dans les métadonnées du paiement Stripe (30/09/2026).
         body: JSON.stringify({ origine: figerOrigineDeLAchat() }),
+        signal: signalDelaiPaiement(),
       });
       const data = await res.json();
       if (data.url) {
+        mesurerEtape({ etape: "paiement-debut", offre: "premium-a-vie" });
         window.location.href = data.url;
-      } else {
-        alert(data.error ?? "Erreur lors de la création du paiement.");
+        return;
       }
-    } catch {
-      alert("Erreur réseau — réessayez dans quelques secondes.");
-    } finally {
+      rendreVerrouPaiement();
       setLoading(false);
+      alert(data.error ?? "Erreur lors de la création du paiement.");
+    } catch {
+      rendreVerrouPaiement();
+      setLoading(false);
+      alert("Erreur réseau — réessayez dans quelques secondes.");
     }
   }
 

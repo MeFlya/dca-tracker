@@ -42,9 +42,35 @@
  *  délivre pas de recommandation personnalisée (AMF DOC-2008-23), et l'art.
  *  R.519-2 CMF exclut la « simple indication » d'un établissement.
  *
- *  La loi influenceurs de 2023 (art. L.533-12-7 CMF) ne couvre PAS ce périmètre :
- *  la position AMF DOC-2017-01 exclut explicitement actions, ETF, PEA et CTO.
- *  Elle vise les CFD, le forex et les options binaires.
+ *  ⚠️ CORRIGÉ LE 14/10/2026 — ce paragraphe disait que la loi influenceurs
+ *  « ne couvre PAS ce périmètre ». C'est vrai pour l'INTERDICTION, faux pour
+ *  la MENTION. La loi n° 2023-451 du 9 juin 2023 (texte consolidé lu sur
+ *  Légifrance le 14/10/2026) a deux volets distincts :
+ *
+ *   · Art. 4 V — interdiction de promouvoir, notamment, les contrats
+ *     financiers de l'art. L.533-12-7 CMF (CFD, forex, options binaires) et
+ *     certains crypto-actifs. Les ETF, le PEA et le CTO n'y sont pas : ce
+ *     volet ne nous vise pas, tant qu'on n'ajoute pas de broker CFD (voir
+ *     plus bas).
+ *   · Art. 5-2 (rédaction de l'ordonnance du 6 novembre 2024) — l'intention
+ *     commerciale doit être signalée par une mention « claire, lisible et
+ *     compréhensible », par exemple « publicité » ou « collaboration
+ *     commerciale » ; à défaut, c'est une pratique commerciale trompeuse.
+ *     Une commission d'affiliation rend la promotion « à titre onéreux »
+ *     (art. 1). Que la loi s'applique ou non à un site comme celui-ci, on pose
+ *     la mention : elle ne coûte rien et c'est ce que les plateformes
+ *     d'affiliation vérifient.
+ *
+ *  → Le texte de cette mention est MENTION_AFFILIATION, plus bas : un seul
+ *    endroit, lu par <AffiliateDisclaimer /> et cité par /transparence.
+ *
+ *  Côté AMF : communiqué du 29/10/2021 (« Investment recommendations on
+ *  social media: the AMF backs ESMA's reminder », relu le 14/10/2026) —
+ *  donner un avis sur le cours d'un instrument coté peut constituer une
+ *  recommandation d'investissement au sens du règlement abus de marché, à
+ *  présenter de façon objective, en disant qui parle, sur quelles sources,
+ *  et ses éventuels conflits d'intérêts. Une commission de courtier est un
+ *  conflit d'intérêts possible : elle sera publiée sur /transparence.
  *
  *  🚫 CONSÉQUENCE DIRECTE : ne jamais ajouter XTB ni Trading 212 comme
  *  partenaires. Ce sont des brokers CFD ; promouvoir leur offre à effet de
@@ -157,6 +183,21 @@ export const BROKER_CONFIG: BrokerCTAConfig = {
   disclosureText:
     "DCA Tracker peut percevoir une commission si vous ouvrez un compte via les liens ci-dessus. Cela ne change rien au coût pour vous. Aucun classement payant : l'ordre des courtiers dépend uniquement de leur pertinence pour un DCA en ETF, et les courtiers avec lesquels je n'ai aucun partenariat restent présentés à égalité.",
 };
+
+// ─── Mention d'affiliation (préparée le 14/10/2026, affichée seulement quand
+//     un partenaire est actif) ────────────────────────────────────────────────
+//
+// Posée AU-DESSUS ou À CÔTÉ de chaque lien affilié, avant le clic, par
+// <AffiliateDisclaimer /> (rendu par <InvestCTA />, qui ne s'affiche que si
+// isBrokerCTAActive()). « Publicité » est le mot que cite l'art. 5-2 de la
+// loi n° 2023-451 ; « lien affilié » dit de quoi il s'agit. Ne pas l'adoucir
+// en « partenaire » seul : le mot ne dit pas qu'il y a une rémunération.
+
+export const MENTION_AFFILIATION = {
+  libelle: "Publicité · lien affilié",
+  texte:
+    "Si vous ouvrez un compte par ce lien, DCA Tracker peut recevoir une commission du courtier. Ce que vous payez ne change pas, et le classement ne dépend pas de cette commission. Ce n'est pas un conseil en investissement personnalisé.",
+} as const;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
