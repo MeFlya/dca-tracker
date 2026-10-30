@@ -7,6 +7,7 @@
 // re-exports). This helper only provides the rendering function.
 
 import { ImageResponse } from "next/og";
+import { OgLogoTrait } from "@/lib/og-logo";
 
 interface MoneyPageOgInput {
   /** Monthly investment amount in euros (e.g. 300) */
@@ -49,7 +50,7 @@ export async function renderMoneyPageOg({
               fontWeight: 700,
             }}
           >
-            ↗
+            <OgLogoTrait size={44} />
           </div>
           <div style={{ display: "flex", alignItems: "baseline", gap: "6px" }}>
             <span style={{ fontSize: "22px", fontWeight: 700 }}>DCA</span>

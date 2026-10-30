@@ -9,6 +9,7 @@
 // re-exports. This helper only provides the rendering function.
 
 import { ImageResponse } from "next/og";
+import { OgLogoTrait } from "@/lib/og-logo";
 
 export type OgVariant = "light" | "dark";
 
@@ -93,7 +94,7 @@ export async function renderOgTemplate(input: OgTemplateInput) {
               fontWeight: 700,
             }}
           >
-            ↗
+            <OgLogoTrait size={48} />
           </div>
           <div style={{ display: "flex", alignItems: "baseline", gap: "6px" }}>
             <span

@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { OgLogoTrait } from "@/lib/og-logo";
 
 // Next.js App Router convention: this file auto-populates og:image for the
 // /a-propos route. Size, contentType, and alt below are read by Next.
@@ -37,7 +38,7 @@ export default async function OgImage() {
               fontWeight: 700,
             }}
           >
-            ↗
+            <OgLogoTrait size={48} />
           </div>
           <div style={{ display: "flex", alignItems: "baseline", gap: "6px" }}>
             <span style={{ fontSize: "26px", fontWeight: 700, color: "#111827" }}>
