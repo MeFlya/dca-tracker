@@ -76,8 +76,11 @@ export const FRAICHEUR_JOURS = 45;
  * construire tant qu'elle est dans le futur, sauf aperçu local explicite
  * (FICHES_V2_APERCU=1) : une fiche v2 ne peut pas partir avant sa date, ni
  * annoncer une modification qui n'a pas encore eu lieu.
+ *
+ * Mise en ligne réelle : le 30/10/2026 (prévue au plus tôt le 23/10), avec
+ * la liste complète des ETF éligibles au PEA.
  */
-export const MISE_EN_LIGNE_V2 = "2026-10-23";
+export const MISE_EN_LIGNE_V2 = "2026-10-30";
 
 /** dateModified et lastmod d'une fiche v2 : la plus récente de sa relecture et de sa mise en ligne. */
 export function dateModifieeV2(f: FicheEtfV2): DateISO {

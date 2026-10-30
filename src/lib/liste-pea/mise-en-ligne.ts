@@ -14,5 +14,7 @@
  * le 28/10/2026. La build refuse de construire tant que cette date est dans
  * le futur (src/lib/liste-pea/index.ts), sauf aperçu local explicite :
  * LISTE_PEA_APERCU=1 npm run build.
+ *
+ * Mise en ligne réelle : le 30/10/2026, avec les fiches ETF v2.
  */
-export const MISE_EN_LIGNE_LISTE_PEA = "2026-10-28";
+export const MISE_EN_LIGNE_LISTE_PEA = "2026-10-30";
