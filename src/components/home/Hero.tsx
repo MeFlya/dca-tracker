@@ -34,13 +34,21 @@ export function Hero() {
 
           {/* ── Left column: copy + CTAs ───────────────────────────────── */}
           <div className="lg:col-span-7">
-            {/* Badge — dot "breathes" to signal live/active */}
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-50 border border-primary-100 text-primary-700 text-xs font-medium mb-6">
+            {/* Accroche (30/10/2026) : la promesse du site, « Les ETF du PEA,
+                vérifiés à la source » (plan du 14/10, §1.1), à la place de
+                « Le cockpit DCA pour investisseurs long-terme ». Elle mène à
+                la liste vérifiée ; le titre et le texte du simulateur ne
+                changent pas (pas de refonte de l'accueil, décision de Maël). */}
+            <Link
+              href="/etf-eligibles-pea"
+              className="group inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-50 border border-primary-100 text-primary-700 text-xs font-medium mb-6 hover:border-primary-200 hover:bg-primary-100/60 transition-colors"
+            >
               <span className="relative w-1.5 h-1.5 rounded-full bg-primary-500 shrink-0 animate-breathe">
                 <span className="absolute inset-0 rounded-full bg-primary-500 animate-ping opacity-50" />
               </span>
-              Le cockpit DCA pour investisseurs long-terme
-            </div>
+              Les ETF du PEA, vérifiés à la source et datés
+              <span aria-hidden className="arrow-nudge">→</span>
+            </Link>
 
             {/* H1 — no colored span. A hyperlink-looking emphasis ("votre argent"
                 in text-primary-600) was weakening the headline. The size already

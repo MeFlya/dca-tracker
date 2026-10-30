@@ -6,6 +6,7 @@ import { HowItWorks } from "@/components/home/HowItWorks";
 import { Features } from "@/components/home/Features";
 import { TrackingPitch } from "@/components/home/TrackingPitch";
 import { TrustSection } from "@/components/home/TrustSection";
+import { EtfDuPeaVerifies } from "@/components/home/EtfDuPeaVerifies";
 import { Testimonials } from "@/components/home/Testimonials";
 import { FAQ } from "@/components/home/FAQ";
 import { EmailCapture } from "@/components/ui/EmailCapture";
@@ -62,6 +63,10 @@ export default function HomePage() {
           d'emblée. Les sections suivantes se révèlent au scroll (data-reveal). */}
       <Hero />
       <LiveSocialProof content={getSiteContentMetrics()} />
+      {/* 30/10/2026 : accès à la liste des ETF éligibles au PEA et aux fiches
+          vérifiées, juste sous le hero (sans data-reveal : visible sans défiler
+          ni JavaScript). */}
+      <EtfDuPeaVerifies />
       <div data-reveal><HowItWorks /></div>
       <div data-reveal><Features /></div>
       <div data-reveal><TrackingPitch /></div>

@@ -43,15 +43,33 @@ export function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
 
-          {/* Logo */}
+          {/* Logo, et la promesse dessous (30/10/2026, plan du 14/10 §1.1).
+              Largeurs mesurées le 30/10/2026 (Inter du build, déconnecté) :
+              l'accroche fait 187 px à 11 px, le mot-symbole 87 ; le bloc du
+              logo passe de 125 à 225 px.
+              - lg (1024-1279) : 855 px occupés sur 960 sans elle ; avec
+                elle, 955, et un connecté dépasserait. Masquée à lg.
+              - xl et plus : 1124 sur 1216 (connecté gratuit : 1133).
+              - Téléphone : 390 px laisse 58 px de marge ; en dessous, ou
+                connecté (cloche et avatar), elle passe sur deux lignes à la
+                virgule (min-w-0 sur le lien) au lieu de pousser la loupe ou
+                le menu hors de l'écran. */}
           <Link
             href="/"
-            className="flex items-center gap-2.5 hover:opacity-80 transition-opacity"
+            className="flex min-w-0 items-center gap-2.5 hover:opacity-80 transition-opacity"
             aria-label="DCATracker, retour à l'accueil"
           >
-            <LogoMark size={28} />
-            <span className="text-[15px] font-bold tracking-tight text-gray-900">
-              DCA<span className="font-normal text-gray-500 ml-1">Tracker</span>
+            <span className="flex shrink-0">
+              <LogoMark size={28} />
+            </span>
+            <span className="flex min-w-0 flex-col">
+              <span className="text-[15px] font-bold leading-tight tracking-tight text-gray-900 whitespace-nowrap">
+                DCA<span className="font-normal text-gray-500 ml-1">Tracker</span>
+              </span>
+              <span className="block lg:hidden xl:block text-[11px] leading-tight text-gray-500">
+                <span className="inline-block whitespace-nowrap">Les ETF du PEA,</span>{" "}
+                <span className="inline-block whitespace-nowrap">vérifiés à la source</span>
+              </span>
             </span>
           </Link>
 

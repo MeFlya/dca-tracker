@@ -61,7 +61,13 @@ const COLUMNS: MenuColumn[] = [
   },
   {
     title: "Choisir un ETF",
+    // 30/10/2026 (plan du 14/10, §1.5 et §2.3) : la liste des ETF éligibles
+    // au PEA entre dans le menu, en tête de colonne. « CW8 vs WPEA, etc. »
+    // décrivait le lien du hub /comparatif-etf : une ancre de requête précise
+    // vers une autre page que celle qui la vise. Le duel a maintenant son
+    // propre lien, et le hub une description générale.
     items: [
+      { href: "/etf-eligibles-pea", label: "ETF éligibles au PEA", desc: "La liste vérifiée, fonds par fonds" },
       {
         href: "/etf-msci-world",
         label: "ETF MSCI World",
@@ -71,7 +77,8 @@ const COLUMNS: MenuColumn[] = [
       { href: "/etf-sp500", label: "ETF S&P 500", desc: "SPEA, PSP5, ESE en PEA" },
       { href: "/etf-nasdaq", label: "ETF Nasdaq 100", desc: "PUST en PEA" },
       { href: "/meilleurs-etf-debutants", label: "Meilleurs ETF débutants", desc: "La sélection commentée" },
-      { href: "/comparatif-etf", label: "Comparatifs ETF", desc: "CW8 vs WPEA, etc." },
+      { href: "/comparatif-etf/cw8-vs-wpea", label: "CW8 vs WPEA", desc: "Deux MSCI World du PEA, face à face" },
+      { href: "/comparatif-etf", label: "Comparatifs ETF", desc: "Tous les duels d'ETF" },
     ],
   },
   {

@@ -135,6 +135,13 @@ export function Footer() {
               Guides
             </h2>
             <ul className="space-y-2">
+              {/* 30/10/2026 : la liste des ETF éligibles au PEA, dans le pied
+                  de page de toutes les pages (plan du 14/10, §2.3). */}
+              <li>
+                <Link href="/etf-eligibles-pea" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+                  ETF éligibles au PEA
+                </Link>
+              </li>
               <li>
                 <Link href="/meilleurs-etf-debutants" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
                   Meilleurs ETF débutants

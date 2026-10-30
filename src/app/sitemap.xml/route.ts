@@ -104,6 +104,10 @@ const REV = {
   // dans <main> sans JavaScript (30/09/2026). Même date que sa byline
   // (SIMULATEUR_REVISE_LE dans la page).
   simulateur: "2026-09-30",
+  // Accueil, 30/10/2026 : accroche « Les ETF du PEA, vérifiés à la source et
+  // datés » (lien vers la liste), bloc d'accès à la liste PEA et aux fiches
+  // v2, bloc « Source des données » et FAQ sans « données de marché ».
+  accueil: "2026-10-30",
 } as const;
 
 /** La plus récente de plusieurs dates YYYY-MM-DD (l'ordre lexical suffit). */
@@ -124,7 +128,7 @@ export async function GET(): Promise<NextResponse> {
   const base = "https://dcatracker.fr";
 
   const pages: PageEntry[] = [
-    { url: base,                               changeFreq: "weekly",  priority: 1.0,  lastmod: REV.etf },
+    { url: base,                               changeFreq: "weekly",  priority: 1.0,  lastmod: REV.accueil },
     { url: `${base}/simulateur`,               changeFreq: "weekly",  priority: 0.9,  lastmod: REV.simulateur },
     // Exemples publiés et FAQ ajoutés le 30/09/2026 : la date est celle de la
     // byline de la page, qui suit aussi le rafraîchissement de la série.
