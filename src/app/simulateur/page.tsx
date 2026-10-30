@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { SimulatorPageClient } from "./SimulatorPageClient";
-import { getUserSubscription, isPremium } from "@/lib/subscription";
 import { JsonLd } from "@/components/ui/JsonLd";
 import Link from "next/link";
 import { runSimulation, formatEur, SCENARIO_DELTA } from "@/lib/simulator";
@@ -129,8 +128,23 @@ export const metadata: Metadata = {
   },
 };
 
-// Reading searchParams here marks the route as dynamic, which is what we want —
-// the simulator output depends on the URL params.
+// ─── Page statique (30/10/2026) ─────────────────────────────────────────────
+//
+// Le 25/10/2026, Vercel a mis le projet en pause (plafond Hobby de CPU
+// dépassé). Cette page lisait searchParams et l'abonnement pendant son rendu :
+// elle s'exécutait donc à chaque visite, robots compris, pour chacune des
+// variantes d'URL (?monthly=…&fees=… : une vingtaine de liens internes), et
+// à chaque réglage de curseur (router.replace refaisait un rendu serveur).
+// Elle est désormais prérendue au build avec les réglages par défaut et
+// servie par le CDN, quelle que soit la query string :
+//   · les paramètres de l'URL sont appliqués dans le navigateur, au montage,
+//     par SimulatorPageClient (mêmes fonctions : paramsFromSearch,
+//     parsePortfolioFromSearch). Toutes les URL partagées restent valables ;
+//   · le statut Premium vient de lib/use-premium.ts (/api/abonnement, décidé
+//     côté serveur), plus d'une lecture de session pendant le rendu.
+// Un robot qui n'exécute pas le JavaScript lit donc les résultats par défaut
+// sur /simulateur?monthly=500 ; la canonique est /simulateur, l'introduction
+// et la FAQ ne changent pas.
 //
 // ⚠️ Pas de loading.tsx dans ce dossier (supprimé le 30/09/2026). Ce commentaire
 // affirmait que les robots recevaient les vrais chiffres dans le HTML initial :
@@ -142,44 +156,15 @@ export const metadata: Metadata = {
 // lisaient donc rien (relevé du 29/09/2026). Sans frontière au-dessus de la
 // page, le document attend la page et le h1, l'introduction, le résultat, le
 // tableau et la FAQ sont dans <main>. Le prix : pas de squelette pendant une
-// navigation vers cette page, le temps que le serveur réponde. On n'isole pas
-// l'abonnement dans une frontière plus petite : il est passé à
-// SimulatorPageClient, qui porte aussi le résultat et le tableau.
-type Props = {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
-};
-
-export default async function SimulateurPage({ searchParams }: Props) {
-  // Le plan est décidé ICI, côté serveur, et descendu en prop.
-  // Avant, SimulatorPageClient le lisait via useUser().publicMetadata côté
-  // navigateur : falsifiable en une ligne de console. Seul le booléen traverse,
-  // aucune donnée personnelle.
-  //
-  // Repli en « gratuit » si la lecture échoue : /simulateur est la page à plus
-  // fort trafic du site et elle doit rester servie même si l'authentification
-  // est indisponible. Le sens du repli est le bon — un incident n'ouvre jamais
-  // une fonctionnalité payante.
-  const premium = await getUserSubscription()
-    .then((sub) => isPremium(sub.plan))
-    .catch(() => false);
-
+// navigation vers cette page. Depuis le 30/10/2026 la page est statique, ce
+// prix ne se paie plus : le CDN répond sans attendre de rendu.
+export default function SimulateurPage() {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://dcatracker.fr";
 
-  // ── Server-side computation of the simulation ─────────────────────────────
-  // Params from URL → paramsFromSearch → runSimulation. All pure, all SSR-safe.
-  const raw = await searchParams;
-  const search = new URLSearchParams();
-  for (const [k, v] of Object.entries(raw)) {
-    if (typeof v === "string") search.set(k, v);
-    else if (Array.isArray(v) && v[0]) search.set(k, v[0]);
-  }
-  const shareParams = paramsFromSearch(search);
-  const initialOutput = runSimulation({
-    ...shareParams.input,
-    annualInflationPct: shareParams.inflationEnabled
-      ? shareParams.input.annualInflationPct
-      : undefined,
-  });
+  // ── Simulation du premier affichage ──────────────────────────────────────
+  // Les réglages par défaut, sans inflation : c'est exactement EXEMPLE.
+  // SimulatorPageClient la remplace au montage si l'URL porte des paramètres.
+  const initialOutput = EXEMPLE;
 
   const { input, base } = initialOutput;
   const gains = base.finalValue - base.totalInvested;
@@ -264,8 +249,7 @@ export default async function SimulateurPage({ searchParams }: Props) {
           </p>
           <p className="text-sm text-amber-800 leading-relaxed mb-4">
             Activez JavaScript pour ajuster les paramètres en temps réel. Voici
-            la projection calculée avec les paramètres par défaut ou ceux fournis
-            dans l&apos;URL.
+            la projection calculée avec les paramètres par défaut.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-amber-900">
             <div className="bg-white/60 rounded-lg p-3">
@@ -291,7 +275,7 @@ export default async function SimulateurPage({ searchParams }: Props) {
       </noscript>
 
       {/* Interactive simulator — hydrates with serverComputedOutput as initial state */}
-      <SimulatorPageClient initialOutput={initialOutput} isPremium={premium} />
+      <SimulatorPageClient initialOutput={initialOutput} />
 
       {/* ── Renvoi vers le guide (29/09/2026) ─────────────────────────────────
           Sous l'outil, jamais dedans : la colonne de résultats porte déjà la

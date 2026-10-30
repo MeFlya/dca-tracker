@@ -9,7 +9,9 @@
 
 import { ImageResponse } from "next/og";
 
-export const runtime = "edge";
+// 30/10/2026 : rendu une seule fois, au build, puis servi par le CDN. En
+// runtime edge, chaque passage d'un robot relançait le rendu de l'image.
+export const dynamic = "force-static";
 
 export async function GET() {
   const response = new ImageResponse(

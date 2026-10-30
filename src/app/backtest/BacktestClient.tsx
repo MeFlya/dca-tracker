@@ -36,6 +36,7 @@ import {
 import { DataAnomalyNotice } from "@/components/backtest/DataAnomalyNotice";
 import { track } from "@/lib/analytics";
 import { PremiumTrialLink } from "@/components/checkout/PremiumTrialLink";
+import { usePremium } from "@/lib/use-premium";
 
 // ─── Quick scenarios ─────────────────────────────────────────────────────────
 // Les périodes sont calculées dynamiquement par rapport au mois courant et
@@ -94,14 +95,16 @@ const QUICK_SCENARIOS: QuickScenarioDef[] = [
 // ─── Props ───────────────────────────────────────────────────────────────────
 
 interface Props {
-  isPremium: boolean;
   minMonth: string; // YYYY-MM (borne basse du dataset, ex: "2009-08")
   maxMonth: string; // YYYY-MM (borne haute, ex: "2026-05")
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
-export function BacktestClient({ isPremium, minMonth, maxMonth }: Props) {
+export function BacktestClient({ minMonth, maxMonth }: Props) {
+  // Décidé par le serveur (/api/abonnement), demandé depuis le navigateur :
+  // la page est statique depuis le 30/10/2026 (voir page.tsx).
+  const isPremium = usePremium();
   // Default : DCA depuis 2015 (10 ans), 200 €/mois — scénario "moyen" engageant
   const [monthlyAmount, setMonthlyAmount] = useState(200);
   const [startMonth, setStartMonth] = useState(() =>

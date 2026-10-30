@@ -2,7 +2,6 @@ import { ImageResponse } from "next/og";
 
 // Next.js App Router convention: this file auto-populates og:image for the
 // /a-propos route. Size, contentType, and alt below are read by Next.
-export const runtime = "edge";
 export const alt = "Maël, créateur de DCA Tracker — DCA depuis janvier 2025";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";

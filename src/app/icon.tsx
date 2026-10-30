@@ -8,7 +8,6 @@
 
 import { ImageResponse } from "next/og";
 
-export const runtime = "edge";
 // Google recommends multiples of 48px and ≥48px for favicons in search results.
 export const size = { width: 48, height: 48 };
 export const contentType = "image/png";

@@ -40,6 +40,22 @@ const nextConfig: NextConfig = {
 
   async redirects() {
     return [
+      // ── *.vercel.app → dcatracker.fr (30/10/2026) ──────────────────────
+      // Faite jusqu'ici par le middleware, qui tournait donc sur TOUTES les
+      // requêtes (pages, robots, images) avant le cache du CDN : environ
+      // 40 % du CPU qui a mis le projet en pause sur l'offre Hobby le
+      // 25/10/2026. Ici, c'est la couche de routage de Vercel qui l'applique,
+      // sans exécuter de fonction. Même code (301), query string conservée,
+      // aperçus et URL de déploiement redirigés comme avant ; la règle couvre
+      // aussi /_next et les fichiers statiques, que le middleware laissait
+      // passer (même build derrière, sans effet). Ne pas ajouter `permanent` :
+      // il est exclusif de statusCode (le build échoue).
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: ".*\\.vercel\\.app" }],
+        destination: "https://dcatracker.fr/:path*",
+        statusCode: 301,
+      },
       {
         source: "/:path*",
         has: [{ type: "host", value: "www.dcatracker.fr" }],
@@ -72,6 +88,18 @@ const nextConfig: NextConfig = {
       // SMAE supprimé (ISIN pointait sur un doublon Russell 2000). On
       // redirige vers la liste complète des ETF — pas d'équivalent direct.
       { source: "/etf/SMAE", destination: "/comparer-etf", permanent: true },
+
+      // ── Fiches ETF et produits prérendus (30/10/2026) ──────────────────
+      // /etf/[symbol] et /produits/[slug] ne sont plus rendues à la demande
+      // (dynamicParams = false) : seules les adresses de generateStaticParams
+      // existent. Or la page acceptait aussi le symbole de cotation
+      // (/etf/CW8.PA, /etf/IWDA.AS, /etf/VWCE.DE, /etf/CSPX.L : getETFBySymbol
+      // lit `symbol` ET `displaySymbol`), et la fiche produit son identifiant
+      // interne (/produits/bundle-dca : getProduct lit l'id ET le slug). Ces
+      // adresses répondaient 200 avec la même page ; elles redirigent vers
+      // l'adresse canonique que leur balise canonical déclarait déjà.
+      { source: "/etf/:mnemo([A-Z0-9]+)\\.(PA|AS|DE|L)", destination: "/etf/:mnemo", statusCode: 301 },
+      { source: "/produits/bundle-dca", destination: "/produits/pack-demarrage-dca", statusCode: 301 },
 
       // ── Fin des cours Yahoo Finance (2026-10-14) ───────────────────────
       // /donnees-marche n'affichait que les cours des ETF du catalogue, tirés
@@ -107,7 +135,8 @@ const nextConfig: NextConfig = {
     return [
       {
         // Only set index/follow on the canonical domain.
-        // Requests to *.vercel.app are redirected by middleware before reaching here.
+        // Les requêtes vers *.vercel.app sont redirigées par la première règle
+        // de redirects() ci-dessus (plus par le middleware depuis le 30/10/2026).
         // Sauf la page de résultats de recherche et l'index qu'elle charge :
         // des pages de résultats indexées seraient du contenu dupliqué.
         source: "/((?!recherche|search-index\\.json).*)",

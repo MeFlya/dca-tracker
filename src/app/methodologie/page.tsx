@@ -337,10 +337,15 @@ Optimiste   : rendement_brut + 2 %`}
             renvoie vers la page du fonds quand nous en avons vérifié
             l&apos;adresse.
           </li>
+          {/* 30/10/2026 : le cours Yahoo est retiré des fiches avant leur
+              refonte (le rafraîchir toutes les cinq minutes faisait partie du
+              dépassement de CPU qui a suspendu le site sur l'offre Hobby de
+              Vercel). La phrase annonçait ce retrait au futur. */}
           <li>
-            <strong>Fiches ETF :</strong> elles affichent encore un cours relevé
-            sur Yahoo Finance, jusqu&apos;à leur refonte prévue fin octobre 2026,
-            qui le retirera.
+            <strong>Fiches ETF :</strong> elles n&apos;affichent plus de cours
+            non plus. Elles donnent les frais, l&apos;ISIN et la réplication de
+            chaque fonds ; pour le prix d&apos;une part, la référence reste la
+            valeur liquidative publiée par l&apos;émetteur.
           </li>
           <li>
             <strong>Backtest :</strong> {mentionSerieGelee()}

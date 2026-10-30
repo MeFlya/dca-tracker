@@ -1,9 +1,19 @@
 import { renderOgTemplate } from "@/lib/og-template";
-import { getETFComparison } from "@/lib/etf-comparisons";
+import { ETF_COMPARISON_LIST, getETFComparison } from "@/lib/etf-comparisons";
 
-export const runtime = "edge";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
+
+// 30/10/2026 (pause Vercel Hobby pour dépassement de CPU) : les images sont
+// rendues au build, une par comparatif, puis servies par le CDN. En runtime edge,
+// chaque robot qui lisait og:image relançait le rendu. `__metadata_id__` est
+// l'identifiant de generateImageMetadata (« og ») : Next l'exige ici, et
+// l'adresse publique (…/opengraph-image/og) ne change pas. Un comparatif inconnu
+// répond 404 sans rien exécuter (dynamicParams = false).
+export const dynamicParams = false;
+export function generateStaticParams() {
+  return ETF_COMPARISON_LIST.map((c) => ({ slug: c.slug, __metadata_id__: "og" }));
+}
 export const alt = "Comparatif ETF — DCA Tracker";
 
 // UNE image par page, et c'est tout.

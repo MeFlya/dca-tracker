@@ -97,8 +97,13 @@ export function PremiumLockedOverlay({
             </p>
           )}
 
+          {/* prefetch={false} (30/10/2026) : ctaHref mène à /upgrade avec les
+              réglages du visiteur ; le préchargement relançait un rendu
+              serveur à chaque changement de réglage. Voir ConversionBlocks. */}
           <Link
             href={ctaHref}
+            prefetch={false}
+            rel="nofollow"
             className={`inline-block bg-white text-slate-950 font-semibold text-sm px-5 py-2.5 rounded-xl hover:bg-slate-100 transition-colors ${fineprint ? "" : "mt-4"}`}
           >
             {ctaLabel}

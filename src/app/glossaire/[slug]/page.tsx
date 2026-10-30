@@ -17,6 +17,11 @@ const CANONICAL_ORIGIN = "https://dcatracker.fr";
 
 type Props = { params: Promise<{ slug: string }> };
 
+// 30/10/2026 (pause Vercel Hobby pour dépassement de CPU) : seules les pages
+// de generateStaticParams existent. Une adresse inconnue répondait 404 après
+// un rendu à la demande ; elle répond désormais 404 sans rien exécuter.
+export const dynamicParams = false;
+
 export async function generateStaticParams() {
   return GLOSSARY_TERM_LIST.map((t) => ({ slug: t.slug }));
 }

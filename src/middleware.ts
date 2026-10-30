@@ -18,20 +18,7 @@ const _clerkMw = clerkMiddleware(
   { signInUrl: "/sign-in", signUpUrl: "/sign-up" },
 );
 
-const CANONICAL_HOST = "dcatracker.fr";
-
 export default function middleware(req: NextRequest, evt: NextFetchEvent) {
-  // Redirect any *.vercel.app request to the canonical domain.
-  // This prevents Google from indexing duplicate content on the Vercel subdomain
-  // and forces it to select dcatracker.fr as the canonical URL.
-  const host = req.headers.get("host") ?? req.nextUrl.hostname;
-  if (host.endsWith(".vercel.app")) {
-    const url = req.nextUrl.clone();
-    url.protocol = "https:";
-    url.host = CANONICAL_HOST;
-    return NextResponse.redirect(url, { status: 301 });
-  }
-
   // Guard: if Clerk env vars are missing, pass through without auth.
   // Prevents MIDDLEWARE_INVOCATION_FAILED when keys aren't set in Vercel yet.
   if (
@@ -43,11 +30,48 @@ export default function middleware(req: NextRequest, evt: NextFetchEvent) {
   return _clerkMw(req, evt);
 }
 
-// Vidéos (mp4|webm) exclues : sans ça, Clerk tournait sur chaque requête
-// vidéo, y compris chaque requête partielle (Range) de la lecture.
+// ─── Où le middleware tourne (30/10/2026) ───────────────────────────────────
+//
+// Le 25/10/2026, Vercel a mis le projet en pause : plafond Hobby de CPU
+// dépassé (4 h par mois glissant), dont 41 % pour le middleware. Son matcher
+// prenait tout sauf /_next et les fichiers statiques : Clerk s'exécutait avant
+// le cache du CDN sur chaque page publique, chaque préchargement de lien,
+// sitemap, robots.txt, images OG, crons et webhook, surtout pour des robots.
+//
+// Il ne tourne plus que là où le serveur lit la session. RÈGLE : toute route
+// qui appelle auth(), currentUser() ou getUserSubscription() (lib/subscription)
+// DOIT figurer ici. Sinon Clerk lève « can't detect usage of clerkMiddleware() »
+// (erreur 500), ou, là où l'appel est rattrapé, le visiteur est vu déconnecté
+// sans bruit — /api/products/checkout ferait alors un achat invité, sans
+// rattacher le client Stripe. Vérifier avec :
+//   grep -rnE "auth\(|currentUser\(|getUserSubscription\(" src/app
+//
+// Volontairement HORS du matcher, parce qu'ils n'utilisent que clerkClient(),
+// qui lit CLERK_SECRET_KEY sans middleware : /api/webhooks/stripe (signature
+// vérifiée sur le corps brut), /api/cron/* (lib/cron-auth.ts), /api/stats/public,
+// /api/subscribe, /api/email/unsubscribe, /desinscription. Ne pas élargir à
+// "/api/:path*" : le webhook et les crons repasseraient par Clerk pour rien.
+//
+// Les pages publiques n'en ont pas besoin : ClerkProvider (sans `dynamic`),
+// useUser, UserButton, SignIn et SignUp sont des composants clients ; clerk-js
+// parle à l'API Frontend de Clerk et rafraîchit la session lui-même. Le statut
+// Premium d'une page publique passe par /api/abonnement (lib/use-premium.ts).
+//
+// La redirection *.vercel.app → dcatracker.fr est dans next.config.ts.
+//
+// Next exige des chaînes littérales ici. « /x/:path* » couvre aussi /x.
 export const config = {
   matcher: [
-    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest|mp4|webm)).*)",
-    "/(api|trpc)(.*)",
+    "/account/:path*",
+    "/sign-in/:path*",
+    "/sign-up/:path*",
+    "/api/abonnement",
+    "/api/account/:path*",
+    "/api/strategy/:path*",
+    "/api/notifications",
+    "/api/onboarding/:path*",
+    "/api/stripe/:path*",
+    "/api/products/checkout",
+    "/api/simulator/:path*",
   ],
 };

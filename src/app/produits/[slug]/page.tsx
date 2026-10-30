@@ -7,6 +7,13 @@ import { getProduct, PRODUCT_LIST } from "@/lib/products";
 
 type Props = { params: Promise<{ slug: string }> };
 
+// 30/10/2026 (pause Vercel Hobby pour dépassement de CPU) : seules les pages
+// de generateStaticParams existent. Une adresse inconnue répondait 404 après
+// un rendu à la demande ; elle répond désormais 404 sans rien exécuter.
+// getProduct accepte aussi l'identifiant interne : /produits/bundle-dca, qui
+// répondait 200, redirige vers /produits/pack-demarrage-dca (next.config.ts).
+export const dynamicParams = false;
+
 export async function generateStaticParams() {
   return PRODUCT_LIST.map((p) => ({ slug: p.slug }));
 }

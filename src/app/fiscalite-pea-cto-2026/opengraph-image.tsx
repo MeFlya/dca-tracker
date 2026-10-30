@@ -2,7 +2,6 @@ import { renderOgTemplate } from "@/lib/og-template";
 import { TAUX_VERIFIES_LE, baremeCapital, tauxAffiche } from "@/lib/fiscal/pea-cto";
 import { dateEnToutesLettres } from "@/lib/etf-pea-verifies";
 
-export const runtime = "edge";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 export const alt = "Fiscalité du PEA et du CTO en 2026\u00a0: ce qui a changé — DCA Tracker";

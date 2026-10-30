@@ -1,7 +1,6 @@
 import { renderOgTemplate } from "@/lib/og-template";
 import { DATE_VERIFICATION_PEA, ETF_PEA_VERIFIES, dateEnToutesLettres } from "@/lib/etf-pea-verifies";
 
-export const runtime = "edge";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 export const alt = "ETF éligibles au PEA\u00a0: la liste vérifiée — DCA Tracker";

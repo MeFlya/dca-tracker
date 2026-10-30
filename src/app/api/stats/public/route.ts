@@ -7,7 +7,15 @@ import { clerkClient } from "@clerk/nextjs/server";
 import { normalizeEntry } from "@/lib/user-strategy";
 import { maxConsecutiveMonths } from "@/lib/badges";
 
-export const dynamic = "force-dynamic";
+// 30/10/2026 (pause Vercel Hobby pour dépassement de CPU) : la route n'est
+// plus exécutée à chaque visite. Elle ne dépend ni du visiteur ni de la
+// requête ; Next la calcule au build, puis au plus une fois par heure (ISR),
+// et le CDN sert le résultat entre-temps. Le bandeau de la home dit
+// « recalculées en continu » : une heure reste dans l'esprit, une journée non.
+// Si Clerk échoue, le repli (zéros) est servi au plus une heure, et en
+// dessous du seuil d'affichage le bandeau montre les métriques de contenu.
+export const dynamic = "force-static";
+export const revalidate = 3600;
 
 type PublicStats = {
   users: number;

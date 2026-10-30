@@ -27,17 +27,26 @@
 //
 // Désormais : loading.tsx est supprimé, la page elle-même n'attend plus rien
 // et rend tout de suite le h1, les exemples déjà calculés (texte et tableau),
-// la FAQ et la méthodologie. Seul l'outil, qui dépend de l'abonnement, attend
-// dans sa propre frontière Suspense (<OutilBacktest />), avec le squelette
-// qu'affichait loading.tsx. Le verrou Premium n'a pas bougé : c'est toujours
-// BacktestClient qui le tient, avec le même booléen décidé côté serveur.
+// la FAQ et la méthodologie.
+//
+// ─── Page statique (30/10/2026) ─────────────────────────────────────────────
+//
+// Le 25/10/2026, Vercel a mis le projet en pause (plafond Hobby de CPU
+// dépassé). Cette page était rendue à chaque requête (force-dynamic), robots
+// compris, alors que rien n'y dépend de la requête : la série est gelée
+// depuis le 14/10/2026, et le seul élément propre au visiteur était le
+// booléen Premium de l'outil. Elle est désormais prérendue au build et servie
+// par le CDN. L'outil (BacktestClient) lit ce booléen dans le navigateur, par
+// lib/use-premium.ts, qui le demande au serveur (/api/abonnement,
+// getUserSubscription) : la décision reste prise côté serveur. Le verrou n'a
+// jamais protégé plus que l'affichage : runBacktest et la série partent déjà
+// dans le JavaScript de la page. Un abonné voit l'outil verrouillé le temps
+// de la réponse, puis déverrouillé.
 
 import { MsciWorldEnPea } from "@/components/backtest/MsciWorldEnPea";
 import { SerieGelee } from "@/components/backtest/SerieGelee";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Suspense } from "react";
-import { getUserSubscription, isPremium } from "@/lib/subscription";
 import {
   getAvailableRange,
   getDatasetMeta,
@@ -78,13 +87,6 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
   },
 };
-
-// La page ne lit plus l'abonnement à son niveau : seul <OutilBacktest /> le
-// fait. On la garde rendue à chaque requête, comme avant, pour ne pas dépendre
-// de la façon dont Next traite une lecture de session dont l'erreur est
-// rattrapée (le .catch plus bas) : une version pré-rendue « gratuit » servie à
-// un abonné serait le pire des cas.
-export const dynamic = "force-dynamic";
 
 // ─── Chiffres : tous calculés sur la série publiée ──────────────────────────
 //
@@ -199,50 +201,6 @@ const FAQ: { id: string; q: string; a: string }[] = [
     a: "Non. Il rejoue une période passée, crises comprises. Une autre période, ou un autre mois d'arrivée, donne un autre résultat. Les performances passées ne préjugent pas des performances futures.",
   },
 ];
-
-// ─── Outil : la seule partie qui dépend du visiteur ─────────────────────────
-
-async function OutilBacktest({ minMonth, maxMonth }: { minMonth: string; maxMonth: string }) {
-  // Subscription côté serveur — l'isPremium ne fuite jamais dans le HTML
-  // public à part le boolean. Pas de PII.
-  //
-  // Repli en « gratuit » si la lecture échoue (30/09/2026), comme sur
-  // /simulateur : un incident d'authentification affichait la page d'erreur
-  // au lieu de la page. Le sens du repli est le bon — un incident n'ouvre
-  // jamais une fonctionnalité payante.
-  const premium = await getUserSubscription()
-    .then((sub) => isPremium(sub.plan))
-    .catch(() => false);
-
-  return <BacktestClient isPremium={premium} minMonth={minMonth} maxMonth={maxMonth} />;
-}
-
-/** Ce qu'affichait loading.tsx pour l'outil (pastilles + formulaire), sans le reste de la page. */
-function SqueletteOutil() {
-  return (
-    <div aria-busy="true">
-      <div className="motion-safe:animate-pulse">
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-6">
-          {Array.from({ length: 4 }, (_, i) => (
-            <div key={i} className="h-16 rounded-xl border border-gray-100 bg-white" />
-          ))}
-        </div>
-        <div className="rounded-2xl border border-gray-100 bg-white p-6">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-6">
-            {Array.from({ length: 3 }, (_, i) => (
-              <div key={i}>
-                <div className="h-3 w-32 rounded bg-gray-50 mb-2" />
-                <div className="h-11 rounded-xl bg-gray-50" />
-              </div>
-            ))}
-          </div>
-          <div className="h-12 w-48 rounded-xl bg-gray-100" />
-        </div>
-      </div>
-      <span className="sr-only">Chargement de l&apos;outil de backtest…</span>
-    </div>
-  );
-}
 
 export default function BacktestPage() {
   const range = RANGE;
@@ -386,10 +344,9 @@ export default function BacktestPage() {
             écart sous le total versé et courbe mois par mois.
           </p>
 
-          {/* Le client component gère tout : inputs, calcul, graphique, paywall. */}
-          <Suspense fallback={<SqueletteOutil />}>
-            <OutilBacktest minMonth={range.min} maxMonth={range.max} />
-          </Suspense>
+          {/* Le client component gère tout : inputs, calcul, graphique, paywall.
+              Le statut Premium, il le lit lui-même (lib/use-premium.ts). */}
+          <BacktestClient minMonth={range.min} maxMonth={range.max} />
         </section>
 
         {/* ── Questions fréquentes ─────────────────────────────────────────── */}

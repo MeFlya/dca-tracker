@@ -90,6 +90,12 @@ export function ConversionBlocks({ output }: { output: SimulatorOutput }) {
   );
 }
 
+// prefetch={false} et rel="nofollow" sur les trois liens (30/10/2026, pause
+// Vercel Hobby pour dépassement de CPU) : leur href porte les réglages du
+// simulateur, il change à chaque mouvement de curseur, et chaque nouvelle
+// adresse était préchargée — un rendu serveur de /upgrade (1 000 trajectoires
+// Monte Carlo) ou de /account à chaque fois. /upgrade est aussi interdite
+// dans robots.txt. Les pages se chargent au clic.
 /** CTA routing: Premium → /account, Free → /upgrade?feature=... */
 function ctaHref(isPremium: boolean, feature: FeatureKey, input: SimulatorInput): string {
   if (isPremium) return "/account";
@@ -154,6 +160,8 @@ function LossBlock({ output, isPremium }: { output: SimulatorOutput; isPremium: 
           sauvegarde (AUDIT F3 : aligner douleur → feature). */}
       <Link
         href={ctaHref(isPremium, "ab-comparison", input)}
+        prefetch={false}
+        rel="nofollow"
         className="btn-primary w-full text-sm px-5 py-2.5 inline-flex items-center justify-center btn-lift"
       >
         {isPremium ? "Ouvrir mon dashboard" : "Comparer les deux scénarios"}
@@ -241,6 +249,8 @@ function TimeShiftBlock({ output, isPremium }: { output: SimulatorOutput; isPrem
 
       <Link
         href={ctaHref(isPremium, "save-strategy", input)}
+        prefetch={false}
+        rel="nofollow"
         className="btn-primary w-full text-sm px-5 py-2.5 inline-flex items-center justify-center btn-lift"
       >
         {isPremium
@@ -416,6 +426,8 @@ function ErrorBlock({ output, isPremium }: { output: SimulatorOutput; isPremium:
 
       <Link
         href={href}
+        prefetch={false}
+        rel="nofollow"
         className="btn-primary w-full text-sm px-5 py-2.5 inline-flex items-center justify-center btn-lift"
       >
         {isPremium ? "Ouvrir mon dashboard" : err.ctaLabel}

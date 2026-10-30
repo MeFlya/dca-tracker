@@ -8,6 +8,13 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+// 30/10/2026 (pause Vercel Hobby pour dépassement de CPU) : la page de base
+// /sign-in est prérendue au build et servie par le CDN. Les sous-chemins que
+// Clerk utilise pendant le parcours (/sign-in/…) restent rendus à la demande.
+export function generateStaticParams() {
+  return [{ "sign-in": [] as string[] }];
+}
+
 export default function SignInPage() {
   return (
     <div className="flex justify-center items-start py-16 px-4 bg-gradient-to-b from-slate-50 to-white min-h-[calc(100vh-200px)]">

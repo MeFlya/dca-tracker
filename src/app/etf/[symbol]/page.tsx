@@ -5,9 +5,7 @@ import { notFound } from "next/navigation";
 import { ETF_LIST, getETFBySymbol, type ETFConfig } from "@/lib/etf-config";
 import type { AccountType } from "@/lib/broker-config";
 import { getETFDetailContent } from "@/lib/etf-detail-content";
-import { getMarketDataProvider, isDemo, libelleFournisseur } from "@/lib/market-data";
-import { formatCurrency, formatPercent, formatPercentSansSigne, formatDate, formatTer } from "@/lib/utils";
-import { DemoBadge, DelayedBadge } from "@/components/ui/Disclaimer";
+import { formatTer } from "@/lib/utils";
 import { InvestCTA } from "@/components/ui/InvestCTA";
 import { RenvoiProduit } from "@/components/products/RenvoiProduit";
 import { IssuerLogoMark } from "@/components/ui/IssuerLogoMark";
@@ -67,7 +65,22 @@ export function generateStaticParams() {
   return ETF_LIST.map((etf) => ({ symbol: etf.displaySymbol }));
 }
 
-export const revalidate = 300;
+// ─── Plus de cours, page statique (30/10/2026) ──────────────────────────────
+//
+// La fiche affichait un cours relevé sur Yahoo Finance (CGU : ni usage
+// commercial, ni collecte automatique) et se régénérait toutes les 5 minutes
+// (revalidate = 300) pour le tenir à jour : un appel à Yahoo plus un rendu
+// complet, pour chaque fiche visitée, robots compris. C'est une des causes
+// de la pause du projet sur l'offre Hobby de Vercel (25/10/2026). Cours,
+// variation, bourse et badges « démo »/« différé » sont retirés ; tout le
+// reste vient des données du dépôt. La page est rendue au build et servie
+// par le CDN.
+//
+// dynamicParams = false : seules les fiches de generateStaticParams existent.
+// Les symboles de cotation (/etf/CW8.PA…), que getETFBySymbol acceptait,
+// redirigent vers la fiche (next.config.ts) ; un symbole inconnu répond 404
+// sans rien exécuter.
+export const dynamicParams = false;
 
 // ─── Metadata ────────────────────────────────────────────────────────────────
 
@@ -152,11 +165,6 @@ export default async function ETFDetailPage({
   if (!etf) notFound();
 
   const detail = getETFDetailContent(etf.displaySymbol);
-  const provider = getMarketDataProvider();
-  const { results } = await provider.getQuotes([etf.symbol]);
-  const result = results[etf.symbol];
-  const quote = result?.quote ?? null;
-  const demo = isDemo();
 
   const otherETFs = ETF_LIST.filter((e) => e.displaySymbol !== etf.displaySymbol);
   // 09/10/2026 : les comparatifs où cet ETF est l'un des deux côtés, avec
@@ -243,14 +251,9 @@ export default async function ETFDetailPage({
                     {etf.peaEligible ? "Éligible PEA" : "Hors PEA"}
                   </span>
                 )}
-                {demo && <DemoBadge />}
-                {!demo && quote?.isDelayed && <DelayedBadge />}
               </div>
             </div>
           </div>
-
-          {/* Right: price */}
-          <PriceBlock quote={quote} error={result?.error ?? null} />
         </div>
 
         {/* Key metrics bar */}
@@ -259,7 +262,6 @@ export default async function ETFDetailPage({
           <MetricCell label="Réplication" value={etf.replicationMethod} />
           <MetricCell label="Distribution" value={etf.distributionPolicy} />
           {etf.isin && <MetricCell label="ISIN" value={etf.isin} mono />}
-          {quote?.exchange && <MetricCell label="Bourse" value={quote.exchange} />}
         </div>
       </header>
 
@@ -412,30 +414,6 @@ export default async function ETFDetailPage({
         </div>
       </div>
 
-      {/* ── Données de marché ──────────────────────────────────────────── */}
-      {quote && (
-        <div data-nosearch="" className="card mb-10 bg-gray-50 border-gray-100">
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
-            Données de marché
-          </p>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
-            <DataPoint label="Cours" value={formatCurrency(quote.price, quote.currency)} />
-            <DataPoint
-              label="Variation"
-              value={formatPercent(quote.changePercent)}
-              valueClass={quote.changePercent >= 0 ? "text-gain-dark font-semibold" : "text-loss-dark font-semibold"}
-            />
-            <DataPoint label="Devise" value={quote.currency} />
-            <DataPoint label="Mis à jour" value={formatDate(quote.lastUpdated)} />
-          </div>
-          <p className="mt-3 text-[11px] text-gray-500">
-            {demo
-              ? "Mode démo — données illustratives, pas des cours réels."
-              : "Données différées (fin de journée). Source : " + libelleFournisseur(provider.name) + "."}
-          </p>
-        </div>
-      )}
-
       {/* ── FAQ (30/09/2026) ────────────────────────────────────────────────
           Deux ou trois questions, calculées sur les données vérifiées
           (reponse-fiche-etf.ts) : l'éligibilité, les frais, l'équivalent PEA
@@ -483,9 +461,8 @@ export default async function ETFDetailPage({
           Au conditionnel (« si vous le retenez ») : sur CW8, le plus cher
           des MSCI World éligibles de notre sélection, une phrase qui tient
           l'achat pour acquis serait un conseil déguisé.
-          Placé après les données de marché, pas contre le bandeau
-          simulateur : collés, ses deux liens et celui-ci faisaient trois
-          appels au même endroit. */}
+          Placé après la FAQ, pas contre le bandeau simulateur : collés, ses
+          deux liens et celui-ci faisaient trois appels au même endroit. */}
       {etf.peaEligible && (
         <RenvoiProduit
           produit="guide-demarrer-dca"
@@ -569,9 +546,9 @@ export default async function ETFDetailPage({
           <strong>Avertissement :</strong> Les informations présentées sur cette
           page sont à caractère éducatif et informatif. Elles ne constituent pas
           un conseil en investissement financier personnalisé. Les performances
-          passées ne présagent pas des performances futures. Les données de marché
-          sont indicatives et peuvent être différées. Consultez un conseiller
-          financier agréé (CGP/CIF) avant toute décision d&apos;investissement.
+          passées ne présagent pas des performances futures. Consultez un
+          conseiller financier agréé (CGP/CIF) avant toute décision
+          d&apos;investissement.
         </p>
       </footer>
     </div>
@@ -579,50 +556,6 @@ export default async function ETFDetailPage({
 }
 
 // ─── Sub-components (page-scoped, not exported) ──────────────────────────────
-
-function PriceBlock({
-  quote,
-  error,
-}: {
-  quote: NonNullable<
-    Awaited<
-      ReturnType<Awaited<ReturnType<typeof getMarketDataProvider>>["getQuote"]>
-    >["quote"]
-  > | null;
-  error: string | null;
-}) {
-  if (error) {
-    // data-nosearch comme le cours lui-même : l'état « indisponible » du
-    // moment du build n'a pas à rester dans l'index jusqu'au déploiement
-    // suivant.
-    return (
-      <div data-nosearch="" className="text-xs text-red-500 bg-red-50 border border-red-100 rounded-lg px-3 py-2 self-start">
-        Cours indisponible
-      </div>
-    );
-  }
-  if (!quote) return null;
-
-  const positive = quote.changePercent >= 0;
-  return (
-    <div data-nosearch="" className="text-right shrink-0">
-      <p className="text-2xl font-bold text-gray-900 tabular-nums">
-        {formatCurrency(quote.price, quote.currency)}
-      </p>
-      <p
-        className={cn(
-          "text-sm font-semibold tabular-nums mt-0.5",
-          positive ? "text-gain-dark" : "text-loss-dark"
-        )}
-      >
-        {positive ? "▲" : "▼"} {formatPercentSansSigne(quote.changePercent)}
-        <span className="text-gray-500 font-normal ml-1 text-xs">
-          ({positive ? "+" : ""}{formatCurrency(quote.change, quote.currency)})
-        </span>
-      </p>
-    </div>
-  );
-}
 
 function MetricCell({
   label,
@@ -706,27 +639,6 @@ function InsightCard({
           </li>
         ))}
       </ul>
-    </div>
-  );
-}
-
-function DataPoint({
-  label,
-  value,
-  valueClass,
-}: {
-  label: string;
-  value: string;
-  valueClass?: string;
-}) {
-  return (
-    <div>
-      <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-0.5">
-        {label}
-      </p>
-      <p className={cn("text-sm font-medium text-gray-800 tabular-nums", valueClass)}>
-        {value}
-      </p>
     </div>
   );
 }

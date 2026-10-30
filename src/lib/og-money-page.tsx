@@ -103,6 +103,12 @@ export async function renderMoneyPageOg({
               opacity: 0.85,
               maxWidth: "1000px",
               marginTop: "12px",
+              // 30/10/2026 : satori exige display: flex sur un <div> qui a
+              // plusieurs enfants (ici le texte et le <span>). Sans lui, les
+              // quatre images /investir-*-euros-mois-etf plantaient à chaque
+              // requête ; prérendues au build, elles le faisaient échouer.
+              display: "flex",
+              gap: "10px",
             }}
           >
             En ETF pendant 20 ans ={" "}

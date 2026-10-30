@@ -127,15 +127,21 @@ export function Header() {
                 <BoutonRecherche variante="large" className="hidden xl:inline-flex" />
               </>
             )}
+            {/* prefetch={false} sur Connexion, S'inscrire et Dashboard (30/10/2026,
+                pause Vercel Hobby pour dépassement de CPU) : ces liens sont
+                dans l'en-tête de TOUTES les pages, et leur préchargement
+                faisait passer chaque page vue par le middleware Clerk, plus un
+                rendu serveur pour /account. Ils se chargent au clic. */}
             {isLoaded && !isSignedIn && (
               <>
                 <Link
                   href="/sign-in"
+                  prefetch={false}
                   className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
                 >
                   Connexion
                 </Link>
-                <Link href="/sign-up" className="btn-primary text-xs px-4 py-2">
+                <Link href="/sign-up" prefetch={false} className="btn-primary text-xs px-4 py-2">
                   S&apos;inscrire
                 </Link>
               </>
@@ -144,6 +150,7 @@ export function Header() {
               <>
                 <Link
                   href="/account"
+                  prefetch={false}
                   className={cn(
                     "px-3 py-1.5 rounded-lg text-sm font-medium transition-colors",
                     pathname === "/account"
@@ -241,6 +248,7 @@ export function Header() {
               <>
                 <Link
                   href="/sign-in"
+                  prefetch={false}
                   onClick={() => setMobileOpen(false)}
                   className="block px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
                 >
@@ -248,6 +256,7 @@ export function Header() {
                 </Link>
                 <Link
                   href="/sign-up"
+                  prefetch={false}
                   onClick={() => setMobileOpen(false)}
                   className="btn-primary w-full justify-center"
                 >
@@ -258,6 +267,7 @@ export function Header() {
             {isLoaded && isSignedIn && (
               <Link
                 href="/account"
+                prefetch={false}
                 onClick={() => setMobileOpen(false)}
                 className="block px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
               >

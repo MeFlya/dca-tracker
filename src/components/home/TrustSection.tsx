@@ -16,7 +16,11 @@ const TRUST_POINTS = [
   {
     icon: <SourceIcon />,
     title: "Source des données affichée",
-    body: "L'origine et le délai de chaque donnée de marché sont toujours visibles. Mode démo explicite sans clé API.",
+    // 30/10/2026 : disait « L'origine et le délai de chaque donnée de marché
+    // sont toujours visibles. Mode démo explicite sans clé API. » Plus aucun
+    // cours n'est affiché (fiches ETF comprises depuis ce jour) et le mode
+    // démo du fournisseur de cours est supprimé avec lui.
+    body: "Le site n'affiche aucun cours de bourse. Les données de marché qu'il cite (série du backtest, rendement historique des indices) sont datées et sourcées.",
   },
   {
     icon: <ShieldIcon />,

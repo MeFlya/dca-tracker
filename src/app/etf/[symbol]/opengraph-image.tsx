@@ -1,10 +1,20 @@
 import { renderOgTemplate } from "@/lib/og-template";
-import { getETFBySymbol } from "@/lib/etf-config";
+import { ETF_LIST, getETFBySymbol } from "@/lib/etf-config";
 import { formatTer } from "@/lib/utils";
 
-export const runtime = "edge";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
+
+// 30/10/2026 (pause Vercel Hobby pour dépassement de CPU) : les images sont
+// rendues au build, une par fiche, puis servies par le CDN. En runtime edge,
+// chaque robot qui lisait og:image relançait le rendu. `__metadata_id__` est
+// l'identifiant de generateImageMetadata (« og ») : Next l'exige ici, et
+// l'adresse publique (…/opengraph-image/og) ne change pas. Un symbole inconnu
+// répond 404 sans rien exécuter (dynamicParams = false).
+export const dynamicParams = false;
+export function generateStaticParams() {
+  return ETF_LIST.map((e) => ({ symbol: e.displaySymbol, __metadata_id__: "og" }));
+}
 export const alt = "Fiche ETF — DCA Tracker";
 
 // UNE image par fiche. Même défaut que les comparatifs : la liste de TOUS les
