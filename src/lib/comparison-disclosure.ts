@@ -244,8 +244,11 @@ export const UPDATE_POLICY = {
     "Les conditions tarifaires des courtiers et les frais des ETF sont revérifiés au moins deux fois par an, et à chaque fois qu'un changement est annoncé par l'établissement ou l'émetteur.",
   method:
     "La vérification se fait à la main, sur la page tarifaire officielle de chaque établissement. Aucune donnée tarifaire n'est récupérée automatiquement : une grille tarifaire mal lue par un robot est pire qu'une grille datée.",
+  // 30/10/2026 : « Les cours affichés ailleurs sur le site suivent leur propre
+  // fréquence […] et sont potentiellement différés » : plus aucun cours n'est
+  // affiché, fiches ETF comprises.
   quotes:
-    "Les cours affichés ailleurs sur le site suivent leur propre fréquence, indiquée à côté de chaque cours, et sont potentiellement différés.",
+    "Le site n'affiche aucun cours de bourse. Pour le prix d'une part, la référence est la valeur liquidative publiée par l'émetteur du fonds.",
 } as const;
 
 /**
@@ -253,4 +256,4 @@ export const UPDATE_POLICY = {
  * ⚠️ À bumper à CHAQUE modification de ce fichier ou de la liste des
  * partenaires. Une date saisie et oubliée est une date qui ment.
  */
-export const DISCLOSURE_REVISED_ON = "2026-10-14";
+export const DISCLOSURE_REVISED_ON = "2026-10-30";

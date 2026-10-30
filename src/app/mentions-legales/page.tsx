@@ -23,7 +23,7 @@ export default function MentionsLegalesPage() {
       </nav>
 
       <h1 className="text-3xl font-bold text-gray-900 mb-2">Mentions légales</h1>
-      <p className="text-sm text-gray-500 mb-8">Dernière mise à jour : 29 avril 2026</p>
+      <p className="text-sm text-gray-500 mb-8">Dernière mise à jour : 30 octobre 2026</p>
 
       <LegalArticle>
 
@@ -169,9 +169,13 @@ export default function MentionsLegalesPage() {
           financier.
         </p>
         <p>
+          {/* 30/10/2026 : « Les données de marché peuvent être différées »
+              retiré, le site n'affichant plus aucun cours de bourse. */}
           Les simulations sont hypothétiques et ne garantissent pas les
-          performances futures. Les données de marché peuvent être différées.
-          Investir comporte un risque de perte en capital. Avant toute décision
+          performances futures. Les performances passées citées sur le site,
+          publiées par les émetteurs des fonds et datées, ne préjugent pas des
+          performances futures. Investir comporte un risque de perte en
+          capital. Avant toute décision
           d&apos;investissement, consultez un conseiller financier agréé (CGP,
           CIF) ou votre établissement bancaire.
         </p>

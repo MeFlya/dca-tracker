@@ -20,7 +20,10 @@ const TRUST_POINTS = [
     // sont toujours visibles. Mode démo explicite sans clé API. » Plus aucun
     // cours n'est affiché (fiches ETF comprises depuis ce jour) et le mode
     // démo du fournisseur de cours est supprimé avec lui.
-    body: "Le site n'affiche aucun cours de bourse. Les données de marché qu'il cite (série du backtest, rendement historique des indices) sont datées et sourcées.",
+    // Même jour, avec les fiches v2 : « Les données de marché qu'il cite »
+    // devient « Les chiffres qu'il cite », et les performances publiées par
+    // les émetteurs s'ajoutent à la liste.
+    body: "Le site n'affiche aucun cours de bourse. Les chiffres qu'il cite (performances publiées par les émetteurs, série du backtest, rendement historique des indices) sont datés et sourcés.",
   },
   {
     icon: <ShieldIcon />,

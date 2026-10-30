@@ -83,13 +83,15 @@ const REV = {
   analytics: "2026-08-23",
   // /confidentialite : page d'origine jointe aux achats (3.3 et 4), puis le
   // modèle de suivi gratuit (3.5 et 4), puis la liste d'opposition après
-  // désinscription (5). Même date que « Dernière mise à jour » affichée dans
-  // la page (02/10/2026).
-  confidentialite: "2026-10-02",
+  // désinscription (5). 30/10/2026 : sous-traitant de cours (Twelve Data)
+  // retiré, le site n'en interroge plus aucun. Même date que « Dernière mise
+  // à jour » affichée dans la page.
+  confidentialite: "2026-10-30",
   // entrée de changelog sur la régression de série du 2 août ; partenariats.
   // 14/10/2026 : mention « Publicité · lien affilié » et ancre #classement
-  // sur /transparence (même date que DISCLOSURE_REVISED_ON).
-  affiliation: "2026-10-14",
+  // sur /transparence. 30/10/2026 : phrase sur les cours (plus aucun cours
+  // affiché). Même date que DISCLOSURE_REVISED_ON.
+  affiliation: "2026-10-30",
   cgv: "2026-10-01",
   // /changelog : corrections du TRI du Cockpit et de la mention de TVA ;
   // 02/10/2026 : exemple du Cockpit et du modèle gratuit aux cours réels.
@@ -108,6 +110,11 @@ const REV = {
   // datés » (lien vers la liste), bloc d'accès à la liste PEA et aux fiches
   // v2, bloc « Source des données » et FAQ sans « données de marché ».
   accueil: "2026-10-30",
+  // /mentions-legales (« Dernière mise à jour » affichée dans la page) et
+  // /a-propos, 30/10/2026 : plus de « données de marché » (aucun cours n'est
+  // affiché). /mentions-legales suivait REV.analytics (23/08/2026).
+  mentionsLegales: "2026-10-30",
+  aPropos: "2026-10-30",
 } as const;
 
 /** La plus récente de plusieurs dates YYYY-MM-DD (l'ordre lexical suffit). */
@@ -179,11 +186,11 @@ export async function GET(): Promise<NextResponse> {
       priority: 0.8,
       lastmod: REV.produits,
     })),
-    { url: `${base}/a-propos`,                 changeFreq: "monthly", priority: 0.6,  lastmod: REV.analytics },
+    { url: `${base}/a-propos`,                 changeFreq: "monthly", priority: 0.6,  lastmod: REV.aPropos },
     { url: `${base}/methodologie`,             changeFreq: "monthly", priority: 0.5,  lastmod: REV.methodologie },
     { url: `${base}/transparence`,             changeFreq: "monthly", priority: 0.5,  lastmod: REV.affiliation },
     { url: `${base}/changelog`,                changeFreq: "monthly", priority: 0.4,  lastmod: REV.changelog },
-    { url: `${base}/mentions-legales`,         changeFreq: "yearly",  priority: 0.3,  lastmod: REV.analytics },
+    { url: `${base}/mentions-legales`,         changeFreq: "yearly",  priority: 0.3,  lastmod: REV.mentionsLegales },
     { url: `${base}/cgv`,                      changeFreq: "yearly",  priority: 0.3,  lastmod: REV.cgv },
     { url: `${base}/confidentialite`,          changeFreq: "yearly",  priority: 0.3,  lastmod: REV.confidentialite },
     { url: `${base}/simulateur-retraite`,      changeFreq: "monthly", priority: 0.9,  lastmod: REV.etf },

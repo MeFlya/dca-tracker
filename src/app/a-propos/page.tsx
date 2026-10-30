@@ -465,7 +465,7 @@ export default function AboutPage() {
             roadmap est dictée par les besoins des utilisateurs, pas par un
             pitch deck. Le modèle économique est simple : un abonnement Premium
             à partir de 4,08 €/mois (facturé 49 €/an) qui finance les serveurs,
-            les données de marché et mon temps. Le détail de chaque source de
+            la vérification des données et mon temps. Le détail de chaque source de
             revenu — y compris les commissions courtier — est public sur la{" "}
             <Link
               href="/transparence"

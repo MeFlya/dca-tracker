@@ -1,4 +1,5 @@
 import { MISE_EN_LIGNE_LISTE_PEA } from "@/lib/liste-pea/mise-en-ligne";
+import { MISE_EN_LIGNE_V2 } from "@/lib/fiche-etf-v2/textes";
 
 // Journal des changements publics.
 //
@@ -69,10 +70,27 @@ export const CHANGELOG: ChangelogEntry[] = [
     why:
       "Une liste limitée à notre sélection laissait sans réponse qui cherchait un fonds précis, et le filtre PEA d'un courtier ne suffit pas\u00a0: au 14 octobre 2026, celui de Boursorama omettait les ETF à effet de levier d'Amundi et classait éligibles des fonds que leur émetteur déclare non éligibles. Une liste complète ne vaut que si chaque ligne porte sa preuve et sa date.",
   },
+  // 30/10/2026 : fin du cours Yahoo sur les 19 fiches (commit 25ab712, en
+  // ligne le 30/10) et fiches v2 (MISE_EN_LIGNE_V2, faits relevés le
+  // 14/10/2026 : private-assets/raw/geo/faits-vague1-2026-10.json). Le
+  // retrait du cours est daté en dur (il est en ligne depuis le 30/10) ; la
+  // refonte des cinq fiches suit MISE_EN_LIGNE_V2. Mnémoniques et date des
+  // chiffres écrits en dur, comme les autres entrées.
+  {
+    date: MISE_EN_LIGNE_V2,
+    kind: "produit",
+    title: "Fiches ETF\u00a0: plus de cours de bourse, et cinq fiches refaites avec les chiffres de l'émetteur",
+    body:
+      "Jusqu'au 30 octobre 2026, chaque fiche ETF affichait un cours relevé sur Yahoo Finance, avec sa variation. Depuis le 30 octobre 2026, aucune fiche n'affiche plus de cours\u00a0: pour le prix d'une part, la référence est la valeur liquidative publiée par l'émetteur. " +
+      `Depuis le ${enLettres(MISE_EN_LIGNE_V2)}, les fiches de CW8, DCAM, PAEEM, PUST et WPEA reprennent des documents de l'émetteur les performances et l'encours au 30 septembre 2026 et la dernière valeur liquidative relevée, chacun avec sa date et un lien vers le document\u00a0; l'ISIN, l'indice, la réplication, les frais et l'éligibilité au PEA y sont en plus recoupés sur une seconde source. Les autres fiches gardent leur présentation, sans cours.`,
+    why:
+      "Les conditions d'utilisation de Yahoo excluent l'usage commercial et la collecte automatique de ses données (voir l'entrée du 14 octobre 2026). Un chiffre repris du document de l'émetteur, avec sa date, se vérifie en un clic.",
+  },
   // 14/10/2026 : décision de Maël de cesser d'utiliser Yahoo Finance (plan :
   // private-assets/raw/geo/remplacement-yahoo-2026-10.md). Fiches ETF hors de
-  // ce lot : elles changent avec les fiches v2 (23/10/2026), l'entrée le dit
-  // au futur. Si le déploiement part après le 14/10, avancer la date.
+  // ce lot : l'entrée le disait au futur (« jusqu'à leur refonte, prévue fin
+  // octobre 2026 ») ; mise au passé le 30/10/2026, jour du retrait (règle sur
+  // le temps des verbes, en tête de ce fichier).
   {
     date: "2026-10-14",
     kind: "produit",
@@ -80,7 +98,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     body:
       "Jusqu'au 14 octobre 2026, le comparateur d'ETF et la page « Données de marché » affichaient des cours et des variations relevés sur Yahoo Finance, présentés comme des données de fin de journée alors qu'il s'agissait de cours de séance, et une adresse publique du site les redistribuait. " +
       "Depuis le 14 octobre 2026, le comparateur n'affiche plus de cours : chaque carte indique où lire la valeur liquidative publiée par l'émetteur, avec un lien vers la page du fonds quand son adresse a été vérifiée. La page « Données de marché » est retirée et redirige vers le comparateur, et l'adresse publique qui redistribuait les cours est fermée. " +
-      "La série mensuelle du backtest, relevée elle aussi sur Yahoo Finance, reste en ligne mais gelée à son relevé du 2 octobre 2026 : ses chiffres ne changent pas, elle n'est plus mise à jour, et chaque page qui la présente le dit. Les fiches ETF afficheront encore un cours jusqu'à leur refonte, prévue fin octobre 2026, qui le retirera.",
+      "La série mensuelle du backtest, relevée elle aussi sur Yahoo Finance, reste en ligne mais gelée à son relevé du 2 octobre 2026 : ses chiffres ne changent pas, elle n'est plus mise à jour, et chaque page qui la présente le dit. Les fiches ETF affichaient encore un cours\u00a0: il est retiré depuis le 30 octobre 2026 (voir l'entrée de ce jour).",
     why:
       "Les conditions d'utilisation de Yahoo excluent l'usage commercial et la collecte automatique de ses données ; un site qui vend un abonnement ne peut pas s'y appuyer. Le prix d'une part se lit dans la valeur liquidative que publie l'émetteur ; la série du backtest sera remplacée par une source dont la réutilisation est autorisée.",
   },

@@ -25,7 +25,7 @@ export default function ConfidentialitePage() {
       <h1 className="text-3xl font-bold text-gray-900 mb-2">
         Politique de confidentialité
       </h1>
-      <p className="text-sm text-gray-500 mb-8">Dernière mise à jour : 2 octobre 2026</p>
+      <p className="text-sm text-gray-500 mb-8">Dernière mise à jour : 30 octobre 2026</p>
 
       <LegalArticle>
 
@@ -290,15 +290,10 @@ export default function ConfidentialitePage() {
                 <td>États-Unis</td>
                 <td>Clauses contractuelles types (CCT) + DPF</td>
               </tr>
-              <tr>
-                <td>Twelve Data Inc.</td>
-                <td>Données de marché financier (cours ETF)</td>
-                <td>États-Unis</td>
-                <td>
-                  Aucune donnée personnelle transférée — uniquement des
-                  requêtes de cours publics
-                </td>
-              </tr>
+              {/* 30/10/2026 : ligne « Twelve Data Inc. — Données de marché
+                  financier (cours ETF) » retirée. Le site n'interroge plus
+                  aucun fournisseur de cours (src/lib/market-data supprimé le
+                  30/10/2026) et n'en affiche aucun. */}
             </tbody>
           </table>
         </div>

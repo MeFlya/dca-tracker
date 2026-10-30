@@ -134,20 +134,25 @@ export const TAILLE_ETF: Record<string, TailleEtf> = {
 };
 
 /**
- * Dernière révision du contenu des fiches /etf/[symbole] (réponse d'ouverture,
- * FAQ, Article JSON-LD — 30/09/2026). Lue par la byline des fiches ET par le
- * sitemap : une seule date, pas deux qui divergent.
+ * Dernière révision du contenu des fiches /etf/[symbole] (rendu v1). Lue par
+ * la byline des fiches ET par le sitemap : une seule date, pas deux qui
+ * divergent.
+ * - 30/09/2026 : réponse d'ouverture, FAQ, Article JSON-LD.
+ * - 30/10/2026 : le cours (Yahoo Finance), sa variation, la bourse et les
+ *   badges « démo »/« différé » sont retirés de toutes les fiches (commit
+ *   25ab712), avec l'avertissement qui les accompagnait. La date suit ce
+ *   changement visible ; elle ne dit pas que les faits ont été revérifiés
+ *   (la date de vérification de chaque fonds reste la sienne).
  */
-export const FICHES_ETF_MAJ_LE = "2026-09-30";
+export const FICHES_ETF_MAJ_LE = "2026-10-30";
 
 /**
- * Fiches révisées après FICHES_ETF_MAJ_LE, avec leur propre date (14/10/2026).
- * JPNK : son équivalent PEA (PTPXE, correction « Japon » du 14/10/2026).
- * Lue par la byline, l'Article JSON-LD et le sitemap, comme FICHES_ETF_MAJ_LE.
+ * Fiches révisées après FICHES_ETF_MAJ_LE, avec leur propre date. Lue par la
+ * byline, l'Article JSON-LD et le sitemap, comme FICHES_ETF_MAJ_LE.
+ * JPNK (14/10/2026, équivalent PEA PTPXE) n'y figure plus : le retrait du
+ * cours, le 30/10/2026, est plus récent.
  */
-const MAJ_FICHE_PAR_SYMBOLE: Record<string, string> = {
-  JPNK: "2026-10-14",
-};
+const MAJ_FICHE_PAR_SYMBOLE: Record<string, string> = {};
 
 /** Date de dernière révision de la fiche /etf/<symbole> (rendu v1). */
 export function majFiche(symbole: string): string {

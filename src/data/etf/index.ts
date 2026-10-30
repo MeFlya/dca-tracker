@@ -50,7 +50,7 @@ if (MISE_EN_LIGNE_V2 > AUJOURDHUI && process.env.FICHES_V2_APERCU !== "1") {
   );
 }
 
-/** Mnémoniques des fiches v2 (pied de page : pas de mention « données de marché différées »). */
+/** Mnémoniques des fiches v2, dans l'ordre du registre (cités par /methodologie). */
 export const MNEMOS_V2: readonly string[] = FICHES.map((f) => f.mnemo);
 
 export const FICHES_V2: Readonly<Record<string, FicheEtfV2>> = Object.fromEntries(FICHES.map((f) => [f.mnemo, f]));

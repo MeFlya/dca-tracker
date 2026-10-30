@@ -17,10 +17,12 @@ export const FAQ_ITEMS: FAQItem[] = [
     a: "Non. DCA Tracker est un outil éducatif et informatif. Les simulations sont hypothétiques et ne constituent pas une recommandation d'investissement personnalisée. Les performances passées ne préjugent pas des performances futures. Pour tout projet d'investissement, consultez un conseiller en gestion de patrimoine (CGP) ayant le statut de conseiller en investissements financiers (CIF), immatriculé à l'ORIAS.",
   },
   {
-    q: "Les données de marché sont-elles en temps réel ?",
+    // 30/10/2026 : la question disait « Les données de marché sont-elles en
+    // temps réel ? » ; plus aucun cours n'est affiché, fiches ETF comprises.
+    q: "Le site affiche-t-il le cours des ETF ?",
     // 14/10/2026 : la réponse décrivait les cours Yahoo Finance (« fin de
     // journée sur le plan gratuit ») ; le site cesse de les utiliser.
-    a: "Non. Le site n'affiche pas de cours en temps réel. Pour le prix d'une part d'ETF, la référence est la valeur liquidative publiée par l'émetteur du fonds (Amundi, iShares, Vanguard…), sur son site : le comparateur d'ETF y renvoie quand nous avons vérifié l'adresse de la page. Le simulateur, lui, n'utilise aucun cours : il part d'un rendement annuel supposé.",
+    a: "Non, aucun cours de bourse, ni en temps réel ni différé. Pour le prix d'une part d'ETF, la référence est la valeur liquidative publiée par l'émetteur du fonds (Amundi, iShares, Vanguard…), sur son site : le comparateur d'ETF y renvoie quand nous avons vérifié l'adresse de la page, et les fiches vérifiées citent la dernière valeur liquidative relevée, avec sa date. Le simulateur, lui, n'utilise aucun cours : il part d'un rendement annuel supposé.",
   },
   {
     q: "Qu'est-ce qu'un ETF et pourquoi choisir cette approche ?",

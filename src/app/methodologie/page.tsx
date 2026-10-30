@@ -16,6 +16,7 @@ import { MISE_EN_LIGNE_LISTE_PEA } from "@/lib/liste-pea/mise-en-ligne";
 import { UPDATE_POLICY, RANKING_IS_PAID_INFLUENCED } from "@/lib/comparison-disclosure";
 import { isBrokerCTAActive, MENTION_AFFILIATION } from "@/lib/broker-config";
 import { mentionSerieGelee } from "@/lib/backtest";
+import { MNEMOS_V2 } from "@/data/etf";
 
 const TITLE = "Méthodologie DCA Tracker : formules, hypothèses et sources";
 // 14/10/2026 : la page dit aussi comment les données ETF sont vérifiées et
@@ -203,10 +204,12 @@ export default function MethodologiePage() {
             {UPDATE_POLICY.cadence}
           </li>
         </ol>
+        {/* 30/10/2026 : disait « Ce que nous ne vérifions pas à la main : les
+            cours encore affichés sur les fiches ETF, fournis par un service
+            externe ». Les fiches n'affichent plus de cours depuis ce jour. */}
         <p>
-          Ce que nous ne vérifions pas à la main&nbsp;: les cours encore
-          affichés sur les fiches ETF, fournis par un service externe (voir
-          «&nbsp;Données de marché&nbsp;» plus bas).
+          Le site n&apos;affiche aucun cours de bourse, fiches ETF comprises
+          (voir «&nbsp;Cours de bourse&nbsp;» plus bas).
         </p>
       </Section>
 
@@ -341,12 +344,15 @@ Optimiste   : rendement_brut + 2 %`}
           gratuit, et les cours servis étaient des cours de séance. Le site
           cesse d'utiliser Yahoo (conditions : ni usage commercial, ni collecte
           automatique). */}
-      <Section title="Données de marché">
+      {/* 30/10/2026 : titre « Données de marché » remplacé (plus aucun cours
+          sur le site) ; les fiches ETF suivent le comparateur. */}
+      <Section title="Cours de bourse" id="cours">
         <p>
           Depuis le 14 octobre 2026, le comparateur d&apos;ETF n&apos;affiche plus
-          de cours, et la page «&nbsp;Données de marché&nbsp;» a été retirée. Ces
-          cours venaient de Yahoo Finance, dont les conditions d&apos;utilisation
-          excluent l&apos;usage commercial et la collecte automatique.
+          de cours, et la page qui les présentait a été retirée&nbsp;; depuis le
+          30 octobre 2026, les fiches ETF non plus. Ces cours venaient de Yahoo
+          Finance, dont les conditions d&apos;utilisation excluent l&apos;usage
+          commercial et la collecte automatique.
         </p>
         <ul className="space-y-2 text-sm">
           <li>
@@ -358,15 +364,20 @@ Optimiste   : rendement_brut + 2 %`}
             renvoie vers la page du fonds quand nous en avons vérifié
             l&apos;adresse.
           </li>
-          {/* 30/10/2026 : le cours Yahoo est retiré des fiches avant leur
-              refonte (le rafraîchir toutes les cinq minutes faisait partie du
-              dépassement de CPU qui a suspendu le site sur l'offre Hobby de
-              Vercel). La phrase annonçait ce retrait au futur. */}
+          {/* 30/10/2026 : le cours Yahoo est retiré des fiches (le rafraîchir
+              toutes les cinq minutes faisait partie du dépassement de CPU qui
+              a suspendu le site sur l'offre Hobby de Vercel). La phrase
+              annonçait ce retrait au futur. Même jour : les fiches v2
+              (MNEMOS_V2), qui citent la valeur liquidative datée. */}
           <li>
             <strong>Fiches ETF :</strong> elles n&apos;affichent plus de cours
             non plus. Elles donnent les frais, l&apos;ISIN et la réplication de
-            chaque fonds ; pour le prix d&apos;une part, la référence reste la
-            valeur liquidative publiée par l&apos;émetteur.
+            chaque fonds. Celles de {MNEMOS_V2.slice(0, -1).join(", ")} et{" "}
+            {MNEMOS_V2[MNEMOS_V2.length - 1]} citent aussi la valeur
+            liquidative, les performances et l&apos;encours publiés par
+            l&apos;émetteur, chacun avec sa date et son document. Pour le prix
+            d&apos;une part, la référence reste la valeur liquidative publiée
+            par l&apos;émetteur.
           </li>
           <li>
             <strong>Backtest :</strong> {mentionSerieGelee()}

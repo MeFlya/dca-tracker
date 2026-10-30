@@ -1,7 +1,5 @@
 import Link from "next/link";
 import { LogoMark } from "@/components/ui/LogoMark";
-import { SaufFichesV2 } from "@/components/layout/SaufFichesV2";
-import { MNEMOS_V2 } from "@/data/etf";
 
 export function Footer() {
   const year = new Date().getFullYear();
@@ -13,15 +11,21 @@ export function Footer() {
         {/* Legal disclaimer — data-nosnippet : interdit à Google d'utiliser ce
             texte comme extrait/sitelink (il remplaçait les meta descriptions
             des pages dans les résultats de recherche). */}
+        {/* 30/10/2026 : « Les données de marché peuvent être différées »
+            retiré. Le site n'affiche plus aucun cours de bourse, fiches ETF
+            comprises : la phrase laissait croire le contraire, comme la
+            mention « Données de marché potentiellement différées » du bas de
+            page, retirée elle aussi. Les performances citées sont celles que
+            publient les émetteurs (fiches v2). */}
         <div data-nosnippet className="mb-10 p-4 rounded-xl bg-amber-50 border border-amber-200">
           <p className="text-xs text-amber-800 leading-relaxed">
             <strong>Avertissement légal :</strong> DCA Tracker est un outil
             pédagogique et informatif. Il ne constitue pas un conseil en
             investissement financier personnalisé. Les simulations sont
-            hypothétiques et ne garantissent pas les performances futures.
-            <SaufFichesV2 mnemos={MNEMOS_V2}> Les données de marché peuvent être différées.</SaufFichesV2> Investir comporte un
-            risque de perte en capital. Consultez un conseiller financier
-            agréé avant toute décision d&apos;investissement.
+            hypothétiques, et les performances passées publiées par les
+            émetteurs ne préjugent pas des performances futures. Investir
+            comporte un risque de perte en capital. Consultez un conseiller
+            financier agréé avant toute décision d&apos;investissement.
           </p>
         </div>
 
@@ -242,11 +246,6 @@ export function Footer() {
             <p className="text-xs text-gray-500">
               © {year} DCA Tracker. Outil éducatif — pas de conseil en investissement.
             </p>
-            <SaufFichesV2 mnemos={MNEMOS_V2}>
-              <p className="text-xs text-gray-500">
-                Données de marché potentiellement différées.
-              </p>
-            </SaufFichesV2>
           </div>
         </div>
       </div>
