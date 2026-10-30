@@ -203,7 +203,7 @@ export default function CGVPage() {
         </p>
         <ul>
           <li>
-            Depuis votre espace <Link href="/account">compte</Link> en cliquant
+            Depuis votre espace <Link href="/account" prefetch={false}>compte</Link> en cliquant
             sur « Gérer mon abonnement » (portail Stripe).
           </li>
           <li>

@@ -43,12 +43,17 @@ export function SaveStrategyButton({ input, plan }: Props) {
   //
   // `redirect_url` est le paramètre que Clerk lit en priorité sur son fallback
   // /account. Écarté au passage : `useSearchParams`, qui aurait fait basculer
-  // la page en rendu client — or /simulateur est servie en SSR exprès, pour
-  // que les robots reçoivent les vrais chiffres dans le HTML initial.
+  // la page en rendu client — or /simulateur est prérendue exprès, pour que
+  // les robots reçoivent les vrais chiffres dans le HTML initial.
+  //
+  // prefetch={false} (30/10/2026) : ce lien est dans le HTML statique de
+  // /simulateur, et son préchargement faisait tourner le middleware Clerk
+  // (/sign-in est dans son matcher) à chaque vue de la page, pour rien.
   if (!isSignedIn) {
     return (
       <Link
         href={retour}
+        prefetch={false}
         onClick={() => track({ name: "click_save_strategy", props: { has_account: false, plan: "free" } })}
         className="inline-flex items-center gap-2 text-sm font-semibold text-primary-600 hover:text-primary-700 transition-colors"
       >
@@ -69,7 +74,7 @@ export function SaveStrategyButton({ input, plan }: Props) {
       <span className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-600">
         <CheckIcon />
         Stratégie sauvegardée —{" "}
-        <Link href="/account" className="underline underline-offset-2 hover:text-emerald-700">
+        <Link href="/account" prefetch={false} className="underline underline-offset-2 hover:text-emerald-700">
           voir le suivi
         </Link>
       </span>

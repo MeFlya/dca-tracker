@@ -115,6 +115,7 @@ function CheckoutButton({
       <div className="relative mb-6">
         <Link
           href="/account"
+          prefetch={false}
           className="w-full text-center text-sm font-semibold py-2.5 px-4 rounded-xl transition-all block bg-white/10 border border-white/15 text-white hover:bg-white/15"
         >
           Gérer mon abonnement

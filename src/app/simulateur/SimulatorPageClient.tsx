@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useUser } from "@clerk/nextjs";
+import { useAuth, useUser } from "@clerk/nextjs";
 import { SimulatorForm } from "@/components/simulator/SimulatorForm";
 import type { SimulatorMode } from "@/components/simulator/SimulatorForm";
 import { SimulatorHero } from "@/components/simulator/SimulatorHero";
@@ -52,7 +52,14 @@ import {
 import { ETF_LIST } from "@/lib/etf-config";
 import type { PortfolioItem } from "@/lib/portfolio";
 import { track } from "@/lib/analytics";
-import { usePremium } from "@/lib/use-premium";
+import { enTeteSession, usePremium } from "@/lib/use-premium";
+
+/**
+ * Attente maximale de clerk-js avant le premier calcul Monte Carlo. Au-delà
+ * (script bloqué, réseau lent), l'appel part en visiteur déconnecté ; si Clerk
+ * arrive ensuite avec une session, il est refait avec le jeton.
+ */
+const ATTENTE_CLERK_MS = 3000;
 
 /** Les champs que lit /api/simulator/monte-carlo : même valeur, même réponse. */
 function memeEntreeMonteCarlo(a: SimulatorInput, b: SimulatorInput): boolean {
@@ -140,18 +147,55 @@ export function SimulatorPageClient({ initialOutput }: Props) {
   // désormais `server-only`, et le calcul passe par /api/simulator/monte-carlo,
   // qui lit le plan côté serveur. Un visiteur non payant ne reçoit qu'une seule
   // valeur — voir le commentaire de la route.
-  const [mc, setMc] = useState<MonteCarloResponse | null>(null);
+  //
+  // Session (30/10/2026) : la page est statique, le middleware ne rafraîchit
+  // plus le cookie __session au chargement. Un abonné revenu après plus d'une
+  // minute avait un cookie périmé ; l'appel, parti 250 ms après le montage,
+  // avant clerk-js, était vu déconnecté et restait en version gratuite. Le
+  // premier appel attend donc Clerk (ATTENTE_CLERK_MS au plus), et un visiteur
+  // connecté envoie un jeton frais (enTeteSession). `session` ne change que si
+  // l'identité change : un visiteur déconnecté ne fait toujours qu'un appel,
+  // même si Clerk arrive après le délai.
+  const { isLoaded: clerkCharge, isSignedIn, userId, getToken } = useAuth();
+  const [attenteClerkFinie, setAttenteClerkFinie] = useState(false);
   useEffect(() => {
-    if (!mcInput) return;
+    const t = setTimeout(() => setAttenteClerkFinie(true), ATTENTE_CLERK_MS);
+    return () => clearTimeout(t);
+  }, []);
+  const session: string | null = clerkCharge
+    ? isSignedIn
+      ? (userId ?? "connecte")
+      : "anonyme"
+    : attenteClerkFinie
+      ? "anonyme"
+      : null;
+
+  const [mc, setMc] = useState<MonteCarloResponse | null>(null);
+  // Filet : /api/abonnement dit Premium, mais le calcul fait pour CETTE
+  // session est revenu en version gratuite (jeton indisponible, incident
+  // passager) → une seule relance. La réponse d'avant l'arrivée de Clerk ne
+  // compte pas : l'appel avec jeton est déjà parti.
+  const [relanceMc, setRelanceMc] = useState(0);
+  const relanceMcFaite = useRef(false);
+  const mcSession = useRef<string | null>(null);
+  useEffect(() => {
+    if (!mcInput || session === null) return;
     let cancelled = false;
-    fetch("/api/simulator/monte-carlo", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(mcInput),
-    })
+    const auth: Promise<Record<string, string>> =
+      session === "anonyme" ? Promise.resolve({}) : enTeteSession(getToken);
+    auth
+      .then((enTetes) =>
+        fetch("/api/simulator/monte-carlo", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", ...enTetes },
+          body: JSON.stringify(mcInput),
+        }),
+      )
       .then((r) => (r.ok ? r.json() : null))
       .then((d: MonteCarloResponse | null) => {
-        if (!cancelled) setMc(d);
+        if (cancelled) return;
+        mcSession.current = session;
+        setMc(d);
       })
       .catch(() => {
         if (!cancelled) setMc(null);
@@ -159,7 +203,13 @@ export function SimulatorPageClient({ initialOutput }: Props) {
     return () => {
       cancelled = true;
     };
-  }, [mcInput]);
+  }, [mcInput, session, getToken, relanceMc]);
+  useEffect(() => {
+    if (!isPremium || !mc || mc.premium || relanceMcFaite.current) return;
+    if (mcSession.current !== session) return;
+    relanceMcFaite.current = true;
+    setRelanceMc((n) => n + 1);
+  }, [isPremium, mc, session]);
   useEffect(() => {
     return () => {
       if (mcTimer.current) clearTimeout(mcTimer.current);

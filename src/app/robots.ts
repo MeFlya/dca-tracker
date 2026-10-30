@@ -14,7 +14,11 @@ export default function robots(): MetadataRoute.Robots {
         allow: ["/", "/api/logo"],
         // Block non-content surfaces that shouldn't appear in Google
         // - /api/*      : JSON endpoints, never content
-        // - /account/*  : user dashboard (requires auth, personal data)
+        // - /account    : user dashboard (requires auth, personal data).
+        //                 Sans barre finale (30/10/2026) : « /account/ » laissait
+        //                 /account lui-même ouvert, alors que /cgv le lie ; un
+        //                 robot qui le suivait faisait tourner le middleware.
+        //                 Aucune page publique ne commence par /account.
         // - /dashboard/*: reserved for future dashboard routes
         // - /sign-in, /sign-up : auth flows, low-value duplicates
         // - /payment/*  : Stripe callback pages (thank-you / cancel)
@@ -31,7 +35,7 @@ export default function robots(): MetadataRoute.Robots {
         // gênerait le rendu par Google et les aperçus de partage.
         disallow: [
           "/api/",
-          "/account/",
+          "/account",
           "/dashboard/",
           "/sign-in",
           "/sign-up",

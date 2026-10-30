@@ -356,7 +356,7 @@ export default function ConfidentialitePage() {
         </p>
         <ul>
           <li>
-            Depuis votre <Link href="/account/settings">espace compte</Link>{" "}
+            Depuis votre <Link href="/account/settings" prefetch={false}>espace compte</Link>{" "}
             (export, suppression).
           </li>
           <li>

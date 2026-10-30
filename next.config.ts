@@ -46,10 +46,12 @@ const nextConfig: NextConfig = {
       // 40 % du CPU qui a mis le projet en pause sur l'offre Hobby le
       // 25/10/2026. Ici, c'est la couche de routage de Vercel qui l'applique,
       // sans exécuter de fonction. Même code (301), query string conservée,
-      // aperçus et URL de déploiement redirigés comme avant ; la règle couvre
-      // aussi /_next et les fichiers statiques, que le middleware laissait
-      // passer (même build derrière, sans effet). Ne pas ajouter `permanent` :
-      // il est exclusif de statusCode (le build échoue).
+      // aperçus et URL de déploiement redirigés comme avant. La règle couvre
+      // les pages et les fichiers de public/, mais pas /_next : Next ajoute
+      // (?!/_next) à toute redirection de next.config (voir la regex dans
+      // routes-manifest.json), et le middleware le laissait passer aussi.
+      // Ne pas ajouter `permanent` : il est exclusif de statusCode (le build
+      // échoue).
       {
         source: "/:path*",
         has: [{ type: "host", value: ".*\\.vercel\\.app" }],

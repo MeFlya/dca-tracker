@@ -18,8 +18,33 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@clerk/nextjs";
 
+/**
+ * En-tête `Authorization: Bearer <jeton de session>` pour un appel /api lancé
+ * AUTOMATIQUEMENT depuis une page statique (30/10/2026).
+ *
+ * Le cookie __session ne vit que 60 s. Tant que le middleware tournait sur
+ * toutes les pages, Clerk le rafraîchissait au chargement du document
+ * (handshake) avant tout appel. Les pages publiques ne passent plus par le
+ * middleware : un abonné qui revient après une minute arrive avec un cookie
+ * périmé, et un appel parti avant que clerk-js ne l'ait renouvelé est vu
+ * déconnecté (un POST n'est jamais rafraîchi côté serveur). getToken()
+ * renvoie, lui, un jeton valide, renouvelé au besoin ; le middleware le lit
+ * dans l'en-tête aussi bien que dans le cookie.
+ *
+ * À n'appeler que si useAuth() dit isLoaded && isSignedIn : getToken() attend
+ * le chargement de Clerk, indéfiniment si clerk-js ne se charge jamais
+ * (bloqueur de publicité). Sans jeton, aucun en-tête : l'appel part avec le
+ * cookie, comme avant.
+ */
+export async function enTeteSession(
+  getToken: () => Promise<string | null>,
+): Promise<Record<string, string>> {
+  const jeton = await getToken().catch(() => null);
+  return jeton ? { Authorization: `Bearer ${jeton}` } : {};
+}
+
 export function usePremium(): boolean {
-  const { isLoaded, isSignedIn, userId } = useAuth();
+  const { isLoaded, isSignedIn, userId, getToken } = useAuth();
   const [premium, setPremium] = useState(false);
 
   useEffect(() => {
@@ -28,7 +53,10 @@ export function usePremium(): boolean {
       return;
     }
     let annule = false;
-    fetch("/api/abonnement", { cache: "no-store", credentials: "same-origin" })
+    enTeteSession(getToken)
+      .then((headers) =>
+        fetch("/api/abonnement", { cache: "no-store", credentials: "same-origin", headers }),
+      )
       .then((r) => (r.ok ? r.json() : null))
       .then((d: { premium?: unknown } | null) => {
         if (!annule) setPremium(d?.premium === true);
@@ -39,7 +67,7 @@ export function usePremium(): boolean {
     return () => {
       annule = true;
     };
-  }, [isLoaded, isSignedIn, userId]);
+  }, [isLoaded, isSignedIn, userId, getToken]);
 
   return premium;
 }

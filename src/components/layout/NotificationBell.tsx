@@ -16,7 +16,9 @@
 import Link from "next/link";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Bell } from "lucide-react";
+import { useAuth } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
+import { enTeteSession } from "@/lib/use-premium";
 import type { AppNotification, NotificationTone } from "@/lib/notifications";
 
 const SEEN_KEY = "dca_seen_notifications";
@@ -58,14 +60,21 @@ export function NotificationBell() {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
 
-  // Charge l'état lu + fetch les notifications au mount.
+  // Monté par le header seulement quand Clerk est chargé et le visiteur
+  // connecté : getToken() répond tout de suite.
+  const { getToken } = useAuth();
+
+  // Charge l'état lu + fetch les notifications au mount. Avec un jeton frais
+  // (30/10/2026) : la page est souvent statique, sans middleware pour
+  // rafraîchir un cookie __session périmé (voir lib/use-premium.ts).
   useEffect(() => {
     setSeen(loadSeen());
-    fetch("/api/notifications")
+    enTeteSession(getToken)
+      .then((headers) => fetch("/api/notifications", { headers }))
       .then((r) => (r.ok ? r.json() : { notifications: [] }))
       .then((d) => setNotifs(Array.isArray(d.notifications) ? d.notifications : []))
       .catch(() => {});
-  }, []);
+  }, [getToken]);
 
   const visible = notifs.filter(
     (n) => n.category === "action" || !seen.has(n.id),
