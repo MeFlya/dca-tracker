@@ -16,7 +16,10 @@ import { MISE_EN_LIGNE_LISTE_PEA } from "@/lib/liste-pea/mise-en-ligne";
 import { UPDATE_POLICY, RANKING_IS_PAID_INFLUENCED } from "@/lib/comparison-disclosure";
 import { isBrokerCTAActive, MENTION_AFFILIATION } from "@/lib/broker-config";
 import { mentionSerieGelee } from "@/lib/backtest";
-import { MNEMOS_V2 } from "@/data/etf";
+import { FICHES_V2, MNEMOS_V2 } from "@/data/etf";
+
+/** Dates de relecture des fiches v2 (une seule aujourd'hui : le 14/10/2026). */
+const RELECTURES_V2 = [...new Set(Object.values(FICHES_V2).map((f) => f.relueLe))].sort();
 
 const TITLE = "Méthodologie DCA Tracker : formules, hypothèses et sources";
 // 14/10/2026 : la page dit aussi comment les données ETF sont vérifiées et
@@ -163,8 +166,21 @@ export default function MethodologiePage() {
             Une donnée sans date ne dit pas si elle est encore juste. Notre
             table de vérité compte {NB_FONDS_TABLE_DE_VERITE} fonds, vérifiés
             le {dateEnToutesLettres(DATE_VERIFICATION_PEA)}. Les fiches ETF
-            indiquent cette date et renvoient, quand nous en avons une adresse
-            vérifiée, vers le document cité.
+            indiquent leur date de vérification
+            {/* 30/10/2026 (relecture) : « indiquent cette date » était faux
+                pour les fiches v2, relues à leur propre date. Dates et
+                mnémoniques lus dans les données des fiches. */}
+            {RELECTURES_V2.length === 1 ? (
+              <>
+                &nbsp;: le {dateEnToutesLettres(DATE_VERIFICATION_PEA)}, ou le{" "}
+                {dateEnToutesLettres(RELECTURES_V2[0])} pour les{" "}
+                {MNEMOS_V2.length} fiches refaites avec les chiffres de
+                l&apos;émetteur ({MNEMOS_V2.slice(0, -1).join(", ")} et{" "}
+                {MNEMOS_V2[MNEMOS_V2.length - 1]}),
+              </>
+            ) : null}{" "}
+            et renvoient, quand nous en avons une adresse vérifiée, vers le
+            document cité.
           </li>
           <li>
             <strong className="text-gray-900">Des garde-fous dans le code.</strong>{" "}

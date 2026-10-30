@@ -53,11 +53,14 @@ export function Header() {
               - Téléphone : 390 px laisse 58 px de marge ; en dessous, ou
                 connecté (cloche et avatar), elle passe sur deux lignes à la
                 virgule (min-w-0 sur le lien) au lieu de pousser la loupe ou
-                le menu hors de l'écran. */}
+                le menu hors de l'écran.
+              Nom accessible (30/10/2026, relecture) : plus d'aria-label, qui
+              remplaçait tout le texte du lien et taisait l'accroche ; le nom
+              est le texte visible, suivi de « retour à l'accueil » pour les
+              lecteurs d'écran (WCAG 2.5.3). */}
           <Link
             href="/"
             className="flex min-w-0 items-center gap-2.5 hover:opacity-80 transition-opacity"
-            aria-label="DCATracker, retour à l'accueil"
           >
             <span className="flex shrink-0">
               <LogoMark size={28} />
@@ -71,6 +74,7 @@ export function Header() {
                 <span className="inline-block whitespace-nowrap">vérifiés à la source</span>
               </span>
             </span>
+            <span className="sr-only">, retour à l&apos;accueil</span>
           </Link>
 
           {/* Desktop nav.

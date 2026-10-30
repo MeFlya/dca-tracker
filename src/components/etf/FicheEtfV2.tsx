@@ -53,6 +53,16 @@ const ORIGINE = "https://dcatracker.fr";
  */
 const AUTEUR_NOMME = true;
 
+/**
+ * Lien dans le texte (30/10/2026, relecture d'accessibilité) : souligné en
+ * permanence. En bleu seul (souligné au survol), il ne se distinguait du texte
+ * gris que par la couleur, avec un contraste de 1,15:1 à 2,03:1 entre les deux
+ * (WCAG 1.4.1, axe « link-in-text-block »). Même traitement que les liens
+ * vers les sources et que le reste du site.
+ */
+const LIEN_TEXTE =
+  "text-primary-700 underline decoration-primary-300 underline-offset-2 hover:decoration-primary-700";
+
 /** Indices dont un guide existe (sous-hub de la fiche). */
 const GUIDE_INDICE: Record<string, { href: string; label: string }> = {
   "msci-world": { href: "/etf-msci-world", label: "le guide des ETF MSCI World" },
@@ -208,7 +218,7 @@ export function FicheEtfV2({ fiche: f, etf, publieeLe }: FicheEtfV2Props) {
             .map((x, i, t) => (
               <Fragment key={x.displaySymbol}>
                 {i > 0 && (i === t.length - 1 ? " et " : ", ")}
-                <Link href={`/etf/${x.displaySymbol}`} className="font-semibold text-primary-700 hover:underline">
+                <Link href={`/etf/${x.displaySymbol}`} className={`font-semibold ${LIEN_TEXTE}`}>
                   {x.displaySymbol}
                 </Link>
               </Fragment>
@@ -414,7 +424,6 @@ export function FicheEtfV2({ fiche: f, etf, publieeLe }: FicheEtfV2Props) {
                 {f.pea.statut.valeur ? "Éligible au PEA" : "Hors PEA"}
               </Link>
             </p>
-            <p className="mt-1.5 text-xs text-gray-500">Les ETF du PEA, vérifiés à la source.</p>
           </div>
         </div>
 
@@ -481,6 +490,17 @@ export function FicheEtfV2({ fiche: f, etf, publieeLe }: FicheEtfV2Props) {
           <span>
             relus le <time dateTime={f.relueLe}>{dateCourte(f.relueLe)}</time>
           </span>
+          {/* 30/10/2026 (relecture) : la date du JSON-LD (dateModified) et du
+              sitemap (lastmod) doit se lire sur la page. Elle n'est ajoutée
+              que si elle diffère de la relecture (mise en ligne postérieure). */}
+          {dateModifieeV2(f) !== f.relueLe && (
+            <>
+              <span aria-hidden>·</span>
+              <span>
+                mis à jour le <time dateTime={dateModifieeV2(f)}>{dateCourte(dateModifieeV2(f))}</time>
+              </span>
+            </>
+          )}
           <span aria-hidden>·</span>
           <Link href="/methodologie#verification" className="underline underline-offset-2 hover:text-gray-700">
             Méthode de vérification
@@ -509,7 +529,7 @@ export function FicheEtfV2({ fiche: f, etf, publieeLe }: FicheEtfV2Props) {
             {f.emetteur.nom}, société de gestion {f.societeDeGestion.valeur}
           </Ligne>
           <Ligne libelle="Dividendes" fait={f.distribution} doc={doc(f.distribution.source)}>
-            <Link href="/glossaire/capitalisant-distribuant" className="text-primary-700 hover:underline">
+            <Link href="/glossaire/capitalisant-distribuant" className={LIEN_TEXTE}>
               {f.distribution.valeur === "capitalisation" ? "Capitalisation" : "Capitalisation et/ou distribution"}
             </Link>
             {f.distribution.valeur === "capitalisation" ? (
@@ -541,7 +561,7 @@ export function FicheEtfV2({ fiche: f, etf, publieeLe }: FicheEtfV2Props) {
           <Ligne libelle="Réplication" fait={f.replication} doc={doc(f.replication.source)}>
             {synthetique ? (
               <>
-                <Link href="/glossaire/replication-synthetique" className="text-primary-700 hover:underline">
+                <Link href="/glossaire/replication-synthetique" className={LIEN_TEXTE}>
                   Synthétique
                 </Link>
                 , {f.replication.valeur.detail}
@@ -592,7 +612,7 @@ export function FicheEtfV2({ fiche: f, etf, publieeLe }: FicheEtfV2Props) {
         <p className="text-sm text-gray-700 leading-relaxed">
           <strong className="text-gray-900">
             {m} est {f.pea.statut.valeur ? "éligible" : "non éligible"} au{" "}
-            <Link href="/glossaire/pea" className="text-primary-700 hover:underline">
+            <Link href="/glossaire/pea" className={LIEN_TEXTE}>
               PEA
             </Link>
             .
@@ -623,11 +643,11 @@ export function FicheEtfV2({ fiche: f, etf, publieeLe }: FicheEtfV2Props) {
             ))}
           . L&apos;éligibilité peut changer&nbsp;: nous la relisons chaque mois, dernière relecture le{" "}
           {dateLongue(f.relueLe)}. Ce qu&apos;un PEA accepte, et pourquoi un fonds à swap peut y entrer&nbsp;:{" "}
-          <Link href="/pea-ou-cto" className="text-primary-700 hover:underline">
+          <Link href="/pea-ou-cto" className={LIEN_TEXTE}>
             PEA ou compte-titres
           </Link>
           {" "}; les autres fonds vérifiés sont dans la{" "}
-          <Link href={lienListe} className="text-primary-700 hover:underline">
+          <Link href={lienListe} className={LIEN_TEXTE}>
             liste des ETF éligibles au PEA
           </Link>
           .
@@ -639,7 +659,7 @@ export function FicheEtfV2({ fiche: f, etf, publieeLe }: FicheEtfV2Props) {
         <p className="text-sm text-gray-700 leading-relaxed">
           <strong className="text-gray-900">
             {frais(f.ter.valeur)} par an de{" "}
-            <Link href="/glossaire/ter" className="text-primary-700 hover:underline">
+            <Link href="/glossaire/ter" className={LIEN_TEXTE}>
               frais courants (TER)
             </Link>
           </strong>
@@ -655,7 +675,7 @@ export function FicheEtfV2({ fiche: f, etf, publieeLe }: FicheEtfV2Props) {
                   {i > 0 && (i === moinsChers.length - 1 ? " et " : ", ")}
                   <Link
                     href={x.aUneFiche ? `/etf/${x.displaySymbol}` : `${URL_LISTE_PEA}#${ancreFonds(x.displaySymbol)}`}
-                    className="font-semibold text-primary-700 hover:underline"
+                    className={`font-semibold ${LIEN_TEXTE}`}
                   >
                     {x.displaySymbol}
                   </Link>{" "}
@@ -666,7 +686,7 @@ export function FicheEtfV2({ fiche: f, etf, publieeLe }: FicheEtfV2Props) {
             </>
           )}{" "}
           Les frais du courtier s&apos;y ajoutent&nbsp;:{" "}
-          <a href="#courtiers" className="text-primary-700 hover:underline">
+          <a href="#courtiers" className={LIEN_TEXTE}>
             ce que coûte un ordre
           </a>
           .
@@ -760,7 +780,7 @@ export function FicheEtfV2({ fiche: f, etf, publieeLe }: FicheEtfV2Props) {
             {ch.volatilite && (
               <li>
                 <strong className="text-gray-800">
-                  <Link href="/glossaire/volatilite" className="text-primary-700 hover:underline">
+                  <Link href="/glossaire/volatilite" className={LIEN_TEXTE}>
                     Volatilité
                   </Link>
                 </strong>{" "}
@@ -862,7 +882,7 @@ export function FicheEtfV2({ fiche: f, etf, publieeLe }: FicheEtfV2Props) {
                   .map((x, i, t) => (
                     <Fragment key={x.displaySymbol}>
                       {i > 0 && (i === t.length - 1 ? " et " : ", ")}
-                      <Link href={`/etf/${x.displaySymbol}`} className="font-semibold text-primary-700 hover:underline">
+                      <Link href={`/etf/${x.displaySymbol}`} className={`font-semibold ${LIEN_TEXTE}`}>
                         {x.displaySymbol}
                       </Link>
                     </Fragment>
@@ -905,7 +925,7 @@ export function FicheEtfV2({ fiche: f, etf, publieeLe }: FicheEtfV2Props) {
                   {emergentsVerifies.map((x, i, t) => (
                     <Fragment key={x.displaySymbol}>
                       {i > 0 && (i === t.length - 1 ? " et " : ", ")}
-                      <Link href={`/etf/${x.displaySymbol}`} className="font-semibold text-primary-700 hover:underline">
+                      <Link href={`/etf/${x.displaySymbol}`} className={`font-semibold ${LIEN_TEXTE}`}>
                         {x.displaySymbol}
                       </Link>
                     </Fragment>
@@ -975,7 +995,7 @@ export function FicheEtfV2({ fiche: f, etf, publieeLe }: FicheEtfV2Props) {
         <p className="text-sm mt-3">
           <Link
             href={`/simulateur?etfs=${m}:100&monthly=${DCA_VERSEMENT_MENSUEL}&years=20`}
-            className="font-semibold text-primary-700 hover:underline"
+            className={`font-semibold ${LIEN_TEXTE}`}
           >
             Simuler {euros(DCA_VERSEMENT_MENSUEL, 0)} par mois avec {m}
           </Link>{" "}
@@ -1133,7 +1153,7 @@ export function FicheEtfV2({ fiche: f, etf, publieeLe }: FicheEtfV2Props) {
         <ul className="space-y-2 text-sm">
           {f.documents.map((d) => (
             <li key={d.id} className="text-gray-700">
-              <LienDoc doc={d} className="text-primary-700 hover:underline">
+              <LienDoc doc={d} className={LIEN_TEXTE}>
                 {d.libelle.charAt(0).toUpperCase() + d.libelle.slice(1)}
               </LienDoc>{" "}
               <span className="text-xs text-gray-500">
@@ -1145,7 +1165,7 @@ export function FicheEtfV2({ fiche: f, etf, publieeLe }: FicheEtfV2Props) {
           ))}
           <li className="text-gray-700">
             Recoupement&nbsp;:{" "}
-            <a href={f.recoupementPrincipal.url} target="_blank" rel="noopener" className="text-primary-700 hover:underline">
+            <a href={f.recoupementPrincipal.url} target="_blank" rel="noopener" className={LIEN_TEXTE}>
               {f.recoupementPrincipal.libelle}
             </a>{" "}
             <span className="text-xs text-gray-500">(lue le {dateCourte(f.recoupementPrincipal.releveLe)})</span>
@@ -1153,15 +1173,15 @@ export function FicheEtfV2({ fiche: f, etf, publieeLe }: FicheEtfV2Props) {
         </ul>
         <p className="text-sm text-gray-600 leading-relaxed mt-3">
           Comment nous vérifions&nbsp;:{" "}
-          <Link href="/methodologie#verification" className="text-primary-700 hover:underline">
+          <Link href="/methodologie#verification" className={LIEN_TEXTE}>
             méthode de vérification
           </Link>{" "}
           ·{" "}
-          <Link href="/methodologie#classement" className="text-primary-700 hover:underline">
+          <Link href="/methodologie#classement" className={LIEN_TEXTE}>
             comment nous classons
           </Link>
           . Une erreur&nbsp;?{" "}
-          <a href="mailto:hello@dcatracker.fr" className="text-primary-700 hover:underline">
+          <a href="mailto:hello@dcatracker.fr" className={LIEN_TEXTE}>
             Écrivez-nous
           </a>
           &nbsp;; chaque correction est datée sur cette page.
@@ -1179,7 +1199,7 @@ export function FicheEtfV2({ fiche: f, etf, publieeLe }: FicheEtfV2Props) {
                   {i > 0 && (i === memeIndice.length - 1 ? " et " : ", ")}
                   <Link
                     href={x.aUneFiche ? `/etf/${x.displaySymbol}` : `${URL_LISTE_PEA}#${ancreFonds(x.displaySymbol)}`}
-                    className="font-semibold text-primary-700 hover:underline"
+                    className={`font-semibold ${LIEN_TEXTE}`}
                   >
                     {x.displaySymbol}
                   </Link>{" "}
@@ -1193,7 +1213,7 @@ export function FicheEtfV2({ fiche: f, etf, publieeLe }: FicheEtfV2Props) {
           {f.equivalentsHorsPea.map((e) => (
             <li key={e.mnemo}>
               Hors PEA&nbsp;:{" "}
-              <Link href={`/etf/${e.mnemo}`} className="font-semibold text-primary-700 hover:underline">
+              <Link href={`/etf/${e.mnemo}`} className={`font-semibold ${LIEN_TEXTE}`}>
                 {e.mnemo}
               </Link>
               , {e.note}
@@ -1205,7 +1225,7 @@ export function FicheEtfV2({ fiche: f, etf, publieeLe }: FicheEtfV2Props) {
               {comparatifs.map((c, i) => (
                 <Fragment key={c.slug}>
                   {i > 0 && " · "}
-                  <Link href={`/comparatif-etf/${c.slug}`} className="text-primary-700 hover:underline">
+                  <Link href={`/comparatif-etf/${c.slug}`} className={LIEN_TEXTE}>
                     {c.title}
                   </Link>
                 </Fragment>
@@ -1215,7 +1235,7 @@ export function FicheEtfV2({ fiche: f, etf, publieeLe }: FicheEtfV2Props) {
           {guide && (
             <li>
               Pour comparer les fonds de cet indice&nbsp;:{" "}
-              <Link href={guide.href} className="text-primary-700 hover:underline">
+              <Link href={guide.href} className={LIEN_TEXTE}>
                 {guide.label}
               </Link>
               .
@@ -1227,7 +1247,7 @@ export function FicheEtfV2({ fiche: f, etf, publieeLe }: FicheEtfV2Props) {
               {autresFichesV2.map((x, i) => (
                 <Fragment key={x}>
                   {i > 0 && (i === autresFichesV2.length - 1 ? " et " : ", ")}
-                  <Link href={`/etf/${x}`} className="font-semibold text-primary-700 hover:underline">
+                  <Link href={`/etf/${x}`} className={`font-semibold ${LIEN_TEXTE}`}>
                     {x}
                   </Link>
                 </Fragment>
@@ -1237,7 +1257,7 @@ export function FicheEtfV2({ fiche: f, etf, publieeLe }: FicheEtfV2Props) {
           )}
           <li>
             Tous les fonds vérifiés, indice par indice&nbsp;:{" "}
-            <Link href={URL_LISTE_PEA} className="text-primary-700 hover:underline">
+            <Link href={URL_LISTE_PEA} className={LIEN_TEXTE}>
               la liste des ETF éligibles au PEA
             </Link>
             .

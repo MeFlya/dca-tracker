@@ -50,32 +50,45 @@ export function EtfDuPeaVerifies() {
           {/* ── La liste ─────────────────────────────────────────────────── */}
           <div className="rounded-3xl border border-primary-100 bg-white shadow-card-lg p-6 sm:p-8 flex flex-col">
             <p className="text-xs font-semibold uppercase tracking-widest text-primary-700 mb-2">Liste vérifiée</p>
+            {/* 30/10/2026 (relecture) : « Les 128 ETF… » la présentait comme
+                complète ; la page dit le contraire (10 lignes non publiées, un
+                lancement récent peut manquer). Sans article, comme son chapô. */}
             <h3 className="text-xl font-bold text-gray-900 mb-3">
-              Les {LIGNES_PEA.length} ETF éligibles au PEA cotés à Paris
+              {LIGNES_PEA.length} ETF éligibles au PEA cotés à Paris, vérifiés un par un
             </h3>
             <p className="text-sm text-gray-600 leading-relaxed mb-5">
               Relevés le {dateEnToutesLettres(DATE_RELEVE_LISTE_PEA)}. Pour chacun&nbsp;: ISIN, frais
               courants, indice suivi, et le document daté de l&apos;émetteur qui établit
               l&apos;éligibilité.
             </p>
-            {/* Les nombres sont lus dans la liste : ils suivent le prochain relevé. */}
-            <dl className="grid grid-cols-3 gap-3 mb-6 rounded-2xl border border-slate-200/70 bg-slate-50/70 px-4 py-4">
+            {/* Les nombres sont lus dans la liste : ils suivent le prochain relevé.
+                30/10/2026 (relecture) : en lignes, comme la liste des fiches
+                d'à côté, et non plus en trois colonnes. Sur ordinateur, les
+                deux cartes ont la même hauteur : les colonnes laissaient 91 px
+                vides au-dessus des boutons. À partir de lg, les lignes se
+                partagent la hauteur restante (lg:flex-1), et les boutons
+                restent à 24 px sous le cadre, alignés sur le bas de la liste
+                des fiches. */}
+            <dl className="mb-6 flex flex-col divide-y divide-slate-100 rounded-2xl border border-slate-200/70 bg-slate-50/70 lg:flex-1">
               {CHIFFRES_LISTE.map((c) => (
-                <div key={c.libelle} className="flex flex-col-reverse justify-end gap-1 min-w-0">
-                  <dt className="text-xs text-gray-500 leading-snug">{c.libelle}</dt>
-                  <dd className="text-2xl font-bold text-gray-900 tabular-nums leading-none">{c.valeur}</dd>
+                <div
+                  key={c.libelle}
+                  className="flex flex-row-reverse items-baseline justify-end gap-3 px-4 py-3 lg:flex-1 lg:items-center"
+                >
+                  <dt className="min-w-0 text-sm text-gray-600 leading-snug">{c.libelle}</dt>
+                  <dd className="w-10 shrink-0 text-xl font-bold text-gray-900 tabular-nums leading-none">{c.valeur}</dd>
                 </div>
               ))}
             </dl>
             <div className="mt-auto flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
-              <Link href={URL_LISTE_PEA} className="btn-primary group self-start">
+              <Link href={URL_LISTE_PEA} className="btn-primary group self-start sm:self-auto">
                 Voir la liste
                 <ArrowRight size={16} aria-hidden className="arrow-nudge" />
               </Link>
               <a
                 href={CHEMIN_CSV_LISTE_PEA}
                 download
-                className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary-700 hover:text-primary-800 underline-offset-4 hover:underline transition-colors self-start"
+                className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary-700 hover:text-primary-800 underline-offset-4 hover:underline transition-colors self-start sm:self-auto"
               >
                 <Download size={15} aria-hidden />
                 Télécharger le CSV
@@ -87,9 +100,13 @@ export function EtfDuPeaVerifies() {
           <div className="rounded-3xl border border-slate-200/70 bg-white shadow-card p-6 sm:p-8 flex flex-col">
             <p className="text-xs font-semibold uppercase tracking-widest text-primary-700 mb-2">Fiches vérifiées</p>
             <h3 className="text-xl font-bold text-gray-900 mb-3">Les chiffres publiés par l&apos;émetteur</h3>
+            {/* 30/10/2026 (relecture) : « Frais, performances et encours au
+                30/09 » ; or chaque fiche date ses frais de son document
+                d'informations clés (du 09/04 au 13/07/2026), pas du 30/09. */}
             <p className="text-sm text-gray-600 leading-relaxed mb-5">
-              Frais, performances et encours{DATE_COMMUNE ? <> au {dateCourte(DATE_COMMUNE)}</> : null}, chacun
-              avec le document qui le donne. Les performances passées ne préjugent pas des performances futures.
+              Performances et encours{DATE_COMMUNE ? <> au {dateCourte(DATE_COMMUNE)}</> : null}, frais
+              selon le dernier document d&apos;informations clés, chacun avec le document qui le donne. Les
+              performances passées ne préjugent pas des performances futures.
             </p>
             <ul className="mt-auto divide-y divide-slate-100 rounded-2xl border border-slate-200/70 overflow-hidden">
               {FICHES.map((f) => (
