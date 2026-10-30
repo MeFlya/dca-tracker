@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, Download } from "lucide-react";
-import { CHEMIN_CSV_LISTE_PEA, DATE_RELEVE_LISTE_PEA, LIGNES_PEA } from "@/lib/liste-pea/donnees";
-import { URL_LISTE_PEA, dateEnToutesLettres } from "@/lib/etf-pea-verifies";
+import { CHEMIN_CSV_LISTE_PEA, DATE_RELEVE_LISTE_PEA, EMETTEURS_LISTE, LIGNES_PEA } from "@/lib/liste-pea";
+import { ETF_NON_ELIGIBLES, URL_LISTE_PEA, dateEnToutesLettres } from "@/lib/etf-pea-verifies";
 import { FICHES_V2 } from "@/data/etf";
 import { dateCourte } from "@/lib/fiche-etf-v2/textes";
 
@@ -11,11 +11,19 @@ import { dateCourte } from "@/lib/fiche-etf-v2/textes";
 // JavaScript du navigateur, la page reste statique.
 //
 // Tout ce qui est compté ou daté ici est lu dans les données : nombre de
-// lignes et date du relevé de la liste, liste des fiches v2 et date de leurs
-// chiffres. Pas de « référence », de « plus complet » ni de « meilleur »
+// lignes, d'émetteurs et de fonds non éligibles, date du relevé de la liste,
+// liste des fiches v2 et date de leurs chiffres. La liste est lue par
+// @/lib/liste-pea, avec ses contrôles de build (date de mise en ligne comprise). Pas de « référence », de « plus complet » ni de « meilleur »
 // (plan §1.3 et §1.4) : on montre la preuve, pas un superlatif.
 
 const FICHES = Object.values(FICHES_V2).sort((a, b) => a.mnemo.localeCompare(b.mnemo, "fr"));
+
+/** Les trois nombres de la carte « liste », comptés dans les données (mêmes libellés que la page). */
+const CHIFFRES_LISTE = [
+  { valeur: LIGNES_PEA.length, libelle: "lignes de cotation, une par ISIN" },
+  { valeur: EMETTEURS_LISTE.length, libelle: "émetteurs" },
+  { valeur: ETF_NON_ELIGIBLES.length, libelle: "fonds non éligibles, avec la raison" },
+];
 
 /** Date des chiffres de l'émetteur, commune aux fiches ; sinon null (chaque ligne donne la sienne). */
 const DATES_CHIFFRES = [...new Set(FICHES.map((f) => f.chiffres.au))];
@@ -45,12 +53,20 @@ export function EtfDuPeaVerifies() {
             <h3 className="text-xl font-bold text-gray-900 mb-3">
               Les {LIGNES_PEA.length} ETF éligibles au PEA cotés à Paris
             </h3>
-            <p className="text-sm text-gray-600 leading-relaxed mb-6">
+            <p className="text-sm text-gray-600 leading-relaxed mb-5">
               Relevés le {dateEnToutesLettres(DATE_RELEVE_LISTE_PEA)}. Pour chacun&nbsp;: ISIN, frais
               courants, indice suivi, et le document daté de l&apos;émetteur qui établit
-              l&apos;éligibilité. Les fonds souvent pris pour des ETF du PEA sans
-              l&apos;être sont présentés à part, avec la raison.
+              l&apos;éligibilité.
             </p>
+            {/* Les nombres sont lus dans la liste : ils suivent le prochain relevé. */}
+            <dl className="grid grid-cols-3 gap-3 mb-6 rounded-2xl border border-slate-200/70 bg-slate-50/70 px-4 py-4">
+              {CHIFFRES_LISTE.map((c) => (
+                <div key={c.libelle} className="flex flex-col-reverse justify-end gap-1 min-w-0">
+                  <dt className="text-xs text-gray-500 leading-snug">{c.libelle}</dt>
+                  <dd className="text-2xl font-bold text-gray-900 tabular-nums leading-none">{c.valeur}</dd>
+                </div>
+              ))}
+            </dl>
             <div className="mt-auto flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
               <Link href={URL_LISTE_PEA} className="btn-primary group self-start">
                 Voir la liste
