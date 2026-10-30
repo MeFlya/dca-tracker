@@ -32,8 +32,9 @@ export type IndexTracker = {
   envelope: "PEA + CTO" | "CTO / AV" | "Non commercialisé (EEE)";
   pea: boolean;
   note: string;
-  /** Met en avant la ligne (le choix recommandé pour la majorité). */
-  recommended?: boolean;
+  // 30/10/2026 : champ « recommended » retiré. Il affichait un badge « Notre
+  // choix » sur WPEA, SPEA et PUST : une recommandation de fonds, que le site
+  // (non-CIF) ne fait pas. Les fiches et la liste comparent, sans désigner.
 };
 
 export type IndexGuide = {
@@ -146,7 +147,6 @@ const MSCI_WORLD: IndexGuide = {
       // divergent (part ou fonds ?, fait encours-a-trancher). Les deux
       // s'accordent sur le classement WPEA > DCAM, qui reste.
       note: "Lancé en mars 2024 et coté à Paris depuis avril 2024 : même indice que le CW8 pour des frais presque deux fois plus bas (0,20 % contre 0,38 %). Encours plus important que celui de DCAM, part sous 10 €.",
-      recommended: true,
     },
     {
       ticker: "DCAM",
@@ -243,7 +243,9 @@ const MSCI_WORLD: IndexGuide = {
   },
   faq: [
     {
-      q: "Quel est le meilleur ETF MSCI World pour un PEA en 2026 ?",
+      // 30/10/2026 : « Quel est le meilleur ETF MSCI World… » retiré : pas de
+      // « meilleur » pour un fonds. La réponse compare les frais, sans désigner.
+      q: "Quels ETF MSCI World sont éligibles au PEA, et à quels frais ?",
       a: "À indice identique, les frais les plus bas de notre sélection sont à 0,20 % : c'est le niveau de WPEA (iShares) et de DCAM (Amundi), contre 0,38 % pour le CW8. Entre ces deux-là, les différences d'encours et de prix de part sont faibles ; l'écart entre eux et le CW8 est chiffré sur vingt ans dans notre comparatif CW8 vs WPEA.",
     },
     {
@@ -355,10 +357,9 @@ const SP500: IndexGuide = {
       envelope: "PEA + CTO",
       pea: true,
       // 29/09/2026 : la petite taille du fonds était signalée sur /guide-5-…
-      // et /meilleurs-etf-debutants, pas ici, où SPEA porte le badge. Aucun
+      // et /meilleurs-etf-debutants, pas ici, où SPEA portait un badge. Aucun
       // montant d'encours : les sources divergent (encours-a-trancher).
       note: "Le S&P 500 éligible PEA le moins cher de notre sélection (0,10 %). Suit le S&P 500 classique, par swap. Fonds récent (lancé le 29 mai 2025) et encore petit : d'après justETF, son encours est très inférieur à celui de PSP5 au 31/08/2026, et un petit fonds est plus exposé au risque de fermeture.",
-      recommended: true,
     },
     {
       ticker: "PSP5",
@@ -459,7 +460,9 @@ const SP500: IndexGuide = {
   ],
   faq: [
     {
-      q: "Quel est le meilleur ETF S&P 500 pour un PEA ?",
+      // 30/10/2026 : « Quel est le meilleur ETF S&P 500… » retiré (voir la FAQ
+      // MSCI World). La réponse compare les frais, sans désigner.
+      q: "Quels ETF S&P 500 sont éligibles au PEA, et à quels frais ?",
       // 28/09/2026 : désignait ESE (« très liquide, disponible partout ») et
       // PSP5 comme « le TER absolu le plus bas » — faux depuis SPEA (0,10 %).
       a: "Sur les frais, SPEA (iShares, 0,10 %) est le moins cher de notre sélection, devant PSP5 (Amundi, 0,12 %) et ESE (BNP Paribas, 0,14 %). Les trois suivent le S&P 500 classique ; SPEA est aussi le plus récent (lancé en mai 2025) et encore petit, donc plus exposé au risque de fermeture qu'un fonds installé comme PSP5. PE500 (0,25 %) suit une version du S&P 500 filtrée sur des critères ESG. Entre les trois premiers, l'écart de frais est faible.",
@@ -498,7 +501,9 @@ const SP500: IndexGuide = {
   ],
   publishedAt: "2026-06-02",
   // 14/10/2026 : liens vers les fiches des fonds cités (IndexGuidePage).
-  updatedAt: "2026-10-14",
+  // 30/10/2026 : badge « Notre choix » retiré (SPEA) et FAQ sans « meilleur »,
+  // avec la mise en ligne de la liste (16 jours après la modification du 14/10).
+  updatedAt: MISE_EN_LIGNE_LISTE_PEA,
   readingMinutes: 7,
 };
 
@@ -557,7 +562,6 @@ const NASDAQ: IndexGuide = {
       // disait « nous ne les détaillons pas tant que leurs données ne sont pas
       // vérifiées ».
       note: "Le Nasdaq-100 classique d'Amundi en PEA, par swap. PNAS (FR001400ZGR7) n'est pas un autre fonds : c'est une seconde part du même fonds, aux mêmes frais courants, selon Amundi.",
-      recommended: true,
     },
     // 28/09/2026 : PNAS et PANX RETIRÉS du tableau. Leurs lignes affirmaient
     // des faits absents de la table de vérité — PNAS « même fonds que PUST »,
@@ -624,7 +628,9 @@ const NASDAQ: IndexGuide = {
   ],
   faq: [
     {
-      q: "Quel est le meilleur ETF Nasdaq 100 pour un PEA ?",
+      // 30/10/2026 : « Quel est le meilleur ETF Nasdaq 100… » retiré (voir la
+      // FAQ MSCI World). La réponse dit quelles lignes la liste compte.
+      q: "Quels ETF Nasdaq 100 sont éligibles au PEA ?",
       // 28/09/2026 : « quasiment le seul » et la part PNAS « même fonds, ~5 € »
       // retirés (faux pour le premier, non vérifié pour le second).
       // 29/09/2026 : encours chiffré retiré (écart table / justETF non tranché).
@@ -677,7 +683,7 @@ const NASDAQ: IndexGuide = {
   ],
   publishedAt: "2026-06-02",
   // 14/10/2026 : PNAS vérifié (note et FAQ) ; liens vers les fiches.
-  // Puis la FAQ « meilleur ETF Nasdaq 100 » renvoie à la liste complète des
+  // Puis la FAQ « ETF Nasdaq 100 éligibles au PEA » renvoie à la liste complète des
   // ETF éligibles au PEA : même date que sa mise en ligne (14 jours au moins
   // après le 14/10, règle d'une modification par page tous les 14 jours).
   updatedAt: MISE_EN_LIGNE_LISTE_PEA,

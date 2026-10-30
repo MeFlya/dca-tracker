@@ -162,16 +162,14 @@ export function IndexGuidePage({ guide }: { guide: IndexGuide }) {
           Les ETF éligibles PEA d&apos;abord, puis ceux réservés au compte-titres.
         </p>
 
+        {/* 30/10/2026 : plus de badge « Notre choix » ni de carte mise en
+            avant. Ils désignaient un fonds comme le choix à faire, alors que
+            le site n'est pas conseiller en investissements financiers (même
+            correction que /meilleurs-etf-debutants le 30/09/2026). Les cartes
+            gardent leur ordre et leurs données. */}
         <div className="space-y-3">
           {guide.trackers.map((t) => (
-            <div
-              key={t.ticker}
-              className={`rounded-2xl border p-5 ${
-                t.recommended
-                  ? "border-primary-200 bg-primary-50/40 ring-1 ring-primary-100"
-                  : "border-gray-100 bg-white"
-              }`}
-            >
+            <div key={t.ticker} className="rounded-2xl border border-gray-100 bg-white p-5">
               <div className="flex items-start justify-between gap-3 flex-wrap mb-2">
                 <div className="flex items-start gap-2.5 min-w-0">
                   <IssuerLogoMark name={t.issuer} height={34} className="mt-0.5" />
@@ -186,11 +184,6 @@ export function IndexGuidePage({ guide }: { guide: IndexGuide }) {
                         </Link>
                       ) : (
                         <span className="text-base font-bold text-gray-900">{t.ticker}</span>
-                      )}
-                      {t.recommended && (
-                        <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide text-primary-700 bg-primary-100 border border-primary-200 px-1.5 py-0.5 rounded">
-                          <Check size={10} strokeWidth={3} /> Notre choix
-                        </span>
                       )}
                     </div>
                     <p className="text-sm text-gray-500">{t.name}</p>
