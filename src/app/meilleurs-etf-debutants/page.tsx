@@ -705,6 +705,19 @@ export default function MeilleursETFDebutantsPage() {
               n: "2",
               title: "Choisir votre ETF de départ",
               body: `Un seul ETF suffit pour commencer. En PEA, WPEA et DCAM suivent le MSCI World pour ${terAffiche(WPEA_F.ter)} de frais par an, contre ${terAffiche(CW8_F.ter)} pour CW8. En compte-titres, VWCE ajoute les pays émergents.`,
+              // Lot C (backlog SEO QW-01 du 14/10/2026, mis en ligne le
+              // 30/10/2026 avec la liste complète, même date de byline) : la
+              // fiche PAEEM ne recevait presque aucun lien contextuel. Un
+              // fait, pas une consigne.
+              suite: (
+                <>
+                  {" "}Dans un PEA, les pays émergents passent par un ETF dédié, comme{" "}
+                  <Link href="/etf/PAEEM" className="font-semibold text-primary-700 hover:underline">
+                    PAEEM
+                  </Link>
+                  , qui suit une variante ESG de l&apos;indice des marchés émergents.
+                </>
+              ),
               link: { href: "/comparer-etf", label: "Comparer tous les ETF disponibles →" },
             },
             {
@@ -720,7 +733,10 @@ export default function MeilleursETFDebutantsPage() {
               </div>
               <div>
                 <p className="font-semibold text-gray-900 mb-1">{step.title}</p>
-                <p className="text-sm text-gray-500 leading-relaxed mb-2">{step.body}</p>
+                <p className="text-sm text-gray-500 leading-relaxed mb-2">
+                  {step.body}
+                  {"suite" in step ? step.suite : null}
+                </p>
                 <Link href={step.link.href} className="text-xs font-semibold text-primary-600 hover:text-primary-700 underline transition-colors">
                   {step.link.label}
                 </Link>
